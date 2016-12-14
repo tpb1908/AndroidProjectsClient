@@ -29,4 +29,15 @@
         <item name="drawableColor">@color/md_white_1000</item>
     </style>
 
+    <style name="LoginEditText" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/md_white_1000</item>
+        <item name="android:colorAccent">@color/md_white_1000</item>
+        <item name="android:colorPrimary">@color/md_white_1000</item>
+        <item name="android:colorPrimaryDark">@color/md_white_1000</item>
+        <item name="android:textColor">@color/md_white_1000</item>
+        <item name="android:colorControlNormal">@color/md_white_1000</item>
+        <item name="android:colorControlActivated">@color/md_white_1000</item>
+        <item name="android:backgroundTint">@color/md_white_1000</item>
+    </style>
+
 </resources>
