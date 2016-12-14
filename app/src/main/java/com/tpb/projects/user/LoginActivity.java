@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 
+import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Loader;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        AndroidNetworking.initialize(this);
+
 
         mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if(id == R.id.login || id == EditorInfo.IME_NULL) {
