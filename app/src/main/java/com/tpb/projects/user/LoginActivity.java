@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.R;
+import com.tpb.projects.data.auth.GitHubApp;
+import com.tpb.projects.util.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +24,7 @@ import butterknife.ButterKnife;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private GitHubApp mApp;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -41,6 +44,22 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         AndroidNetworking.initialize(this);
+
+
+        mApp = new GitHubApp(this, Constants.CLIENT_ID,
+                Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
+
+        mApp.setListener(new GitHubApp.OAuthAuthenticationListener() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onFail(String error) {
+
+            }
+        });
+
         mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if(id == R.id.login || id == EditorInfo.IME_NULL) {
                 attemptLogin();
@@ -49,8 +68,15 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
-        final Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(view -> attemptLogin());
+        final Button login = (Button) findViewById(R.id.email_sign_in_button);
+        login.setOnClickListener(view -> {
+            if(mApp.hasAccessToken()) {
+                //Prompt to see if user wants to reset token
+                mApp.resetAccessToken();
+            }
+            mApp.authorize();
+
+        });
     }
 
 
