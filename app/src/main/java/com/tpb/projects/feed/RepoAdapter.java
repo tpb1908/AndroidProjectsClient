@@ -9,6 +9,12 @@ import android.view.ViewGroup;
 
 public class RepoAdapter extends RecyclerView.Adapter {
 
+
+    /*
+    Use the ItemTouchHelper.Simplecallback methods and override getMoveThreshold to either
+    drag in the recyclerview or drag outside of the view
+     */
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return null;

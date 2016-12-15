@@ -1,11 +1,8 @@
 package com.tpb.projects.data;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.util.Log;
 
-import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.client.GitHubClient;
-import org.eclipse.egit.github.core.service.RepositoryService;
 
 /**
  * Created by theo on 14/12/16.
@@ -14,26 +11,18 @@ import org.eclipse.egit.github.core.service.RepositoryService;
 public class Loader {
     private static final String TAG = Loader.class.getSimpleName();
 
-
+    private static final String GIT_BASE = "https://api.github.com";
 
     //https://developer.github.com/v3/repos/
     //https://developer.github.com/v3/projects/
     //https://developer.github.com/v3/projects/columns/#get-a-project-column
     //https://developer.github.com/v3/projects/cards/
 
-    public static void tryLogin(String username, String password) {
-        final GitHubClient client = new GitHubClient();
-        client.setCredentials(username, password);
-        AsyncTask.execute(() -> {
-            final RepositoryService service = new RepositoryService(client);
-            try {
-                for(Repository r : service.getRepositories()) {
-                    Log.i(TAG, "tryLogin: " + r.getName());
-                }
-            } catch(Exception e) {
-                Log.e(TAG, "tryLogin: ", e);
-            }
-        });
+    public static void tryLogin(final Context context, String username, String password) {
+
+
+
+
 
     }
 

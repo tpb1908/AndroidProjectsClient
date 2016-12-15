@@ -45,8 +45,8 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.amitshekhar.android:android-networking:0.2.0'
     compile 'us.feras.mdv:markdownview:1.1.0'
+    compile 'com.google.api-client:google-api-client:1.22.0'
     compile 'com.jakewharton:butterknife:8.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.3.0'
     testCompile 'junit:junit:4.12'
-    compile files('libs/org.eclipse.egit.github.core-4.6.0-SNAPSHOT.jar')
 }
