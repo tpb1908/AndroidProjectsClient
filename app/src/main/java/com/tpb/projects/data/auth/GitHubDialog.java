@@ -32,13 +32,13 @@ import android.widget.TextView;
  */
 public class GitHubDialog extends Dialog {
 
-    static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
-    static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
-    static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
+    private static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
+    private static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
+    private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
             ViewGroup.LayoutParams.FILL_PARENT);
-    static final int MARGIN = 4;
-    static final int PADDING = 2;
+    private static final int MARGIN = 4;
+    private static final int PADDING = 2;
 
     private String mUrl;
     private OAuthDialogListener mListener;
