@@ -5,14 +5,20 @@ package com.tpb.projects.data.auth;
  */
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.user.LoginActivity;
+import com.tpb.projects.util.Constants;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,6 +40,8 @@ public class GitHubApp {
     private String mAuthUrl;
     private String mTokenUrl;
     private String mAccessToken;
+    private Handler mHandler;
+
 
     /**
      * Callback url, as set in 'Manage OAuth Costumers' page
@@ -48,6 +56,7 @@ public class GitHubApp {
 
     private static final String TAG = "GitHubAPI";
 
+
     public GitHubApp(Context context, String clientId, String clientSecret,
                      String callbackUrl) {
         mSession = new GitHubSession(context);
@@ -57,6 +66,20 @@ public class GitHubApp {
                 + clientSecret + "&redirect_uri=" + mCallbackUrl;
         mAuthUrl = AUTH_URL + "client_id=" + clientId + "&scope=" + SCOPE
                 + "&redirect_uri=" + mCallbackUrl;
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.arg1 == 1) {
+                    if(msg.what == 0) {
+                        fetchUserName();
+                    } else {
+                        mListener.onFail("Failed to get access token");
+                    }
+                } else {
+                    mListener.onSuccess();
+                }
+            }
+        };
     }
 
     public LoginActivity.OAuthLoginListener getListener() {
@@ -99,6 +122,7 @@ public class GitHubApp {
                     mAccessToken = response.substring(
                             response.indexOf("access_token=") + 13,
                             response.indexOf("&token_type"));
+                    mSession.storeAccessToken(mAccessToken);
                     Log.i(TAG, "Got access token: " + mAccessToken);
                 } catch (Exception ex) {
                     what = 1;
@@ -111,57 +135,40 @@ public class GitHubApp {
     }
 
     private void fetchUserName() {
+        AsyncTask.execute(() -> {
+            Log.i(TAG, "Fetching user info");
+            int what = 0;
 
-        new Thread() {
-            @Override
-            public void run() {
-                Log.i(TAG, "Fetching user info");
-                int what = 0;
+            AndroidNetworking.get(API_URL + "/user?access_token=" + mAccessToken)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                final String username = response.getString(Constants.JSON_KEY_LOGIN);
+                                final String avatar_url = response.getString(Constants.JSON_JEY_AVATAR);
+                                final String name = response.getString(Constants.JSON_KEY_NAME);
+                                final String details = //TODO Format string resource
+                                        response.getString(Constants.JSON_KEY_PUBLIC_REPO_COUNT) +
+                                        " public repos\n" +
+                                         "Following: " + response.getString(Constants.JSON_KEY_FOLLOWING) +
+                                         "\nFollowers: " + response.getString(Constants.JSON_KEY_FOLLOWERS) +
+                                         "\nLocation: " + response.getString(Constants.JSON_KEY_LOCATION);
+                                mListener.userLoaded(name, username, details, avatar_url);
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: ", jse);
+                            }
+                        }
 
-                try {
-                    final URL url = new URL(API_URL + "/user?access_token="
-                            + mAccessToken);
+                        @Override
+                        public void onError(ANError anError) {
 
-                    Log.d(TAG, "Opening URL " + url.toString());
-                    final HttpURLConnection urlConnection = (HttpURLConnection) url
-                            .openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setDoInput(true);
-                    urlConnection.setDoOutput(true);
-                    urlConnection.connect();
-                    String response = streamToString(urlConnection
-                            .getInputStream());
+                        }
+                    });
 
-                    final JSONObject jsonObj = (JSONObject) new JSONTokener(response)
-                            .nextValue();
-                    final String id = jsonObj.getString("id");
-                    final String login = jsonObj.getString("login");
-                    Log.i(TAG, "Got user name: " + login);
-                    mSession.storeAccessToken(mAccessToken, id, login);
-                } catch (Exception ex) {
-                    what = 1;
-                    ex.printStackTrace();
-                }
-
-                mHandler.sendMessage(mHandler.obtainMessage(what, 2, 0));
-            }
-        }.start();
+            mHandler.sendMessage(mHandler.obtainMessage(what, 2, 0));
+        });
     }
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.arg1 == 1) {
-                if (msg.what == 0) {
-                    fetchUserName();
-                } else {
-                    mListener.onFail("Failed to get access token");
-                }
-            } else {
-                mListener.onSuccess();
-            }
-        }
-    };
 
     public boolean hasAccessToken() {
         return mAccessToken != null;
@@ -210,8 +217,10 @@ public class GitHubApp {
     }
 
     public interface OAuthAuthenticationListener {
-        public abstract void onSuccess();
+        void onSuccess();
 
-        public abstract void onFail(String error);
+        void onFail(String error);
+
+        void userLoaded(String name, String id, String details, String imagePath);
     }
 }
