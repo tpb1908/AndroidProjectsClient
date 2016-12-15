@@ -97,6 +97,7 @@ public class GitHubApp {
     }
 
     private void fetchUserName() {
+
         AndroidNetworking.get(API_URL + "/user?access_token=" + mAccessToken)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
