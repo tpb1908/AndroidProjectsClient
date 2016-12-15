@@ -4,11 +4,12 @@ package com.tpb.projects.data.auth;
  * Created by theo on 15/12/16.
  */
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+
+import com.tpb.projects.user.LoginActivity;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -29,9 +30,7 @@ import java.net.URL;
  */
 public class GitHubApp {
     private GitHubSession mSession;
-    private GitHubDialog mDialog;
     private OAuthAuthenticationListener mListener;
-    private ProgressDialog mProgress;
     private String mAuthUrl;
     private String mTokenUrl;
     private String mAccessToken;
@@ -58,27 +57,27 @@ public class GitHubApp {
         mAuthUrl = AUTH_URL + "client_id=" + clientId + "&redirect_uri="
                 + mCallbackUrl;
 
-        GitHubDialog.OAuthDialogListener listener = new GitHubDialog.OAuthDialogListener() {
+    }
+
+    public LoginActivity.OAuthLoginListener getListener() {
+        return new LoginActivity.OAuthLoginListener() {
             @Override
-            public void onComplete(String code) {
-                getAccessToken(code);
+            public void onComplete(String accessToken) {
+                getAccessToken(accessToken);
             }
 
             @Override
             public void onError(String error) {
-                mListener.onFail("Authorization failed");
+                Log.i(TAG, "onError: " + error);
             }
         };
+    }
 
-        mDialog = new GitHubDialog(context, mAuthUrl, listener);
-        mProgress = new ProgressDialog(context);
-        mProgress.setCancelable(false);
+    public String getAuthUrl() {
+        return mAuthUrl;
     }
 
     private void getAccessToken(final String code) {
-        mProgress.setMessage("Getting access token ...");
-        mProgress.show();
-
         new Thread() {
             @Override
             public void run() {
@@ -112,7 +111,6 @@ public class GitHubApp {
     }
 
     private void fetchUserName() {
-        mProgress.setMessage("Finalizing ...");
 
         new Thread() {
             @Override
@@ -157,11 +155,9 @@ public class GitHubApp {
                 if (msg.what == 0) {
                     fetchUserName();
                 } else {
-                    mProgress.dismiss();
                     mListener.onFail("Failed to get access token");
                 }
             } else {
-                mProgress.dismiss();
                 mListener.onSuccess();
             }
         }
@@ -179,9 +175,6 @@ public class GitHubApp {
         return mSession.getUsername();
     }
 
-    public void authorize() {
-        mDialog.show();
-    }
 
     private String streamToString(InputStream is) throws IOException {
         String str = "";
