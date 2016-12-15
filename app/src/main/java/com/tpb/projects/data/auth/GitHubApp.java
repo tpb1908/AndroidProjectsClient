@@ -44,6 +44,7 @@ public class GitHubApp {
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
     private static final String API_URL = "https://api.gitHub.com";
+    private static final String SCOPE = "user repo";
 
     private static final String TAG = "GitHubAPI";
 
@@ -54,9 +55,8 @@ public class GitHubApp {
         mCallbackUrl = callbackUrl;
         mTokenUrl = TOKEN_URL + "client_id=" + clientId + "&client_secret="
                 + clientSecret + "&redirect_uri=" + mCallbackUrl;
-        mAuthUrl = AUTH_URL + "client_id=" + clientId + "&redirect_uri="
-                + mCallbackUrl;
-
+        mAuthUrl = AUTH_URL + "client_id=" + clientId + "&scope=" + SCOPE
+                + "&redirect_uri=" + mCallbackUrl;
     }
 
     public LoginActivity.OAuthLoginListener getListener() {
@@ -85,15 +85,15 @@ public class GitHubApp {
                 int what = 0;
 
                 try {
-                    URL url = new URL(mTokenUrl + "&code=" + code);
+                    final URL url = new URL(mTokenUrl + "&code=" + code);
                     Log.i(TAG, "Opening URL " + url.toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url
+                    final HttpURLConnection urlConnection = (HttpURLConnection) url
                             .openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.setDoInput(true);
                     urlConnection.setDoOutput(true);
                     urlConnection.connect();
-                    String response = streamToString(urlConnection
+                    final String response = streamToString(urlConnection
                             .getInputStream());
                     Log.i(TAG, "response " + response);
                     mAccessToken = response.substring(
@@ -119,11 +119,11 @@ public class GitHubApp {
                 int what = 0;
 
                 try {
-                    URL url = new URL(API_URL + "/user?access_token="
+                    final URL url = new URL(API_URL + "/user?access_token="
                             + mAccessToken);
 
                     Log.d(TAG, "Opening URL " + url.toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url
+                    final HttpURLConnection urlConnection = (HttpURLConnection) url
                             .openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.setDoInput(true);
@@ -132,10 +132,10 @@ public class GitHubApp {
                     String response = streamToString(urlConnection
                             .getInputStream());
 
-                    JSONObject jsonObj = (JSONObject) new JSONTokener(response)
+                    final JSONObject jsonObj = (JSONObject) new JSONTokener(response)
                             .nextValue();
-                    String id = jsonObj.getString("id");
-                    String login = jsonObj.getString("login");
+                    final String id = jsonObj.getString("id");
+                    final String login = jsonObj.getString("login");
                     Log.i(TAG, "Got user name: " + login);
                     mSession.storeAccessToken(mAccessToken, id, login);
                 } catch (Exception ex) {
