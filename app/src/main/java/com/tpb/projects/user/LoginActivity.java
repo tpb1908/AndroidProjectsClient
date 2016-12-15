@@ -3,7 +3,9 @@ package com.tpb.projects.user;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,11 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.GitHubApp;
 import com.tpb.projects.util.Constants;
@@ -28,8 +33,15 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private GitHubApp mApp;
 
-    @BindView(R.id.login_progress) View mProgressView;
-    @BindView(R.id.login_weview) WebView mWebView;
+    @BindView(R.id.login_webview) WebView mWebView;
+    @BindView(R.id.login_form) CardView mLogin;
+    @BindView(R.id.progress_spinner) ProgressBar mSpinner;
+    @BindView(R.id.user_details) View mDetails;
+    @BindView(R.id.user_image) ANImageView mImage;
+    @BindView(R.id.user_name) TextView mName;
+    @BindView(R.id.user_id) TextView mId;
+    @BindView(R.id.user_stats) TextView mStats;
+
 
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
@@ -41,9 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
         AndroidNetworking.initialize(this);
-
 
         mApp = new GitHubApp(this, Constants.CLIENT_ID,
                 Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
@@ -51,11 +61,25 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 Log.i(TAG, "onSuccess: ");
+                Log.i(TAG, "onSuccess: User " + mApp.getUserName());
+                mWebView.setVisibility(View.GONE);
+                mSpinner.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onFail(String error) {
                 Log.i(TAG, "onFail: " + error);
+            }
+
+            @Override
+            public void userLoaded(String name, String id, String stats, String imagePath) {
+                mSpinner.setVisibility(View.GONE);
+                mDetails.setVisibility(View.VISIBLE);
+                mImage.setImageUrl(imagePath);
+                mName.setText(name);
+                mId.setText(id);
+                mStats.setText(stats);
+                new Handler().postDelayed(() -> finish(), 500);
             }
         });
         CookieSyncManager.createInstance(this);
@@ -86,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.d(TAG, "Redirecting URL " + url);
 
-            if (url.startsWith(GitHubApp.mCallbackUrl)) {
+            if(url.startsWith(GitHubApp.mCallbackUrl)) {
                 String urls[] = url.split("=");
                 mListener.onComplete(urls[1]);
                 //GitHubDialog.this.dismiss();
@@ -102,22 +126,17 @@ public class LoginActivity extends AppCompatActivity {
 
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(description);
-           // GitHubDialog.this.dismiss();
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d(TAG, "Loading URL: " + url);
-
             super.onPageStarted(view, url, favicon);
-           // mSpinner.show();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-
-           // mSpinner.dismiss();
         }
 
     }

@@ -15,6 +15,14 @@ public class Constants {
     public static final String REDIRECT_URL = "https://github.com/tpb1908/AndroidProjectsClient";
     public static final  String CREDENTIALS_STORE_PREF_FILE = "oauth";
 
+    public static final String JSON_KEY_LOGIN = "login";
+    public static final String JSON_KEY_ID = "id";
+    public static final String JSON_JEY_AVATAR = "avatar_url";
+    public static final String JSON_KEY_NAME = "name";
+    public static final String JSON_KEY_PUBLIC_REPO_COUNT = "public_repos";
+    public static final String JSON_KEY_LOCATION = "location";
+    public static final String JSON_KEY_FOLLOWERS ="followers";
+    public static final String JSON_KEY_FOLLOWING = "following";
 
     private Constants() {}
 }
