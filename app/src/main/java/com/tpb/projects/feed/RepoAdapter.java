@@ -93,8 +93,6 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
 
     }
 
-
-
     class RepoHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.repo_name) TextView mName;
         @BindView(R.id.repo_description) TextView mDescription;

@@ -36,10 +36,10 @@ public class ReposActivity extends AppCompatActivity {
     private static final String TAG = ReposActivity.class.getSimpleName();
 
     private OAuthLoader mApp;
-    @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_recycler) RecyclerView mRecycler;
-    @BindView(R.id.repo_toolbar) Toolbar mToolbar;
-    @BindView(R.id.repo_appbar) AppBarLayout mAppbar;
+    @BindView(R.id.repos_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.repos_recycler) RecyclerView mRecycler;
+    @BindView(R.id.repos_toolbar) Toolbar mToolbar;
+    @BindView(R.id.repos_appbar) AppBarLayout mAppbar;
 
     private RepoAdapter mAdapter;
 
