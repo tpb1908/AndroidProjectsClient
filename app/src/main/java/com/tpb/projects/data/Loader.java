@@ -6,7 +6,6 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
-import com.androidnetworking.interfaces.StringRequestListener;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Logging;
@@ -36,28 +35,8 @@ public class Loader {
     }
 
 
-    public void loadRepositories(String user) {
+    public void loadRepositories(RepositoryLoader loader, String user) {
         final String path = appendAccessToken(GIT_BASE + "users/" + user + "/repos");
-        AndroidNetworking.get(path)
-                .build()
-                .getAsString(new StringRequestListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "onResponse: " + response);
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorCode());
-                        Log.i(TAG, "onError: " + anError.getErrorDetail());
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
-                    }
-                });
-    }
-
-    public void loadRepositories() {
-        final String path = appendAccessToken(GIT_BASE + "user/repos");
-        Log.i(TAG, "loadRepositories: " + path);
         AndroidNetworking.get(path)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -67,9 +46,9 @@ public class Loader {
                             final Repository[] repos = new Repository[jsa.length()];
                             for(int i = 0; i < repos.length; i++) {
                                 repos[i] = Repository.parse(jsa.getJSONObject(i));
-                                Log.i(TAG, "onResponse: " + repos[i].toString());
                             }
                             Log.i(TAG, "onResponse: successfully parsed repos");
+                            if(loader != null) loader.reposLoaded(repos);
                         } catch(JSONException jse) {
                             Log.i(TAG, "onResponse: " + jsa.toString());
                             Log.e(TAG, "onResponse: ", jse);
@@ -82,6 +61,43 @@ public class Loader {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                     }
                 });
+    }
+
+    public void loadRepositories(RepositoryLoader loader) {
+        final String path = appendAccessToken(GIT_BASE + "user/repos");
+        Log.i(TAG, "loadRepositories: " + path);
+        AndroidNetworking.get(path)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray jsa) {
+                        try {
+                            final Repository[] repos = new Repository[jsa.length()];
+                            for(int i = 0; i < repos.length; i++) {
+                                repos[i] = Repository.parse(jsa.getJSONObject(i));
+                            }
+                            Log.i(TAG, "onResponse: successfully parsed repos");
+                            if(loader != null) loader.reposLoaded(repos);
+                        } catch(JSONException jse) {
+                            Log.i(TAG, "onResponse: " + jsa.toString());
+                            Log.e(TAG, "onResponse: ", jse);
+                            Logging.largeDebugDump(TAG, jse.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
+    public interface RepositoryLoader {
+
+        void reposLoaded(Repository[] repos);
+
+        void loadError();
+
     }
 
     private String appendAccessToken(String path) {
