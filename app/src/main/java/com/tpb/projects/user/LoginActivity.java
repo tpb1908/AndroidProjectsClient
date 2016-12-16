@@ -21,6 +21,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.GitHubApp;
+import com.tpb.projects.util.Animation;
 import com.tpb.projects.util.Constants;
 
 import butterknife.BindView;
@@ -32,6 +33,7 @@ import butterknife.ButterKnife;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private GitHubApp mApp;
+    private boolean mLoginShown = false;
 
     @BindView(R.id.login_webview) WebView mWebView;
     @BindView(R.id.login_form) CardView mLogin;
@@ -94,6 +96,17 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void ensureWebViewVisible() {
+        if(!mLoginShown) {
+            new Handler().postDelayed(() -> {
+                Animation.expand(mLogin);
+                mLoginShown = true;
+            }, 150);
+
+        }
+
+    }
+
     public interface OAuthLoginListener {
         void onComplete(String accessToken);
         void onError(String error);
@@ -136,6 +149,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            ensureWebViewVisible();
             super.onPageFinished(view, url);
         }
 
