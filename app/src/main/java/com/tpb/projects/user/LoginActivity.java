@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                 mName.setText(name);
                 mId.setText(id);
                 mStats.setText(stats);
-                new Handler().postDelayed(() -> finish(), 500);
+                new Handler().postDelayed(() -> finish(), 1500);
             }
         });
         CookieSyncManager.createInstance(this);
@@ -93,13 +93,14 @@ public class LoginActivity extends AppCompatActivity {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(mApp.getAuthUrl());
         mWebView.setLayoutParams(FILL);
-
+        Animation.expand(mLogin);
     }
 
     private void ensureWebViewVisible() {
         if(!mLoginShown) {
             new Handler().postDelayed(() -> {
-                Animation.expand(mLogin);
+                mWebView.setVisibility(View.VISIBLE);
+                mSpinner.setVisibility(View.GONE);
                 mLoginShown = true;
             }, 150);
 
