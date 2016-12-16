@@ -7,13 +7,13 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.tpb.projects.R;
-import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
@@ -33,12 +33,15 @@ import butterknife.ButterKnife;
  */
 
 public class ReposActivity extends AppCompatActivity {
+    private static final String TAG = ReposActivity.class.getSimpleName();
 
     private OAuthLoader mApp;
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_recycler) RecyclerView mRecycler;
     @BindView(R.id.repo_toolbar) Toolbar mToolbar;
     @BindView(R.id.repo_appbar) AppBarLayout mAppbar;
+
+    private RepoAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +55,10 @@ public class ReposActivity extends AppCompatActivity {
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         }
-        new Loader(this).loadRepositories();
+
+        mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new RepoAdapter(this, mRefresher);
+        mRecycler.setAdapter(mAdapter);
+
     }
 }

@@ -3,7 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="4dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,10 +30,9 @@
             android:layout_below="@+id/repo_name"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
@@ -38,7 +43,8 @@
                 <TextView
                     android:id="@+id/repo_forks"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_zero_value"/>
 
                 <ImageView
                     android:layout_width="16dp"
@@ -57,7 +63,8 @@
                 <TextView
                     android:id="@+id/repo_stars"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_zero_value"/>
 
                 <ImageView
                     android:layout_width="16dp"
@@ -77,7 +84,8 @@
                 <TextView
                     android:id="@+id/repo_private"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_zero_value"/>
 
                 <ImageView
                     android:layout_width="16dp"

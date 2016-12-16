@@ -16,7 +16,8 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/repo_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways">
 
 
         </android.support.v7.widget.Toolbar>
@@ -28,9 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/repo_recycler"
