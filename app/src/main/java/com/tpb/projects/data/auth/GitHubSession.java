@@ -31,10 +31,10 @@ public class GitHubSession {
      * @param accessToken
      * @param username
      */
-    public void storeAccessToken(String accessToken, String id, String username) {
+    public void storeAccessToken(String accessToken, int id, String username) {
         Log.i(TAG, "Storing token " + accessToken);
         final SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(API_ID, id);
+        editor.putInt(API_ID, id);
         editor.putString(API_ACCESS_TOKEN, accessToken);
         editor.putString(API_USERNAME, username);
         editor.apply();

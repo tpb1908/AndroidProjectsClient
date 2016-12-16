@@ -100,4 +100,20 @@ public class Repository extends DataModel {
 
         return r;
     }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", description='" + description + '\'' +
+                ", isPrivate=" + isPrivate +
+                ", isFork=" + isFork +
+                ", url='" + url + '\'' +
+                ", htmlUrl='" + htmlUrl + '\'' +
+                ", language='" + language + '\'' +
+                ", hasIssues=" + hasIssues +
+                '}';
+    }
 }
