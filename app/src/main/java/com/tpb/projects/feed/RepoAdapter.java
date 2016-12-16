@@ -15,6 +15,9 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Constants;
+import com.tpb.projects.util.Data;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,6 +83,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
     public void reposLoaded(Repository[] repos) {
         Log.i(TAG, "reposLoaded: " + repos.length);
         mRepos = repos;
+        Arrays.sort(mRepos, Data.repoAlphaSort);
         mRefresher.setRefreshing(false);
         notifyDataSetChanged();
     }
