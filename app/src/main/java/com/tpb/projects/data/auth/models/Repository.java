@@ -38,8 +38,20 @@ public class Repository extends DataModel {
     private static final String LANGUAGE = "language";
     private String language;
 
-    private static final String ISSUES = "has_issues";
+    private static final String HAS_ISSUES = "has_issues";
     private boolean hasIssues;
+
+    private static final String STAR_GAZERS = "stargazers_count";
+    private int starGazers;
+
+    private static final String FORKS = "forks_count";
+    private int forks;
+
+    private static final String WATCHERS = "watchers_count";
+    private int watches;
+
+    private static final String ISSUES = "open_issues_count";
+    private int issues;
 
     public int getId() {
         return id;
@@ -81,6 +93,22 @@ public class Repository extends DataModel {
         return hasIssues;
     }
 
+    public int getStarGazers() {
+        return starGazers;
+    }
+
+    public int getForks() {
+        return forks;
+    }
+
+    public int getWatches() {
+        return watches;
+    }
+
+    public int getIssues() {
+        return issues;
+    }
+
     public static Repository parse(JSONObject object) {
         final Repository r = new Repository();
         try {
@@ -93,7 +121,11 @@ public class Repository extends DataModel {
             r.url = object.getString(URL);
             r.htmlUrl = object.getString(HTML_URL);
             r.language = object.getString(LANGUAGE);
-            r.hasIssues = object.getBoolean(ISSUES);
+            r.hasIssues = object.getBoolean(HAS_ISSUES);
+            r.starGazers = object.getInt(STAR_GAZERS);
+            r.forks = object.getInt(FORKS);
+            r.watches = object.getInt(WATCHERS);
+            r.issues = object.getInt(ISSUES);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -114,6 +146,10 @@ public class Repository extends DataModel {
                 ", htmlUrl='" + htmlUrl + '\'' +
                 ", language='" + language + '\'' +
                 ", hasIssues=" + hasIssues +
+                ", starGazers=" + starGazers +
+                ", forks=" + forks +
+                ", watches=" + watches +
+                ", issues=" + issues +
                 '}';
     }
 }
