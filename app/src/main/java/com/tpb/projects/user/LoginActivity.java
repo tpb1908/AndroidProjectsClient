@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.GitHubApp;
+import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.util.Animation;
 import com.tpb.projects.util.Constants;
 
@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private GitHubApp mApp;
+    private OAuthLoader mApp;
     private boolean mLoginShown = false;
 
     @BindView(R.id.login_webview) WebView mWebView;
@@ -57,9 +57,9 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
 
-        mApp = new GitHubApp(this, Constants.CLIENT_ID,
+        mApp = new OAuthLoader(this, Constants.CLIENT_ID,
                 Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
-        mApp.setListener(new GitHubApp.OAuthAuthenticationListener() {
+        mApp.setListener(new OAuthLoader.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
                 Log.i(TAG, "onSuccess: ");
@@ -124,10 +124,9 @@ public class LoginActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.d(TAG, "Redirecting URL " + url);
 
-            if(url.startsWith(GitHubApp.mCallbackUrl)) {
+            if(url.startsWith(OAuthLoader.mCallbackUrl)) {
                 String urls[] = url.split("=");
                 mListener.onComplete(urls[1]);
-                //GitHubDialog.this.dismiss();
                 return true;
             }
             return false;

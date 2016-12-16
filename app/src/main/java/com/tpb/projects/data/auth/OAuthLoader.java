@@ -24,7 +24,7 @@ import org.json.JSONObject;
  * @author Lorensius W. L T <lorenz@londatiga.net>
  *
  */
-public class GitHubApp {
+public class OAuthLoader {
     private GitHubSession mSession;
     private OAuthAuthenticationListener mListener;
     private String mAuthUrl;
@@ -39,14 +39,14 @@ public class GitHubApp {
     public static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
-    private static final String API_URL = "https://api.gitHub.com";
+    private static final String API_URL = "https://api.gitHub.com/";
     private static final String SCOPE = "user repo";
 
-    private static final String TAG = "GitHubAPI";
+    private static final String TAG = OAuthLoader.class.getSimpleName();
 
 
-    public GitHubApp(Context context, String clientId, String clientSecret,
-                     String callbackUrl) {
+    public OAuthLoader(Context context, String clientId, String clientSecret,
+                       String callbackUrl) {
         mSession = new GitHubSession(context);
         mAccessToken = mSession.getAccessToken();
         mCallbackUrl = callbackUrl;
@@ -97,13 +97,14 @@ public class GitHubApp {
     }
 
     private void fetchUserName() {
-
-        AndroidNetworking.get(API_URL + "/user?access_token=" + mAccessToken)
+        Log.i(TAG, "fetchUserName: " + API_URL + "user?access_token=" + mAccessToken);
+        AndroidNetworking.get(API_URL + "user?access_token=" + mAccessToken)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            Log.i(TAG, "onResponse: " + response.toString());
                             final String username = response.getString(Constants.JSON_KEY_LOGIN);
                             final String avatar_url = response.getString(Constants.JSON_JEY_AVATAR);
                             final String name = response.getString(Constants.JSON_KEY_NAME);
@@ -114,6 +115,7 @@ public class GitHubApp {
                                      "\nFollowers: " + response.getString(Constants.JSON_KEY_FOLLOWERS) +
                                      "\nLocation: " + response.getString(Constants.JSON_KEY_LOCATION);
                             mListener.userLoaded(name, username, details, avatar_url);
+                            mSession.storeAccessToken(mAccessToken, response.getInt("id"), username);
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);
                         }

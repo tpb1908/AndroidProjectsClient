@@ -11,7 +11,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.GitHubApp;
+import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
 
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
 
 public class ReposActivity extends AppCompatActivity {
 
-    private GitHubApp mApp;
+    private OAuthLoader mApp;
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_recycler) RecyclerView mRecycler;
     @BindView(R.id.repo_toolbar) Toolbar mToolbar;
@@ -43,9 +44,10 @@ public class ReposActivity extends AppCompatActivity {
         setContentView(R.layout.activity_repos);
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
-        mApp = new GitHubApp(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
+        mApp = new OAuthLoader(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         }
+        new Loader(this).loadRepositories();
     }
 }
