@@ -24,5 +24,7 @@ public class Constants {
     public static final String JSON_KEY_FOLLOWERS ="followers";
     public static final String JSON_KEY_FOLLOWING = "following";
 
+    public static final String JSON_NULL = "null";
+
     private Constants() {}
 }
