@@ -120,24 +120,23 @@
 
                             <TableRow
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp">
 
                                 <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_gravity="center"
                                     app:ico_icon="oct-git-commit"/>
 
                                 <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_gravity="center"
                                     app:ico_icon="oct-database"/>
 
                                 <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_gravity="center"
                                     app:ico_icon="oct-repo-forked"/>
 
                             </TableRow>
@@ -149,17 +148,20 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_commits"/>
+                                    android:text="@string/text_commits"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_size"/>
+                                    android:text="@string/text_size"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_forks"/>
+                                    android:text="@string/text_forks"
+                                    android:textAlignment="center"/>
 
                                 <!--TODO TextViews for image titles and counts-->
                             </TableRow>
@@ -172,19 +174,22 @@
                                     android:id="@+id/repo_commits"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_placeholder"/>
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:id="@+id/repo_size"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_placeholder"/>
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:id="@+id/repo_forks"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/text_placeholder"/>
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
 
                             </TableRow>
 
