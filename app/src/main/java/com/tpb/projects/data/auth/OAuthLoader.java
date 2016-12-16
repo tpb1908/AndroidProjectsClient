@@ -24,7 +24,7 @@ import org.json.JSONObject;
  * @author Lorensius W. L T <lorenz@londatiga.net>
  *
  */
-public class GitHubApp {
+public class OAuthLoader {
     private GitHubSession mSession;
     private OAuthAuthenticationListener mListener;
     private String mAuthUrl;
@@ -45,8 +45,8 @@ public class GitHubApp {
     private static final String TAG = "GitHubAPI";
 
 
-    public GitHubApp(Context context, String clientId, String clientSecret,
-                     String callbackUrl) {
+    public OAuthLoader(Context context, String clientId, String clientSecret,
+                       String callbackUrl) {
         mSession = new GitHubSession(context);
         mAccessToken = mSession.getAccessToken();
         mCallbackUrl = callbackUrl;
