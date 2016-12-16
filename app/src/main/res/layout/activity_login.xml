@@ -10,13 +10,16 @@
               android:paddingRight="@dimen/activity_horizontal_margin"
               android:paddingTop="@dimen/activity_vertical_margin"
               tools:context="com.tpb.projects.user.LoginActivity"
-              android:background="@color/colorPrimary">
+              android:background="@color/colorPrimary"
+              android:animateLayoutChanges="true">
 
 
     <android.support.v7.widget.CardView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="invisible"
         android:animateLayoutChanges="true"
         app:cardCornerRadius="4dp">
 

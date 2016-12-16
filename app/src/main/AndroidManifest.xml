@@ -24,12 +24,6 @@
         <activity
             android:name=".user.LoginActivity"
             android:label="@string/title_activity_login">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
 
         </activity>
     </application>
