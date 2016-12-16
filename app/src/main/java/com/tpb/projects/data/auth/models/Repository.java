@@ -9,15 +9,13 @@ import org.json.JSONObject;
  * Created by theo on 15/12/16.
  */
 
-public class Repository {
+public class Repository extends DataModel {
     private static final String TAG = Repository.class.getSimpleName();
 
     private Repository() {}
 
-    private static final String ID = "id";
     private int id;
 
-    private static final String NAME = "name";
     private String name;
 
     private static final String FULL_NAME = "full_name";
@@ -32,7 +30,6 @@ public class Repository {
     private static final String FORK = "fork";
     private boolean isFork;
 
-    private static final String URL = "url";
     private String url;
 
     private static final String HTML_URL = "html_url";
