@@ -12,4 +12,10 @@
 
     <string name="text_zero_value">0</string>
 
+    <string name="text_forks">Forks</string>
+    <string name="text_stars">Stars</string>
+    <string name="text_commits">Commits</string>
+    <string name="text_size">Size</string>
+
+    <string name="text_placeholder">…</string>
 </resources>

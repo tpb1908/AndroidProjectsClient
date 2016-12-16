@@ -26,6 +26,27 @@
             android:label="@string/title_activity_login">
 
         </activity>
+
+        <activity android:name=".repo.RepoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+
+
+                <data
+                    android:scheme="https"
+                    android:host="github.com"
+                    />
+                <data
+                    android:scheme="http"
+                    android:host="github.com"
+                    />
+
+            </intent-filter>
+
+
+        </activity>
     </application>
 
 </manifest>
