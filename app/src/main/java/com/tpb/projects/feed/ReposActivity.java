@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
@@ -47,5 +48,6 @@ public class ReposActivity extends AppCompatActivity {
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         }
+        new Loader(this).loadRepositories();
     }
 }

@@ -81,4 +81,17 @@ public class Project extends DataModel {
         return p;
     }
 
+    @Override
+    public String toString() {
+        return "Project{" +
+                "ownerUrl='" + ownerUrl + '\'' +
+                ", url='" + url + '\'' +
+                ", name='" + name + '\'' +
+                ", body='" + body + '\'' +
+                ", number=" + number +
+                ", creator=" + creator +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
