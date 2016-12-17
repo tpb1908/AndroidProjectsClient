@@ -49,11 +49,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_zero_value"/>
 
-                <ImageView
+                <com.mikepenz.iconics.view.IconicsImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center"
-                    app:ico_icon="oct-repo-forked"
+                    app:iiv_icon="oct-repo-forked"
                     />
 
             </LinearLayout>
@@ -69,11 +69,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_zero_value"/>
 
-                <ImageView
+                <com.mikepenz.iconics.view.IconicsImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center"
-                    app:ico_icon="oct-star"
+                    app:iiv_icon="oct-star"
                     />
 
             </LinearLayout>
@@ -90,11 +90,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_zero_value"/>
 
-                <ImageView
+                <com.mikepenz.iconics.view.IconicsImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center"
-                    app:ico_icon="oct-gist-secret"
+                    app:iiv_icon="oct-gist-secret"
                     />
 
             </LinearLayout>

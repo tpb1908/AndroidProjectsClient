@@ -14,12 +14,13 @@
         <activity
             android:name=".feed.ReposActivity"
             android:label="@string/app_name">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
 
-                <action android:name="android.intent.action.MAIN"/>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
         <activity
             android:name=".user.LoginActivity"
@@ -28,6 +29,10 @@
         </activity>
 
         <activity android:name=".repo.RepoActivity">
+        </activity>
+
+        <activity android:name=".util.IntentHandlerActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -37,14 +42,15 @@
                 <data
                     android:scheme="https"
                     android:host="github.com"
+                    android:pathPattern="/.*"
                     />
                 <data
                     android:scheme="http"
                     android:host="github.com"
+                    android:pathPattern="/.*"
                     />
 
             </intent-filter>
-
 
         </activity>
     </application>

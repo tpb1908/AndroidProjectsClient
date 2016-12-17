@@ -2,8 +2,10 @@ package com.tpb.projects.feed;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +36,9 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
     private SwipeRefreshLayout mRefresher;
     private Repository[] mRepos = new Repository[0];
     private String mUser;
+    private RepoPinSorter mSorter;
 
-    public RepoAdapter(Context context, SwipeRefreshLayout refresher) {
+    public RepoAdapter(Context context, RecyclerView recycler, SwipeRefreshLayout refresher) {
         mContext = context;
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
@@ -47,6 +50,30 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
             mLoader.loadRepositories(RepoAdapter.this);
         });
         mUser = new GitHubSession(context).getUsername();
+        mSorter = new RepoPinSorter(context, mUser);
+        new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP);
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                final Repository r = mRepos[viewHolder.getAdapterPosition()];
+                mRepos[viewHolder.getAdapterPosition()] = mRepos[target.getAdapterPosition()];
+                mRepos[target.getAdapterPosition()] = r;
+                notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                mSorter.savePosition(mRepos);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+
+        }).attachToRecyclerView(recycler);
     }
 
     /*
@@ -83,7 +110,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
     public void reposLoaded(Repository[] repos) {
         Log.i(TAG, "reposLoaded: " + repos.length);
         mRepos = repos;
-        Arrays.sort(mRepos, Data.repoAlphaSort);
+        mSorter.sort(mRepos);
         mRefresher.setRefreshing(false);
         notifyDataSetChanged();
     }
@@ -100,9 +127,40 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
         @BindView(R.id.repo_stars) TextView mStars;
         @BindView(R.id.repo_private) TextView mPrivate;
 
-        public RepoHolder(View view) {
+        RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+        }
+
+    }
+
+    private static class RepoPinSorter {
+        private static final String TAG = RepoPinSorter.class.getSimpleName();
+
+        private SharedPreferences prefs;
+        private static final String PREFS_KEY = "PINS";
+        private final String KEY;
+        private int[] pinnedRepos;
+
+        RepoPinSorter(Context context, String key) {
+            prefs = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE);
+            KEY = key;
+            pinnedRepos = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
+        }
+
+        void savePosition(Repository[] repos) {
+            final int[] ids = new int[repos.length];
+            for(int i = 0; i < ids.length; i++) ids[i] = repos[i].getId();
+            pinnedRepos = ids;
+            prefs.edit().putString(KEY, Data.intArrayForPrefs(ids)).apply();
+        }
+
+        void sort(Repository[] repos) {
+            Arrays.sort(repos, (r1, r2) -> {
+                final int i1 = Data.indexOf(pinnedRepos, r1.getId());
+                final int i2 = Data.indexOf(pinnedRepos, r2.getId());
+                return i1 > i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
+            });
         }
 
     }

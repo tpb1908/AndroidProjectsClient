@@ -2,13 +2,11 @@ package com.tpb.projects.repo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.tpb.projects.R;
 
 import butterknife.BindView;
@@ -37,7 +35,6 @@ public class RepoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repo);
     }

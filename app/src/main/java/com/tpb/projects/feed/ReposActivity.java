@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.androidnetworking.AndroidNetworking;
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.user.LoginActivity;
@@ -45,8 +43,6 @@ public class ReposActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        //Allows xml opticon drawables
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repos);
         ButterKnife.bind(this);
@@ -57,8 +53,9 @@ public class ReposActivity extends AppCompatActivity {
         }
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RepoAdapter(this, mRefresher);
+        mAdapter = new RepoAdapter(this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
     }
+
 }
