@@ -9,7 +9,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -20,6 +19,7 @@ import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
+import com.tpb.projects.views.AnimatingRecycler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +40,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
     private OAuthLoader mApp;
     @BindView(R.id.repos_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repos_recycler) RecyclerView mRecycler;
+    @BindView(R.id.repos_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.repos_toolbar) Toolbar mToolbar;
     @BindView(R.id.repos_appbar) AppBarLayout mAppbar;
 

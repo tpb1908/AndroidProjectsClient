@@ -48,12 +48,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         notifyDataSetChanged();
     }
 
+    void clearProjects() {
+        mProjects = new Project[0];
+        notifyDataSetChanged();
+    }
+
     class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.project_name) TextView mName;
         @BindView(R.id.project_last_updated) TextView mLastUpdate;
 
-        public ProjectViewHolder(View view) {
+        ProjectViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
