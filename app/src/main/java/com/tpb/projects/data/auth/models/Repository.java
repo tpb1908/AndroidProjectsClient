@@ -158,6 +158,7 @@ public class Repository extends DataModel implements Parcelable {
             r.watchers = object.getInt(WATCHERS);
             r.issues = object.getInt(ISSUES);
             r.size = object.getInt(SIZE);
+
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }

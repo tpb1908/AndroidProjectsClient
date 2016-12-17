@@ -2,7 +2,8 @@ package com.tpb.projects.data.auth.models;
 
 import android.util.Log;
 
-import org.json.JSONException;
+import com.tpb.projects.util.Data;
+
 import org.json.JSONObject;
 
 /**
@@ -76,7 +77,9 @@ public class Project extends DataModel {
             p.name = object.getString(NAME);
             p.url = object.getString(URL);
             p.ownerUrl = object.getString(OWNER_URL);
-        } catch(JSONException jse) {
+            p.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
+            p.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+        } catch(Exception jse) {
             Log.e(TAG, "parse: ", jse);
         }
         return p;

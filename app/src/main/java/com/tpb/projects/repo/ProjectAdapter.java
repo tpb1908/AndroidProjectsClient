@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.models.Project;
+import com.tpb.projects.util.Data;
 
 import java.util.Arrays;
 
@@ -33,7 +34,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     @Override
     public void onBindViewHolder(ProjectViewHolder holder, int position) {
         holder.mName.setText(mProjects[position].getName());
-        //TODO last update
+        holder.mLastUpdate.setText(
+                String.format(
+                        holder.itemView.getContext().getString(R.string.text_last_updated),
+                        Data.timeAgo(mProjects[position].getUpdatedAt())
+                )
+        );
     }
 
     @Override
