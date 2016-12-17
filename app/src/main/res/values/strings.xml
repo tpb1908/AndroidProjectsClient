@@ -17,6 +17,8 @@
     <string name="text_commits">Commits</string>
     <string name="text_size">Size</string>
     <string name="text_watchers">Watchers</string>
+    <string name="text_show_readme">Show README</string>
+    <string name="text_hide_readme">Hide README</string>
 
     <string name="text_placeholder">…</string>
 
