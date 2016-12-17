@@ -59,7 +59,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         } else {
             //TODO Begin loading repo from url
         }
-        mRefresher.setRefreshing(true);
+        //mRefresher.setRefreshing(true);
         mReadmeButton.setOnClickListener((v) -> {
             if(mReadme.getVisibility() == GONE) {
                 mReadme.setVisibility(View.VISIBLE);
@@ -91,6 +91,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
                 Log.i(TAG, "readMeLoaded: ");
                 mReadmeButton.setVisibility(View.VISIBLE);
                 mReadme.loadMarkdown(readMe);
+                //TODO Dark theming
             }
 
             @Override
@@ -103,5 +104,11 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     @Override
     public void loadError() {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        mReadme.setVisibility(GONE);
+        super.onBackPressed();
     }
 }
