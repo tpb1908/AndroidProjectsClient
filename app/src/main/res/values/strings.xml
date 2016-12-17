@@ -18,4 +18,7 @@
     <string name="text_size">Size</string>
 
     <string name="text_placeholder">…</string>
+
+    <string name="transition_card" translatable="false">card</string>
+    <string name="transition_appbar" translatable="false">appbar</string>
 </resources>

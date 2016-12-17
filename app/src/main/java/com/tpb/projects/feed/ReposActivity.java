@@ -4,15 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthLoader;
+import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
 
@@ -30,7 +35,7 @@ import butterknife.ButterKnife;
  *
  */
 
-public class ReposActivity extends AppCompatActivity {
+public class ReposActivity extends AppCompatActivity implements RepoAdapter.RepoOpener {
     private static final String TAG = ReposActivity.class.getSimpleName();
 
     private OAuthLoader mApp;
@@ -44,7 +49,9 @@ public class ReposActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme_Dark);
         setContentView(R.layout.activity_repos);
+
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
         mApp = new OAuthLoader(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
@@ -53,9 +60,19 @@ public class ReposActivity extends AppCompatActivity {
         }
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RepoAdapter(this, mRecycler, mRefresher);
+        mAdapter = new RepoAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
     }
 
+    @Override
+    public void openRepo(Repository repo, View view) {
+        final Intent i = new Intent(ReposActivity.this, RepoActivity.class);
+        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                Pair.create(view, getString(R.string.transition_card))
+                ).toBundle()
+        );
+        overridePendingTransition(R.anim.slide_up, R.anim.none);
+    }
 }
