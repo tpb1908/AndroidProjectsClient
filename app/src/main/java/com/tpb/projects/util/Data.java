@@ -1,16 +1,23 @@
 package com.tpb.projects.util;
 
 import android.util.Base64;
+import android.util.Log;
 
 import com.tpb.projects.data.auth.models.Repository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by theo on 16/12/16.
  */
 
 public class Data {
+    private static final String TAG = Data.class.getSimpleName();
 
     public static Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
 
@@ -66,5 +73,67 @@ public class Data {
 
     public static String base64Decode(String base64) {
         return new String(Base64.decode(base64, Base64.DEFAULT));
+    }
+
+    //http://stackoverflow.com/a/10621553/4191572
+    private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    /** Transform Calendar to ISO 8601 string. */
+    public static String fromCalendar(final Calendar calendar) {
+        Date date = calendar.getTime();
+        String formatted = ISO8601.format(date);
+        return formatted.substring(0, 22) + ":" + formatted.substring(22);
+    }
+
+    /** Get current date and time formatted as ISO 8601 string. */
+    public static String now() {
+        return fromCalendar(GregorianCalendar.getInstance());
+    }
+
+    /** Transform ISO 8601 string to Calendar. */
+    public static Calendar toCalendar(final String iso8601string)
+            throws ParseException {
+        final Calendar calendar = GregorianCalendar.getInstance();
+        String s = iso8601string.replace("Z", "+00:00");
+        try {
+            s = s.substring(0, 22) + s.substring(23);  // to get rid of the ":"
+        } catch (IndexOutOfBoundsException e) {
+            throw new ParseException("Invalid length", 0);
+        }
+        final Date date = ISO8601.parse(s);
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    public static String timeAgo(Calendar time) {
+        return timeAgo(time.getTime().getTime());
+    }
+
+    public static String timeAgo(long time) {
+        final long now = System.currentTimeMillis() / 1000;
+        final long delta = (now - time);
+        Log.i(TAG, "timeAgo: " + now + " " + time + " " + delta);
+        if(delta / (365 * 24 * 3600) > 0) {
+            final long div = delta / (365 * 24 * 3600);
+            return div + (div == 1 ? " year" : " years");
+        } else if(delta / (28 * 24 * 3600) > 0) {
+            final long div = delta / (28 * 24 * 3600);
+            return div + (div == 1 ? " month" : " months");
+        } else if(delta / (7 * 24 * 3600) > 0) {
+            final long div = delta / (7 * 24 * 3600);
+            return div + (div == 1 ? " week" : " weeks");
+        } else if(delta / (24 * 3600) > 0) {
+            final long div = delta / (24 * 3600);
+            return div + (div == 1 ? " day" : " days");
+        } else if(delta / (3600) > 0) {
+            final long div = delta / (3600);
+            return div + (div == 1 ? " hour" : " hours");
+        } else {
+            final long div = delta / 60;
+            if(div > 5) {
+                return div + (div == 1 ? " minute" : " minutes");
+            } else {
+                return "just now";
+            }
+        }
     }
 }
