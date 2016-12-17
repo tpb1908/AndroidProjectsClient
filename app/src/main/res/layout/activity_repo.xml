@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/repo_appbar"
@@ -27,211 +27,214 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/repo_refresher"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:transitionName="@string/transition_card">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="8dp">
-
-                    <TextView
-                        android:id="@+id/repo_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@android:style/TextAppearance.Material.Title"
-                        android:text="@string/text_placeholder"/>
-
-                    <TextView
-                        android:id="@+id/repo_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_placeholder"/>
-                </LinearLayout>
-
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_margin="8dp"
+                    android:transitionName="@string/transition_card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_margin="16dp">
-
-                        <com.androidnetworking.widget.ANImageView
-                            android:id="@+id/user_image"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_gravity="center_horizontal"/>
+                        android:orientation="vertical"
+                        android:layout_margin="8dp">
 
                         <TextView
-                            android:id="@+id/user_name"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/repo_name"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="top"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/text_placeholder"
-                            android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
+                            android:textAppearance="@android:style/TextAppearance.Material.Title"
+                            android:text="@string/text_placeholder"/>
+
+                        <TextView
+                            android:id="@+id/repo_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_placeholder"/>
+                    </LinearLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_margin="16dp">
+
+                            <com.androidnetworking.widget.ANImageView
+                                android:id="@+id/user_image"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_gravity="center_horizontal"/>
+
+                            <TextView
+                                android:id="@+id/user_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:layout_marginStart="16dp"
+                                android:text="@string/text_placeholder"
+                                android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
+
+                        </LinearLayout>
+
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:stretchColumns="*"
+                            android:layout_margin="8dp">
+
+                            <TableRow
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-database"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-repo-forked"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-star"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-eye"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                            </TableRow>
+
+                            <TableRow
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_size"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_forks"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_stars"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_watchers"
+                                    android:textAlignment="center"/>
+
+                            </TableRow>
+
+                            <TableRow
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/repo_size"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_forks"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_stars"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_watchers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                            </TableRow>
+
+                        </TableLayout>
+
+                        <Button
+                            android:id="@+id/repo_show_readme"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="@string/text_show_readme"
+                            style="@style/Widget.AppCompat.Button.Borderless"/>
 
                     </LinearLayout>
 
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:stretchColumns="*"
-                        android:layout_margin="8dp">
+                </android.support.v7.widget.CardView>
 
-                        <TableRow
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp">
+                <us.feras.mdv.MarkdownView
+                    android:id="@+id/repo_readme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:visibility="gone"/>
 
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                app:iiv_icon="oct-database"
-                                app:iiv_color="?attr/drawableColor"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/repo_project_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                app:iiv_icon="oct-repo-forked"
-                                app:iiv_color="?attr/drawableColor"/>
+                </android.support.v7.widget.RecyclerView>
 
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                app:iiv_icon="oct-star"
-                                app:iiv_color="?attr/drawableColor"/>
+            </LinearLayout>
 
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                app:iiv_icon="oct-eye"
-                                app:iiv_color="?attr/drawableColor"/>
-
-                        </TableRow>
-
-                        <TableRow
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_size"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_forks"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_stars"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_watchers"
-                                android:textAlignment="center"/>
-
-                        </TableRow>
-
-                        <TableRow
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/repo_size"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_placeholder"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:id="@+id/repo_forks"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_placeholder"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:id="@+id/repo_stars"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_placeholder"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:id="@+id/repo_watchers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_placeholder"
-                                android:textAlignment="center"/>
-
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <Button
-                        android:id="@+id/repo_show_readme"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:text="@string/text_show_readme"
-                        style="@style/Widget.AppCompat.Button.Borderless"/>
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <us.feras.mdv.MarkdownView
-                android:id="@+id/repo_readme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:visibility="gone">
-            </us.feras.mdv.MarkdownView>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/repo_project_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
-
 
 </android.support.design.widget.CoordinatorLayout>
