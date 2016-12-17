@@ -40,7 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="8dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"

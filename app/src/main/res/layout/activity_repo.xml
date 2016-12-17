@@ -25,6 +25,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/repo_refresher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -50,6 +51,7 @@
                         android:id="@+id/repo_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textAppearance="@android:style/TextAppearance.Material.Title"
                         android:text="@string/text_placeholder"/>
 
                     <TextView
@@ -75,38 +77,23 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
+                        android:orientation="horizontal"
+                        android:layout_margin="16dp">
 
                         <com.androidnetworking.widget.ANImageView
                             android:id="@+id/user_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
                             android:layout_gravity="center_horizontal"/>
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/user_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_margin="16dp">
-
-                            <TextView
-                                android:id="@+id/user_name"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="top"
-                                android:text="@string/text_placeholder"
-                                android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
-
-                            <TextView
-                                android:id="@+id/user_id"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:text="@string/text_placeholder"
-                                android:textAppearance="@android:style/TextAppearance.Material.Small"/>
-
-                        </LinearLayout>
+                            android:layout_gravity="top"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/text_placeholder"
+                            android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
 
                     </LinearLayout>
 
@@ -130,12 +117,6 @@
                                 <com.mikepenz.iconics.view.IconicsImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-git-commit"
-                                    app:iiv_color="?attr/drawableColor"/>
-
-                                <com.mikepenz.iconics.view.IconicsImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
                                     app:iiv_icon="oct-database"
                                     app:iiv_color="?attr/drawableColor"/>
 
@@ -145,17 +126,23 @@
                                     app:iiv_icon="oct-repo-forked"
                                     app:iiv_color="?attr/drawableColor"/>
 
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-star"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    app:iiv_icon="oct-eye"
+                                    app:iiv_color="?attr/drawableColor"/>
+
                             </TableRow>
 
                             <TableRow
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/text_commits"
-                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -169,19 +156,23 @@
                                     android:text="@string/text_forks"
                                     android:textAlignment="center"/>
 
-                                <!--TODO TextViews for image titles and counts-->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_stars"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_watchers"
+                                    android:textAlignment="center"/>
+
                             </TableRow>
 
                             <TableRow
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content">
-
-                                <TextView
-                                    android:id="@+id/repo_commits"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/text_placeholder"
-                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:id="@+id/repo_size"
@@ -192,6 +183,20 @@
 
                                 <TextView
                                     android:id="@+id/repo_forks"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_stars"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_watchers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/text_placeholder"

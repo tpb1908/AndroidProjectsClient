@@ -35,7 +35,7 @@ public class Loader {
     }
 
 
-    public void loadRepositories(RepositoryLoader loader, String user) {
+    public void loadRepositories(RepositoriesLoader loader, String user) {
         final String path = appendAccessToken(GIT_BASE + "users/" + user + "/repos");
         AndroidNetworking.get(path)
                 .build()
@@ -63,7 +63,7 @@ public class Loader {
                 });
     }
 
-    public void loadRepositories(RepositoryLoader loader) {
+    public void loadRepositories(RepositoriesLoader loader) {
         final String path = appendAccessToken(GIT_BASE + "user/repos");
         Log.i(TAG, "loadRepositories: " + path);
         AndroidNetworking.get(path)
@@ -92,11 +92,23 @@ public class Loader {
                 });
     }
 
-    public interface RepositoryLoader {
+    public interface RepositoriesLoader {
 
         void reposLoaded(Repository[] repos);
 
         void loadError();
+
+    }
+
+    public interface RepositoryLoader {
+
+        void repoLoaded(Repository repo);
+
+        void loadError();
+    }
+
+    public interface RepositoryStatisticsLoader {
+
 
     }
 
