@@ -67,6 +67,26 @@ public class Loader {
                 });
     }
 
+    public void loadRepository(RepositoryLoader loader, String fullRepoName) {
+        final String path = appendAccessToken(GIT_BASE + "repos/" + fullRepoName);
+        Log.i(TAG, "loadRepository: " + path);
+        AndroidNetworking.get(path)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        final Repository repo = Repository.parse(response);
+                        if(loader != null) loader.repoLoaded(repo);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+
+    }
+
     public void loadRepositories(RepositoriesLoader loader) {
         final String path = appendAccessToken(GIT_BASE + "user/repos");
         Log.i(TAG, "loadRepositories: " + path);

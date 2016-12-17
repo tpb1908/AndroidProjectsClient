@@ -71,7 +71,14 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         });
         mLoader = new Loader(this);
         mRefresher.setOnRefreshListener(() -> {
-            if(mRepo != null) mLoader.loadProjects(this, mRepo.getFullName());
+            if(mRepo != null) {
+                mAdapter.clearProjects();
+                mName.setText(null);
+                mDescription.setText(null);
+                mUserName.setText(null);
+                mUserImage.setImageDrawable(null);
+                mLoader.loadRepository(this, mRepo.getFullName());
+            }
         });
         mAdapter = new ProjectAdapter();
         mRecycler.setAdapter(mAdapter);
@@ -79,6 +86,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
             repoLoaded(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
         } else {
+            mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
             //TODO Begin loading repo from url
         }
 
