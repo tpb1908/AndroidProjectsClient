@@ -28,7 +28,8 @@ public class Project extends DataModel {
     private int number;
 
     private static final String CREATOR = "creator";
-    private int creator;
+    private static final String LOGIN = "login";
+    private String creatorUserName;
 
     private long createdAt;
 
@@ -54,8 +55,8 @@ public class Project extends DataModel {
         return number;
     }
 
-    public int getCreator() {
-        return creator;
+    public String getCreatorUserName() {
+        return creatorUserName;
     }
 
     public long getCreatedAt() {
@@ -69,7 +70,7 @@ public class Project extends DataModel {
     public static Project parse(JSONObject object) {
         final Project p = new Project();
         try {
-            p.creator = object.getInt(CREATOR);
+            p.creatorUserName = object.getJSONObject(CREATOR).getString(LOGIN);
             p.number = object.getInt(NUMBER);
             p.body = object.getString(BODY);
             p.name = object.getString(NAME);
@@ -89,7 +90,7 @@ public class Project extends DataModel {
                 ", name='" + name + '\'' +
                 ", body='" + body + '\'' +
                 ", number=" + number +
-                ", creator=" + creator +
+                ", creatorUserName=" + creatorUserName +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

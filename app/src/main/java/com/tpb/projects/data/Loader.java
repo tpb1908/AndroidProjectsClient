@@ -8,6 +8,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.Logging;
@@ -120,6 +121,34 @@ public class Loader {
                 });
     }
 
+    public void loadProjects(ProjectsLoader loader, String repoFullName) {
+        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/projects");
+        Log.i(TAG, "loadProjects: " + path);
+        AndroidNetworking.get(path)
+                .addHeaders("Accept", "application/vnd.github.inertia-preview+json")
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            final Project[] projects = new Project[response.length()];
+                            for(int i = 0; i < response.length(); i++) {
+                                projects[i] = Project.parse(response.getJSONObject(i));
+                            }
+                            if(loader != null) loader.projectsLoaded(projects);
+                        } catch(JSONException jse) {
+                            Log.e(TAG, "onResponse: ",jse );
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: ", anError);
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
     private String appendAccessToken(String path) {
         return path + "?access_token=" + mSession.getAccessToken();
     }
@@ -151,7 +180,16 @@ public class Loader {
 
     }
 
+    public interface ProjectLoader {
 
+        void projectLoaded(Project project);
+    }
+
+    public interface ProjectsLoader {
+
+        void projectsLoaded(Project[] projects);
+
+    }
 
 
 }
