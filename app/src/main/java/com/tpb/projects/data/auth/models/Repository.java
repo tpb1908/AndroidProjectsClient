@@ -1,5 +1,7 @@
 package com.tpb.projects.data.auth.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -9,7 +11,7 @@ import org.json.JSONObject;
  * Created by theo on 15/12/16.
  */
 
-public class Repository extends DataModel {
+public class Repository extends DataModel implements Parcelable {
     private static final String TAG = Repository.class.getSimpleName();
 
     private Repository() {}
@@ -17,6 +19,13 @@ public class Repository extends DataModel {
     private int id;
 
     private String name;
+
+    private static final String OWNER = "owner";
+    private static final String USER_LOGIN = "login";
+    private static final String USER_AVATAR = "avatar_url";
+    private String userLogin;
+    private String userAvatarUrl;
+    private int userId;
 
     private static final String FULL_NAME = "full_name";
     private String fullName;
@@ -48,10 +57,13 @@ public class Repository extends DataModel {
     private int forks;
 
     private static final String WATCHERS = "watchers_count";
-    private int watches;
+    private int watchers;
 
     private static final String ISSUES = "open_issues_count";
     private int issues;
+
+    private static final String SIZE = "size";
+    private int size;
 
     public int getId() {
         return id;
@@ -101,18 +113,37 @@ public class Repository extends DataModel {
         return forks;
     }
 
-    public int getWatches() {
-        return watches;
+    public int getWatchers() {
+        return watchers;
     }
 
     public int getIssues() {
         return issues;
     }
 
+    public String getUserLogin() {
+        return userLogin;
+    }
+
+    public String getUserAvatarUrl() {
+        return userAvatarUrl;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
     public static Repository parse(JSONObject object) {
         final Repository r = new Repository();
         try {
             r.id = object.getInt(ID);
+            r.userLogin = object.getJSONObject(OWNER).getString(USER_LOGIN);
+            r.userId = object.getJSONObject(OWNER).getInt(ID);
+            r.userAvatarUrl = object.getJSONObject(OWNER).getString(USER_AVATAR);
             r.name = object.getString(NAME);
             r.fullName = object.getString(FULL_NAME);
             r.description = object.getString(DESCRIPTION);
@@ -124,8 +155,9 @@ public class Repository extends DataModel {
             r.hasIssues = object.getBoolean(HAS_ISSUES);
             r.starGazers = object.getInt(STAR_GAZERS);
             r.forks = object.getInt(FORKS);
-            r.watches = object.getInt(WATCHERS);
+            r.watchers = object.getInt(WATCHERS);
             r.issues = object.getInt(ISSUES);
+            r.size = object.getInt(SIZE);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -138,6 +170,9 @@ public class Repository extends DataModel {
         return "Repository{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", userLogin='" + userLogin + '\'' +
+                ", userAvatarUrl='" + userAvatarUrl + '\'' +
+                ", userId=" + userId +
                 ", fullName='" + fullName + '\'' +
                 ", description='" + description + '\'' +
                 ", isPrivate=" + isPrivate +
@@ -148,8 +183,69 @@ public class Repository extends DataModel {
                 ", hasIssues=" + hasIssues +
                 ", starGazers=" + starGazers +
                 ", forks=" + forks +
-                ", watches=" + watches +
+                ", watchers=" + watchers +
                 ", issues=" + issues +
+                ", size=" + size +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.userLogin);
+        dest.writeString(this.userAvatarUrl);
+        dest.writeInt(this.userId);
+        dest.writeString(this.fullName);
+        dest.writeString(this.description);
+        dest.writeByte(this.isPrivate ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isFork ? (byte) 1 : (byte) 0);
+        dest.writeString(this.url);
+        dest.writeString(this.htmlUrl);
+        dest.writeString(this.language);
+        dest.writeByte(this.hasIssues ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.starGazers);
+        dest.writeInt(this.forks);
+        dest.writeInt(this.watchers);
+        dest.writeInt(this.issues);
+        dest.writeInt(this.size);
+    }
+
+    protected Repository(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.userLogin = in.readString();
+        this.userAvatarUrl = in.readString();
+        this.userId = in.readInt();
+        this.fullName = in.readString();
+        this.description = in.readString();
+        this.isPrivate = in.readByte() != 0;
+        this.isFork = in.readByte() != 0;
+        this.url = in.readString();
+        this.htmlUrl = in.readString();
+        this.language = in.readString();
+        this.hasIssues = in.readByte() != 0;
+        this.starGazers = in.readInt();
+        this.forks = in.readInt();
+        this.watchers = in.readInt();
+        this.issues = in.readInt();
+        this.size = in.readInt();
+    }
+
+    public static final Creator<Repository> CREATOR = new Creator<Repository>() {
+        @Override
+        public Repository createFromParcel(Parcel source) {
+            return new Repository(source);
+        }
+
+        @Override
+        public Repository[] newArray(int size) {
+            return new Repository[size];
+        }
+    };
 }

@@ -28,8 +28,8 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> implements Loader.RepositoryLoader {
-    private static final String TAG = RepoAdapter.class.getSimpleName();
+public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
+    private static final String TAG = ReposAdapter.class.getSimpleName();
 
     private Context mContext;
     private Loader mLoader;
@@ -39,7 +39,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
     private RepoPinSorter mSorter;
     private RepoOpener mOpener;
 
-    public RepoAdapter(Context context, RepoOpener opener,  RecyclerView recycler, SwipeRefreshLayout refresher) {
+    public ReposAdapter(Context context, RepoOpener opener, RecyclerView recycler, SwipeRefreshLayout refresher) {
         mContext = context;
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
@@ -49,7 +49,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
         mRefresher.setOnRefreshListener(() -> {
             mRepos = new Repository[0];
             notifyDataSetChanged();
-            mLoader.loadRepositories(RepoAdapter.this);
+            mLoader.loadRepositories(ReposAdapter.this);
         });
         mUser = new GitHubSession(context).getUsername();
         mSorter = new RepoPinSorter(context, mUser);
@@ -137,7 +137,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener((v) -> RepoAdapter.this.openItem(view, getAdapterPosition()));
+            view.setOnClickListener((v) -> ReposAdapter.this.openItem(view, getAdapterPosition()));
         }
 
     }

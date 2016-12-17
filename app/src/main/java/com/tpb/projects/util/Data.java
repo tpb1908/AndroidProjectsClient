@@ -55,4 +55,10 @@ public class Data {
         for(int i = 0; i < values.length; i++) if(values[i].equals(key)) return i;
         return -1;
     }
+
+    public static String formatKB(int kb) {
+        if(kb < 1024) return Integer.toString(kb) + " KB";
+        if(kb < 1024 * 1024) return String.format("%.2f", kb/1024f) + " MB";
+        return String.format("%.2f", kb/(1024f*1024f)) + " GB";
+    }
 }

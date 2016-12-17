@@ -35,7 +35,7 @@ import butterknife.ButterKnife;
  *
  */
 
-public class ReposActivity extends AppCompatActivity implements RepoAdapter.RepoOpener {
+public class ReposActivity extends AppCompatActivity implements ReposAdapter.RepoOpener {
     private static final String TAG = ReposActivity.class.getSimpleName();
 
     private OAuthLoader mApp;
@@ -44,7 +44,7 @@ public class ReposActivity extends AppCompatActivity implements RepoAdapter.Repo
     @BindView(R.id.repos_toolbar) Toolbar mToolbar;
     @BindView(R.id.repos_appbar) AppBarLayout mAppbar;
 
-    private RepoAdapter mAdapter;
+    private ReposAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class ReposActivity extends AppCompatActivity implements RepoAdapter.Repo
         }
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RepoAdapter(this, this, mRecycler, mRefresher);
+        mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
     }
@@ -68,6 +68,7 @@ public class ReposActivity extends AppCompatActivity implements RepoAdapter.Repo
     @Override
     public void openRepo(Repository repo, View view) {
         final Intent i = new Intent(ReposActivity.this, RepoActivity.class);
+        i.putExtra(getString(R.string.intent_repo), repo);
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
                 Pair.create(view, getString(R.string.transition_card))
