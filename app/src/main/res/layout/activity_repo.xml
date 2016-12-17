@@ -94,6 +94,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="top"
+                                android:text="@string/text_placeholder"
                                 android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
 
                             <TextView
@@ -101,6 +102,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
+                                android:text="@string/text_placeholder"
                                 android:textAppearance="@android:style/TextAppearance.Material.Small"/>
 
                         </LinearLayout>
@@ -124,20 +126,20 @@
                                 android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp">
 
-                                <ImageView
+                                <com.mikepenz.iconics.view.IconicsImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:ico_icon="oct-git-commit"/>
+                                    app:iiv_icon="oct-git-commit"/>
 
-                                <ImageView
+                                <com.mikepenz.iconics.view.IconicsImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:ico_icon="oct-database"/>
+                                    app:iiv_icon="oct-database"/>
 
-                                <ImageView
+                                <com.mikepenz.iconics.view.IconicsImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:ico_icon="oct-repo-forked"/>
+                                    app:iiv_icon="oct-repo-forked"/>
 
                             </TableRow>
 
