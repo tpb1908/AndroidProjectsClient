@@ -1,5 +1,7 @@
 package com.tpb.projects.util;
 
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Transformation;
@@ -8,7 +10,7 @@ import android.view.animation.Transformation;
  * Created by theo on 16/12/16.
  */
 
-public class Animation {
+public class UI {
 
     //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation
     public static void expand(final View v) {
@@ -62,5 +64,22 @@ public class Animation {
         a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
+
+    public static float dpFromPx(final float px) {
+        return px / Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static float pxFromDp(final float dp) {
+        return dp * Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static int pxFromDp(final int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    public static int pxFromSp(final float sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
+    }
+
 
 }

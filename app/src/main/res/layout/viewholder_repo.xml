@@ -9,7 +9,8 @@
     android:layout_marginEnd="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="2dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:transitionName="@string/transition_card">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,14 +23,16 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/repo_details"
-            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+            android:textAppearance="@android:style/TextAppearance.Material.Title"
+            android:clickable="false"/>
 
         <TextView
             android:id="@+id/repo_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/repo_name"
-            android:layout_toStartOf="@+id/repo_details"/>
+            android:layout_toStartOf="@+id/repo_details"
+            android:clickable="false"/>
 
         <LinearLayout
             android:id="@+id/repo_details"
@@ -54,7 +57,7 @@
                     android:layout_height="16dp"
                     android:layout_gravity="center"
                     app:iiv_icon="oct-repo-forked"
-                    />
+                    app:iiv_color="?attr/drawableColor"/>
 
             </LinearLayout>
 
@@ -74,7 +77,7 @@
                     android:layout_height="16dp"
                     android:layout_gravity="center"
                     app:iiv_icon="oct-star"
-                    />
+                    app:iiv_color="?attr/drawableColor"/>
 
             </LinearLayout>
 
@@ -95,7 +98,7 @@
                     android:layout_height="16dp"
                     android:layout_gravity="center"
                     app:iiv_icon="oct-gist-secret"
-                    />
+                    app:iiv_color="?attr/drawableColor"/>
 
             </LinearLayout>
 

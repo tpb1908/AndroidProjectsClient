@@ -21,7 +21,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthLoader;
-import com.tpb.projects.util.Animation;
+import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Constants;
 
 import butterknife.BindView;
@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(mApp.getAuthUrl());
         mWebView.setLayoutParams(FILL);
-        Animation.expand(mLogin);
+        UI.expand(mLogin);
     }
 
     private void ensureWebViewVisible() {

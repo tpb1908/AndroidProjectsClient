@@ -37,11 +37,13 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
     private Repository[] mRepos = new Repository[0];
     private String mUser;
     private RepoPinSorter mSorter;
+    private RepoOpener mOpener;
 
-    public RepoAdapter(Context context, RecyclerView recycler, SwipeRefreshLayout refresher) {
+    public RepoAdapter(Context context, RepoOpener opener,  RecyclerView recycler, SwipeRefreshLayout refresher) {
         mContext = context;
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
+        mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -61,6 +63,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 final Repository r = mRepos[viewHolder.getAdapterPosition()];
+
                 mRepos[viewHolder.getAdapterPosition()] = mRepos[target.getAdapterPosition()];
                 mRepos[target.getAdapterPosition()] = r;
                 notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
@@ -120,6 +123,10 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
 
     }
 
+    private void openItem(View view, int pos) {
+        mOpener.openRepo(mRepos[pos], view);
+    }
+
     class RepoHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.repo_name) TextView mName;
         @BindView(R.id.repo_description) TextView mDescription;
@@ -130,12 +137,12 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            view.setOnClickListener((v) -> RepoAdapter.this.openItem(view, getAdapterPosition()));
         }
 
     }
 
-    private static class RepoPinSorter {
-        private static final String TAG = RepoPinSorter.class.getSimpleName();
+    private class RepoPinSorter {
 
         private SharedPreferences prefs;
         private static final String PREFS_KEY = "PINS";
@@ -162,6 +169,12 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoHolder> im
                 return i1 > i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
             });
         }
+
+    }
+
+    interface RepoOpener {
+
+        void openRepo(Repository repo, View view);
 
     }
 
