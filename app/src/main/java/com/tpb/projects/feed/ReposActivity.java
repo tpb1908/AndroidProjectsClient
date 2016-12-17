@@ -62,13 +62,13 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
-
     }
 
     @Override
     public void openRepo(Repository repo, View view) {
         final Intent i = new Intent(ReposActivity.this, RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
+        mRecycler.disableAnimation();
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
                 Pair.create(view, getString(R.string.transition_card))
@@ -76,4 +76,11 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
 }

@@ -12,6 +12,7 @@ import android.view.View;
 
 public class AnimatingRecycler extends RecyclerView {
     private boolean mIsScrollable;
+    private boolean mShouldAnimate = true;
 
     public AnimatingRecycler(Context context) {
         this(context, null);
@@ -26,6 +27,18 @@ public class AnimatingRecycler extends RecyclerView {
         mIsScrollable = false;
     }
 
+    public void enableAnimation() {
+        mShouldAnimate = true;
+    }
+
+    public void disableAnimation() {
+        mShouldAnimate = false;
+    }
+
+    public boolean shouldAnimate() {
+        return mShouldAnimate;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return !mIsScrollable || super.dispatchTouchEvent(ev);
@@ -34,11 +47,13 @@ public class AnimatingRecycler extends RecyclerView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        for (int i = 0; i < getChildCount(); i++) {
-            animate(getChildAt(i), i);
+        if(mShouldAnimate) {
+            for(int i = 0; i < getChildCount(); i++) {
+                animate(getChildAt(i), i);
 
-            if (i == getChildCount() - 1) {
-                getHandler().postDelayed(() -> mIsScrollable = true, i * 100);
+                if(i == getChildCount() - 1) {
+                    getHandler().postDelayed(() -> mIsScrollable = true, i * 100);
+                }
             }
         }
     }

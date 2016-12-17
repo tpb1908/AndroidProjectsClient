@@ -18,6 +18,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.views.AnimatingRecycler;
 
 import java.util.Arrays;
 
@@ -34,16 +35,18 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
     private Context mContext;
     private Loader mLoader;
     private SwipeRefreshLayout mRefresher;
+    private AnimatingRecycler mRecycler;
     private Repository[] mRepos = new Repository[0];
     private String mUser;
     private RepoPinSorter mSorter;
     private RepoOpener mOpener;
 
-    public ReposAdapter(Context context, RepoOpener opener, RecyclerView recycler, SwipeRefreshLayout refresher) {
+    public ReposAdapter(Context context, RepoOpener opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mContext = context;
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
         mOpener = opener;
+        mRecycler = recycler;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -112,6 +115,7 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
     @Override
     public void reposLoaded(Repository[] repos) {
         Log.i(TAG, "reposLoaded: " + repos.length);
+        mRecycler.enableAnimation();
         mRepos = repos;
         mSorter.sort(mRepos);
         mRefresher.setRefreshing(false);
