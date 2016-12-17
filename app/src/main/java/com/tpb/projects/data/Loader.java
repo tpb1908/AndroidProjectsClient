@@ -6,12 +6,15 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.util.Data;
 import com.tpb.projects.util.Logging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by theo on 14/12/16.
@@ -92,6 +95,39 @@ public class Loader {
                 });
     }
 
+    public void loadReadMe(ReadMeLoader loader, String repoFullName) {
+        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/readme");
+        Log.i(TAG, "loadReadMe: " + path);
+        AndroidNetworking.get(path)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            final String readme = Data.base64Decode(response.getString("content"));
+                            Log.i(TAG, "onResponse: " + readme);
+                            if(loader != null) loader.readMeLoaded(readme);
+                        } catch(JSONException jse) {
+                            Log.e(TAG, "onResponse: ", jse);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: ", anError);
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
+    private String appendAccessToken(String path) {
+        return path + "?access_token=" + mSession.getAccessToken();
+    }
+
+    public enum LoadError {
+        NOT_FOUND, UNKNOWN
+    }
+
     public interface RepositoriesLoader {
 
         void reposLoaded(Repository[] repos);
@@ -107,13 +143,15 @@ public class Loader {
         void loadError();
     }
 
-    public interface RepositoryStatisticsLoader {
+    public interface ReadMeLoader {
 
+        void readMeLoaded(String readMe);
+
+        void loadError();
 
     }
 
-    private String appendAccessToken(String path) {
-        return path + "?access_token=" + mSession.getAccessToken();
-    }
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.tpb.projects.util;
 
+import android.util.Base64;
+
 import com.tpb.projects.data.auth.models.Repository;
 
 import java.util.Comparator;
@@ -60,5 +62,9 @@ public class Data {
         if(kb < 1024) return Integer.toString(kb) + " KB";
         if(kb < 1024 * 1024) return String.format("%.2f", kb/1024f) + " MB";
         return String.format("%.2f", kb/(1024f*1024f)) + " GB";
+    }
+
+    public static String base64Decode(String base64) {
+        return new String(Base64.decode(base64, Base64.DEFAULT));
     }
 }

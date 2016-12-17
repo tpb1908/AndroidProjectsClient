@@ -6,7 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
@@ -20,11 +22,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import us.feras.mdv.MarkdownView;
 
+import static android.view.View.GONE;
+
 /**
  * Created by theo on 16/12/16.
  */
 
-public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader{
+public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader {
+    private static final String TAG = RepoActivity.class.getSimpleName();
 
     @BindView(R.id.repo_name) TextView mName;
     @BindView(R.id.repo_description) TextView mDescription;
@@ -36,7 +41,8 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     @BindView(R.id.repo_stars) TextView mStars;
     @BindView(R.id.repo_watchers) TextView mWatchers;
 
-    @BindView(R.id.repo_readme) MarkdownView mReadMe;
+    @BindView(R.id.repo_show_readme) Button mReadmeButton;
+    @BindView(R.id.repo_readme) MarkdownView mReadme;
 
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_project_recycler) RecyclerView mRecycler;
@@ -54,14 +60,22 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
             //TODO Begin loading repo from url
         }
         mRefresher.setRefreshing(true);
-
+        mReadmeButton.setOnClickListener((v) -> {
+            if(mReadme.getVisibility() == GONE) {
+                mReadme.setVisibility(View.VISIBLE);
+                mReadmeButton.setText(R.string.text_hide_readme);
+            } else {
+                mReadme.setVisibility(GONE);
+                mReadmeButton.setText(R.string.text_show_readme);
+            }
+        });
     }
 
     @Override
     public void repoLoaded(Repository repo) {
         mName.setText(repo.getName());
         if(Constants.JSON_NULL.equals(repo.getDescription())) {
-            mDescription.setVisibility(View.GONE);
+            mDescription.setVisibility(GONE);
         } else {
             mDescription.setText(repo.getDescription());
         }
@@ -71,6 +85,19 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         mForks.setText(Integer.toString(repo.getForks()));
         mWatchers.setText(Integer.toString(repo.getWatchers()));
         mStars.setText(Integer.toString(repo.getStarGazers()));
+        new Loader(this).loadReadMe(new Loader.ReadMeLoader() {
+            @Override
+            public void readMeLoaded(String readMe) {
+                Log.i(TAG, "readMeLoaded: ");
+                mReadmeButton.setVisibility(View.VISIBLE);
+                mReadme.loadMarkdown(readMe);
+            }
+
+            @Override
+            public void loadError() {
+
+            }
+        }, repo.getFullName());
     }
 
     @Override
