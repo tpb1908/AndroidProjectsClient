@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,9 +14,11 @@ import android.widget.TextView;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.views.AnimatingRecycler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +30,7 @@ import static android.view.View.GONE;
  * Created by theo on 16/12/16.
  */
 
-public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader {
+public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader, Loader.ReadMeLoader, Loader.ProjectsLoader {
     private static final String TAG = RepoActivity.class.getSimpleName();
 
     @BindView(R.id.repo_name) TextView mName;
@@ -46,9 +47,11 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     @BindView(R.id.repo_readme) MarkdownView mReadme;
 
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_project_recycler) RecyclerView mRecycler;
+    @BindView(R.id.repo_project_recycler) AnimatingRecycler mRecycler;
 
     private ProjectAdapter mAdapter;
+    private Loader mLoader;
+    private Repository mRepo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +69,10 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
                 mReadmeButton.setText(R.string.text_show_readme);
             }
         });
-
+        mLoader = new Loader(this);
+        mRefresher.setOnRefreshListener(() -> {
+            if(mRepo != null) mLoader.loadProjects(this, mRepo.getFullName());
+        });
         mAdapter = new ProjectAdapter();
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -80,6 +86,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
 
     @Override
     public void repoLoaded(Repository repo) {
+        mRepo = repo;
         mName.setText(repo.getName());
         if(Constants.JSON_NULL.equals(repo.getDescription())) {
             mDescription.setVisibility(GONE);
@@ -93,24 +100,22 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         mWatchers.setText(Integer.toString(repo.getWatchers()));
         mStars.setText(Integer.toString(repo.getStarGazers()));
         mRefresher.setRefreshing(true);
-        new Loader(this).loadReadMe(new Loader.ReadMeLoader() {
-            @Override
-            public void readMeLoaded(String readMe) {
-                Log.i(TAG, "readMeLoaded: ");
-                mReadmeButton.setVisibility(View.VISIBLE);
-                mReadme.loadMarkdown(readMe);
-                //TODO Dark theming
-            }
+        mLoader.loadProjects(this, mRepo.getFullName());
+        mLoader.loadReadMe(this, mRepo.getFullName());
+    }
 
-            @Override
-            public void loadError() {
+    @Override
+    public void projectsLoaded(Project[] projects) {
+        mRefresher.setRefreshing(false);
+        mAdapter.projectsLoaded(projects);
+    }
 
-            }
-        }, repo.getFullName());
-        new Loader(this).loadProjects(projects -> {
-            mRefresher.setRefreshing(false);
-            mAdapter.projectsLoaded(projects);
-        }, repo.getFullName());
+    @Override
+    public void readMeLoaded(String readMe) {
+        Log.i(TAG, "readMeLoaded: ");
+        mReadmeButton.setVisibility(View.VISIBLE);
+        mReadme.loadMarkdown(readMe);
+        //TODO Dark theming
     }
 
     @Override

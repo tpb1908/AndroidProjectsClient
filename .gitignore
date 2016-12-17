@@ -40,3 +40,8 @@ captures/
 
 # Keystore files
 *.jks
+
+github
+github.pub
+github_projects
+github_projects.pub

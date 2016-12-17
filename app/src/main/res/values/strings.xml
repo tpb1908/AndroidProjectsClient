@@ -19,6 +19,7 @@
     <string name="text_watchers">Watchers</string>
     <string name="text_show_readme">Show README</string>
     <string name="text_hide_readme">Hide README</string>
+    <string name="text_create_project">Create new project</string>
 
     <string name="text_placeholder">…</string>
 
