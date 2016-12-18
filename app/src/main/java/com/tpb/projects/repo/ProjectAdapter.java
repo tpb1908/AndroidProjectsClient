@@ -12,6 +12,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.views.AnimatingRecycler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +29,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     private ArrayList<Project> mProjects = new ArrayList<>();
     private ProjectEditor mEditor;
+    private AnimatingRecycler mRecycler;
 
-    public ProjectAdapter(ProjectEditor editor, RecyclerView recycler) {
+    public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
+        mRecycler = recycler;
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -62,6 +65,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         );
     }
 
+
+
     @Override
     public int getItemCount() {
         return mProjects.size();
@@ -72,11 +77,26 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         Log.i(TAG, "projectsLoaded: " + Arrays.toString(projects));
         mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();
+        mRecycler.enableAnimation();
     }
 
     void clearProjects() {
         mProjects.clear();
         notifyDataSetChanged();
+        mRecycler.enableAnimation();
+    }
+
+    void addProject(Project project) {
+        mProjects.add(0, project);
+        notifyItemInserted(0);
+    }
+
+    void updateProject(Project project) {
+        final int pos = mProjects.indexOf(project);
+        if(pos != -1) {
+            mProjects.set(pos, project);
+            notifyItemChanged(pos);
+        }
     }
 
     class ProjectViewHolder extends RecyclerView.ViewHolder {

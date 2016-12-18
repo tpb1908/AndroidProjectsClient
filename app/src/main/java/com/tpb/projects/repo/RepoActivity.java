@@ -3,6 +3,8 @@ package com.tpb.projects.repo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,7 +39,8 @@ public class RepoActivity extends AppCompatActivity implements
         Loader.ReadMeLoader,
         Loader.ProjectsLoader,
         ProjectAdapter.ProjectEditor,
-        ProjectDialog.ProjectListener {
+        ProjectDialog.ProjectListener,
+        Editor.ProjectCreationListener {
     private static final String TAG = RepoActivity.class.getSimpleName();
 
     @BindView(R.id.repo_name) TextView mName;
@@ -53,6 +56,7 @@ public class RepoActivity extends AppCompatActivity implements
     @BindView(R.id.repo_show_readme) Button mReadmeButton;
     @BindView(R.id.repo_readme) MarkedView mReadme;
 
+    @BindView(R.id.repo_coordinator) CoordinatorLayout mCoordinator;
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_project_recycler) AnimatingRecycler mRecycler;
 
@@ -103,34 +107,18 @@ public class RepoActivity extends AppCompatActivity implements
             mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
             //TODO Begin loading repo from url
         }
-
     }
 
     @Override
     public void projectEditDone(Project project, boolean isNewProject) {
         if(isNewProject) {
-            new Editor(this).createProject(new Editor.ProjectCreationListener() {
-                @Override
-                public void projectCreated(Project project) {
-                    Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
-                    mRefresher.setRefreshing(true);
-                    mAdapter.clearProjects();
-                    mLoader.loadProjects(RepoActivity.this, mRepo.getFullName());
-                }
-
-                @Override
-                public void creationError() {
-
-                }
-            }, project, mRepo.getFullName());
+            new Editor(this).createProject(this, project, mRepo.getFullName());
         } else {
             new Editor(this).editProject(new Editor.ProjectEditListener() {
                 @Override
                 public void projectEdited(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
-                    mRefresher.setRefreshing(true);
-                    mAdapter.clearProjects();
-                    mLoader.loadProjects(RepoActivity.this, mRepo.getFullName());
+                    mAdapter.updateProject(project);
                 }
 
                 @Override
@@ -147,12 +135,27 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteProject(Project project) {
+    public void projectCreated(Project project) {
+        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
+        mAdapter.addProject(project);
+    }
+
+    @Override
+    public void creationError() {
+
+    }
+
+    @Override
+    public void deleteProject(final Project project) {
         Log.i(TAG, "deleteProject: Deleting project");
         new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
             @Override
             public void projectDelete(Project project) {
-                //It seems to take a while for deletions to take affect
+                Snackbar.make(mCoordinator,
+                        R.string.text_project_deleted_undo,
+                        Snackbar.LENGTH_LONG
+                ).setAction(R.string.action_undo, view -> new Editor(RepoActivity.this).createProject(RepoActivity.this, project, mRepo.getFullName())
+                ).show();
             }
 
             @Override

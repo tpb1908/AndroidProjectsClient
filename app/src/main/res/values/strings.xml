@@ -7,6 +7,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_undo">UNDO</string>
     <string name="action_ok">OK</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -26,6 +27,8 @@
     <string name="text_last_updated">Last updated %1$s</string>
     <string name="text_project_created">Project created successfully</string>
     <string name="text_project_edited">Project edited successfully</string>
+    <string name="text_project_deleted">Project deleted successfully</string>
+    <string name="text_project_deleted_undo">Project deleted</string>
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
 

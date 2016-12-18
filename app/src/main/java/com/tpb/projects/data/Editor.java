@@ -95,12 +95,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
+                        listener.deletionError();
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorCode());
                         Log.i(TAG, "onError: " + anError.getErrorBody());
+                        if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
+                            listener.projectDelete(project);
+                        } else {
+                            listener.deletionError();
+                        }
                     }
                 });
     }
