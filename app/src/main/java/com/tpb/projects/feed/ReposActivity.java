@@ -67,7 +67,11 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
         mUserName.setText(mApp.getUserName());
+        /* TODO
+        Load the repository collaborators and check if the user can edit
 
+
+         */
     }
 
     @Override
