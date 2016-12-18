@@ -7,7 +7,6 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Data;
@@ -21,13 +20,8 @@ import org.json.JSONObject;
  * Created by theo on 14/12/16.
  */
 
-public class Loader {
+public class Loader extends APIHandler {
     private static final String TAG = Loader.class.getSimpleName();
-
-    private static final String GIT_BASE = "https://api.github.com/";
-    private static final String GIT_REPOS = "%1$s/repos/";
-
-    private static GitHubSession mSession;
 
     //https://developer.github.com/v3/repos/
     //https://developer.github.com/v3/projects/
@@ -35,7 +29,7 @@ public class Loader {
     //https://developer.github.com/v3/projects/cards/
 
     public Loader(Context context) {
-        if(mSession == null) mSession = new GitHubSession(context);
+        super(context);
     }
 
 
@@ -145,7 +139,7 @@ public class Loader {
         final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/projects");
         Log.i(TAG, "loadProjects: " + path);
         AndroidNetworking.get(path)
-                .addHeaders("Accept", "application/vnd.github.inertia-preview+json")
+                .addHeaders("Accept", ACCEPT_HEADER)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -167,10 +161,6 @@ public class Loader {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                     }
                 });
-    }
-
-    private String appendAccessToken(String path) {
-        return path + "?access_token=" + mSession.getAccessToken();
     }
 
     public enum LoadError {

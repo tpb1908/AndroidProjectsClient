@@ -1,6 +1,7 @@
 package com.tpb.projects.repo;
 
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.util.Data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -24,11 +26,24 @@ import butterknife.ButterKnife;
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.ProjectsLoader {
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
-    private Project[] mProjects = new Project[0];
+    private ArrayList<Project> mProjects = new ArrayList<>();
     private ProjectEditor mEditor;
 
-    public ProjectAdapter(ProjectEditor editor) {
+    public ProjectAdapter(ProjectEditor editor, RecyclerView recycler) {
         mEditor = editor;
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                editor.deleteProject(mProjects.get(viewHolder.getAdapterPosition()));
+                mProjects.remove(viewHolder.getAdapterPosition());
+                notifyItemRemoved(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recycler);
     }
 
     @Override
@@ -38,29 +53,29 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     @Override
     public void onBindViewHolder(ProjectViewHolder holder, int position) {
-        holder.mName.setText(mProjects[position].getName());
+        holder.mName.setText(mProjects.get(position).getName());
         holder.mLastUpdate.setText(
                 String.format(
                         holder.itemView.getContext().getString(R.string.text_last_updated),
-                        Data.timeAgo(mProjects[position].getUpdatedAt())
+                        Data.timeAgo(mProjects.get(position).getUpdatedAt())
                 )
         );
     }
 
     @Override
     public int getItemCount() {
-        return mProjects.length;
+        return mProjects.size();
     }
 
     @Override
     public void projectsLoaded(Project[] projects) {
         Log.i(TAG, "projectsLoaded: " + Arrays.toString(projects));
-        mProjects = projects;
+        mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();
     }
 
     void clearProjects() {
-        mProjects = new Project[0];
+        mProjects.clear();
         notifyDataSetChanged();
     }
 
@@ -72,7 +87,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         ProjectViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener((v) -> mEditor.editProject(mProjects[getAdapterPosition()]));
+            view.setOnClickListener((v) -> mEditor.editProject(mProjects.get(getAdapterPosition())));
         }
 
     }
@@ -80,6 +95,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     interface ProjectEditor {
 
         void editProject(Project project);
+
+        void deleteProject(Project project);
     }
 
 }

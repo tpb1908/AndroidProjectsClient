@@ -17,12 +17,14 @@ public class Project extends DataModel implements Parcelable{
 
     public Project() {}
 
+    private int id;
+
+    private static final String CREATOR = "creator";
     private static final String OWNER_URL = "owner_url";
     private String ownerUrl;
 
     private String url;
 
-    private static final String CREATOR = "creator";
     private String name;
 
     private static final String BODY = "body";
@@ -70,9 +72,23 @@ public class Project extends DataModel implements Parcelable{
         return updatedAt;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
     public static Project parse(JSONObject object) {
         final Project p = new Project();
         try {
+            Log.i(TAG, "parse: " + object.toString());
+            p.id = object.getInt(ID);
             p.creatorUserName = object.getJSONObject(CREATOR).getString(LOGIN);
             p.number = object.getInt(NUMBER);
             p.body = object.getString(BODY);
@@ -88,16 +104,16 @@ public class Project extends DataModel implements Parcelable{
     }
 
 
-
     @Override
     public String toString() {
         return "Project{" +
-                "ownerUrl='" + ownerUrl + '\'' +
+                "id=" + id +
+                ", ownerUrl='" + ownerUrl + '\'' +
                 ", url='" + url + '\'' +
                 ", name='" + name + '\'' +
                 ", body='" + body + '\'' +
                 ", number=" + number +
-                ", creatorUserName=" + creatorUserName +
+                ", creatorUserName='" + creatorUserName + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
@@ -110,6 +126,7 @@ public class Project extends DataModel implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
         dest.writeString(this.ownerUrl);
         dest.writeString(this.url);
         dest.writeString(this.name);
@@ -121,6 +138,7 @@ public class Project extends DataModel implements Parcelable{
     }
 
     protected Project(Parcel in) {
+        this.id = in.readInt();
         this.ownerUrl = in.readString();
         this.url = in.readString();
         this.name = in.readString();
