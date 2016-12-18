@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
@@ -30,7 +32,12 @@ import static android.view.View.GONE;
  * Created by theo on 16/12/16.
  */
 
-public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader, Loader.ReadMeLoader, Loader.ProjectsLoader, ProjectAdapter.ProjectEditor {
+public class RepoActivity extends AppCompatActivity implements
+        Loader.RepositoryLoader,
+        Loader.ReadMeLoader,
+        Loader.ProjectsLoader,
+        ProjectAdapter.ProjectEditor,
+        ProjectDialog.ProjectListener {
     private static final String TAG = RepoActivity.class.getSimpleName();
 
     @BindView(R.id.repo_name) TextView mName;
@@ -72,7 +79,9 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
             }
         });
         mNewProjectButton.setOnClickListener((v) -> {
-            new ProjectDialog().show(getSupportFragmentManager(), TAG);
+            final ProjectDialog dialog = new ProjectDialog();
+            dialog.setListener(this);
+            dialog.show(getSupportFragmentManager(), TAG);
         });
         mLoader = new Loader(this);
         mRefresher.setOnRefreshListener(() -> {
@@ -85,7 +94,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
                 mLoader.loadRepository(this, mRepo.getFullName());
             }
         });
-        mAdapter = new ProjectAdapter(this);
+        mAdapter = new ProjectAdapter(this, mRecycler);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
@@ -98,11 +107,68 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     }
 
     @Override
+    public void projectEditDone(Project project, boolean isNewProject) {
+        if(isNewProject) {
+            new Editor(this).createProject(new Editor.ProjectCreationListener() {
+                @Override
+                public void projectCreated(Project project) {
+                    Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
+                    mRefresher.setRefreshing(true);
+                    mAdapter.clearProjects();
+                    mLoader.loadProjects(RepoActivity.this, mRepo.getFullName());
+                }
+
+                @Override
+                public void creationError() {
+
+                }
+            }, project, mRepo.getFullName());
+        } else {
+            new Editor(this).editProject(new Editor.ProjectEditListener() {
+                @Override
+                public void projectEdited(Project project) {
+                    Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
+                    mRefresher.setRefreshing(true);
+                    mAdapter.clearProjects();
+                    mLoader.loadProjects(RepoActivity.this, mRepo.getFullName());
+                }
+
+                @Override
+                public void editError() {
+
+                }
+            }, project);
+        }
+    }
+
+    @Override
+    public void projectEditCancelled() {
+
+    }
+
+    @Override
+    public void deleteProject(Project project) {
+        Log.i(TAG, "deleteProject: Deleting project");
+        new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
+            @Override
+            public void projectDelete(Project project) {
+                //It seems to take a while for deletions to take affect
+            }
+
+            @Override
+            public void deletionError() {
+
+            }
+        }, project);
+    }
+
+    @Override
     public void editProject(Project project) {
         final ProjectDialog dialog = new ProjectDialog();
         final Bundle bundle = new Bundle();
         bundle.putParcelable(getString(R.string.parcel_project), project);
         dialog.setArguments(bundle);
+        dialog.setListener(this);
         dialog.show(getSupportFragmentManager(), TAG);
     }
 
