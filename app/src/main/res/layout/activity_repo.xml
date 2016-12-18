@@ -260,7 +260,8 @@
                 <com.tpb.projects.views.AnimatingRecycler
                     android:id="@+id/repo_project_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false">
 
                 </com.tpb.projects.views.AnimatingRecycler>
 
