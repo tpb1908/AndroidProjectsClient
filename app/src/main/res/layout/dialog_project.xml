@@ -31,6 +31,17 @@
                 android:layout_marginBottom="8dp"
                 android:hint="@string/hint_project_description"/>
 
+            <us.feras.mdv.MarkdownView
+                android:id="@+id/project_description_markdwon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+            </us.feras.mdv.MarkdownView>
+
         </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>
