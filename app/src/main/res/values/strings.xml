@@ -12,6 +12,7 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_key_invalid">Bad credentials</string>
 
     <string name="text_zero_value">0</string>
 

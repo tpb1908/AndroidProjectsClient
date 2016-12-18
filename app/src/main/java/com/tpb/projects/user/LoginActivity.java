@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.OAuthLoader;
+import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Constants;
 
@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private OAuthLoader mApp;
+    private OAuthHandler mApp;
     private boolean mLoginShown = false;
 
     @BindView(R.id.login_webview) WebView mWebView;
@@ -57,9 +57,9 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
 
-        mApp = new OAuthLoader(this, Constants.CLIENT_ID,
+        mApp = new OAuthHandler(this, Constants.CLIENT_ID,
                 Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
-        mApp.setListener(new OAuthLoader.OAuthAuthenticationListener() {
+        mApp.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
                 Log.i(TAG, "onSuccess: ");
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.d(TAG, "Redirecting URL " + url);
 
-            if(url.startsWith(OAuthLoader.mCallbackUrl)) {
+            if(url.startsWith(OAuthHandler.mCallbackUrl)) {
                 String urls[] = url.split("=");
                 mListener.onComplete(urls[1]);
                 return true;

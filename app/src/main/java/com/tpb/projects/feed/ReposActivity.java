@@ -12,11 +12,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.OAuthLoader;
+import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
@@ -40,7 +41,7 @@ import butterknife.ButterKnife;
 public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {
     private static final String TAG = ReposActivity.class.getSimpleName();
 
-    private OAuthLoader mApp;
+    private OAuthHandler mApp;
     @BindView(R.id.repos_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repos_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.repos_toolbar) Toolbar mToolbar;
@@ -59,7 +60,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
-        mApp = new OAuthLoader(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
+        mApp = new OAuthHandler(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         }
@@ -67,6 +68,12 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
         mUserName.setText(mApp.getUserName());
+        mApp.validateKey(isValid -> {
+            if(!isValid) {
+                Toast.makeText(ReposActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
+                startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+            }
+        });
         /* TODO
         Load the repository collaborators and check if the user can edit
 

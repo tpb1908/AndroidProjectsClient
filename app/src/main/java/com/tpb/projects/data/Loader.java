@@ -23,11 +23,6 @@ import org.json.JSONObject;
 public class Loader extends APIHandler {
     private static final String TAG = Loader.class.getSimpleName();
 
-    //https://developer.github.com/v3/repos/
-    //https://developer.github.com/v3/projects/
-    //https://developer.github.com/v3/projects/columns/#get-a-project-column
-    //https://developer.github.com/v3/projects/cards/
-
     public Loader(Context context) {
         super(context);
     }
