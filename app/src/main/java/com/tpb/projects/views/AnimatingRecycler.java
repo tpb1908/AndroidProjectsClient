@@ -56,7 +56,10 @@ public class AnimatingRecycler extends RecyclerView {
                 }
             }
         }
+        mShouldAnimate = false;
     }
+
+
 
     private void animate(View view, final int pos) {
         view.animate().cancel();
