@@ -2,30 +2,64 @@ package com.tpb.projects.repo;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.models.Project;
 
+import us.feras.mdv.MarkdownView;
+
 /**
  * Created by theo on 17/12/16.
  */
 
 public class ProjectDialog extends DialogFragment {
+    private static final String TAG = ProjectDialog.class.getSimpleName();
+
     private Project mProject;
-    private EditText mNameEdit;
-    private EditText mDescriptionEdit;
+
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle bundle) {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_project, null);
-        mNameEdit = (EditText) view.findViewById(R.id.project_name_edit);
-        mDescriptionEdit = (EditText) view.findViewById(R.id.project_description_edit);
+        final EditText nameEdit = (EditText) view.findViewById(R.id.project_name_edit);
+        final EditText descriptionEdit = (EditText) view.findViewById(R.id.project_description_edit);
+        final MarkdownView descriptionMarkDown = (MarkdownView) view.findViewById(R.id.project_description_markdwon);
+
+        descriptionEdit.addTextChangedListener(new TextWatcher() {
+            final Handler updateHandler = new Handler();
+            long lastUpdated;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                lastUpdated = System.currentTimeMillis();
+                updateHandler.postDelayed(() -> {
+                    if(System.currentTimeMillis() - lastUpdated >= 290 ) {
+                        descriptionMarkDown.loadMarkdown(descriptionEdit.getText().toString());
+                    }
+                }, 300);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
            dismiss();
@@ -36,8 +70,9 @@ public class ProjectDialog extends DialogFragment {
         if(getArguments() != null && getArguments().getParcelable(getContext().getString(R.string.parcel_project)) != null) {
             mProject = getArguments().getParcelable(getContext().getString(R.string.parcel_project));
             builder.setTitle(R.string.title_edit_project);
-            mNameEdit.setText(mProject.getName());
-            mDescriptionEdit.setText(mProject.getBody());
+            nameEdit.setText(mProject.getName());
+            descriptionEdit.setText(mProject.getBody());
+            descriptionMarkDown.loadMarkdown(mProject.getBody());
         } else {
             mProject = new Project();
             builder.setTitle(R.string.title_new_project);
