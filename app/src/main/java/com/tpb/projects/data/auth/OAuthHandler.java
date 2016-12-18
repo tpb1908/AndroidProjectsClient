@@ -11,6 +11,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
 
@@ -24,7 +25,7 @@ import org.json.JSONObject;
  * @author Lorensius W. L T <lorenz@londatiga.net>
  *
  */
-public class OAuthLoader {
+public class OAuthHandler extends APIHandler {
     private GitHubSession mSession;
     private OAuthAuthenticationListener mListener;
     private String mAuthUrl;
@@ -40,13 +41,15 @@ public class OAuthLoader {
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
     private static final String API_URL = "https://api.gitHub.com/";
+    private static final String VALIDATION_URL = "applications/%1$s/tokens/%2$s";
     private static final String SCOPE = "user repo";
 
-    private static final String TAG = OAuthLoader.class.getSimpleName();
+    private static final String TAG = OAuthHandler.class.getSimpleName();
 
 
-    public OAuthLoader(Context context, String clientId, String clientSecret,
-                       String callbackUrl) {
+    public OAuthHandler(Context context, String clientId, String clientSecret,
+                        String callbackUrl) {
+        super(context);
         mSession = new GitHubSession(context);
         mAccessToken = mSession.getAccessToken();
         mCallbackUrl = callbackUrl;
@@ -148,11 +151,36 @@ public class OAuthLoader {
         }
     }
 
+    //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization
+    public void validateKey(OAuthValidationListener listener) {
+        Log.i(TAG, "validateKey: " + appendAccessToken(GIT_BASE + "rate_limit"));
+        AndroidNetworking.get(appendAccessToken(GIT_BASE + "rate_limit"))
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.keyValidated(true);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.keyValidated(false);
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
     public interface OAuthAuthenticationListener {
         void onSuccess();
 
         void onFail(String error);
 
         void userLoaded(String name, String id, String details, String imagePath);
+    }
+
+    public interface OAuthValidationListener {
+
+        void keyValidated(boolean isValid);
+
     }
 }
