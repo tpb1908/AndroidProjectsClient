@@ -222,6 +222,10 @@ public class RepoActivity extends AppCompatActivity implements
 
     }
 
+    public void onToolbarBackPress(View view) {
+        onBackPressed();
+    }
+
     @Override
     public void onBackPressed() {
         mReadme.setVisibility(GONE);
