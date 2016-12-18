@@ -1,5 +1,7 @@
 package com.tpb.projects.data.auth.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.util.Data;
@@ -10,16 +12,17 @@ import org.json.JSONObject;
  * Created by theo on 15/12/16.
  */
 
-public class Project extends DataModel {
+public class Project extends DataModel implements Parcelable{
     private static final String TAG = Project.class.getSimpleName();
 
-    private Project() {}
+    public Project() {}
 
     private static final String OWNER_URL = "owner_url";
     private String ownerUrl;
 
     private String url;
 
+    private static final String CREATOR = "creator";
     private String name;
 
     private static final String BODY = "body";
@@ -28,7 +31,6 @@ public class Project extends DataModel {
     private static final String NUMBER = "number";
     private int number;
 
-    private static final String CREATOR = "creator";
     private static final String LOGIN = "login";
     private String creatorUserName;
 
@@ -85,6 +87,8 @@ public class Project extends DataModel {
         return p;
     }
 
+
+
     @Override
     public String toString() {
         return "Project{" +
@@ -98,4 +102,44 @@ public class Project extends DataModel {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.ownerUrl);
+        dest.writeString(this.url);
+        dest.writeString(this.name);
+        dest.writeString(this.body);
+        dest.writeInt(this.number);
+        dest.writeString(this.creatorUserName);
+        dest.writeLong(this.createdAt);
+        dest.writeLong(this.updatedAt);
+    }
+
+    protected Project(Parcel in) {
+        this.ownerUrl = in.readString();
+        this.url = in.readString();
+        this.name = in.readString();
+        this.body = in.readString();
+        this.number = in.readInt();
+        this.creatorUserName = in.readString();
+        this.createdAt = in.readLong();
+        this.updatedAt = in.readLong();
+    }
+
+    public static final Creator<Project> PARCEL_CREATOR = new Creator<Project>() {
+        @Override
+        public Project createFromParcel(Parcel source) {
+            return new Project(source);
+        }
+
+        @Override
+        public Project[] newArray(int size) {
+            return new Project[size];
+        }
+    };
 }

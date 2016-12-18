@@ -30,7 +30,7 @@ import static android.view.View.GONE;
  * Created by theo on 16/12/16.
  */
 
-public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader, Loader.ReadMeLoader, Loader.ProjectsLoader {
+public class RepoActivity extends AppCompatActivity implements Loader.RepositoryLoader, Loader.ReadMeLoader, Loader.ProjectsLoader, ProjectAdapter.ProjectEditor {
     private static final String TAG = RepoActivity.class.getSimpleName();
 
     @BindView(R.id.repo_name) TextView mName;
@@ -48,6 +48,8 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
 
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_project_recycler) AnimatingRecycler mRecycler;
+
+    @BindView(R.id.repo_new_project) Button mNewProjectButton;
 
     private ProjectAdapter mAdapter;
     private Loader mLoader;
@@ -69,6 +71,9 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
                 mReadmeButton.setText(R.string.text_show_readme);
             }
         });
+        mNewProjectButton.setOnClickListener((v) -> {
+            new ProjectDialog().show(getSupportFragmentManager(), TAG);
+        });
         mLoader = new Loader(this);
         mRefresher.setOnRefreshListener(() -> {
             if(mRepo != null) {
@@ -80,7 +85,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
                 mLoader.loadRepository(this, mRepo.getFullName());
             }
         });
-        mAdapter = new ProjectAdapter();
+        mAdapter = new ProjectAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
@@ -90,6 +95,15 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
             //TODO Begin loading repo from url
         }
 
+    }
+
+    @Override
+    public void editProject(Project project) {
+        final ProjectDialog dialog = new ProjectDialog();
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.parcel_project), project);
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), TAG);
     }
 
     @Override

@@ -6,6 +6,8 @@
     <string name="prompt_login">Email or Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -20,12 +22,16 @@
     <string name="text_show_readme">Show README</string>
     <string name="text_hide_readme">Hide README</string>
     <string name="text_create_project">Create new project</string>
-
     <string name="text_placeholder">…</string>
-
     <string name="text_last_updated">Last updated %1$s</string>
+    <string name="hint_project_name">Name</string>
+    <string name="hint_project_description">Description</string>
+
+    <string name="title_new_project">New project</string>
+    <string name="title_edit_project">Edit project</string>
 
     <string name="intent_repo">repo</string>
+    <string name="parcel_project">project</string>
     <string name="transition_card" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
 </resources>
