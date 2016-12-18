@@ -25,6 +25,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private Project[] mProjects = new Project[0];
+    private ProjectEditor mEditor;
+
+    public ProjectAdapter(ProjectEditor editor) {
+        mEditor = editor;
+    }
 
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -67,8 +72,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         ProjectViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            view.setOnClickListener((v) -> mEditor.editProject(mProjects[getAdapterPosition()]));
         }
 
+    }
+
+    interface ProjectEditor {
+
+        void editProject(Project project);
     }
 
 }
