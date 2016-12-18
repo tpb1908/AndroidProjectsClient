@@ -220,7 +220,7 @@
 
                 </android.support.v7.widget.CardView>
 
-                <us.feras.mdv.MarkdownView
+                <com.mittsu.markedview.MarkedView
                     android:id="@+id/repo_readme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
