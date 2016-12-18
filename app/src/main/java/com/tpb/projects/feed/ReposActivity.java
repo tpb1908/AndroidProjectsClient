@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthLoader;
 import com.tpb.projects.data.auth.models.Repository;
@@ -35,7 +37,7 @@ import butterknife.ButterKnife;
  *
  */
 
-public class ReposActivity extends AppCompatActivity implements ReposAdapter.RepoOpener {
+public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {
     private static final String TAG = ReposActivity.class.getSimpleName();
 
     private OAuthLoader mApp;
@@ -43,6 +45,9 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @BindView(R.id.repos_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.repos_toolbar) Toolbar mToolbar;
     @BindView(R.id.repos_appbar) AppBarLayout mAppbar;
+
+    @BindView(R.id.user_image) ANImageView mUserAvatar;
+    @BindView(R.id.user_name) TextView mUserName;
 
     private ReposAdapter mAdapter;
 
@@ -58,10 +63,11 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         }
-
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
         mRecycler.setAdapter(mAdapter);
+        mUserName.setText(mApp.getUserName());
+
     }
 
     @Override
@@ -75,6 +81,11 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
                 ).toBundle()
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
+    }
+
+    @Override
+    public void displayUserAvatar(String userImagePath) {
+        mUserAvatar.setImageUrl(userImagePath);
     }
 
     @Override

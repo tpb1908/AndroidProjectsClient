@@ -32,20 +32,18 @@ import butterknife.ButterKnife;
 public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
     private static final String TAG = ReposAdapter.class.getSimpleName();
 
-    private Context mContext;
     private Loader mLoader;
     private SwipeRefreshLayout mRefresher;
     private AnimatingRecycler mRecycler;
     private Repository[] mRepos = new Repository[0];
     private String mUser;
     private RepoPinSorter mSorter;
-    private RepoOpener mOpener;
+    private ReposManager mManager;
 
-    public ReposAdapter(Context context, RepoOpener opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
-        mContext = context;
+    public ReposAdapter(Context context, ReposManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
-        mOpener = opener;
+        mManager = opener;
         mRecycler = recycler;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
@@ -120,6 +118,7 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
         mSorter.sort(mRepos);
         mRefresher.setRefreshing(false);
         notifyDataSetChanged();
+        if(mRepos.length > 0) mManager.displayUserAvatar(mRepos[0].getUserAvatarUrl());
     }
 
     @Override
@@ -128,7 +127,7 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
     }
 
     private void openItem(View view, int pos) {
-        mOpener.openRepo(mRepos[pos], view);
+        mManager.openRepo(mRepos[pos], view);
     }
 
     class RepoHolder extends RecyclerView.ViewHolder {
@@ -176,9 +175,11 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
 
     }
 
-    interface RepoOpener {
+    interface ReposManager {
 
         void openRepo(Repository repo, View view);
+
+        void displayUserAvatar(String userImagePath);
 
     }
 
