@@ -40,4 +40,9 @@
         <item name="android:backgroundTint">@color/md_white_1000</item>
     </style>
 
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+    
 </resources>
