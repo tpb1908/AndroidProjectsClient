@@ -8,14 +8,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.models.Project;
-
-import us.feras.mdv.MarkdownView;
 
 /**
  * Created by theo on 17/12/16.
@@ -33,7 +31,7 @@ public class ProjectDialog extends DialogFragment {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_project, null);
         final EditText nameEdit = (EditText) view.findViewById(R.id.project_name_edit);
         final EditText descriptionEdit = (EditText) view.findViewById(R.id.project_description_edit);
-        final MarkdownView descriptionMarkDown = (MarkdownView) view.findViewById(R.id.project_description_markdwon);
+        final MarkedView descriptionMarkDown = (MarkedView) view.findViewById(R.id.project_description_markdwon);
 
         descriptionEdit.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
@@ -42,10 +40,11 @@ public class ProjectDialog extends DialogFragment {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 lastUpdated = System.currentTimeMillis();
                 updateHandler.postDelayed(() -> {
-                    if(System.currentTimeMillis() - lastUpdated >= 290 ) {
-                        descriptionMarkDown.loadMarkdown(descriptionEdit.getText().toString());
+                    if(System.currentTimeMillis() - lastUpdated >= 190 ) {
+                        descriptionMarkDown.setMDText(descriptionEdit.getText().toString());
+                        descriptionMarkDown.reload();
                     }
-                }, 300);
+                }, 200);
             }
 
             @Override
@@ -72,7 +71,7 @@ public class ProjectDialog extends DialogFragment {
             builder.setTitle(R.string.title_edit_project);
             nameEdit.setText(mProject.getName());
             descriptionEdit.setText(mProject.getBody());
-            descriptionMarkDown.loadMarkdown(mProject.getBody());
+            descriptionMarkDown.setMDText(mProject.getBody());
         } else {
             mProject = new Project();
             builder.setTitle(R.string.title_new_project);

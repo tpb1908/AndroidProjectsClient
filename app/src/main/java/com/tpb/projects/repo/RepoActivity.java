@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
+import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.models.Project;
@@ -22,7 +23,6 @@ import com.tpb.projects.views.AnimatingRecycler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.feras.mdv.MarkdownView;
 
 import static android.view.View.GONE;
 
@@ -44,7 +44,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     @BindView(R.id.repo_watchers) TextView mWatchers;
 
     @BindView(R.id.repo_show_readme) Button mReadmeButton;
-    @BindView(R.id.repo_readme) MarkdownView mReadme;
+    @BindView(R.id.repo_readme) MarkedView mReadme;
 
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_project_recycler) AnimatingRecycler mRecycler;
@@ -136,7 +136,7 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
     public void readMeLoaded(String readMe) {
         Log.i(TAG, "readMeLoaded: ");
         mReadmeButton.setVisibility(View.VISIBLE);
-        mReadme.loadMarkdown(readMe);
+        mReadme.setMDText(readMe);
         //TODO Dark theming
     }
 
