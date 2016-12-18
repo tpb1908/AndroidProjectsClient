@@ -110,6 +110,41 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void openProject(Project project) {
+
+    }
+
+    @Override
+    public void editProject(Project project) {
+        final ProjectDialog dialog = new ProjectDialog();
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.parcel_project), project);
+        dialog.setArguments(bundle);
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), TAG);
+    }
+
+    @Override
+    public void deleteProject(final Project project) {
+        Log.i(TAG, "deleteProject: Deleting project");
+        new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
+            @Override
+            public void projectDelete(Project project) {
+                Snackbar.make(mCoordinator,
+                        R.string.text_project_deleted_undo,
+                        Snackbar.LENGTH_LONG
+                ).setAction(R.string.action_undo, view -> new Editor(RepoActivity.this).createProject(RepoActivity.this, project, mRepo.getFullName())
+                ).show();
+            }
+
+            @Override
+            public void deletionError() {
+
+            }
+        }, project);
+    }
+
+    @Override
     public void projectEditDone(Project project, boolean isNewProject) {
         if(isNewProject) {
             new Editor(this).createProject(this, project, mRepo.getFullName());
@@ -145,35 +180,6 @@ public class RepoActivity extends AppCompatActivity implements
 
     }
 
-    @Override
-    public void deleteProject(final Project project) {
-        Log.i(TAG, "deleteProject: Deleting project");
-        new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
-            @Override
-            public void projectDelete(Project project) {
-                Snackbar.make(mCoordinator,
-                        R.string.text_project_deleted_undo,
-                        Snackbar.LENGTH_LONG
-                ).setAction(R.string.action_undo, view -> new Editor(RepoActivity.this).createProject(RepoActivity.this, project, mRepo.getFullName())
-                ).show();
-            }
-
-            @Override
-            public void deletionError() {
-
-            }
-        }, project);
-    }
-
-    @Override
-    public void editProject(Project project) {
-        final ProjectDialog dialog = new ProjectDialog();
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(getString(R.string.parcel_project), project);
-        dialog.setArguments(bundle);
-        dialog.setListener(this);
-        dialog.show(getSupportFragmentManager(), TAG);
-    }
 
     @Override
     public void repoLoaded(Repository repo) {
