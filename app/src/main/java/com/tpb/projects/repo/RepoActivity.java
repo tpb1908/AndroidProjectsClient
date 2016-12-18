@@ -137,6 +137,8 @@ public class RepoActivity extends AppCompatActivity implements Loader.Repository
         Log.i(TAG, "readMeLoaded: ");
         mReadmeButton.setVisibility(View.VISIBLE);
         mReadme.setMDText(readMe);
+        mReadme.reload();
+
         //TODO Dark theming
     }
 
