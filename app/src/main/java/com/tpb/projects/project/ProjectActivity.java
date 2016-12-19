@@ -2,6 +2,7 @@ package com.tpb.projects.project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Column;
@@ -30,8 +33,10 @@ import butterknife.ButterKnife;
 public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
 
     @BindView(R.id.project_name) TextView mName;
-    //@BindView(R.id.project_new_card_fab) FloatingActionButton mNewCardFab;
     @BindView(R.id.project_column_pager) ViewPager mColumnPager;
+    @BindView(R.id.project_fab_menu) FloatingActionMenu mMenu;
+    @BindView(R.id.project_add_card) FloatingActionButton mAddCard;
+    @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
 
     private ColumnPager mAdapter;
     private Project mProject;
@@ -52,7 +57,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mColumnPager.setAdapter(mAdapter);
         mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
 
-       // new Handler().postDelayed(() -> mNewCardFab.show(), 400);
+        mMenu.hideMenuButton(false); //Hide the button so that we can show it later
+        new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
     }
 
     @Override
@@ -79,8 +85,13 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @Override
     public void onBackPressed() {
-     //   mNewCardFab.hide();
-        super.onBackPressed();
+        if(mMenu.isOpened()) {
+            mMenu.close(true);
+        } else {
+            mMenu.hideMenuButton(true);
+            super.onBackPressed();
+        }
+
     }
 
     private class ColumnPager extends FragmentPagerAdapter {
