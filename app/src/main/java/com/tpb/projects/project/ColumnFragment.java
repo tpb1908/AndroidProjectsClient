@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.util.Data;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +43,7 @@ public class ColumnFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_column, container, false);
         unbinder = ButterKnife.bind(this, view);
         mName.setText(mColumn.getName());
+        mLastUpdate.setText(String.format(getContext().getString(R.string.text_last_updated), Data.timeAgo(mColumn.getUpdatedAt())));
         return view;
     }
 

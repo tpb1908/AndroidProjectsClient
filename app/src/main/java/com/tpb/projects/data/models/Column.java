@@ -2,8 +2,12 @@ package com.tpb.projects.data.models;
 
 import android.util.Log;
 
+import com.tpb.projects.util.Data;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
  * Created by theo on 15/12/16.
@@ -21,10 +25,8 @@ public class Column extends DataModel {
     private static final String PROJECT_URL = "project_url";
     private String projectUrl;
 
-    private static final String CREATED_AT = "created_at";
     private long createdAt;
 
-    private static final String UPDATED_AT = "updated_at";
     private long updatedAt;
 
     public int getId() {
@@ -53,6 +55,12 @@ public class Column extends DataModel {
             c.id = object.getInt(ID);
             c.name = object.getString(NAME);
             c.projectUrl = object.getString(PROJECT_URL);
+            try {
+                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
+                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
