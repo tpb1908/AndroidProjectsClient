@@ -19,6 +19,7 @@ import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
 import com.tpb.projects.util.Constants;
@@ -199,6 +200,26 @@ public class RepoActivity extends AppCompatActivity implements
         mRefresher.setRefreshing(true);
         mLoader.loadProjects(this, mRepo.getFullName());
         mLoader.loadReadMe(this, mRepo.getFullName());
+        if(mRepo.getUserLogin().equals(new GitHubSession(this).getUsername())) {
+            mAdapter.enableRepoAccess();
+        } else {
+            mLoader.checkAccess(new Loader.AccessCheckListener() {
+                @Override
+                public void checkComplete(boolean canAccess) {
+                    Log.i(TAG, "checkComplete: Aaccess " + canAccess);
+                    if(canAccess) mAdapter.enableRepoAccess();
+                    Toast.makeText(RepoActivity.this,
+                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+
+                @Override
+                public void checkError() {
+
+                }
+            }, new GitHubSession(this).getUsername(), mRepo.getFullName());
+        }
     }
 
     @Override

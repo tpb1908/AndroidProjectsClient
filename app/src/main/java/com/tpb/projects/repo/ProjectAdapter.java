@@ -30,6 +30,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private ArrayList<Project> mProjects = new ArrayList<>();
     private ProjectEditor mEditor;
     private AnimatingRecycler mRecycler;
+    private boolean canAccessRepo = false;
 
     public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
@@ -65,7 +66,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         );
     }
 
-
+    void enableRepoAccess() {
+        canAccessRepo = true;
+        if(mProjects.size() > 0) notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {
@@ -108,6 +112,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             super(view);
             ButterKnife.bind(this, view);
             view.findViewById(R.id.project_edit_button).setOnClickListener((v) -> mEditor.editProject(mProjects.get(getAdapterPosition())));
+            view.findViewById(R.id.project_edit_button).setVisibility(canAccessRepo ? View.VISIBLE : View.INVISIBLE);
             view.setOnClickListener((v) -> mEditor.openProject(mProjects.get(getAdapterPosition())));
         }
 

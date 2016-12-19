@@ -9,12 +9,15 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.auth.models.Project;
 import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.data.auth.models.User;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.Logging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
 
 /**
  * Created by theo on 14/12/16.
@@ -158,6 +161,53 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
+        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/collaborators");
+        AndroidNetworking.get(path)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final User[] collabs = new User[response.length()];
+                        for(int i = 0; i < collabs.length; i++) {
+                            try {
+                                collabs[i] = User.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: ", jse);
+                            }
+                        }
+                        if(loader != null) loader.collaboratorsLoaded(collabs);
+                        Log.i(TAG, "onResponse: Collaborators"+ Arrays.toString(collabs));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Collaborators" + anError.getErrorBody());
+                    }
+                });
+    }
+
+    public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
+        loadCollaborators(new CollaboratorsLoader() {
+            @Override
+            public void collaboratorsLoaded(User[] collaborators) {
+                for(User u : collaborators) {
+                    Log.i(TAG, "collaboratorsLoaded: Comparing " + login + " to " + u.getLogin());
+                    if(login.equals(u.getLogin()) && listener != null) {
+                        listener.checkComplete(true);
+                        return;
+                    }
+                }
+                if(listener != null) listener.checkComplete(false);
+            }
+
+            @Override
+            public void loadError() {
+                if(listener != null) listener.checkError();
+            }
+        }, repoFullname);
+    }
+
     public enum LoadError {
         NOT_FOUND, UNKNOWN
     }
@@ -196,5 +246,20 @@ public class Loader extends APIHandler {
 
     }
 
+    public interface CollaboratorsLoader {
+
+        void collaboratorsLoaded(User[] collaborators);
+
+        void loadError();
+
+    }
+
+    public interface AccessCheckListener {
+
+        void checkComplete(boolean canAccess);
+
+        void checkError();
+
+    }
 
 }
