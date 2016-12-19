@@ -47,6 +47,7 @@ dependencies {
     compile 'com.mittsu:markedview:1.0.4@aar'
     compile "com.mikepenz:iconics-core:2.8.1@aar"
     compile 'com.mikepenz:octicons-typeface:3.2.0.2@aar'
+    compile 'com.github.clans:fab:1.6.4'
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     testCompile 'junit:junit:4.12'

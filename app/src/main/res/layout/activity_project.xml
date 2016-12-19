@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:orientation="vertical"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/project_appbar"
@@ -42,18 +43,38 @@
         android:id="@+id/project_column_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    </android.support.v4.view.ViewPager>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/project_new_card_fab"
+    <com.github.clans.fab.FloatingActionMenu
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:visibility="invisible"
-        app:layout_anchor="@id/project_column_pager"
-        app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_add"/>
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/colorAccent">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/project_add_column"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_column"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            app:fab_label="@string/text_fab_new_column"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorAccent"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/project_add_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_note"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            app:fab_label="@string/text_fab_new_card"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorAccent"/>
+
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

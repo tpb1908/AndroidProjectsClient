@@ -32,6 +32,8 @@
     <string name="text_project_deleted_undo">Project deleted</string>
     <string name="text_can_access_repo">Edit access granted</string>
     <string name="text_cannot_access_repo">Can\'t edit this repo</string>
+    <string name="text_fab_new_card">New card</string>
+    <string name="text_fab_new_column">New column</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
