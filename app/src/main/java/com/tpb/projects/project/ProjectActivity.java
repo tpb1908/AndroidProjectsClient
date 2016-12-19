@@ -16,7 +16,11 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +36,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_column_pager) ViewPager mColumnPager;
 
     private ColumnPager mAdapter;
+    private Project mProject;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +59,20 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @Override
     public void projectLoaded(Project project) {
+        mProject = project;
         mName.setText(project.getName());
+        new Loader(this).loadColumns(new Loader.ColumnsLoader() {
+            @Override
+            public void columnsLoaded(Column[] columns) {
+                mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void loadError() {
+
+            }
+        }, project.getId());
     }
 
     public void onToolbarBackPressed(View view) {
@@ -68,6 +86,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private class ColumnPager extends FragmentPagerAdapter {
+        private ArrayList<Column> columns = new ArrayList<>();
 
         ColumnPager(FragmentManager fm) {
             super(fm);
@@ -75,12 +94,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         @Override
         public Fragment getItem(int position) {
-            return ColumnFragment.getInstance();
+            return ColumnFragment.getInstance(columns.get(position));
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return columns.size();
         }
 
     }

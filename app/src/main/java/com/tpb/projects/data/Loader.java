@@ -7,6 +7,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
@@ -75,7 +76,6 @@ public class Loader extends APIHandler {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                     }
                 });
-
     }
 
     public void loadRepositories(RepositoriesLoader loader) {
@@ -130,31 +130,6 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadProjects(ProjectsLoader loader, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
-                .build()
-                .getAsJSONArray(new JSONArrayRequestListener() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            final Project[] projects = new Project[response.length()];
-                            for(int i = 0; i < response.length(); i++) {
-                                projects[i] = Project.parse(response.getJSONObject(i));
-                            }
-                            if(loader != null) loader.projectsLoaded(projects);
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ",jse );
-                        }
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: ", anError);
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
-                    }
-                });
-    }
 
     public void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/collaborators")
@@ -203,6 +178,59 @@ public class Loader extends APIHandler {
         }, repoFullname);
     }
 
+    public void loadProjects(ProjectsLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            final Project[] projects = new Project[response.length()];
+                            for(int i = 0; i < response.length(); i++) {
+                                projects[i] = Project.parse(response.getJSONObject(i));
+                            }
+                            if(loader != null) loader.projectsLoaded(projects);
+                        } catch(JSONException jse) {
+                            Log.e(TAG, "onResponse: ",jse );
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: ", anError);
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
+    public void loadColumns(ColumnsLoader loader, int projectId) {
+        AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.i(TAG, "onResponse: " + response.toString());
+                        final Column[] columns = new Column[response.length()];
+                        for(int i = 0; i < columns.length; i++) {
+                            try {
+                                columns[i] = Column.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: ", jse);
+                            }
+                        }
+                        if(loader != null) loader.columnsLoaded(columns);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        loader.loadError();
+                    }
+                });
+    }
+
     public enum LoadError {
         NOT_FOUND, UNKNOWN
     }
@@ -238,6 +266,14 @@ public class Loader extends APIHandler {
     public interface ProjectsLoader {
 
         void projectsLoaded(Project[] projects);
+
+    }
+
+    public interface ColumnsLoader {
+
+        void columnsLoaded(Column[] columns);
+
+        void loadError();
 
     }
 

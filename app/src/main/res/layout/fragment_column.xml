@@ -34,7 +34,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:hint="@string/text_placeholder"
-                        android:enabled="false"
+                        android:inputType="textNoSuggestions"
                         android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
 
                     <ImageButton
@@ -43,6 +43,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/ic_delete"
                         android:background="@android:color/transparent"/>
 
@@ -60,8 +61,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/text_placeholder"
                         android:layout_below="@id/column_name"
-                        android:layout_toStartOf="@+id/column_delete"
-                        android:layout_marginEnd="4dp"/>
+                        android:layout_toStartOf="@+id/column_delete"/>
 
                 </RelativeLayout>
 
