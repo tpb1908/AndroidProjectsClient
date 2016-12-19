@@ -2,7 +2,6 @@
     <string name="app_name">Projects</string>
     <string name="title_activity_login">Sign in</string>
 
-    <!-- Strings related to login -->
     <string name="prompt_login">Email or Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
@@ -30,6 +29,9 @@
     <string name="text_project_edited">Project edited successfully</string>
     <string name="text_project_deleted">Project deleted successfully</string>
     <string name="text_project_deleted_undo">Project deleted</string>
+    <string name="text_can_access_repo">Edit access granted</string>
+    <string name="text_cannot_access_repo">Can\'t edit this repo</string>
+
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
 
