@@ -1,4 +1,4 @@
-package com.tpb.projects.data.auth.models;
+package com.tpb.projects.data.models;
 
 /**
  * Created by theo on 15/12/16.

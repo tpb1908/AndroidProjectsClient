@@ -15,6 +15,7 @@ import android.util.Log;
 public class GitHubSession {
     private static final String TAG = GitHubSession.class.getSimpleName();
 
+    private static GitHubSession session;
     private SharedPreferences prefs;
 
     private static final String SHARED = "GitHub_Preferences";
@@ -22,8 +23,13 @@ public class GitHubSession {
     private static final String API_ID = "id";
     private static final String API_ACCESS_TOKEN = "access_token";
 
-    public GitHubSession(Context context) {
+    private GitHubSession(Context context) {
         prefs = context.getSharedPreferences(SHARED, Context.MODE_PRIVATE);
+    }
+
+    public static GitHubSession getSession(Context context) {
+        if(session == null) session = new GitHubSession(context);
+        return session;
     }
 
     /**
@@ -31,7 +37,7 @@ public class GitHubSession {
      * @param accessToken
      * @param username
      */
-    public void storeAccessToken(String accessToken, int id, String username) {
+    void storeAccessToken(String accessToken, int id, String username) {
         Log.i(TAG, "Storing token " + accessToken);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(API_ID, id);
@@ -40,7 +46,7 @@ public class GitHubSession {
         editor.apply();
     }
 
-    public void storeAccessToken(String accessToken) {
+    void storeAccessToken(String accessToken) {
         Log.i(TAG, "Storing token " + accessToken);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putString(API_ACCESS_TOKEN, accessToken);
@@ -50,7 +56,7 @@ public class GitHubSession {
     /**
      * Reset access token and user name
      */
-    public void resetAccessToken() {
+    void resetAccessToken() {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putString(API_ID, null);
         editor.putString(API_ACCESS_TOKEN, null);

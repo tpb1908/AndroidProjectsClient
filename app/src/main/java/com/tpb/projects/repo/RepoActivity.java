@@ -20,8 +20,8 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.auth.models.Project;
-import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.data.models.Project;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
@@ -50,6 +50,7 @@ public class RepoActivity extends AppCompatActivity implements
     @BindView(R.id.user_name) TextView mUserName;
 
     @BindView(R.id.repo_forks) TextView mForks;
+    @BindView(R.id.repo_issues) TextView mIssues;
     @BindView(R.id.repo_size) TextView mSize;
     @BindView(R.id.repo_stars) TextView mStars;
     @BindView(R.id.repo_watchers) TextView mWatchers;
@@ -194,13 +195,14 @@ public class RepoActivity extends AppCompatActivity implements
         mUserName.setText(repo.getUserLogin());
         mUserImage.setImageUrl(repo.getUserAvatarUrl());
         mSize.setText(Data.formatKB(repo.getSize()));
+        mIssues.setText(Integer.toString(repo.getIssues()));
         mForks.setText(Integer.toString(repo.getForks()));
         mWatchers.setText(Integer.toString(repo.getWatchers()));
         mStars.setText(Integer.toString(repo.getStarGazers()));
         mRefresher.setRefreshing(true);
         mLoader.loadProjects(this, mRepo.getFullName());
         mLoader.loadReadMe(this, mRepo.getFullName());
-        if(mRepo.getUserLogin().equals(new GitHubSession(this).getUsername())) {
+        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUsername())) {
             mAdapter.enableRepoAccess();
         } else {
             mLoader.checkAccess(new Loader.AccessCheckListener() {
@@ -218,7 +220,7 @@ public class RepoActivity extends AppCompatActivity implements
                 public void checkError() {
 
                 }
-            }, new GitHubSession(this).getUsername(), mRepo.getFullName());
+            }, GitHubSession.getSession(this).getUsername(), mRepo.getFullName());
         }
     }
 

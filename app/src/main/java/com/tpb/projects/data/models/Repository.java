@@ -1,4 +1,4 @@
-package com.tpb.projects.data.auth.models;
+package com.tpb.projects.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -101,7 +101,7 @@ public class Repository extends DataModel implements Parcelable {
         return language;
     }
 
-    public boolean isHasIssues() {
+    public boolean hasIssues() {
         return hasIssues;
     }
 

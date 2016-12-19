@@ -28,7 +28,7 @@ public abstract class APIHandler {
 
     public APIHandler(Context context) {
         if(mSession == null) {
-            mSession = new GitHubSession(context);
+            mSession = GitHubSession.getSession(context);
             initHeaders();
             Log.i(TAG, "APIHandler: Token " + mSession.getAccessToken());
         }

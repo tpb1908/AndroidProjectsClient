@@ -139,6 +139,12 @@
                                 <com.mikepenz.iconics.view.IconicsImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
+                                    app:iiv_icon="oct-issue-opened"
+                                    app:iiv_color="?attr/drawableColor"/>
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     app:iiv_icon="oct-repo-forked"
                                     app:iiv_color="?attr/drawableColor"/>
 
@@ -169,6 +175,12 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:text="@string/text_issues"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:text="@string/text_forks"
                                     android:textAlignment="center"/>
 
@@ -192,6 +204,13 @@
 
                                 <TextView
                                     android:id="@+id/repo_size"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_placeholder"
+                                    android:textAlignment="center"/>
+
+                                <TextView
+                                    android:id="@+id/repo_issues"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/text_placeholder"

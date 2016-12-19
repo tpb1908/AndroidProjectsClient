@@ -1,4 +1,4 @@
-package com.tpb.projects.data.auth.models;
+package com.tpb.projects.data.models;
 
 import android.support.annotation.Nullable;
 import android.util.Log;

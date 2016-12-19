@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.auth.models.Project;
+import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
 

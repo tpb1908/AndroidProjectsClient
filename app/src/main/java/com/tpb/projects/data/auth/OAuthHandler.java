@@ -48,7 +48,7 @@ public class OAuthHandler extends APIHandler {
     public OAuthHandler(Context context, String clientId, String clientSecret,
                         String callbackUrl) {
         super(context);
-        mSession = new GitHubSession(context);
+        mSession = GitHubSession.getSession(context);
         mAccessToken = mSession.getAccessToken();
         mCallbackUrl = callbackUrl;
         mTokenUrl = TOKEN_URL + "client_id=" + clientId + "&client_secret="

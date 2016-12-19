@@ -6,7 +6,7 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.tpb.projects.data.auth.models.Project;
+import com.tpb.projects.data.models.Project;
 
 import org.json.JSONException;
 import org.json.JSONObject;

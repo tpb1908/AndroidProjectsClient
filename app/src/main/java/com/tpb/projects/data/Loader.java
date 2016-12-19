@@ -7,9 +7,9 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.tpb.projects.data.auth.models.Project;
-import com.tpb.projects.data.auth.models.Repository;
-import com.tpb.projects.data.auth.models.User;
+import com.tpb.projects.data.models.Project;
+import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.Logging;
 

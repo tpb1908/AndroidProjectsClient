@@ -3,7 +3,7 @@ package com.tpb.projects.util;
 import android.util.Base64;
 import android.util.Log;
 
-import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.data.models.Repository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.auth.models.Repository;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
@@ -52,7 +52,7 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> 
             notifyDataSetChanged();
             mLoader.loadRepositories(ReposAdapter.this);
         });
-        mUser = new GitHubSession(context).getUsername();
+        mUser = GitHubSession.getSession(context).getUsername();
         mSorter = new RepoPinSorter(context, mUser);
         new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
