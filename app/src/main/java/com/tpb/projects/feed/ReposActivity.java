@@ -74,11 +74,6 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
                 startActivity(new Intent(ReposActivity.this, LoginActivity.class));
             }
         });
-        /* TODO
-        Load the repository collaborators and check if the user can edit
-
-
-         */
     }
 
     @Override
