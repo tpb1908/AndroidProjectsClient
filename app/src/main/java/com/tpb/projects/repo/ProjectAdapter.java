@@ -113,14 +113,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             ButterKnife.bind(this, view);
             view.findViewById(R.id.project_edit_button).setOnClickListener((v) -> mEditor.editProject(mProjects.get(getAdapterPosition())));
             view.findViewById(R.id.project_edit_button).setVisibility(canAccessRepo ? View.VISIBLE : View.INVISIBLE);
-            view.setOnClickListener((v) -> mEditor.openProject(mProjects.get(getAdapterPosition())));
+            view.setOnClickListener((v) -> mEditor.openProject(mProjects.get(getAdapterPosition()), mName));
         }
 
     }
 
     interface ProjectEditor {
 
-        void openProject(Project project);
+        void openProject(Project project, View name);
 
         void editProject(Project project);
 

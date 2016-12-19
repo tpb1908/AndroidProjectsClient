@@ -45,4 +45,5 @@
     <string name="parcel_project">project</string>
     <string name="transition_card" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
+    <string name="transition_title" translatable="false">title</string>
 </resources>

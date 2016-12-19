@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
@@ -112,8 +114,16 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void openProject(Project project) {
-
+    public void openProject(Project project, View name) {
+        final Intent i = new Intent(RepoActivity.this, ProjectActivity.class);
+        i.putExtra(getString(R.string.parcel_project), project);
+        startActivity(i,
+                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        this,
+                        name,
+                        getString(R.string.transition_title)
+                ).toBundle()
+        );
     }
 
     @Override
@@ -245,7 +255,7 @@ public class RepoActivity extends AppCompatActivity implements
 
     }
 
-    public void onToolbarBackPress(View view) {
+    public void onToolbarBackPressed(View view) {
         onBackPressed();
     }
 

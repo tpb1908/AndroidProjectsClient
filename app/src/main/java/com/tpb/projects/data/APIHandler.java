@@ -1,7 +1,6 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.tpb.projects.data.auth.GitHubSession;
 
@@ -30,7 +29,6 @@ public abstract class APIHandler {
         if(mSession == null) {
             mSession = GitHubSession.getSession(context);
             initHeaders();
-            Log.i(TAG, "APIHandler: Token " + mSession.getAccessToken());
         }
     }
 

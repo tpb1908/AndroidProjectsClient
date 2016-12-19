@@ -31,6 +31,10 @@
         <activity android:name=".repo.RepoActivity">
         </activity>
 
+        <activity android:name=".project.ProjectActivity">
+
+        </activity>
+
         <activity android:name=".util.IntentHandlerActivity">
 
             <intent-filter>

@@ -19,7 +19,7 @@ public class Project extends DataModel implements Parcelable{
 
     private int id;
 
-    private static final String CREATOR = "creator";
+    private static final String CREATOR_KEY = "creator";
     private static final String OWNER_URL = "owner_url";
     private String ownerUrl;
 
@@ -89,7 +89,7 @@ public class Project extends DataModel implements Parcelable{
         try {
             Log.i(TAG, "parse: " + object.toString());
             p.id = object.getInt(ID);
-            p.creatorUserName = object.getJSONObject(CREATOR).getString(LOGIN);
+            p.creatorUserName = object.getJSONObject(CREATOR_KEY).getString(LOGIN);
             p.number = object.getInt(NUMBER);
             p.body = object.getString(BODY);
             p.name = object.getString(NAME);
@@ -149,7 +149,7 @@ public class Project extends DataModel implements Parcelable{
         this.updatedAt = in.readLong();
     }
 
-    public static final Creator<Project> PARCEL_CREATOR = new Creator<Project>() {
+    public static final Creator<Project> CREATOR = new Creator<Project>() {
         @Override
         public Project createFromParcel(Parcel source) {
             return new Project(source);

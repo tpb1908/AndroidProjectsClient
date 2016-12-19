@@ -20,26 +20,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_arrow_back"/>
+                android:src="@drawable/ic_arrow_back"
+                android:onClick="onToolbarBackPressed"/>
 
             <TextView
-                android:id="@+id/project_title"
+                android:id="@+id/project_name"
+                android:transitionName="@string/transition_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/text_placeholder"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:layout_marginStart="32dp"
                 android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
         </android.support.v7.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/project_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|snap|enterAlways"
-            app:tabGravity="center">
-
-        </android.support.design.widget.TabLayout>
-
     </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/project_column_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </android.support.v4.view.ViewPager>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/project_new_card_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:visibility="invisible"
+        app:layout_anchor="@id/project_column_pager"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@drawable/ic_add"/>
 
 </android.support.design.widget.CoordinatorLayout>

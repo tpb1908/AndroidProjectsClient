@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,7 +82,8 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mRecycler.disableAnimation();
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
-                Pair.create(view, getString(R.string.transition_card))
+                view,
+                getString(R.string.transition_card)
                 ).toBundle()
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
