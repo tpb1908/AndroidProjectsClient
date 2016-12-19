@@ -15,7 +15,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:duplicateParentState="true">
 
         <TextView
             android:id="@+id/repo_name"
@@ -23,14 +24,16 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/repo_details"
-            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+            android:textAppearance="@android:style/TextAppearance.Material.Title"
+            android:duplicateParentState="true"/>
 
         <TextView
             android:id="@+id/repo_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/repo_name"
-            android:layout_toStartOf="@+id/repo_details"/>
+            android:layout_toStartOf="@+id/repo_details"
+            android:duplicateParentState="true"/>
 
         <LinearLayout
             android:id="@+id/repo_details"
@@ -39,7 +42,8 @@
             android:layout_alignParentEnd="true"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:duplicateParentState="true">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -64,7 +68,8 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:duplicateParentState="true">
 
                 <TextView
                     android:id="@+id/repo_stars"
@@ -85,7 +90,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:duplicateParentState="true">
 
                 <TextView
                     android:id="@+id/repo_private"
@@ -105,6 +111,5 @@
         </LinearLayout>
 
     </RelativeLayout>
-
 
 </android.support.v7.widget.CardView>
