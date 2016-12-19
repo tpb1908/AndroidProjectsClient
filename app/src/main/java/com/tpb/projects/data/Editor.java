@@ -23,8 +23,6 @@ public class Editor extends APIHandler {
     }
 
     public void createProject(final ProjectCreationListener listener, Project project, String fullRepoName) {
-        final String path = appendAccessToken(GIT_BASE + "repos/" + fullRepoName + "/projects");
-        Log.i(TAG, "createProject: " + path);
         Log.i(TAG, "createProject: Project " + project.toString());
         JSONObject obj = new JSONObject();
         //Unsure why GitHub can't parse the JSON if I add these as body parameters
@@ -34,8 +32,8 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.post(path)
-                .addHeaders("Accept", ACCEPT_HEADER)
+        AndroidNetworking.post(GIT_BASE + "repos/" + fullRepoName + "/projects")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -54,9 +52,7 @@ public class Editor extends APIHandler {
     }
 
     public void editProject(final ProjectEditListener listener, Project project) {
-        final String path = appendAccessToken(GIT_BASE + "projects/" + project.getId());
-        Log.i(TAG, "editProject: " + path);
-        JSONObject obj = new JSONObject();
+        final JSONObject obj = new JSONObject();
         //Unsure why GitHub can't parse the JSON if I add these as body parameters
         try {
             obj.put("name", project.getName());
@@ -64,8 +60,8 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.patch(path)
-                .addHeaders("Accept", ACCEPT_HEADER)
+        AndroidNetworking.patch(GIT_BASE + "projects/" + project.getId())
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -84,12 +80,11 @@ public class Editor extends APIHandler {
     }
 
     public void deleteProject(final ProjectDeletionListener listener, Project project) {
-        final String path = appendAccessToken(GIT_BASE + "projects/" + project.getId());
         /*
         It seems that on a successful deletion, this returns an error with null body
          */
-        AndroidNetworking.delete(path)
-                .addHeaders("Accept", ACCEPT_HEADER)
+        AndroidNetworking.delete(GIT_BASE + "projects/" + project.getId())
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override

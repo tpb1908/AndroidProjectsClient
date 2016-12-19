@@ -32,8 +32,8 @@ public class Loader extends APIHandler {
 
 
     public void loadRepositories(RepositoriesLoader loader, String user) {
-        final String path = appendAccessToken(GIT_BASE + "users/" + user + "/repos");
-        AndroidNetworking.get(path)
+        AndroidNetworking.get(GIT_BASE + "users/" + user + "/repos")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -60,9 +60,8 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepository(RepositoryLoader loader, String fullRepoName) {
-        final String path = appendAccessToken(GIT_BASE + "repos/" + fullRepoName);
-        Log.i(TAG, "loadRepository: " + path);
-        AndroidNetworking.get(path)
+        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -80,9 +79,8 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(RepositoriesLoader loader) {
-        final String path = appendAccessToken(GIT_BASE + "user/repos");
-        Log.i(TAG, "loadRepositories: " + path);
-        AndroidNetworking.get(path)
+        AndroidNetworking.get(GIT_BASE + "user/repos")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -103,15 +101,14 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.i(TAG, "onError: User repos" + anError.getErrorBody());
                     }
                 });
     }
 
     public void loadReadMe(ReadMeLoader loader, String repoFullName) {
-        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/readme");
-        Log.i(TAG, "loadReadMe: " + path);
-        AndroidNetworking.get(path)
+        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/readme")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -134,10 +131,8 @@ public class Loader extends APIHandler {
     }
 
     public void loadProjects(ProjectsLoader loader, String repoFullName) {
-        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/projects");
-        Log.i(TAG, "loadProjects: " + path);
-        AndroidNetworking.get(path)
-                .addHeaders("Accept", ACCEPT_HEADER)
+        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -162,8 +157,8 @@ public class Loader extends APIHandler {
     }
 
     public void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
-        final String path = appendAccessToken(GIT_BASE + "repos/" + repoFullName + "/collaborators");
-        AndroidNetworking.get(path)
+        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/collaborators")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override

@@ -40,8 +40,6 @@ public class OAuthHandler extends APIHandler {
     public static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
-    private static final String API_URL = "https://api.gitHub.com/";
-    private static final String VALIDATION_URL = "applications/%1$s/tokens/%2$s";
     private static final String SCOPE = "user repo";
 
     private static final String TAG = OAuthHandler.class.getSimpleName();
@@ -86,8 +84,9 @@ public class OAuthHandler extends APIHandler {
                         Log.i(TAG, "onResponse: AccessToken: " + response);
                         mAccessToken = response.substring(
                                 response.indexOf("access_token=") + 13,
-                                response.indexOf("&token_type"));
+                                response.indexOf("&scope"));
                         mSession.storeAccessToken(mAccessToken);
+                        initHeaders();
                         mListener.onSuccess();
                         fetchUserName();
                     }
@@ -100,8 +99,8 @@ public class OAuthHandler extends APIHandler {
     }
 
     private void fetchUserName() {
-        Log.i(TAG, "fetchUserName: " + API_URL + "user?access_token=" + mAccessToken);
-        AndroidNetworking.get(API_URL + "user?access_token=" + mAccessToken)
+        AndroidNetworking.get(GIT_BASE + "user")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -153,8 +152,8 @@ public class OAuthHandler extends APIHandler {
 
     //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization
     public void validateKey(OAuthValidationListener listener) {
-        Log.i(TAG, "validateKey: " + appendAccessToken(GIT_BASE + "rate_limit"));
-        AndroidNetworking.get(appendAccessToken(GIT_BASE + "rate_limit"))
+        AndroidNetworking.get(GIT_BASE + "rate_limit")
+                .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
