@@ -39,11 +39,20 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/project_column_pager"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/project_refresher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:animateLayoutChanges="true">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/project_column_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/project_fab_menu"

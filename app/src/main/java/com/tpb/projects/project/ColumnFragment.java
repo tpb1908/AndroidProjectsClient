@@ -3,6 +3,7 @@ package com.tpb.projects.project;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class ColumnFragment extends Fragment {
 
     private Column mColumn;
 
+    @BindView(R.id.column_card) CardView mCard;
     @BindView(R.id.column_name) EditText mName;
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
@@ -56,6 +58,7 @@ public class ColumnFragment extends Fragment {
         );
         return view;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

@@ -257,6 +257,32 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void addColumn(ColumnAddListener listener, int projectId, String name) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("name", name);
+        } catch(JSONException jse) {
+            Log.e(TAG, "addColumn: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Column created " + response.toString());
+                        if(listener != null) listener.columnAdded(Column.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        if(listener != null) listener.addError();
+                    }
+                });
+    }
+
     public enum LoadError {
         NOT_FOUND, UNKNOWN
     }
@@ -308,6 +334,14 @@ public class Loader extends APIHandler {
         void columnChanged(Column column);
 
         void changeError();
+
+    }
+
+    public interface ColumnAddListener {
+
+        void columnAdded(Column column);
+
+        void addError();
 
     }
 

@@ -1,83 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/column_refresher"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/column_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="8dp">
 
-            <android.support.v7.widget.CardView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp">
+                android:layout_margin="16dp">
 
-                <RelativeLayout
+                <EditText
+                    android:id="@+id/column_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp">
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/column_delete"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:hint="@string/text_placeholder"
+                    android:inputType="textNoSuggestions"
+                    android:textAppearance="@android:style/TextAppearance.Material.Subhead"
+                    android:imeOptions="actionDone"/>
 
-                    <EditText
-                        android:id="@+id/column_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@+id/column_delete"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:hint="@string/text_placeholder"
-                        android:inputType="textNoSuggestions"
-                        android:textAppearance="@android:style/TextAppearance.Material.Subhead"
-                        android:imeOptions="actionDone"/>
+                <ImageButton
+                    android:id="@+id/column_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_delete"
+                    android:background="@android:color/transparent"/>
 
-                    <ImageButton
-                        android:id="@+id/column_delete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="16dp"
-                        android:src="@drawable/ic_delete"
-                        android:background="@android:color/transparent"/>
+                <TextView
+                    android:id="@+id/column_last_updated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_placeholder"
+                    android:layout_below="@id/column_name"
+                    android:layout_marginStart="4dp"/>
 
-                    <TextView
-                        android:id="@+id/column_last_updated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_placeholder"
-                        android:layout_below="@id/column_name"
-                        android:layout_marginStart="4dp"/>
+                <TextView
+                    android:id="@+id/column_card_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_placeholder"
+                    android:layout_below="@id/column_name"
+                    android:layout_toStartOf="@+id/column_delete"/>
 
-                    <TextView
-                        android:id="@+id/column_card_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_placeholder"
-                        android:layout_below="@id/column_name"
-                        android:layout_toStartOf="@+id/column_delete"/>
+            </RelativeLayout>
 
-                </RelativeLayout>
+        </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
+        <com.tpb.projects.views.AnimatingRecycler
+            android:id="@+id/column_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"/>
 
-            <com.tpb.projects.views.AnimatingRecycler
-                android:id="@+id/column_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-
-</android.support.v4.widget.SwipeRefreshLayout>
-
-
+</android.support.v4.widget.NestedScrollView>

@@ -37,10 +37,12 @@
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
+    <string name="hint_column_name">Name</string>
 
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
     <string name="title_activity_repo">Repository</string>
+    <string name="title_new_column">New column</string>
 
 
     <string name="intent_repo">repo</string>
