@@ -231,6 +231,32 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void updateColumn(int columnId, String newName) {
+        final JSONObject obj = new JSONObject();
+        // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
+
+        try {
+            obj.put("name", newName);
+        } catch(JSONException jse) {
+            Log.e(TAG, "updateColumn: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Column update: " + response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Column update: " + anError.getErrorBody() );
+                    }
+                });
+    }
+
     public enum LoadError {
         NOT_FOUND, UNKNOWN
     }
@@ -274,6 +300,14 @@ public class Loader extends APIHandler {
         void columnsLoaded(Column[] columns);
 
         void loadError();
+
+    }
+
+    public interface ColumnChangeListener {
+
+        void columnChanged(Column column);
+
+        void changeError();
 
     }
 

@@ -49,6 +49,14 @@ public class Column extends DataModel {
         return updatedAt;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public static Column parse(JSONObject object) {
         final Column c = new Column();
         try {

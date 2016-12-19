@@ -35,7 +35,8 @@
                         android:ellipsize="end"
                         android:hint="@string/text_placeholder"
                         android:inputType="textNoSuggestions"
-                        android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
+                        android:textAppearance="@android:style/TextAppearance.Material.Subhead"
+                        android:imeOptions="actionDone"/>
 
                     <ImageButton
                         android:id="@+id/column_delete"
