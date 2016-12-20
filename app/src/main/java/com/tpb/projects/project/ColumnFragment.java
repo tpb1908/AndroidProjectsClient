@@ -72,7 +72,7 @@ public class ColumnFragment extends Fragment {
                 )
         );
         mViewsValid = true;
-        mAdapter = new CardAdapter();
+        mAdapter = new CardAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -115,7 +115,8 @@ public class ColumnFragment extends Fragment {
             public void cardsLoaded(Card[] cards) {
                 if(mViewsValid) {
                     mCardCount.setText(Integer.toString(cards.length));
-                    mAdapter.setCard(new ArrayList<>(Arrays.asList(cards)));
+                    mRecycler.enableAnimation();
+                    mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
                 }
                 Log.i(TAG, "cardsLoaded: " + Arrays.toString(cards));
             }

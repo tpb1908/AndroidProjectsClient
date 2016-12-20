@@ -3,6 +3,7 @@ package com.tpb.projects.views;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -47,6 +48,7 @@ public class AnimatingRecycler extends RecyclerView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
+        Log.i("Animating recycler ", "onLayout: " + mShouldAnimate);
         if(mShouldAnimate) {
             for(int i = 0; i < getChildCount(); i++) {
                 animate(getChildAt(i), i);
@@ -58,8 +60,6 @@ public class AnimatingRecycler extends RecyclerView {
         }
         mShouldAnimate = false;
     }
-
-
 
     private void animate(View view, final int pos) {
         view.animate().cancel();

@@ -2,6 +2,7 @@ package com.tpb.projects.data.models;
 
 import android.util.Log;
 
+import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONException;
@@ -30,6 +31,8 @@ public class Card extends DataModel {
 
     private static final String NOTE = "note";
     private String note;
+
+    private boolean requiresLoadingFromIssue;
 
     private long createdAt;
 
@@ -88,6 +91,14 @@ public class Card extends DataModel {
         return issueId;
     }
 
+    public boolean requiresLoadingFromIssue() {
+        return requiresLoadingFromIssue;
+    }
+
+    public void setRequiresLoadingFromIssue(boolean requiresLoadingFromIssue) {
+        this.requiresLoadingFromIssue = requiresLoadingFromIssue;
+    }
+
     public static Card parse(JSONObject object) {
         final Card c = new Card();
         try {
@@ -98,6 +109,10 @@ public class Card extends DataModel {
                 c.issueId = Integer.parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
             }
             c.note = object.getString(NOTE);
+            if(Constants.JSON_NULL.equals(c.note)) {
+                c.note = "";
+                c.requiresLoadingFromIssue = true;
+            }
             try {
                 c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
                 c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
@@ -123,9 +138,9 @@ public class Card extends DataModel {
                 ", issueId=" + issueId +
                 ", id=" + id +
                 ", note='" + note + '\'' +
+                ", requiresLoadingFromIssue=" + requiresLoadingFromIssue +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-
 }

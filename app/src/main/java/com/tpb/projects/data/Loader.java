@@ -239,7 +239,7 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Log.i(TAG, "onResponse: Cards");
+                        Log.i(TAG, "onResponse: Cards " + response.toString());
                         final Card[] cards = new Card[response.length()];
                         for(int i = 0; i < cards.length; i++) {
                             try {
@@ -257,6 +257,10 @@ public class Loader extends APIHandler {
                         if(loader != null) loader.loadError();
                     }
                 });
+    }
+
+    public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
+
     }
 
     public enum LoadError {
@@ -317,6 +321,14 @@ public class Loader extends APIHandler {
     public interface CollaboratorsLoader {
 
         void collaboratorsLoaded(User[] collaborators);
+
+        void loadError();
+
+    }
+
+    public interface IssueLoader {
+
+        void issueLoader();
 
         void loadError();
 

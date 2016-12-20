@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="anddown-0.3.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.commonsware.cwac/anddown/0.3.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.commonsware.cwac/anddown/0.3.0/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.commonsware.cwac/anddown/0.3.0/c9b81d1e7fda49d9479d14e1f14f07842a29f9e4/anddown-0.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

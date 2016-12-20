@@ -1,11 +1,14 @@
 package com.tpb.projects.project;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.mittsu.markedview.MarkedView;
+import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
 
@@ -22,12 +25,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private ArrayList<Card> mCards = new ArrayList<>();
+    private AndDown md = new AndDown();
+    private ColumnFragment mParent;
 
-    public CardAdapter() {
-
+    public CardAdapter(ColumnFragment parent) {
+        mParent = parent;
     }
 
-    void setCard(ArrayList<Card> cards) {
+    void setCards(ArrayList<Card> cards) {
         mCards = cards;
         notifyDataSetChanged();
     }
@@ -39,7 +44,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
-        holder.mMarkDown.setMDText(mCards.get(holder.getAdapterPosition()).getNote());
+        final int pos = holder.getAdapterPosition();
+        if(mCards.get(pos).requiresLoadingFromIssue()) {
+            holder.mSpinner.setVisibility(View.VISIBLE);
+        } else {
+            holder.mMarkDown.setText(Html.fromHtml(md.markdownToHtml(mCards.get(holder.getAdapterPosition()).getNote())));
+        }
     }
 
     @Override
@@ -48,9 +58,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.card_markdown) MarkedView mMarkDown;
+        @BindView(R.id.card_markdown) TextView mMarkDown;
+        @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
 
-        public CardHolder(View view) {
+        CardHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
