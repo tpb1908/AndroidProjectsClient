@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -79,6 +80,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @Override
     public void projectLoaded(Project project) {
+        Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
         mProject = project;
         mName.setText(project.getName());
         mLoader.loadColumns(new Loader.ColumnsLoader() {
@@ -157,6 +159,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }, column.getId());
                 }).show();
 
+    }
+
+    void loadIssue(Loader.IssueLoader loader, int issueId) {
+        mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 
     public void onToolbarBackPressed(View view) {

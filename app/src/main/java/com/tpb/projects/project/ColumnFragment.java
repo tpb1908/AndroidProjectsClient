@@ -133,6 +133,10 @@ public class ColumnFragment extends Fragment {
         mParent.deleteColumn(mColumn);
     }
 
+    void loadIssue(Loader.IssueLoader loader, int issueId) {
+        mParent.loadIssue(loader, issueId);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

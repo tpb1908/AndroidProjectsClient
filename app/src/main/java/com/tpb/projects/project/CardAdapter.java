@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Issue;
 
 import java.util.ArrayList;
 
@@ -47,6 +49,20 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final int pos = holder.getAdapterPosition();
         if(mCards.get(pos).requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
+            mParent.loadIssue(new Loader.IssueLoader() {
+                @Override
+                public void issueLoaded(Issue issue) {
+                    mCards.get(pos).setRequiresLoadingFromIssue(false);
+                    mCards.get(pos).setNote(issue.getTitle());
+                    holder.mSpinner.setVisibility(View.INVISIBLE);
+                    notifyItemChanged(pos);
+                }
+
+                @Override
+                public void loadError() {
+
+                }
+            }, mCards.get(pos).getIssueId());
         } else {
             holder.mMarkDown.setText(Html.fromHtml(md.markdownToHtml(mCards.get(holder.getAdapterPosition()).getNote())));
         }

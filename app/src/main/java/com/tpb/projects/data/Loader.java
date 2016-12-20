@@ -9,6 +9,7 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
@@ -260,7 +261,23 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
+        Log.i(TAG, "loadIssue: " + GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber));
+        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber))
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Issue:  ");
+                        if(loader != null) loader.issueLoaded(Issue.parse(response));
+                    }
 
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue: " + anError.getErrorBody());
+                        if(loader != null) loader.loadError();
+                    }
+                });
     }
 
     public enum LoadError {
@@ -328,7 +345,7 @@ public class Loader extends APIHandler {
 
     public interface IssueLoader {
 
-        void issueLoader();
+        void issueLoaded(Issue issue);
 
         void loadError();
 

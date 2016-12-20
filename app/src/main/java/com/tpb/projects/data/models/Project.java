@@ -40,6 +40,7 @@ public class Project extends DataModel implements Parcelable{
 
     private long updatedAt;
 
+
     public String getOwnerUrl() {
         return ownerUrl;
     }
@@ -82,6 +83,10 @@ public class Project extends DataModel implements Parcelable{
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getRepoFullName() {
+        return ownerUrl.substring(ownerUrl.indexOf("s/") + 2);
     }
 
     public static Project parse(JSONObject object) {
