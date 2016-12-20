@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,9 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.views.AnimatingRecycler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -43,9 +46,12 @@ public class ColumnFragment extends Fragment {
     @BindView(R.id.column_name) EditText mName;
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
+    @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
 
     private ProjectActivity mParent;
     private Editor mEditor;
+
+    private CardAdapter mAdapter;
 
     public static ColumnFragment getInstance(Column column) {
         final ColumnFragment cf = new ColumnFragment();
@@ -66,6 +72,10 @@ public class ColumnFragment extends Fragment {
                 )
         );
         mViewsValid = true;
+        mAdapter = new CardAdapter();
+        mRecycler.setAdapter(mAdapter);
+        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+
         return view;
     }
 
@@ -103,7 +113,10 @@ public class ColumnFragment extends Fragment {
         new Loader(getContext()).loadCards(new Loader.CardsLoader() {
             @Override
             public void cardsLoaded(Card[] cards) {
-                if(mViewsValid) mCardCount.setText(Integer.toString(cards.length));
+                if(mViewsValid) {
+                    mCardCount.setText(Integer.toString(cards.length));
+                    mAdapter.setCard(new ArrayList<>(Arrays.asList(cards)));
+                }
                 Log.i(TAG, "cardsLoaded: " + Arrays.toString(cards));
             }
 
