@@ -21,7 +21,9 @@ import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +38,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     private Loader mLoader;
     private SwipeRefreshLayout mRefresher;
     private AnimatingRecycler mRecycler;
-    private Repository[] mRepos = new Repository[0];
+    private ArrayList<Repository> mRepos = new ArrayList<>();
     private String mUser;
     private RepoPinSorter mSorter;
     private ReposManager mManager;
@@ -49,7 +51,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
-            mRepos = new Repository[0];
+            mRepos.clear();
             notifyDataSetChanged();
             mLoader.loadRepositories(ReposAdapter.this);
         });
@@ -65,16 +67,16 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
 
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                final Repository r = mRepos[viewHolder.getAdapterPosition()];
                 final int tpos = target.getAdapterPosition();
-                mRepos[viewHolder.getAdapterPosition()] = mRepos[tpos];
-                mRepos[tpos] = r;
+                Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
                 mSorter.savePosition(mRepos);
                 notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
-                if(mSorter.isPinned(mRepos[tpos].getId())) {
+                if(mSorter.isPinned(mRepos.get(tpos).getId())) {
                     ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
+                    ((RepoHolder) viewHolder).isPinned = true;
                 } else {
                     ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_not_pinned);
+                    ((RepoHolder) viewHolder).isPinned = false;
                 }
                 return true;
             }
@@ -96,37 +98,50 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     @Override
     public void onBindViewHolder(RepoHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
-        final Repository r = mRepos[pos];
+        final Repository r = mRepos.get(pos);
         holder.mName.setText(r.getFullName().contains(mUser) ? r.getName() : r.getFullName());
         if(r.getDescription() != null && !r.getDescription().equals(Constants.JSON_NULL)) {
             holder.mDescription.setText(r.getDescription());
         } else {
             holder.mDescription.setText(null);
         }
-        holder.mPin.setImageResource(mSorter.isPinned(mRepos[pos].getId()) ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+        final boolean isPinned = mSorter.isPinned(r.getId());
+        holder.isPinned = isPinned;
+        holder.mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
         holder.mForks.setText(Integer.toString(r.getForks()));
         holder.mStars.setText(Integer.toString(r.getStarGazers()));
     }
 
     private void togglePin(int pos) {
        //TODO Pin to top or move back to original pos
-
+        final Repository r = mRepos.get(pos);
+        if(mSorter.isPinned(r.getId())) {
+            mRepos.remove(pos);
+            final int newPos = mSorter.initialPosition(r.getId());
+            mRepos.add(newPos, r);
+            notifyItemMoved(pos, newPos);
+        } else {
+            mRepos.remove(pos);
+            mRepos.add(0, r);
+            notifyItemMoved(pos, 0);
+        }
+        mSorter.savePosition(mRepos);
     }
 
     @Override
     public int getItemCount() {
-        return mRepos.length;
+        return mRepos.size();
     }
 
     @Override
     public void reposLoaded(Repository[] repos) {
         Log.i(TAG, "reposLoaded: " + repos.length);
         mRecycler.enableAnimation();
-        mRepos = repos;
+        mRepos = new ArrayList<>(Arrays.asList(repos));
         mSorter.sort(mRepos);
         mRefresher.setRefreshing(false);
         notifyDataSetChanged();
-        if(mRepos.length > 0) mManager.displayUserAvatar(mRepos[0].getUserAvatarUrl());
+        if(mRepos.size() > 0) mManager.displayUserAvatar(mRepos.get(0).getUserAvatarUrl());
     }
 
     @Override
@@ -135,7 +150,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     private void openItem(View view, int pos) {
-        mManager.openRepo(mRepos[pos], view);
+        mManager.openRepo(mRepos.get(pos), view);
     }
 
     class RepoHolder extends RecyclerView.ViewHolder {
@@ -145,12 +160,17 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         @BindView(R.id.repo_stars) TextView mStars;
         @BindView(R.id.repo_private) TextView mPrivate;
         @BindView(R.id.repo_pin_button) ImageButton mPin;
+        private boolean isPinned = false;
 
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener((v) -> ReposAdapter.this.openItem(view, getAdapterPosition()));
-            mPin.setOnClickListener((v) -> togglePin(getAdapterPosition()));
+            mPin.setOnClickListener((v) -> {
+                togglePin(getAdapterPosition());
+                isPinned = !isPinned;
+                mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+            });
         }
 
     }
@@ -169,9 +189,9 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
             pinnedRepos = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
         }
 
-        void savePosition(Repository[] repos) {
-            final int[] ids = new int[repos.length];
-            for(int i = 0; i < ids.length; i++) ids[i] = repos[i].getId();
+        void savePosition(ArrayList<Repository> repos) {
+            final int[] ids = new int[repos.size()];
+            for(int i = 0; i < ids.length; i++) ids[i] = repos.get(i).getId();
             pinnedRepos = ids;
             prefs.edit().putString(KEY, Data.intArrayForPrefs(ids)).apply();
         }
@@ -185,12 +205,12 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
             return pinPos != -1 && pinPos < Data.indexOf(standardPositions, key);
         }
 
-        void sort(Repository[] repos) {
-            standardPositions = new int[repos.length];
-            for(int i = 0; i < repos.length; i++) {
-                standardPositions[i] = repos[i].getId();
+        void sort(ArrayList<Repository> repos) {
+            standardPositions = new int[repos.size()];
+            for(int i = 0; i < repos.size(); i++) {
+                standardPositions[i] = repos.get(i).getId();
             }
-            Arrays.sort(repos, (r1, r2) -> {
+            Collections.sort(repos, (r1, r2) -> {
                 final int i1 = Data.indexOf(pinnedRepos, r1.getId());
                 final int i2 = Data.indexOf(pinnedRepos, r2.getId());
                 return i1 > i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
