@@ -31,6 +31,7 @@ android {
     }
 }
 
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -45,10 +46,11 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.amitshekhar.android:android-networking:0.2.0'
     compile 'com.mittsu:markedview:1.0.4@aar'
-    compile "com.mikepenz:iconics-core:2.8.1@aar"
+    compile 'com.mikepenz:iconics-core:2.8.1@aar'
     compile 'com.mikepenz:octicons-typeface:3.2.0.2@aar'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     testCompile 'junit:junit:4.12'
+    compile files('src/main/lib/cwac-pager-0.2.5.jar')
 }

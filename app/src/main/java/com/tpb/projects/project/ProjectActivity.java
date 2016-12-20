@@ -3,21 +3,20 @@ package com.tpb.projects.project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.commonsware.cwac.pager.PageDescriptor;
+import com.commonsware.cwac.pager.v4.ArrayPagerAdapter;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.tpb.projects.R;
@@ -29,6 +28,7 @@ import com.tpb.projects.repo.ProjectAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,7 +67,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        mAdapter = new ColumnPagerAdapter(getSupportFragmentManager());
+        mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
         mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
         mRefresher.setRefreshing(true);
@@ -86,7 +86,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             public void columnsLoaded(Column[] columns) {
                 mRefresher.setRefreshing(false);
                 mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
-                mAdapter.notifyDataSetChanged();
+                for(Column c : columns) {
+                    mAdapter.add(new ColumnPageDescriptor(c));
+                }
+
                 mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
             }
 
@@ -112,7 +115,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 @Override
                 public void columnAdded(Column column) {
                     mAdapter.columns.add(column);
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.add(new ColumnPageDescriptor(column));
                     mColumnPager.setCurrentItem(mAdapter.getCount());
                     mRefresher.setRefreshing(false);
                 }
@@ -137,12 +140,13 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
                         @Override
                         public void columnDeleted() {
-                            final int pos = mAdapter.columns.indexOf(column);
-                            Log.i(TAG, "columnDeleted: " + pos);
-                            Log.i(TAG, "columnDeleted: Removing column " + mAdapter.columns.remove(pos));
-                            Log.i(TAG, "columnDeleted: " + mAdapter.columns.toString());
-                            mAdapter.notifyChange(pos);
-                            mAdapter.notifyDataSetChanged();
+                            for(int i = 0; i < mAdapter.columns.size(); i++) {
+                                if(mAdapter.columns.get(i).equals(column)) {
+                                    mAdapter.remove(i);
+                                    mAdapter.columns.remove(i);
+                                    break;
+                                }
+                            }
                             mRefresher.setRefreshing(false);
                         }
 
@@ -169,36 +173,62 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
-    private class ColumnPagerAdapter extends FragmentPagerAdapter {
-        private ArrayList<Column> columns = new ArrayList<>();
-        private long base = 0;
+    private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {
+        private ArrayList<Column> columns;
 
-        ColumnPagerAdapter(FragmentManager fm) {
-            super(fm);
+        ColumnPagerAdapter(FragmentManager manager, List<PageDescriptor> descriptors) {
+            super(manager, descriptors);
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return ColumnFragment.getInstance(columns.get(position));
+        protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
+            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn);
+        }
+
+
+    }
+
+    private class ColumnPageDescriptor implements PageDescriptor {
+        private Column mColumn;
+
+        ColumnPageDescriptor(Column column) {
+            mColumn = column;
         }
 
         @Override
-        public int getCount() {
-            return columns.size();
+        public String getFragmentTag() {
+            return Integer.toString(mColumn.getId());
         }
 
         @Override
-        public int getItemPosition(Object object){
-            return PagerAdapter.POSITION_NONE;
+        public String getTitle() {
+            return mColumn.getName();
         }
 
         @Override
-        public long getItemId(int position) {
-            return base + position;
+        public int describeContents() {
+            return 0;
         }
 
-        void notifyChange(int n) {
-            base = getCount() + n;
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeParcelable(mColumn, flags);
         }
+
+        ColumnPageDescriptor(Parcel in) {
+            this.mColumn = in.readParcelable(Column.class.getClassLoader());
+        }
+
+        public final Creator<ColumnPageDescriptor> CREATOR = new Creator<ColumnPageDescriptor>() {
+            @Override
+            public ColumnPageDescriptor createFromParcel(Parcel source) {
+                return new ColumnPageDescriptor(source);
+            }
+
+            @Override
+            public ColumnPageDescriptor[] newArray(int size) {
+                return new ColumnPageDescriptor[size];
+            }
+        };
     }
 }

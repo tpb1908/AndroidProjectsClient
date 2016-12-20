@@ -2,8 +2,12 @@ package com.tpb.projects.data.models;
 
 import android.util.Log;
 
+import com.tpb.projects.util.Data;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
  * Created by theo on 15/12/16.
@@ -19,6 +23,8 @@ public class Card extends DataModel {
 
     private static final String CONTENT_URL = "content_url";
     private String contentUrl;
+
+    private int issueId;
 
     private int id;
 
@@ -40,6 +46,7 @@ public class Card extends DataModel {
     public String getContentUrl() {
         return contentUrl;
     }
+
 
     public void setContentUrl(String contentUrl) {
         this.contentUrl = contentUrl;
@@ -77,17 +84,48 @@ public class Card extends DataModel {
         this.updatedAt = updatedAt;
     }
 
+    public int getIssueId() {
+        return issueId;
+    }
+
     public static Card parse(JSONObject object) {
         final Card c = new Card();
         try {
             c.id = object.getInt(ID);
             c.columnUrl = object.getString(COLUMN_URL);
-            c.contentUrl = object.getString(CONTENT_URL);
+            if(object.has(CONTENT_URL) ){
+                c.contentUrl = object.getString(CONTENT_URL);
+                c.issueId = Integer.parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
+            }
             c.note = object.getString(NOTE);
+            try {
+                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
+                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
         return c;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Card && ((Card) obj).id == id;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "columnUrl='" + columnUrl + '\'' +
+                ", contentUrl='" + contentUrl + '\'' +
+                ", issueId=" + issueId +
+                ", id=" + id +
+                ", note='" + note + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 
 }

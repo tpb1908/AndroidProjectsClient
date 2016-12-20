@@ -7,6 +7,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
@@ -231,7 +232,32 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void loadCards(CardsLoader loader, int columnId) {
+        AndroidNetworking.get(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.i(TAG, "onResponse: Cards");
+                        final Card[] cards = new Card[response.length()];
+                        for(int i = 0; i < cards.length; i++) {
+                            try {
+                                cards[i] = Card.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: ", jse);
+                            }
+                        }
+                        if(loader != null) loader.cardsLoaded(cards);
+                    }
 
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Cards: " + anError.getErrorBody());
+                        if(loader != null) loader.loadError();
+                    }
+                });
+    }
 
     public enum LoadError {
         NOT_FOUND, UNKNOWN
@@ -274,6 +300,14 @@ public class Loader extends APIHandler {
     public interface ColumnsLoader {
 
         void columnsLoaded(Column[] columns);
+
+        void loadError();
+
+    }
+
+    public interface CardsLoader {
+
+        void cardsLoaded(Card[] cards);
 
         void loadError();
 

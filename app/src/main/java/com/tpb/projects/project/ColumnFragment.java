@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,12 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
+import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.util.Data;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,8 +35,9 @@ public class ColumnFragment extends Fragment {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     private Unbinder unbinder;
+    private boolean mViewsValid = false;
 
-    private Column mColumn;
+    Column mColumn;
 
     @BindView(R.id.column_card) CardView mCard;
     @BindView(R.id.column_name) EditText mName;
@@ -59,6 +65,7 @@ public class ColumnFragment extends Fragment {
                         Data.timeAgo(mColumn.getUpdatedAt())
                 )
         );
+        mViewsValid = true;
         return view;
     }
 
@@ -79,18 +86,32 @@ public class ColumnFragment extends Fragment {
 
                     }
                 }, mColumn.getId(), mName.getText().toString());
-                mColumn.setName(mName.getText().toString());
-                mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
-                mLastUpdate.setText(
-                        String.format(
-                                getContext().getString(R.string.text_last_updated),
-                                Data.timeAgo(mColumn.getUpdatedAt())
-                        )
-                );
+                if(mViewsValid) {
+                    mColumn.setName(mName.getText().toString());
+                    mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
+                    mLastUpdate.setText(
+                            String.format(
+                                    getContext().getString(R.string.text_last_updated),
+                                    Data.timeAgo(mColumn.getUpdatedAt())
+                            )
+                    );
+                }
                 return false;
             }
             return false;
         });
+        new Loader(getContext()).loadCards(new Loader.CardsLoader() {
+            @Override
+            public void cardsLoaded(Card[] cards) {
+                if(mViewsValid) mCardCount.setText(Integer.toString(cards.length));
+                Log.i(TAG, "cardsLoaded: " + Arrays.toString(cards));
+            }
+
+            @Override
+            public void loadError() {
+
+            }
+        }, mColumn.getId());
     }
 
     @OnClick(R.id.column_delete)
@@ -112,5 +133,6 @@ public class ColumnFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        mViewsValid = false;
     }
 }

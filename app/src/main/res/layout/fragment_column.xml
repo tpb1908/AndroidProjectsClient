@@ -2,6 +2,7 @@
 
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,18 +23,30 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp">
 
-                <EditText
-                    android:id="@+id/column_name"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/column_name_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginBottom="-8dp"
                     android:layout_toStartOf="@+id/column_delete"
-                    android:maxLength="140"
-                    android:hint="@string/text_placeholder"
-                    android:inputType="textNoSuggestions"
-                    android:textAppearance="@android:style/TextAppearance.Material.Subhead"
-                    android:imeOptions="actionDone"/>
+                    app:counterEnabled="true"
+                    app:counterMaxLength="140">
+
+                    <EditText
+                        android:id="@+id/column_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
+                        android:maxLength="140"
+                        android:textAppearance="@android:style/TextAppearance.Material.Subhead"
+                        android:imeOptions="actionDone"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+
 
                 <ImageButton
                     android:id="@+id/column_delete"
@@ -50,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_placeholder"
-                    android:layout_below="@id/column_name"
+                    android:layout_below="@id/column_name_layout"
                     android:layout_marginStart="4dp"/>
 
                 <TextView
@@ -58,7 +71,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_placeholder"
-                    android:layout_below="@id/column_name"
+                    android:background="@drawable/shape_badge"
+                    android:layout_below="@id/column_name_layout"
                     android:layout_toStartOf="@+id/column_delete"/>
 
             </RelativeLayout>
