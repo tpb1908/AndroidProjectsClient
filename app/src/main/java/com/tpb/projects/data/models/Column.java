@@ -75,4 +75,19 @@ public class Column extends DataModel {
         return c;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Column && ((Column) obj).id == id;
+    }
+
+    @Override
+    public String toString() {
+        return "Column{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", projectUrl='" + projectUrl + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

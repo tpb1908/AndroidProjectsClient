@@ -34,6 +34,7 @@
     <string name="text_cannot_access_repo">Can\'t edit this repo</string>
     <string name="text_fab_new_card">New card</string>
     <string name="text_fab_new_column">New column</string>
+    <string name="text_delete_column_warning">Are you sure you want to delete this column?</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
@@ -43,6 +44,7 @@
     <string name="title_edit_project">Edit project</string>
     <string name="title_activity_repo">Repository</string>
     <string name="title_new_column">New column</string>
+    <string name="title_delete_column">Delete column</string>
 
 
     <string name="intent_repo">repo</string>

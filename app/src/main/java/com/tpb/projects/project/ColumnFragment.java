@@ -1,5 +1,6 @@
 package com.tpb.projects.project;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,12 +13,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.util.Data;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -36,7 +38,8 @@ public class ColumnFragment extends Fragment {
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
 
-    private Loader mLoader;
+    private ProjectActivity mParent;
+    private Editor mEditor;
 
     public static ColumnFragment getInstance(Column column) {
         final ColumnFragment cf = new ColumnFragment();
@@ -59,15 +62,23 @@ public class ColumnFragment extends Fragment {
         return view;
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLoader = new Loader(getContext());
-
+        mEditor = new Editor(getContext());
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE) {
-                mLoader.updateColumn(mColumn.getId(), mName.getText().toString());
+                mEditor.updateColumn(new Editor.ColumnChangeListener() {
+                    @Override
+                    public void columnChanged(Column column) {
+
+                    }
+
+                    @Override
+                    public void changeError() {
+
+                    }
+                }, mColumn.getId(), mName.getText().toString());
                 mColumn.setName(mName.getText().toString());
                 mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
                 mLastUpdate.setText(
@@ -80,6 +91,21 @@ public class ColumnFragment extends Fragment {
             }
             return false;
         });
+    }
+
+    @OnClick(R.id.column_delete)
+    void deleteColumn() {
+        mParent.deleteColumn(mColumn);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mParent = (ProjectActivity) context;
+        } catch(ClassCastException cce) {
+            throw new IllegalArgumentException("Parent of ColumnFragment must be ProjectActivity");
+        }
     }
 
     @Override

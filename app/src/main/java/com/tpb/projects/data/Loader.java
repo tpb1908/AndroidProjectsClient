@@ -231,57 +231,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void updateColumn(int columnId, String newName) {
-        final JSONObject obj = new JSONObject();
-        // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
-        try {
-            obj.put("name", newName);
-        } catch(JSONException jse) {
-            Log.e(TAG, "updateColumn: ", jse);
-        }
-        AndroidNetworking.patch(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
-                .addJSONObjectBody(obj)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Column update: " + response.toString());
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Column update: " + anError.getErrorBody() );
-                    }
-                });
-    }
-
-    public void addColumn(ColumnAddListener listener, int projectId, String name) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put("name", name);
-        } catch(JSONException jse) {
-            Log.e(TAG, "addColumn: ", jse);
-        }
-        AndroidNetworking.post(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
-                .addJSONObjectBody(obj)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Column created " + response.toString());
-                        if(listener != null) listener.columnAdded(Column.parse(response));
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.addError();
-                    }
-                });
-    }
 
     public enum LoadError {
         NOT_FOUND, UNKNOWN
@@ -329,21 +279,6 @@ public class Loader extends APIHandler {
 
     }
 
-    public interface ColumnChangeListener {
-
-        void columnChanged(Column column);
-
-        void changeError();
-
-    }
-
-    public interface ColumnAddListener {
-
-        void columnAdded(Column column);
-
-        void addError();
-
-    }
 
     public interface CollaboratorsLoader {
 
