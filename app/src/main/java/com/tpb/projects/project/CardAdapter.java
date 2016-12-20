@@ -1,18 +1,19 @@
 package com.tpb.projects.project;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -64,7 +65,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }, mCards.get(pos).getIssueId());
         } else {
-            holder.mMarkDown.setText(Html.fromHtml(md.markdownToHtml(mCards.get(holder.getAdapterPosition()).getNote())));
+            holder.mMarkDown.setHtml(
+                    md.markdownToHtml(
+                            mCards.get(holder.getAdapterPosition()).getNote()
+                    ),
+                    new HtmlHttpImageGetter(holder.mMarkDown)
+            );
         }
     }
 
@@ -74,7 +80,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.card_markdown) TextView mMarkDown;
+        @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
 
         CardHolder(View view) {
