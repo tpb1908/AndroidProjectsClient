@@ -35,7 +35,7 @@
                     app:counterEnabled="true"
                     app:counterMaxLength="140">
 
-                    <EditText
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/column_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
