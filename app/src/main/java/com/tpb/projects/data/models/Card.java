@@ -99,6 +99,11 @@ public class Card extends DataModel {
         this.requiresLoadingFromIssue = requiresLoadingFromIssue;
     }
 
+    public void setFromIssue(Issue issue) {
+        requiresLoadingFromIssue = false;
+
+    }
+
     public static Card parse(JSONObject object) {
         final Card c = new Card();
         try {

@@ -50,6 +50,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
 
     private ColumnPagerAdapter mAdapter;
+    private int mCurrentPosition = -1;
     private Loader mLoader;
     private Project mProject;
     private Editor mEditor;
@@ -70,10 +71,31 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
+        mColumnPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mCurrentPosition = position;
+                Log.i(TAG, "onPageSelected: Page changed to  " + position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
         mRefresher.setRefreshing(true);
         mMenu.hideMenuButton(false); //Hide the button so that we can show it later
         mMenu.setClosedOnTouchOutside(true);
+
+        mRefresher.setOnRefreshListener(() -> mLoader.loadProject(ProjectActivity.this, mProject.getId()));
+
+
         //TODO Only add the card fab when we have columns
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
     }
@@ -87,11 +109,22 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             @Override
             public void columnsLoaded(Column[] columns) {
                 mRefresher.setRefreshing(false);
-                mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
-                for(Column c : columns) {
-                    mAdapter.add(new ColumnPageDescriptor(c));
+                int id = 0;
+                if(mCurrentPosition != -1) {
+                    id = mAdapter.getCurrentFragment().mColumn.getId();
                 }
-
+                mCurrentPosition = 0;
+                mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
+                if(mAdapter.getCount() != 0) {
+                    for(int i = mAdapter.getCount() - 1; i >= 0; i--) mAdapter.remove(i);
+                }
+                for(int i = 0; i < columns.length; i++) {
+                    mAdapter.add(new ColumnPageDescriptor(columns[i]));
+                    if(columns[i].getId() == id) {
+                        mCurrentPosition = i;
+                    }
+                }
+                mColumnPager.setCurrentItem(mCurrentPosition);
                 mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
             }
 
@@ -100,6 +133,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
             }
         }, project.getId());
+    }
+
+    @Override
+    public void loadError() {
+
     }
 
     @OnClick(R.id.project_add_column)
@@ -142,13 +180,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
                         @Override
                         public void columnDeleted() {
-                            for(int i = 0; i < mAdapter.columns.size(); i++) {
-                                if(mAdapter.columns.get(i).equals(column)) {
-                                    mAdapter.remove(i);
-                                    mAdapter.columns.remove(i);
-                                    break;
-                                }
-                            }
+                            mAdapter.remove(mCurrentPosition);
+                            mAdapter.columns.remove(mCurrentPosition);
+
                             mRefresher.setRefreshing(false);
                         }
 

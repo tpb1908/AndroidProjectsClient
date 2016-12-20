@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,7 @@ import butterknife.Unbinder;
  * Created by theo on 19/12/16.
  */
 
-public class ColumnFragment extends Fragment {
+public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     private Unbinder unbinder;
@@ -110,24 +109,8 @@ public class ColumnFragment extends Fragment {
             }
             return false;
         });
-        new Loader(getContext()).loadCards(new Loader.CardsLoader() {
-            @Override
-            public void cardsLoaded(Card[] cards) {
-                if(mViewsValid) {
-                    mCardCount.setText(Integer.toString(cards.length));
-                    mRecycler.enableAnimation();
-                    mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
-                }
-                Log.i(TAG, "cardsLoaded: " + Arrays.toString(cards));
-            }
-
-            @Override
-            public void loadError() {
-
-            }
-        }, mColumn.getId());
+        new Loader(getContext()).loadCards(this, mColumn.getId());
     }
-
     @OnClick(R.id.column_delete)
     void deleteColumn() {
         mParent.deleteColumn(mColumn);
@@ -135,6 +118,20 @@ public class ColumnFragment extends Fragment {
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
         mParent.loadIssue(loader, issueId);
+    }
+
+    @Override
+    public void cardsLoaded(Card[] cards) {
+        if(mViewsValid) {
+            mCardCount.setText(Integer.toString(cards.length));
+            mRecycler.enableAnimation();
+            mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
+        }
+    }
+
+    @Override
+    public void loadError() {
+
     }
 
     @Override

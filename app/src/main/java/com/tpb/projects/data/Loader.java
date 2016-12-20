@@ -180,6 +180,23 @@ public class Loader extends APIHandler {
         }, repoFullname);
     }
 
+    public void loadProject(ProjectLoader loader, int id) {
+        AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(id))
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(loader != null) loader.projectLoaded(Project.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) loader.loadError();
+                    }
+                });
+    }
+
     public void loadProjects(ProjectsLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
                 .addHeaders(PREVIEW_API_AUTH_HEADERS)
@@ -261,14 +278,12 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
-        Log.i(TAG, "loadIssue: " + GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber));
         AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber))
                 .addHeaders(PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Issue:  ");
                         if(loader != null) loader.issueLoaded(Issue.parse(response));
                     }
 
@@ -310,6 +325,8 @@ public class Loader extends APIHandler {
     public interface ProjectLoader {
 
         void projectLoaded(Project project);
+
+        void loadError();
     }
 
     public interface ProjectsLoader {
