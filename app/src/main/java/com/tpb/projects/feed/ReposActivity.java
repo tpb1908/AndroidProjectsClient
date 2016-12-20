@@ -83,7 +83,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
                 view,
-                getString(R.string.transition_card)
+                getString(R.string.transition_name)
                 ).toBundle()
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);

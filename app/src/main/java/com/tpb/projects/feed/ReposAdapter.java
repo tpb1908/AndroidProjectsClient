@@ -165,7 +165,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener((v) -> ReposAdapter.this.openItem(view, getAdapterPosition()));
+            view.setOnClickListener((v) -> ReposAdapter.this.openItem(mName, getAdapterPosition()));
             mPin.setOnClickListener((v) -> {
                 togglePin(getAdapterPosition());
                 isPinned = !isPinned;
