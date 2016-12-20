@@ -21,6 +21,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Constants;
 
@@ -70,17 +71,20 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFail(String error) {
-                Log.i(TAG, "onFail: " + error);
+
             }
 
             @Override
-            public void userLoaded(String name, String id, String stats, String imagePath) {
+            public void userLoaded(User user) {
                 mSpinner.setVisibility(View.GONE);
                 mDetails.setVisibility(View.VISIBLE);
-                mImage.setImageUrl(imagePath);
-                mName.setText(name);
-                mId.setText(id);
-                mStats.setText(stats);
+                mImage.setImageUrl(user.getAvatarUrl());
+                mName.setText(user.getName());
+                mId.setText(user.getLogin());
+                String details = "";
+                if(!user.getBio().equals(Constants.JSON_NULL)) details += user.getBio();
+                mStats.setText(String.format(getString(R.string.text_user_info), details, user.getLocation(), user.getRepos(), user.getFollowers()));
+
                 new Handler().postDelayed(() -> finish(), 1500);
             }
         });

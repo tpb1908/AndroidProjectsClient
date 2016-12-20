@@ -12,10 +12,9 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.LoginActivity;
-import com.tpb.projects.util.Constants;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -105,22 +104,11 @@ public class OAuthHandler extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            Log.i(TAG, "onResponse: " + response.toString());
-                            final String username = response.getString(Constants.JSON_KEY_LOGIN);
-                            final String avatar_url = response.getString(Constants.JSON_JEY_AVATAR);
-                            final String name = response.getString(Constants.JSON_KEY_NAME);
-                            final String details = //TODO Format string resource
-                                    response.getString(Constants.JSON_KEY_PUBLIC_REPO_COUNT) +
-                                    " public repos\n" +
-                                     "Following: " + response.getString(Constants.JSON_KEY_FOLLOWING) +
-                                     "\nFollowers: " + response.getString(Constants.JSON_KEY_FOLLOWERS) +
-                                     "\nLocation: " + response.getString(Constants.JSON_KEY_LOCATION);
-                            mListener.userLoaded(name, username, details, avatar_url);
-                            mSession.storeAccessToken(mAccessToken, response.getInt("id"), username);
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
-                        }
+                        Log.i(TAG, "onResponse: " + response.toString());
+                        final User user = User.parse(response);
+                        mSession.storeAccessToken(mAccessToken, user.getId(), user.getLogin());
+                        mListener.userLoaded(user);
+
                     }
 
                     @Override
@@ -174,7 +162,8 @@ public class OAuthHandler extends APIHandler {
 
         void onFail(String error);
 
-        void userLoaded(String name, String id, String details, String imagePath);
+        void userLoaded(User user);
+
     }
 
     public interface OAuthValidationListener {

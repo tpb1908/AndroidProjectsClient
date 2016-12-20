@@ -14,7 +14,7 @@
     <string name="error_key_invalid">Bad credentials</string>
 
     <string name="text_zero_value">0</string>
-
+    <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
     <string name="text_forks">Forks</string>
     <string name="text_issues">Issues</string>
     <string name="text_stars">Stars</string>
