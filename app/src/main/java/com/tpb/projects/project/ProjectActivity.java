@@ -10,10 +10,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.commonsware.cwac.pager.PageDescriptor;
@@ -26,6 +28,8 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.repo.ProjectAdapter;
+import com.tpb.projects.util.UI;
+import com.tpb.projects.views.AnimatingRecycler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +52,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_fab_menu) FloatingActionMenu mMenu;
     @BindView(R.id.project_add_card) FloatingActionButton mAddCard;
     @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
+
+    @BindView(R.id.project_sorter_layout) LinearLayout mSorter;
+    @BindView(R.id.project_sort_recycler) AnimatingRecycler mSortRecycler;
+    @BindView(R.id.project_sorter_dragger) CardView mSortDragger;
 
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
@@ -168,6 +176,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         });
 
         dialog.show();
+    }
+
+    @OnClick(R.id.project_add_card)
+    void test() {
+        if(mSorter.getVisibility() == View.GONE) {
+
+            getWindow().setStatusBarColor(UI.adjustAlpha(getResources().getColor(R.color.colorPrimaryDark), 0.5f));
+            mSorter.setVisibility(View.VISIBLE);
+        } else {
+            mSorter.setVisibility(View.GONE);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
     }
 
     void deleteColumn(Column column) {

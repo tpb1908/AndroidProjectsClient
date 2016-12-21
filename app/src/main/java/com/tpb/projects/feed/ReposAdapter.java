@@ -69,8 +69,8 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 final int tpos = target.getAdapterPosition();
                 Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
-                mSorter.savePosition(mRepos);
                 notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
+                mSorter.savePosition(mRepos);
                 if(mSorter.isPinned(mRepos.get(tpos).getId())) {
                     ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
                     ((RepoHolder) viewHolder).isPinned = true;
