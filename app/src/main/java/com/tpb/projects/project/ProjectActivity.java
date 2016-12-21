@@ -198,21 +198,20 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 
-    private long lastLeftTime;
+    private long lastPageChange;
     void dragLeft() {
         Log.i(TAG, "dragLeft: ");
-        if(mCurrentPosition > 0 && System.nanoTime() - lastLeftTime > 5E8) {
+        if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
             mColumnPager.setCurrentItem(mCurrentPosition - 1);
-            lastLeftTime = System.nanoTime();
+            lastPageChange = System.nanoTime();
         }
     }
 
-    private long lastRightTime;
     void dragRight() {
         Log.i(TAG, "dragRight: ");
-        if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastRightTime > 5E8) {
+        if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastPageChange > 5E8) {
             mColumnPager.setCurrentItem(mCurrentPosition + 1);
-            lastRightTime = System.nanoTime();
+            lastPageChange = System.nanoTime();
         }
     }
 

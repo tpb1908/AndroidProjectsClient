@@ -131,7 +131,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         @Override
         public boolean onDrag(View view, DragEvent event) {
             final int action = event.getAction();
-            Log.i(TAG, "onDrag: (" + event.getX() + ", " + event.getY() + ")");
             switch(action) {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     mParent.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -144,7 +143,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     }
                     break;
                 case DragEvent.ACTION_DROP:
-                    Log.i(TAG, "onDrag: Drag drop");
                     isDropped = true;
                     int positionSource, positionTarget = -1;
                     final View viewSource = (View) event.getLocalState();
@@ -161,25 +159,31 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         final Card card = adapterSource.getCards().get(positionSource);
                         final ArrayList<Card> cardsSource = adapterSource.getCards();
 
+                        final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
+                        ArrayList<Card> cardsTarget = targetAdapter.getCards();
+
                         cardsSource.remove(card);
 
                         adapterSource.setCards(cardsSource);
                         adapterSource.notifyDataSetChanged();
 
-                        final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
-                        ArrayList<Card> cardsTarget = targetAdapter.getCards();
+
                         if(positionTarget >= 0) {
                             cardsTarget.add(positionTarget, card);
                         } else {
                             cardsTarget.add(card);
                         }
 
-
                         targetAdapter.setCards(cardsTarget);
                         targetAdapter.notifyDataSetChanged();
 
                         view.setVisibility(View.VISIBLE);
 
+                        if(source == target) {
+                            Log.i(TAG, "onDrag: Same recyclerview");
+                        } else {
+                            Log.i(TAG, "onDrag: Different recyclers");
+                        }
                     }
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
