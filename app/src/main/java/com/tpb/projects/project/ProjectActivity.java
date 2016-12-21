@@ -25,7 +25,6 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
-import com.tpb.projects.repo.ProjectAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,7 @@ import butterknife.OnClick;
  */
 
 public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
-    private static final String TAG = ProjectAdapter.class.getSimpleName();
+    private static final String TAG = ProjectActivity.class.getSimpleName();
 
     @BindView(R.id.project_name) TextView mName;
     @BindView(R.id.project_refresher) SwipeRefreshLayout mRefresher;
@@ -88,7 +87,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
             }
         });
-        mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
         mRefresher.setRefreshing(true);
         mMenu.hideMenuButton(false); //Hide the button so that we can show it later
         mMenu.setClosedOnTouchOutside(true);
@@ -124,6 +122,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         mCurrentPosition = i;
                     }
                 }
+                mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
                 mColumnPager.setCurrentItem(mCurrentPosition);
                 mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
             }
@@ -170,10 +169,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         dialog.show();
     }
 
-    @OnClick(R.id.project_add_card)
-    void test() {
-
-    }
 
     void deleteColumn(Column column) {
         new AlertDialog.Builder(this)
@@ -197,11 +192,28 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
                     }, column.getId());
                 }).show();
-
     }
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
+    }
+
+    private long lastLeftTime;
+    void dragLeft() {
+        Log.i(TAG, "dragLeft: ");
+        if(mCurrentPosition > 0 && System.nanoTime() - lastLeftTime > 5E8) {
+            mColumnPager.setCurrentItem(mCurrentPosition - 1);
+            lastLeftTime = System.nanoTime();
+        }
+    }
+
+    private long lastRightTime;
+    void dragRight() {
+        Log.i(TAG, "dragRight: ");
+        if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastRightTime > 5E8) {
+            mColumnPager.setCurrentItem(mCurrentPosition + 1);
+            lastRightTime = System.nanoTime();
+        }
     }
 
     public void onToolbarBackPressed(View view) {

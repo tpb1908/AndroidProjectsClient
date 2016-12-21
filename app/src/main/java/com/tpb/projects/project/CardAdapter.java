@@ -1,8 +1,12 @@
 package com.tpb.projects.project;
 
 import android.content.ClipData;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +58,20 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
+        holder.mCardView.setTag(pos);
+        holder.mCardView.setOnLongClickListener(view -> {
+            final ClipData data = ClipData.newPlainText("", "");
+            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+            view.startDrag(data, shadowBuilder, view, 0);
+            view.setVisibility(View.INVISIBLE);
+            return true;
+        });
+        holder.mCardView.setOnDragListener(new DragListener());
+        if(mCards.size() == 0) {
+            holder.mMarkDown.setText("\nNo cards\n");
+            return;
+        }
+
         if(mCards.get(pos).requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
             mParent.loadIssue(new Loader.IssueLoader() {
@@ -78,21 +96,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
-        holder.mCardView.setTag(pos);
-        holder.mCardView.setOnLongClickListener(view -> {
-            final ClipData data = ClipData.newPlainText("", "");
-            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-            view.startDrag(data, shadowBuilder, view, 0);
-            view.setVisibility(View.INVISIBLE);
-            return true;
-        });
-        holder.mCardView.setOnDragListener(new DragListener());
 
     }
 
     @Override
     public int getItemCount() {
-        return mCards.size();
+        return Math.max(1, mCards.size());
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
@@ -106,4 +115,95 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         }
 
     }
+
+    private class DragListener implements View.OnDragListener {
+
+        private boolean isDropped = false;
+        private DisplayMetrics metrics;
+        private Drawable selectedBG;
+        private int accent;
+
+        DragListener() {
+            metrics = new DisplayMetrics();
+            accent = mParent.getContext().getResources().getColor(R.color.colorAccent);
+        }
+
+        @Override
+        public boolean onDrag(View view, DragEvent event) {
+            final int action = event.getAction();
+            Log.i(TAG, "onDrag: (" + event.getX() + ", " + event.getY() + ")");
+            switch(action) {
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    mParent.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                    if(event.getX() / metrics.widthPixels > 0.85f) {
+                        Log.i(TAG, "onDrag: Right");
+                        ((ProjectActivity) mParent.getActivity()).dragRight();
+                    } else if(event.getX() / metrics.widthPixels < 0.15f) {
+                        Log.i(TAG, "onDrag: Left");
+                        ((ProjectActivity) mParent.getActivity()).dragLeft();
+                    }
+                    break;
+                case DragEvent.ACTION_DROP:
+                    Log.i(TAG, "onDrag: Drag drop");
+                    isDropped = true;
+                    int positionSource, positionTarget = -1;
+                    final View viewSource = (View) event.getLocalState();
+                    if(view.getId() == R.id.viewholder_card) {
+                        final RecyclerView target = (RecyclerView) view.getParent();
+
+                        positionTarget = (int) view.getTag();
+
+                        final RecyclerView source = (RecyclerView) viewSource.getParent();
+
+                        final CardAdapter adapterSource = (CardAdapter) source.getAdapter();
+                        positionSource = (int) viewSource.getTag();
+
+                        final Card card = adapterSource.getCards().get(positionSource);
+                        final ArrayList<Card> cardsSource = adapterSource.getCards();
+
+                        cardsSource.remove(card);
+
+                        adapterSource.setCards(cardsSource);
+                        adapterSource.notifyDataSetChanged();
+
+                        final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
+                        ArrayList<Card> cardsTarget = targetAdapter.getCards();
+                        if(positionTarget >= 0) {
+                            cardsTarget.add(positionTarget, card);
+                        } else {
+                            cardsTarget.add(card);
+                        }
+
+
+                        targetAdapter.setCards(cardsTarget);
+                        targetAdapter.notifyDataSetChanged();
+
+                        view.setVisibility(View.VISIBLE);
+
+                    }
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    Log.i(TAG, "onDrag: Drag entered");
+                    selectedBG = view.getBackground();
+                    view.setBackgroundColor(accent);
+                    //This is when we have entered another view
+
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    Log.i(TAG, "onDrag: Drag exited");
+                    view.setBackground(selectedBG);
+                    //This is when we have exited another view
+                    break;
+                default:
+                    break;
+            }
+            if(!isDropped) {
+                ((View) event.getLocalState()).setVisibility(View.VISIBLE);
+            }
+
+            return true;
+        }
+    }
+
+
 }
