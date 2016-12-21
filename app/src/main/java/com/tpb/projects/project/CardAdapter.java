@@ -1,5 +1,7 @@
 package com.tpb.projects.project;
 
+import android.content.ClipData;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,20 +26,24 @@ import butterknife.ButterKnife;
  * Created by theo on 20/12/16.
  */
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
+class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private ArrayList<Card> mCards = new ArrayList<>();
     private AndDown md = new AndDown();
     private ColumnFragment mParent;
 
-    public CardAdapter(ColumnFragment parent) {
+    CardAdapter(ColumnFragment parent) {
         mParent = parent;
     }
 
     void setCards(ArrayList<Card> cards) {
         mCards = cards;
         notifyDataSetChanged();
+    }
+
+    ArrayList<Card> getCards() {
+        return mCards;
     }
 
     @Override
@@ -72,6 +78,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
+        holder.mCardView.setTag(pos);
+        holder.mCardView.setOnLongClickListener(view -> {
+            final ClipData data = ClipData.newPlainText("", "");
+            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+            view.startDrag(data, shadowBuilder, view, 0);
+            view.setVisibility(View.INVISIBLE);
+            return true;
+        });
+        holder.mCardView.setOnDragListener(new DragListener());
+
     }
 
     @Override
@@ -82,6 +98,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     class CardHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
+        @BindView(R.id.viewholder_card) CardView mCardView;
 
         CardHolder(View view) {
             super(view);
