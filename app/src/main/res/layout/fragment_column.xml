@@ -20,7 +20,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp">
+                android:layout_margin="16dp"
+                android:duplicateParentState="true">
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/column_name_layout"
@@ -81,7 +82,7 @@
             android:id="@+id/column_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="600dp"
+            android:minHeight="450dp"
             android:nestedScrollingEnabled="false"/>
 
     </LinearLayout>

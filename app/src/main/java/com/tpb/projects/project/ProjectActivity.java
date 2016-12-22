@@ -10,7 +10,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -92,7 +94,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mMenu.setClosedOnTouchOutside(true);
 
         mRefresher.setOnRefreshListener(() -> mLoader.loadProject(ProjectActivity.this, mProject.getId()));
-
+        mRefresher.setOnDragListener(new NavigationDragListener());
 
         //TODO Only add the card fab when we have columns
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
@@ -123,7 +125,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
                 }
                 mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
-                mColumnPager.setCurrentItem(mCurrentPosition);
+                mColumnPager.setCurrentItem(mCurrentPosition, true);
                 mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
             }
 
@@ -155,7 +157,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 public void columnAdded(Column column) {
                     mAdapter.columns.add(column);
                     mAdapter.add(new ColumnPageDescriptor(column));
-                    mColumnPager.setCurrentItem(mAdapter.getCount());
+                    mColumnPager.setCurrentItem(mAdapter.getCount(), true);
                     mRefresher.setRefreshing(false);
                 }
 
@@ -200,19 +202,26 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private long lastPageChange;
     void dragLeft() {
-        Log.i(TAG, "dragLeft: ");
         if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
-            mColumnPager.setCurrentItem(mCurrentPosition - 1);
+            mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
             lastPageChange = System.nanoTime();
         }
     }
 
     void dragRight() {
-        Log.i(TAG, "dragRight: ");
         if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastPageChange > 5E8) {
-            mColumnPager.setCurrentItem(mCurrentPosition + 1);
+            mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
             lastPageChange = System.nanoTime();
         }
+    }
+
+    void moveColumn(int tag, int dropTag) {
+        final int from = mAdapter.indexOf(tag);
+        final int to = mAdapter.indexOf(dropTag);
+        Log.i(TAG, "moveColumn: From " + from + ", to " + to);
+        mAdapter.move(from, to);
+        mAdapter.columns.add(to, mAdapter.columns.remove(from));
+        mColumnPager.setCurrentItem(to, true);
     }
 
     public void onToolbarBackPressed(View view) {
@@ -229,11 +238,50 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
+    private class NavigationDragListener implements View.OnDragListener {
+
+        @Override
+        public boolean onDrag(View view, DragEvent event) {
+
+            if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
+
+                final DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+
+                if(event.getX() / metrics.widthPixels > 0.85f) {
+                    dragRight();
+                } else if(event.getX() / metrics.widthPixels < 0.15f) {
+                    dragLeft();
+                }
+            }
+            switch(event.getAction()) {
+                case DragEvent.ACTION_DRAG_EXITED:
+                    Log.i(TAG, "onDrag: Exited");
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    Log.i(TAG, "onDrag: Ended");
+                    break;
+                case DragEvent.ACTION_DROP:
+                    Log.i(TAG, "onDrag: Dropped");
+                    break;
+            }
+            return true;
+        }
+    }
+
+
     private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {
         private ArrayList<Column> columns;
 
         ColumnPagerAdapter(FragmentManager manager, List<PageDescriptor> descriptors) {
             super(manager, descriptors);
+        }
+
+        int indexOf(int id) {
+            for(int i = 0; i < columns.size(); i++) {
+                if(columns.get(i).getId() == id) return i;
+            }
+            return -1;
         }
 
         @Override
