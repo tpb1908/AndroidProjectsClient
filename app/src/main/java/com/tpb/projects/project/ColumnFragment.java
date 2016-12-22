@@ -74,7 +74,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mAdapter = new CardAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        mRecycler.setOnDragListener(mAdapter.new DragListener());
         return view;
     }
 

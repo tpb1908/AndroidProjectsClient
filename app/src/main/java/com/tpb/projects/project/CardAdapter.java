@@ -46,6 +46,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         notifyDataSetChanged();
     }
 
+    void addCard(Card card) {
+        mCards.add(card);
+        notifyDataSetChanged();
+    }
+
+    private void setUnconditionally(ArrayList<Card> cards) {
+        mCards = cards;
+    }
+
     ArrayList<Card> getCards() {
         return mCards;
     }
@@ -67,10 +76,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             return true;
         });
         holder.mCardView.setOnDragListener(new DragListener());
-        if(mCards.size() == 0) {
-            holder.mMarkDown.setText("\nNo cards\n");
-            return;
-        }
 
         if(mCards.get(pos).requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
@@ -101,7 +106,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     @Override
     public int getItemCount() {
-        return Math.max(1, mCards.size());
+        return mCards.size();
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
@@ -116,7 +121,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     }
 
-    private class DragListener implements View.OnDragListener {
+    public class DragListener implements View.OnDragListener {
 
         private boolean isDropped = false;
         private DisplayMetrics metrics;
@@ -146,50 +151,62 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     isDropped = true;
                     int positionSource, positionTarget = -1;
                     final View viewSource = (View) event.getLocalState();
+                    final RecyclerView target;
+                    final RecyclerView source = (RecyclerView) viewSource.getParent();
+
+                    final CardAdapter adapterSource = (CardAdapter) source.getAdapter();
+                    positionSource = (int) viewSource.getTag();
+
+                    final Card card = adapterSource.getCards().get(positionSource);
+                    final ArrayList<Card> cardsSource = adapterSource.getCards();
                     if(view.getId() == R.id.viewholder_card) {
-                        final RecyclerView target = (RecyclerView) view.getParent();
+                        target = (RecyclerView) view.getParent();
+                    } else {
+                        target = (RecyclerView) view;
+                    }
+                    final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
+                    ArrayList<Card> cardsTarget = targetAdapter.getCards();
+                    if(view.getId() == R.id.viewholder_card) {
 
                         positionTarget = (int) view.getTag();
 
-                        final RecyclerView source = (RecyclerView) viewSource.getParent();
-
-                        final CardAdapter adapterSource = (CardAdapter) source.getAdapter();
-                        positionSource = (int) viewSource.getTag();
-
-                        final Card card = adapterSource.getCards().get(positionSource);
-                        final ArrayList<Card> cardsSource = adapterSource.getCards();
-
-                        final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
-                        ArrayList<Card> cardsTarget = targetAdapter.getCards();
-
-                        cardsSource.remove(card);
-
-                        adapterSource.setCards(cardsSource);
-                        adapterSource.notifyDataSetChanged();
-
-
+                        //TODO get y positions of each view and decide on which side to add the card
                         if(positionTarget >= 0) {
                             cardsTarget.add(positionTarget, card);
                         } else {
                             cardsTarget.add(card);
                         }
 
-                        targetAdapter.setCards(cardsTarget);
+                        targetAdapter.setUnconditionally(cardsTarget);
                         targetAdapter.notifyDataSetChanged();
 
                         view.setVisibility(View.VISIBLE);
+                        cardsSource.remove(card);
 
+                        adapterSource.setUnconditionally(cardsSource);
+                        adapterSource.notifyDataSetChanged();
+                        //TODO If recyclers are the same, then switch the views
                         if(source == target) {
                             Log.i(TAG, "onDrag: Same recyclerview");
                         } else {
                             Log.i(TAG, "onDrag: Different recyclers");
                         }
+                    } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0) {
+                        Log.i(TAG, "onDrag: Drop on the recycler");
+                        cardsSource.remove(card);
+
+                        adapterSource.setUnconditionally(cardsSource);
+                        adapterSource.notifyDataSetChanged();
+                        targetAdapter.addCard(card);
                     }
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     Log.i(TAG, "onDrag: Drag entered");
-                    selectedBG = view.getBackground();
-                    view.setBackgroundColor(accent);
+                    if(view.getId() == R.id.viewholder_card
+                            || (view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0)) {
+                        selectedBG = view.getBackground();
+                        view.setBackgroundColor(accent);
+                    }
                     //This is when we have entered another view
 
                     break;
