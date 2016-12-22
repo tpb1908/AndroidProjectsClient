@@ -124,7 +124,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     public void cardsLoaded(Card[] cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
-            mRecycler.enableAnimation();
+            //mRecycler.enableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
     }

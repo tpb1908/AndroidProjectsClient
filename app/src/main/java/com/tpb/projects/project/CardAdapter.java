@@ -103,6 +103,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             mParent.loadIssue(new Loader.IssueLoader() {
                 @Override
                 public void issueLoaded(Issue issue) {
+                    Log.i(TAG, "issueLoaded: " + issue.getTitle());
                     mCards.get(pos).setRequiresLoadingFromIssue(false);
                     mCards.get(pos).setNote(issue.getTitle());
                     holder.mSpinner.setVisibility(View.INVISIBLE);
@@ -117,12 +118,20 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else {
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
-                            mCards.get(holder.getAdapterPosition()).getNote()
+                            mCards.get(pos).getNote()
                     ),
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
+        holder.mCardView.setAlpha(1.0f);
+        holder.itemView.setAlpha(1.0f);
+    }
 
+    @Override
+    public void onViewRecycled(CardHolder holder) {
+        super.onViewRecycled(holder);
+        holder.mCardView.setAlpha(1.0f);
+        holder.itemView.setAlpha(1.0f);
     }
 
     @Override
@@ -157,7 +166,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         @Override
         public boolean onDrag(View view, DragEvent event) {
             final int action = event.getAction();
-            //FIXME When things are moved the tags must be changed
             switch(action) {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     mParent.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -185,6 +193,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         target = (RecyclerView) view;
                     }
                     final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
+                    Log.i(TAG, "onDrag: Dropping onto view at " + view.getY() + " with view at " + sourceView.getY());
                     if(view.getId() == R.id.viewholder_card) {
 
                         targetPosition = targetAdapter.indexOf((int) view.getTag());
