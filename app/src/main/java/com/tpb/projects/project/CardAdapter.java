@@ -2,6 +2,7 @@ package com.tpb.projects.project;
 
 import android.content.ClipData;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -92,7 +93,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mCardView.setOnLongClickListener(view -> {
             final ClipData data = ClipData.newPlainText("", "");
             final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-            view.startDrag(data, shadowBuilder, view, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                view.startDragAndDrop(data, shadowBuilder, view, 0);
+            } else {
+                view.startDrag(data, shadowBuilder, view, 0);
+            }
             view.setVisibility(View.INVISIBLE);
             return true;
         });

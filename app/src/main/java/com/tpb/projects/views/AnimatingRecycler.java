@@ -33,6 +33,7 @@ public class AnimatingRecycler extends RecyclerView {
 
     public void disableAnimation() {
         mShouldAnimate = false;
+        mIsScrollable = true;
     }
 
     public boolean shouldAnimate() {
@@ -55,6 +56,8 @@ public class AnimatingRecycler extends RecyclerView {
                     getHandler().postDelayed(() -> mIsScrollable = true, i * 100);
                 }
             }
+        } else {
+            mIsScrollable = true;
         }
         mShouldAnimate = false;
     }
