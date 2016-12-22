@@ -152,7 +152,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mRefresher.setRefreshing(true);
             final String text = ((EditText) dialog.findViewById(R.id.project_new_column)).getText().toString();
             //TODO Check for string length
-            mEditor.addColumn(new Editor.ColumnAddListener() {
+            mEditor.addColumn(new Editor.ColumnAdditionListener() {
                 @Override
                 public void columnAdded(Column column) {
                     mAdapter.columns.add(column);

@@ -133,7 +133,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void addColumn(ColumnAddListener listener, int projectId, String name) {
+    public void addColumn(ColumnAdditionListener listener, int projectId, String name) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("name", name);
@@ -179,6 +179,38 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void moveCard(CardMovementListener listener, int columnId, int cardId, int afterId) {
+        final JSONObject obj = new JSONObject();
+        try {
+            if(afterId == -1) {
+                //FIXME
+                //Not my problem, but githubs api doesn't work with 'bottom'
+                obj.put("position", "top");
+            } else {
+                obj.put("position", "after:" + Integer.toString(afterId));
+            }
+            if(columnId != -1) obj.put("column_id", columnId);
+        } catch(JSONException jse) {
+            Log.e(TAG, "moveCard: ", jse);
+        }
+        Log.i(TAG, "moveCard: " + obj.toString() + ", card " + cardId);
+        AndroidNetworking.post(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId) + "/moves")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Card moved " + response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Card move error " + anError.getErrorBody());
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -211,7 +243,7 @@ public class Editor extends APIHandler {
 
     }
 
-    public interface ColumnAddListener {
+    public interface ColumnAdditionListener {
 
         void columnAdded(Column column);
 
@@ -226,5 +258,22 @@ public class Editor extends APIHandler {
         void deletionError();
 
     }
+
+    public interface ColumnMovementListener {
+
+        void columnMoved(int columnId);
+
+        void columnMovementError();
+    }
+
+    public interface CardMovementListener {
+
+        void cardMoved(int cardId);
+
+        void cardMovementError();
+
+    }
+
+
 
 }

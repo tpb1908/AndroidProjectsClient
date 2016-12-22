@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
@@ -34,9 +35,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private ArrayList<Card> mCards = new ArrayList<>();
     private AndDown md = new AndDown();
     private ColumnFragment mParent;
+    private Editor mEditor;
 
     CardAdapter(ColumnFragment parent) {
         mParent = parent;
+        mEditor = new Editor(mParent.getContext());
     }
 
     void setCards(ArrayList<Card> cards) {
@@ -47,17 +50,21 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     void addCard(Card card) {
         mCards.add(card);
         notifyItemInserted(mCards.size());
+        mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), -1);
     }
 
     void addCard(int pos, Card card) {
         Log.i(TAG, "addCard: Card being added to " + pos);
         mCards.add(pos, card);
         notifyItemInserted(pos);
+        final int id = pos == 0 ? -1 : mCards.get(pos - 1).getId();
+        mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
 
     void removeCard(Card card) {
         mCards.remove(card);
         notifyDataSetChanged();
+        //API call is handled in adapter to which card is added
     }
 
     void moveCard(int oldPos, int newPos) {
@@ -65,6 +72,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         mCards.remove(oldPos);
         mCards.add(newPos, card);
         notifyItemMoved(oldPos, newPos);
+        final int id = newPos == 0 ? -1 : mCards.get(newPos - 1).getId();
+        mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
 
     int indexOf(int cardId) {

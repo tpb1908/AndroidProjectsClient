@@ -29,7 +29,7 @@ class CardDragListener implements View.OnDragListener {
     public boolean onDrag(View view, DragEvent event) {
         final int action = event.getAction();
         final View sourceView = (View) event.getLocalState();
-        if(sourceView.getId() == R.id.column_card || view.getId() == sourceView.getId()) {
+        if(sourceView.getId() == R.id.column_card || view.getTag() == sourceView.getTag()) {
             return true;
         }
 
