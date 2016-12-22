@@ -198,12 +198,17 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         target = (RecyclerView) view;
                     }
                     final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
-                    Log.i(TAG, "onDrag: Dropping onto view at " + view.getY() + " with view at " + sourceView.getY());
+
                     if(view.getId() == R.id.viewholder_card) {
 
                         targetPosition = targetAdapter.indexOf((int) view.getTag());
 
-                        //TODO get y positions of each view and decide on which side to add the card
+                        Log.i(TAG, "onDrag: Dropping onto view of " + view.getHeight() + " with view at " + event.getY());
+                        boolean below = event.getY() < view.getHeight() / 2;
+                        if(below) {
+                            targetPosition = Math.max(0, targetPosition - 1);
+                        }
+                        Log.i(TAG, "onDrag: Should drop below " + below);
                         if(source != target) {
                             if(targetPosition >= 0) {
                                 Log.i(TAG, "onDrag: Adding to position " + targetPosition);
@@ -212,7 +217,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                                 targetAdapter.addCard(card);
                             }
                             sourceAdapter.removeCard(card);
-                        } else { //We are moving a card
+                        } else if(sourcePosition != targetPosition) { //We are moving a card
                             sourceAdapter.moveCard(sourcePosition, targetPosition);
                         }
 
