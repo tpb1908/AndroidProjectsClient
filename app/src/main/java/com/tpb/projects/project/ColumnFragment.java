@@ -52,13 +52,15 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
 
     private ProjectActivity mParent;
+    private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
 
     private CardAdapter mAdapter;
 
-    public static ColumnFragment getInstance(Column column) {
+    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
+        cf.mNavListener = navListener;
         return cf;
     }
 
@@ -78,7 +80,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mAdapter = new CardAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setOnDragListener(new CardDragListener(mParent));
+        mRecycler.setOnDragListener(mNavListener);
         mCard.setTag(mColumn.getId());
         mCard.setOnLongClickListener(v -> {
             final ClipData data = ClipData.newPlainText("", "");

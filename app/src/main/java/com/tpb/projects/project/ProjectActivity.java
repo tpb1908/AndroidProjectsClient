@@ -55,6 +55,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private Loader mLoader;
     private Project mProject;
     private Editor mEditor;
+    private NavigationDragListener mNavListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,7 +95,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mMenu.setClosedOnTouchOutside(true);
 
         mRefresher.setOnRefreshListener(() -> mLoader.loadProject(ProjectActivity.this, mProject.getId()));
-        mRefresher.setOnDragListener(new NavigationDragListener());
+        mNavListener = new NavigationDragListener();
+        mRefresher.setOnDragListener(mNavListener);
 
         //TODO Only add the card fab when we have columns
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
@@ -238,13 +240,13 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
-    private class NavigationDragListener implements View.OnDragListener {
+    class NavigationDragListener implements View.OnDragListener {
 
         @Override
         public boolean onDrag(View view, DragEvent event) {
 
             if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
-
+                Log.i(TAG, "onDrag: Refresher drag listener");
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
 
@@ -286,7 +288,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
-            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn);
+            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn, mNavListener);
         }
 
 
