@@ -70,7 +70,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                         Data.timeAgo(mProjects.get(position).getUpdatedAt())
                 )
         );
-        if(!Constants.JSON_NULL.equals(mProjects.get(position).getBody())) {
+        if(!(Constants.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
                     md.markdownToHtml(
