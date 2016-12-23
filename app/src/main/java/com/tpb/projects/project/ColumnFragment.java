@@ -103,7 +103,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -137,6 +136,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         });
         new Loader(getContext()).loadCards(this, mColumn.getId());
     }
+
     @OnClick(R.id.column_delete)
     void deleteColumn() {
         mParent.deleteColumn(mColumn);
@@ -146,12 +146,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.loadIssue(loader, issueId);
     }
 
+
+    void hideRecycler() {
+        mRecycler.setVisibility(View.INVISIBLE);
+    }
+
     @Override
     public void cardsLoaded(Card[] cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
-            //mRecycler.enableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
+            mRecycler.postDelayed(() -> mRecycler.setVisibility(View.VISIBLE), 300);
         }
     }
 
@@ -159,6 +164,24 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     public void loadError() {
 
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mParent = (ProjectActivity) context;
+        } catch(ClassCastException cce) {
+            throw new IllegalArgumentException("Parent of ColumnFragment must be ProjectActivity");
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+        mViewsValid = false;
+    }
+
 
     private class ColumnDragListener implements View.OnDragListener {
         private View mActualTarget;
@@ -192,22 +215,5 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
             return true;
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mParent = (ProjectActivity) context;
-        } catch(ClassCastException cce) {
-            throw new IllegalArgumentException("Parent of ColumnFragment must be ProjectActivity");
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-        mViewsValid = false;
     }
 }

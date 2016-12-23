@@ -183,8 +183,6 @@ public class Editor extends APIHandler {
         final JSONObject obj = new JSONObject();
         try {
             if(afterId == -1) {
-                //FIXME
-                //Not my problem, but githubs api doesn't work with 'bottom'
                 obj.put("position", "top");
             } else {
                 obj.put("position", "after:" + Integer.toString(afterId));

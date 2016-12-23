@@ -100,6 +100,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         //TODO Only add the card fab when we have columns
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+
     }
 
     @Override
@@ -235,6 +236,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(mMenu.isOpened()) {
             mMenu.close(true);
         } else {
+            mAdapter.getCurrentFragment().hideRecycler();
             mMenu.hideMenuButton(true);
             super.onBackPressed();
         }

@@ -133,15 +133,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
-        holder.mCardView.setAlpha(1.0f);
-        holder.itemView.setAlpha(1.0f);
-    }
-
-    @Override
-    public void onViewRecycled(CardHolder holder) {
-        super.onViewRecycled(holder);
-        holder.mCardView.setAlpha(1.0f);
-        holder.itemView.setAlpha(1.0f);
     }
 
     @Override
