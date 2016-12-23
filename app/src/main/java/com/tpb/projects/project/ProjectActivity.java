@@ -27,6 +27,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.repo.ProjectDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,6 +177,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         });
 
         dialog.show();
+    }
+
+    @OnClick(R.id.project_add_card)
+    void addCard() {
+        new CardDialog().show(getSupportFragmentManager(), "TAG");
     }
 
 

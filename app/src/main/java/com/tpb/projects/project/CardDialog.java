@@ -87,6 +87,12 @@ public class CardDialog extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+    }
+
     public void setListener(CardListener listener) {
         mListener = listener;
     }
