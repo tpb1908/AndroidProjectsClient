@@ -68,7 +68,7 @@ public class Card extends DataModel {
     }
 
     public void setNote(String note) {
-        this.note = note;
+        this.note = note.replace("\n", "\n\n");
     }
 
     public long getCreatedAt() {
@@ -117,6 +117,8 @@ public class Card extends DataModel {
             if(Constants.JSON_NULL.equals(c.note)) {
                 c.note = "";
                 c.requiresLoadingFromIssue = true;
+            } else {
+                c.note = c.note.replace("\n", "\n\n");
             }
             try {
                 c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
