@@ -39,16 +39,20 @@
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
     <string name="hint_column_name">Name</string>
+    <string name="hint_card_new">Enter a note</string>
 
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
     <string name="title_activity_repo">Repository</string>
     <string name="title_new_column">New column</string>
     <string name="title_delete_column">Delete column</string>
+    <string name="title_edit_card">Edit card</string>
+    <string name="title_new_card">New card</string>
 
 
     <string name="intent_repo">repo</string>
     <string name="parcel_project">project</string>
+    <string name="parcel_card">card</string>
     <string name="transition_name" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
     <string name="transition_title" translatable="false">title</string>

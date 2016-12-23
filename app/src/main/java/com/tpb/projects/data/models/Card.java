@@ -17,7 +17,7 @@ import java.text.ParseException;
 public class Card extends DataModel {
     private static final String TAG = Card.class.getSimpleName();
 
-    private Card() {}
+    public Card() {}
 
     private static final String COLUMN_URL = "column_url";
     private String columnUrl;
