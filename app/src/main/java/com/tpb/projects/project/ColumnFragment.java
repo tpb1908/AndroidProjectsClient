@@ -80,7 +80,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mAdapter = new CardAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setOnDragListener(mNavListener);
+        mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
         mCard.setTag(mColumn.getId());
         mCard.setOnLongClickListener(v -> {
             final ClipData data = ClipData.newPlainText("", "");

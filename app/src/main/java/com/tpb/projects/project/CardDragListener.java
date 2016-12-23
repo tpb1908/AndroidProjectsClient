@@ -20,13 +20,20 @@ class CardDragListener implements View.OnDragListener {
     private boolean isDropped = false;
     private Drawable selectedBG;
     private int accent;
+    private View.OnDragListener mParent;
 
     CardDragListener(Context context) {
         accent = context.getResources().getColor(R.color.colorAccent);
     }
 
+    CardDragListener(Context context, View.OnDragListener parent) {
+        accent = context.getResources().getColor(R.color.colorAccent);
+        mParent = parent;
+    }
+
     @Override
     public boolean onDrag(View view, DragEvent event) {
+        if(mParent != null) mParent.onDrag(view, event);
         final int action = event.getAction();
         final View sourceView = (View) event.getLocalState();
         if(sourceView.getId() == R.id.column_card || view.getTag() == sourceView.getTag()) {

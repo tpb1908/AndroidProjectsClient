@@ -1,7 +1,6 @@
 package com.tpb.projects.util;
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.tpb.projects.data.models.Repository;
 
@@ -111,7 +110,6 @@ public class Data {
     public static String timeAgo(long time) {
         final long now = System.currentTimeMillis() / 1000;
         final long delta = (now - time);
-        Log.i(TAG, "timeAgo: " + now + " " + time + " " + delta);
         if(delta / (365 * 24 * 3600) > 0) {
             final long div = delta / (365 * 24 * 3600);
             return div + (div == 1 ? " year" : " years");
