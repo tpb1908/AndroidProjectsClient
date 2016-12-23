@@ -87,7 +87,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                if(state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    mRefresher.setEnabled(false);
+                } else if(state == ViewPager.SCROLL_STATE_IDLE) {
+                    mRefresher.setEnabled(true);
+                }
             }
         });
         mRefresher.setRefreshing(true);
