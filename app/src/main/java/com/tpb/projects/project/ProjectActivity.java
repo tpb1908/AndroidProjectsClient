@@ -240,7 +240,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(mMenu.isOpened()) {
             mMenu.close(true);
         } else {
-            mAdapter.getCurrentFragment().hideRecycler();
+            if(mAdapter.getCurrentFragment() != null) mAdapter.getCurrentFragment().hideRecycler();
             mMenu.hideMenuButton(true);
             super.onBackPressed();
         }
