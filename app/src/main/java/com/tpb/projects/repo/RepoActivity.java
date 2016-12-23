@@ -192,7 +192,6 @@ public class RepoActivity extends AppCompatActivity implements
 
     }
 
-
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;

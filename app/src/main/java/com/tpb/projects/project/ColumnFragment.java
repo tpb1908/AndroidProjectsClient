@@ -148,7 +148,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
 
     void hideRecycler() {
-        mRecycler.setVisibility(View.INVISIBLE);
+        if(mRecycler != null) mRecycler.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -156,7 +156,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
-            mRecycler.postDelayed(() -> mRecycler.setVisibility(View.VISIBLE), 300);
+            mRecycler.postDelayed(() -> {
+                if(mRecycler != null) mRecycler.setVisibility(View.VISIBLE);
+            }, 300);
         }
     }
 

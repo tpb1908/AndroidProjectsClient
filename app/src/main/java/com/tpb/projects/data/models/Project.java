@@ -108,6 +108,10 @@ public class Project extends DataModel implements Parcelable{
         return p;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Project && ((Project) obj).id == id;
+    }
 
     @Override
     public String toString() {

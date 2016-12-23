@@ -8,11 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.views.AnimatingRecycler;
+
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +36,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private ProjectEditor mEditor;
     private AnimatingRecycler mRecycler;
     private boolean canAccessRepo = false;
+    private AndDown md = new AndDown();
 
     public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
@@ -64,6 +70,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                         Data.timeAgo(mProjects.get(position).getUpdatedAt())
                 )
         );
+        if(!Constants.JSON_NULL.equals(mProjects.get(position).getBody())) {
+            holder.mBody.setVisibility(View.VISIBLE);
+            holder.mBody.setHtml(
+                    md.markdownToHtml(
+                            mProjects.get(holder.getAdapterPosition()).getBody()
+                    ),
+                    new HtmlHttpImageGetter(holder.mBody)
+            );
+        }
     }
 
     void enableRepoAccess() {
@@ -101,12 +116,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             mProjects.set(pos, project);
             notifyItemChanged(pos);
         }
+        Log.i(TAG, "updateProject: At " + pos);
     }
 
     class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.project_name) TextView mName;
         @BindView(R.id.project_last_updated) TextView mLastUpdate;
+        @BindView(R.id.project_body) HtmlTextView mBody;
 
         ProjectViewHolder(View view) {
             super(view);
