@@ -13,18 +13,36 @@
     app:cardCornerRadius="2dp"
     app:cardElevation="2dp">
 
-    <ProgressBar
-        android:id="@+id/card_issue_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="invisible"/>
-
-    <org.sufficientlysecure.htmltextview.HtmlTextView
-        android:id="@+id/card_markdown"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp">
-    </org.sufficientlysecure.htmltextview.HtmlTextView>
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/card_issue_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+
+        <org.sufficientlysecure.htmltextview.HtmlTextView
+            android:id="@+id/card_markdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/card_menu_button"
+            android:layout_margin="8dp">
+        </org.sufficientlysecure.htmltextview.HtmlTextView>
+
+        <ImageButton
+            android:id="@+id/card_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_chevron_down"/>
+
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>
