@@ -49,6 +49,10 @@
     <string name="title_edit_card">Edit card</string>
     <string name="title_new_card">New card</string>
 
+    <string name="menu_copy_card_url">Copy card URL</string>
+    <string name="menu_convert_to_issue">Convert to issue</string>
+    <string name="menu_edit_note">Edit note</string>
+    <string name="menu_delete_note">Delete note</string>
 
     <string name="intent_repo">repo</string>
     <string name="intent_can_edit">can_edit</string>

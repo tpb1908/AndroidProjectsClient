@@ -92,7 +92,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     private void openMenu(View view, int position) {
-        Log.i(TAG, "openMenu: Opening menu at " + position);
+        mParent.openMenu(view, mCards.get(position));
     }
 
     @Override
