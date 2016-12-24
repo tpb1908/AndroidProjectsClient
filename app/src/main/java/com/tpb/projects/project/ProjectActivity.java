@@ -209,16 +209,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         dialog.setListener(new CardDialog.CardListener() {
             @Override
             public void cardEditDone(Card card, boolean isNewCard) {
+                mRefresher.setRefreshing(true);
                 if(isNewCard) {
                     mEditor.createCard(new Editor.CardCreationListener() {
                         @Override
                         public void cardCreated(Card card) {
                             mAdapter.getExistingFragment(columnPosition).addCard(card);
+                            mRefresher.setRefreshing(false);
                         }
 
                         @Override
                         public void cardCreationError() {
-
+                            mRefresher.setRefreshing(false);
                         }
                     }, mAdapter.getCurrentFragment().mColumn.getId(), card);
                 } else {
@@ -226,11 +228,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         @Override
                         public void cardUpdated(Card card) {
                             mAdapter.getExistingFragment(columnPosition).updateCard(card);
+                            mRefresher.setRefreshing(false);
                         }
 
                         @Override
                         public void cardUpdateError() {
-
+                            mRefresher.setRefreshing(false);
                         }
                     }, card.getId(), card.getNote());
                 }
