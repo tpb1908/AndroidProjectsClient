@@ -107,7 +107,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mNavListener = new NavigationDragListener();
         mRefresher.setOnDragListener(mNavListener);
 
-        //TODO Only add the card fab when we have columns
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
 
     }
@@ -273,8 +272,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private Editor.CardCreationListener mCardCreationListener = new Editor.CardCreationListener() {
         @Override
-        public void cardCreated(Card card) {
-            mAdapter.getCurrentFragment().addCard(card);
+        public void cardCreated(int columnId, Card card) {
+            mAdapter.getExistingFragment(mAdapter.indexOf(columnId)).addCard(card);
             mRefresher.setRefreshing(false);
         }
 

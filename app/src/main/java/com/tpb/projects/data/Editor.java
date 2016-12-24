@@ -197,7 +197,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card: " + response.toString());
-                        if(listener != null) listener.cardCreated(Card.parse(response));
+                        if(listener != null) listener.cardCreated(columnId, Card.parse(response));
                     }
 
                     @Override
@@ -345,7 +345,7 @@ public class Editor extends APIHandler {
 
     public interface CardCreationListener {
 
-        void cardCreated(Card card);
+        void cardCreated(int columnId, Card card);
 
         void cardCreationError();
 
