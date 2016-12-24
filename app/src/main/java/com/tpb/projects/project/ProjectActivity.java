@@ -193,6 +193,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addCard() {
         mMenu.close(true);
         final CardDialog dialog = new CardDialog();
+        showCardDialog(dialog);
+    }
+
+    void editCard(Card card) {
+        final CardDialog dialog = new CardDialog();
+        final Bundle b = new Bundle();
+        b.putParcelable(getString(R.string.parcel_card), card);
+        dialog.setArguments(b);
+        showCardDialog(dialog);
+    }
+
+    void showCardDialog(CardDialog dialog) {
         final int columnPosition = mCurrentPosition;
         dialog.setListener(new CardDialog.CardListener() {
             @Override
@@ -210,7 +222,17 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
                     }, mAdapter.getCurrentFragment().mColumn.getId(), card);
                 } else {
-                    //TODO Make edit call
+                    mEditor.updateCard(new Editor.CardUpdateListener() {
+                        @Override
+                        public void cardUpdated(Card card) {
+                            mAdapter.getExistingFragment(columnPosition).updateCard(card);
+                        }
+
+                        @Override
+                        public void cardUpdateError() {
+
+                        }
+                    }, card.getId(), card.getNote());
                 }
             }
 

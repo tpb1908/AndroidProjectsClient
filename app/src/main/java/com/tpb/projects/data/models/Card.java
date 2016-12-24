@@ -1,5 +1,7 @@
 package com.tpb.projects.data.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.util.Constants;
@@ -14,7 +16,7 @@ import java.text.ParseException;
  * Created by theo on 15/12/16.
  */
 
-public class Card extends DataModel {
+public class Card extends DataModel implements Parcelable {
     private static final String TAG = Card.class.getSimpleName();
 
     public Card() {}
@@ -132,6 +134,8 @@ public class Card extends DataModel {
         return c;
     }
 
+
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Card && ((Card) obj).id == id;
@@ -150,4 +154,44 @@ public class Card extends DataModel {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.columnUrl);
+        dest.writeString(this.contentUrl);
+        dest.writeInt(this.issueId);
+        dest.writeInt(this.id);
+        dest.writeString(this.note);
+        dest.writeByte(this.requiresLoadingFromIssue ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.createdAt);
+        dest.writeLong(this.updatedAt);
+    }
+
+    protected Card(Parcel in) {
+        this.columnUrl = in.readString();
+        this.contentUrl = in.readString();
+        this.issueId = in.readInt();
+        this.id = in.readInt();
+        this.note = in.readString();
+        this.requiresLoadingFromIssue = in.readByte() != 0;
+        this.createdAt = in.readLong();
+        this.updatedAt = in.readLong();
+    }
+
+    public static final Parcelable.Creator<Card> CREATOR = new Parcelable.Creator<Card>() {
+        @Override
+        public Card createFromParcel(Parcel source) {
+            return new Card(source);
+        }
+
+        @Override
+        public Card[] newArray(int size) {
+            return new Card[size];
+        }
+    };
 }

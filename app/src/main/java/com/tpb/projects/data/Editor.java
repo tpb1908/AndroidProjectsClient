@@ -208,6 +208,33 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void updateCard(CardUpdateListener listener, int cardId, String note) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("note", note);
+        } catch(JSONException jse) {
+            Log.e(TAG, "updateCard: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId))
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Card update: " + response.toString());
+                        if(listener != null) listener.cardUpdated(Card.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Card update: " + anError.getErrorBody());
+                        if(listener != null) listener.cardUpdateError();
+                    }
+                });
+    }
+
+
     public void moveCard(CardMovementListener listener, int columnId, int cardId, int afterId) {
         final JSONObject obj = new JSONObject();
         try {
@@ -229,6 +256,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card moved " + response.toString());
+
                     }
 
                     @Override
@@ -298,6 +326,14 @@ public class Editor extends APIHandler {
         void cardCreated(Card card);
 
         void cardCreationError();
+
+    }
+
+    public interface CardUpdateListener {
+
+        void cardUpdated(Card card);
+
+        void cardUpdateError();
 
     }
 
