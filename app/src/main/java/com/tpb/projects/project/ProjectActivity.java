@@ -120,24 +120,29 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             @Override
             public void columnsLoaded(Column[] columns) {
                 mRefresher.setRefreshing(false);
-                int id = 0;
-                if(mCurrentPosition != -1) {
-                    id = mAdapter.getCurrentFragment().mColumn.getId();
-                }
-                mCurrentPosition = 0;
-                mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
-                if(mAdapter.getCount() != 0) {
-                    for(int i = mAdapter.getCount() - 1; i >= 0; i--) mAdapter.remove(i);
-                }
-                for(int i = 0; i < columns.length; i++) {
-                    mAdapter.add(new ColumnPageDescriptor(columns[i]));
-                    if(columns[i].getId() == id) {
-                        mCurrentPosition = i;
+                if(columns.length > 0) {
+                    mAddCard.setVisibility(View.VISIBLE);
+                    int id = 0;
+                    if(mCurrentPosition != -1) {
+                        id = mAdapter.getCurrentFragment().mColumn.getId();
                     }
+                    mCurrentPosition = 0;
+                    mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
+                    if(mAdapter.getCount() != 0) {
+                        for(int i = mAdapter.getCount() - 1; i >= 0; i--) mAdapter.remove(i);
+                    }
+                    for(int i = 0; i < columns.length; i++) {
+                        mAdapter.add(new ColumnPageDescriptor(columns[i]));
+                        if(columns[i].getId() == id) {
+                            mCurrentPosition = i;
+                        }
+                    }
+                    mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
+                    mColumnPager.setCurrentItem(mCurrentPosition, true);
+                    mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
+                } else {
+                    mAddCard.setVisibility(View.GONE);
                 }
-                mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
-                mColumnPager.setCurrentItem(mCurrentPosition, true);
-                mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
             }
 
             @Override
@@ -167,6 +172,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mEditor.addColumn(new Editor.ColumnAdditionListener() {
                 @Override
                 public void columnAdded(Column column) {
+                    mAddCard.setVisibility(View.VISIBLE);
                     mAdapter.columns.add(column);
                     mAdapter.add(new ColumnPageDescriptor(column));
                     mColumnPager.setCurrentItem(mAdapter.getCount(), true);
@@ -214,8 +220,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         public void columnDeleted() {
                             mAdapter.remove(mCurrentPosition);
                             mAdapter.columns.remove(mCurrentPosition);
-
                             mRefresher.setRefreshing(false);
+                            if(mAdapter.columns.size() == 0) mAddCard.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -302,7 +308,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
 
     private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {
-        private ArrayList<Column> columns;
+        private ArrayList<Column> columns = new ArrayList<>();
 
         ColumnPagerAdapter(FragmentManager manager, List<PageDescriptor> descriptors) {
             super(manager, descriptors);
