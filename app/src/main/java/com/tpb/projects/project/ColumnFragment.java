@@ -106,7 +106,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         return view;
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -220,7 +219,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private class ColumnDragListener implements View.OnDragListener {
         private View mActualTarget;
 
-        ColumnDragListener() {}
+        ColumnDragListener() {
+        }
 
         ColumnDragListener(View actualTarget) {
             mActualTarget = actualTarget;

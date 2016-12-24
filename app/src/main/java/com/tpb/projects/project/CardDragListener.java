@@ -109,7 +109,7 @@ class CardDragListener implements View.OnDragListener {
                 break;
         }
 
-        if (!isDropped) {
+        if(!isDropped) {
             View vw = (View) event.getLocalState();
             vw.setVisibility(View.VISIBLE);
         }

@@ -29,12 +29,11 @@ import butterknife.ButterKnife;
 /**
  * Created by theo on 14/12/16.
  * Possible markdown textviews
- *
- *https://github.com/fiskurgit/MarkdownView
- *https://github.com/mukeshsolanki/MarkdownView-Android
+ * <p>
+ * https://github.com/fiskurgit/MarkdownView
+ * https://github.com/mukeshsolanki/MarkdownView-Android
  * https://github.com/mittsuu/MarkedView-for-Android
  * https://github.com/falnatsheh/MarkdownView best demo
- *
  */
 
 public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {

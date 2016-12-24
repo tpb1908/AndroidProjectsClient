@@ -14,7 +14,8 @@ import org.json.JSONObject;
 public class Issue extends DataModel {
     private static final String TAG = Issue.class.getSimpleName();
 
-    private Issue() {}
+    private Issue() {
+    }
 
     private int id;
 

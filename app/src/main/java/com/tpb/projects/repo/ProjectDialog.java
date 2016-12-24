@@ -68,11 +68,12 @@ public class ProjectDialog extends DialogFragment {
         descriptionEdit.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
             long lastUpdated;
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 lastUpdated = System.currentTimeMillis();
                 updateHandler.postDelayed(() -> {
-                    if(System.currentTimeMillis() - lastUpdated >= 190 ) {
+                    if(System.currentTimeMillis() - lastUpdated >= 190) {
                         descriptionMarkDown.setMDText(descriptionEdit.getText().toString());
                         descriptionMarkDown.reload();
                     }

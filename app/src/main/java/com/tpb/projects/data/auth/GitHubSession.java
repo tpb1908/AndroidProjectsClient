@@ -10,7 +10,6 @@ import android.util.Log;
  *
  * @author Thiago Locatelli <thiago.locatelli@gmail.com>
  * @author Lorensius W. L T <lorenz@londatiga.net>
- *
  */
 public class GitHubSession {
     private static final String TAG = GitHubSession.class.getSimpleName();
@@ -33,7 +32,6 @@ public class GitHubSession {
     }
 
     /**
-     *
      * @param accessToken
      * @param username
      */

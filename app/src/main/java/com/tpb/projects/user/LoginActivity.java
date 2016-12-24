@@ -22,8 +22,8 @@ import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Constants;
+import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -114,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public interface OAuthLoginListener {
         void onComplete(String accessToken);
+
         void onError(String error);
     }
 

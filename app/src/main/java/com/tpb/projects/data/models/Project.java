@@ -12,10 +12,11 @@ import org.json.JSONObject;
  * Created by theo on 15/12/16.
  */
 
-public class Project extends DataModel implements Parcelable{
+public class Project extends DataModel implements Parcelable {
     private static final String TAG = Project.class.getSimpleName();
 
-    public Project() {}
+    public Project() {
+    }
 
     private int id;
 

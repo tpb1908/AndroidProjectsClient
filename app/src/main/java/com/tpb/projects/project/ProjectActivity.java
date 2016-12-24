@@ -166,7 +166,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @OnClick(R.id.project_add_column)
     void addColumn() {
         mMenu.close(true);
-        final AlertDialog dialog  = new AlertDialog.Builder(this)
+        final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog_new_column)
                 .setTitle(R.string.title_new_column)
                 .setNegativeButton(R.string.action_cancel, null)
@@ -260,7 +260,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             Snackbar.make(findViewById(R.id.project_coordinator),
                                     getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
                                     .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card))
-                            .show();
+                                    .show();
                         }
 
                         @Override
@@ -272,16 +272,16 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private Editor.CardCreationListener mCardCreationListener = new Editor.CardCreationListener() {
-            @Override
-            public void cardCreated(Card card) {
-                mAdapter.getCurrentFragment().addCard(card);
-                mRefresher.setRefreshing(false);
-            }
+        @Override
+        public void cardCreated(Card card) {
+            mAdapter.getCurrentFragment().addCard(card);
+            mRefresher.setRefreshing(false);
+        }
 
-            @Override
-            public void cardCreationError() {
-                mRefresher.setRefreshing(false);
-            }
+        @Override
+        public void cardCreationError() {
+            mRefresher.setRefreshing(false);
+        }
     };
 
     void showCardDialog(CardDialog dialog) {
@@ -317,6 +317,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private long lastPageChange;
+
     void dragLeft() {
         if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
             mColumnPager.setCurrentItem(mCurrentPosition - 1, true);

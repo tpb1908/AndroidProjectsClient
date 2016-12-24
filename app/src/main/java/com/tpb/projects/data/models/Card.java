@@ -19,7 +19,8 @@ import java.text.ParseException;
 public class Card extends DataModel implements Parcelable {
     private static final String TAG = Card.class.getSimpleName();
 
-    public Card() {}
+    public Card() {
+    }
 
     private static final String COLUMN_URL = "column_url";
     private String columnUrl;
@@ -111,7 +112,7 @@ public class Card extends DataModel implements Parcelable {
         try {
             c.id = object.getInt(ID);
             c.columnUrl = object.getString(COLUMN_URL);
-            if(object.has(CONTENT_URL) ){
+            if(object.has(CONTENT_URL)) {
                 c.contentUrl = object.getString(CONTENT_URL);
                 c.issueId = Integer.parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
             }
@@ -133,7 +134,6 @@ public class Card extends DataModel implements Parcelable {
         }
         return c;
     }
-
 
 
     @Override

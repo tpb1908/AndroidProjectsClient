@@ -20,7 +20,7 @@ import com.tpb.projects.data.models.Card;
  */
 
 public class CardDialog extends DialogFragment {
-    private static final String TAG =  CardDialog.class.getSimpleName();
+    private static final String TAG = CardDialog.class.getSimpleName();
 
     private CardListener mListener;
 
@@ -62,11 +62,12 @@ public class CardDialog extends DialogFragment {
         noteEdit.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
             long lastUpdated;
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 lastUpdated = System.currentTimeMillis();
                 updateHandler.postDelayed(() -> {
-                    if(System.currentTimeMillis() - lastUpdated >= 190 ) {
+                    if(System.currentTimeMillis() - lastUpdated >= 190) {
                         md.setMDText(noteEdit.getText().toString());
                         md.reload();
                     }

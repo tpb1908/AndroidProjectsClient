@@ -56,14 +56,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         notifyItemInserted(0);
     }
 
-    void updateCard(Card card) {
-        final int index = indexOf(card.getId());
-        if(index != -1) {
-            mCards.set(index, card);
-            notifyItemChanged(index);
-        }
-    }
-
     void addCardFromDrag(Card card) {
         mCards.add(card);
         notifyItemInserted(mCards.size());
@@ -78,13 +70,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
 
-    void removeCard(Card card) {
+    void updateCard(Card card) {
         final int index = indexOf(card.getId());
         if(index != -1) {
-            mCards.remove(index);
-            notifyItemRemoved(index);
+            mCards.set(index, card);
+            notifyItemChanged(index);
         }
-        //API call is handled in adapter to which card is added
     }
 
     void moveCardFromDrag(int oldPos, int newPos) {
@@ -95,6 +86,17 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final int id = newPos == 0 ? -1 : mCards.get(newPos - 1).getId();
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
+
+
+    void removeCard(Card card) {
+        final int index = indexOf(card.getId());
+        if(index != -1) {
+            mCards.remove(index);
+            notifyItemRemoved(index);
+        }
+        //API call is handled in adapter to which card is added
+    }
+
 
     int indexOf(int cardId) {
         for(int i = 0; i < mCards.size(); i++) {

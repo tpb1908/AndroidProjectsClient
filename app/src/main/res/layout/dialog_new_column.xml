@@ -23,6 +23,6 @@
             android:maxLength="140"
             android:hint="@string/hint_column_name"/>
 
-        </android.support.design.widget.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
 </FrameLayout>

@@ -149,7 +149,7 @@ public class Loader extends APIHandler {
                             }
                         }
                         if(loader != null) loader.collaboratorsLoaded(collabs);
-                        Log.i(TAG, "onResponse: Collaborators"+ Arrays.toString(collabs));
+                        Log.i(TAG, "onResponse: Collaborators" + Arrays.toString(collabs));
                     }
 
                     @Override
@@ -211,7 +211,7 @@ public class Loader extends APIHandler {
                             }
                             if(loader != null) loader.projectsLoaded(projects);
                         } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ",jse );
+                            Log.e(TAG, "onResponse: ", jse);
                         }
                     }
 

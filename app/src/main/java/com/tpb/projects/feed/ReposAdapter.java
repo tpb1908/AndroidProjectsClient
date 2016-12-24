@@ -113,7 +113,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     private void togglePin(int pos) {
-       //TODO Pin to top or move back to original pos
+        //TODO Pin to top or move back to original pos
         final Repository r = mRepos.get(pos);
         if(mSorter.isPinned(r.getId())) {
             mRepos.remove(pos);
@@ -197,7 +197,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         }
 
         int initialPosition(int key) {
-            return  Data.indexOf(standardPositions, key);
+            return Data.indexOf(standardPositions, key);
         }
 
         boolean isPinned(int key) {

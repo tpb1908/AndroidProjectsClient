@@ -19,10 +19,8 @@ import org.json.JSONObject;
 
 
 /**
- *
  * @author Thiago Locatelli <thiago.locatelli@gmail.com>
  * @author Lorensius W. L T <lorenz@londatiga.net>
- *
  */
 public class OAuthHandler extends APIHandler {
     private GitHubSession mSession;
@@ -132,7 +130,7 @@ public class OAuthHandler extends APIHandler {
     }
 
     public void resetAccessToken() {
-        if (mAccessToken != null) {
+        if(mAccessToken != null) {
             mSession.resetAccessToken();
             mAccessToken = null;
         }

@@ -129,7 +129,7 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Column update: " + anError.getErrorBody() );
+                        Log.i(TAG, "onError: Column update: " + anError.getErrorBody());
                     }
                 });
     }

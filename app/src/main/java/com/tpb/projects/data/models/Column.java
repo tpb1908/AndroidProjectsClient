@@ -18,7 +18,8 @@ import java.text.ParseException;
 public class Column extends DataModel implements Parcelable {
     private static final String TAG = Column.class.getSimpleName();
 
-    private Column() {}
+    private Column() {
+    }
 
     private int id;
 
@@ -81,7 +82,6 @@ public class Column extends DataModel implements Parcelable {
     public boolean equals(Object obj) {
         return obj instanceof Column && ((Column) obj).id == id;
     }
-
 
 
     @Override

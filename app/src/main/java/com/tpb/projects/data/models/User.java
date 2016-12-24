@@ -13,7 +13,8 @@ import org.json.JSONObject;
 public class User extends DataModel {
     private static final String TAG = User.class.getSimpleName();
 
-    private User() {}
+    private User() {
+    }
 
     private static final String LOGIN = "login";
     private String login;
@@ -26,7 +27,7 @@ public class User extends DataModel {
     private static final String URL = "url";
     private String url;
 
-    private static final String REPOS_URL ="repos_url";
+    private static final String REPOS_URL = "repos_url";
     private String reposUrl;
 
     private static final String NAME = "name";

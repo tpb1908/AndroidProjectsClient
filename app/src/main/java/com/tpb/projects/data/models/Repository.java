@@ -14,7 +14,8 @@ import org.json.JSONObject;
 public class Repository extends DataModel implements Parcelable {
     private static final String TAG = Repository.class.getSimpleName();
 
-    private Repository() {}
+    private Repository() {
+    }
 
     private int id;
 

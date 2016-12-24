@@ -66,8 +66,8 @@ public class Data {
 
     public static String formatKB(int kb) {
         if(kb < 1024) return Integer.toString(kb) + " KB";
-        if(kb < 1024 * 1024) return String.format("%.2f", kb/1024f) + " MB";
-        return String.format("%.2f", kb/(1024f*1024f)) + " GB";
+        if(kb < 1024 * 1024) return String.format("%.2f", kb / 1024f) + " MB";
+        return String.format("%.2f", kb / (1024f * 1024f)) + " GB";
     }
 
     public static String base64Decode(String base64) {
@@ -76,26 +76,33 @@ public class Data {
 
     //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    /** Transform Calendar to ISO 8601 string. */
+
+    /**
+     * Transform Calendar to ISO 8601 string.
+     */
     public static String fromCalendar(final Calendar calendar) {
         Date date = calendar.getTime();
         String formatted = ISO8601.format(date);
         return formatted.substring(0, 22) + ":" + formatted.substring(22);
     }
 
-    /** Get current date and time formatted as ISO 8601 string. */
+    /**
+     * Get current date and time formatted as ISO 8601 string.
+     */
     public static String now() {
         return fromCalendar(GregorianCalendar.getInstance());
     }
 
-    /** Transform ISO 8601 string to Calendar. */
+    /**
+     * Transform ISO 8601 string to Calendar.
+     */
     public static Calendar toCalendar(final String iso8601string)
             throws ParseException {
         final Calendar calendar = GregorianCalendar.getInstance();
         String s = iso8601string.replace("Z", "+00:00");
         try {
             s = s.substring(0, 22) + s.substring(23);  // to get rid of the ":"
-        } catch (IndexOutOfBoundsException e) {
+        } catch(IndexOutOfBoundsException e) {
             throw new ParseException("Invalid length", 0);
         }
         final Date date = ISO8601.parse(s);
