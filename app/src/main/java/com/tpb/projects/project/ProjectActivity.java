@@ -352,7 +352,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         public boolean onDrag(View view, DragEvent event) {
 
             if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
-                Log.i(TAG, "onDrag: Refresher drag listener");
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
                 if(event.getX() / metrics.widthPixels > 0.85f) {

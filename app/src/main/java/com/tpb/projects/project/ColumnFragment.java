@@ -198,6 +198,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                     cm.setPrimaryClip(ClipData.newPlainText("Card text", card.getNote()));
                     break;
+                case R.id.menu_card_fullscreen:
+                    final FullScreenDialog dialog = new FullScreenDialog();
+                    final Bundle b = new Bundle();
+                    b.putParcelable(getString(R.string.parcel_card), card);
+                    dialog.setArguments(b);
+                    dialog.show(getFragmentManager(), TAG);
             }
 
             return true;

@@ -56,6 +56,7 @@
     <string name="menu_convert_to_issue">Convert to issue</string>
     <string name="menu_edit_note">Edit note</string>
     <string name="menu_delete_note">Delete note</string>
+    <string name="menu_fullscreen_note">Show in fullscreen</string>
 
     <string name="intent_repo">repo</string>
     <string name="intent_can_edit">can_edit</string>

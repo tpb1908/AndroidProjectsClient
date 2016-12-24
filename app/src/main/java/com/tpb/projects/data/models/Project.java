@@ -93,14 +93,12 @@ public class Project extends DataModel implements Parcelable {
     public static Project parse(JSONObject object) {
         final Project p = new Project();
         try {
-            Log.i(TAG, "parse: " + object.toString());
             p.id = object.getInt(ID);
             p.creatorUserName = object.getJSONObject(CREATOR_KEY).getString(LOGIN);
             p.number = object.getInt(NUMBER);
             p.body = object.getString(BODY);
             if(p.body != null) {
                 p.body = p.body.replace("\n", "\n\n");
-                Log.i(TAG, "parse: Body " + p.body);
             }
             p.name = object.getString(NAME);
             p.url = object.getString(URL);

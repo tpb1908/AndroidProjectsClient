@@ -6,6 +6,10 @@
         android:title="@string/menu_copy_card_url"/>
 
     <item
+        android:id="@+id/menu_card_fullscreen"
+        android:title="@string/menu_fullscreen_note"/>
+
+    <item
         android:id="@+id/menu_convert_to_issue"
         android:title="@string/menu_convert_to_issue"/>
 
