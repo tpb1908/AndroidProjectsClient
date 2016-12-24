@@ -95,6 +95,7 @@ public class Column extends DataModel implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -117,7 +118,7 @@ public class Column extends DataModel implements Parcelable {
         this.updatedAt = in.readLong();
     }
 
-    public static final Parcelable.Creator<Column> CREATOR = new Parcelable.Creator<Column>() {
+    public static final Creator<Column> CREATOR = new Creator<Column>() {
         @Override
         public Column createFromParcel(Parcel source) {
             return new Column(source);

@@ -74,6 +74,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_column, container, false);
         unbinder = ButterKnife.bind(this, view);
+        if(mColumn == null && savedInstanceState != null) {
+            mColumn = savedInstanceState.getParcelable(getString(R.string.parcel_column));
+        }
+
         mName.setText(mColumn.getName());
         mLastUpdate.setText(
                 String.format(
@@ -243,6 +247,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mViewsValid = false;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(getString(R.string.parcel_column), mColumn);
+    }
 
     private class ColumnDragListener implements View.OnDragListener {
         private View mActualTarget;

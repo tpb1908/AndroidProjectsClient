@@ -403,7 +403,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     }
 
-    private class ColumnPageDescriptor implements PageDescriptor {
+    private static class ColumnPageDescriptor implements PageDescriptor {
         private Column mColumn;
 
         ColumnPageDescriptor(Column column) {
@@ -434,7 +434,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             this.mColumn = in.readParcelable(Column.class.getClassLoader());
         }
 
-        public final Creator<ColumnPageDescriptor> CREATOR = new Creator<ColumnPageDescriptor>() {
+        public static final Creator<ColumnPageDescriptor> CREATOR = new Creator<ColumnPageDescriptor>() {
             @Override
             public ColumnPageDescriptor createFromParcel(Parcel source) {
                 return new ColumnPageDescriptor(source);
