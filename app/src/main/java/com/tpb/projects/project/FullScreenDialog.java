@@ -2,6 +2,7 @@ package com.tpb.projects.project;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
@@ -16,10 +17,11 @@ import com.tpb.projects.data.models.Card;
 
 public class FullScreenDialog extends DialogFragment {
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MarkedView view = new MarkedView(getContext());
-        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(getArguments() != null &&  getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) {
             view.setMDText( ((Card)getArguments().getParcelable(getContext().getString(R.string.parcel_card))).getNote());
         }
@@ -37,7 +39,7 @@ public class FullScreenDialog extends DialogFragment {
         super.onStart();
         final Dialog dialog = getDialog();
         if(dialog != null) {
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 }
