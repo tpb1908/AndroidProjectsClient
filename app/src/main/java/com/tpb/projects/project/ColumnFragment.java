@@ -1,6 +1,7 @@
 package com.tpb.projects.project;
 
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -186,11 +187,19 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         //We use the non AppCompat popup as the AppCompat version has a bug which scrolls the RecyclerView up
         final android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
         popup.setOnMenuItemClickListener(menuItem -> {
-            if(menuItem.getItemId() == R.id.menu_edit_note) {
-                mParent.editCard(card);
-            } else if(menuItem.getItemId() == R.id.menu_delete_note) {
-                mParent.deleteCard(card);
+            switch(menuItem.getItemId()) {
+                case R.id.menu_edit_note:
+                    mParent.editCard(card);
+                    break;
+                case R.id.menu_delete_note:
+                    mParent.deleteCard(card);
+                    break;
+                case R.id.menu_copy_card_note:
+                    final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    cm.setPrimaryClip(ClipData.newPlainText("Card text", card.getNote()));
+                    break;
             }
+
             return true;
         });
         popup.inflate(R.menu.menu_card);

@@ -75,7 +75,7 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.i(TAG, "onError: load Repo: " + anError.getErrorBody());
                     }
                 });
     }
@@ -126,8 +126,8 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, "onError: ", anError);
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.e(TAG, "onError: load ReadMe: ", anError);
+                        Log.i(TAG, "onError: load ReadMe: " + anError.getErrorBody());
                     }
                 });
     }
@@ -217,8 +217,8 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, "onError: ", anError);
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.e(TAG, "onError: load Projects: ", anError);
+                        Log.i(TAG, "onError: load Projects: " + anError.getErrorBody());
                     }
                 });
     }
@@ -244,7 +244,7 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.i(TAG, "onError: load columnes: " + anError.getErrorBody());
                         loader.loadError();
                     }
                 });

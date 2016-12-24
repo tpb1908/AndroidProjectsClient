@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_copy_card_url"
+        android:id="@+id/menu_copy_card_note"
         android:title="@string/menu_copy_card_url"/>
 
     <item
