@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
@@ -113,32 +114,42 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mEditor = new Editor(getContext());
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE) {
-                mEditor.updateColumn(new Editor.ColumnChangeListener() {
-                    @Override
-                    public void columnChanged(Column column) {
+                if(mName.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
+                    mName.setText(mColumn.getName());
+                } else {
+                    mEditor.updateColumn(new Editor.ColumnChangeListener() {
+                        @Override
+                        public void columnChanged(Column column) {
+                            if(mViewsValid) {
+                                mColumn.setName(mName.getText().toString());
+                                resetLastUpdate();
+                            }
+                        }
 
-                    }
+                        @Override
+                        public void changeError() {
+                            Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
+                            mName.setText(mColumn.getName());
+                        }
+                    }, mColumn.getId(), mName.getText().toString());
 
-                    @Override
-                    public void changeError() {
-
-                    }
-                }, mColumn.getId(), mName.getText().toString());
-                if(mViewsValid) {
-                    mColumn.setName(mName.getText().toString());
-                    mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
-                    mLastUpdate.setText(
-                            String.format(
-                                    getContext().getString(R.string.text_last_updated),
-                                    Data.timeAgo(mColumn.getUpdatedAt())
-                            )
-                    );
                 }
                 return false;
             }
             return false;
         });
         new Loader(getContext()).loadCards(this, mColumn.getId());
+    }
+
+    void resetLastUpdate() {
+        mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
+        mLastUpdate.setText(
+                String.format(
+                        getContext().getString(R.string.text_last_updated),
+                        Data.timeAgo(mColumn.getUpdatedAt())
+                )
+        );
     }
 
     @OnClick(R.id.column_delete)
@@ -149,7 +160,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     void loadIssue(Loader.IssueLoader loader, int issueId) {
         mParent.loadIssue(loader, issueId);
     }
-
 
     void hideRecycler() {
         if(mRecycler != null) mRecycler.setVisibility(View.INVISIBLE);
@@ -173,14 +183,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     void addCard(Card card) {
         mAdapter.addCard(card);
+        resetLastUpdate();
     }
 
     void updateCard(Card card) {
         mAdapter.updateCard(card);
+        resetLastUpdate();
     }
 
     void removeCard(Card card) {
         mAdapter.removeCard(card);
+        resetLastUpdate();
     }
 
     void openMenu(View view, Card card) {

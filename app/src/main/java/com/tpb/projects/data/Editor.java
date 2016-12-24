@@ -183,6 +183,13 @@ public class Editor extends APIHandler {
     //https://developer.github.com/v3/projects/cards/#create-a-project-card
     public void createCard(CardCreationListener listener, int columnId, Card card) {
         //TODO Support creating issue cards
+        /*
+        Process
+        * Show dialog for the issue title and body
+        * Delete the card
+        * Create the issue
+        * Create the new card with the issue id
+         */
         final JSONObject obj = new JSONObject();
         try {
             obj.put("note", card.getNote());

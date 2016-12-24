@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.commonsware.cwac.pager.PageDescriptor;
 import com.commonsware.cwac.pager.v4.ArrayPagerAdapter;
@@ -173,22 +174,26 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (dialogInterface, i) -> {
             mRefresher.setRefreshing(true);
             final String text = ((EditText) dialog.findViewById(R.id.project_new_column)).getText().toString();
-            //TODO Check for string length
-            mEditor.addColumn(new Editor.ColumnAdditionListener() {
-                @Override
-                public void columnAdded(Column column) {
-                    mAddCard.setVisibility(View.VISIBLE);
-                    mAdapter.columns.add(column);
-                    mAdapter.add(new ColumnPageDescriptor(column));
-                    mColumnPager.setCurrentItem(mAdapter.getCount(), true);
-                    mRefresher.setRefreshing(false);
-                }
+            if(!text.isEmpty()) {
+                mEditor.addColumn(new Editor.ColumnAdditionListener() {
+                    @Override
+                    public void columnAdded(Column column) {
+                        mAddCard.setVisibility(View.VISIBLE);
+                        mAdapter.columns.add(column);
+                        mAdapter.add(new ColumnPageDescriptor(column));
+                        mColumnPager.setCurrentItem(mAdapter.getCount(), true);
+                        mRefresher.setRefreshing(false);
+                    }
 
-                @Override
-                public void addError() {
+                    @Override
+                    public void addError() {
 
-                }
-            }, mProject.getId(), text);
+                    }
+                }, mProject.getId(), text);
+            } else {
+                //TODO Ensure that dialog doesn't close
+                Toast.makeText(this, R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
+            }
         });
 
         dialog.show();

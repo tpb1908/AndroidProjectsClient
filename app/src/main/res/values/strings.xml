@@ -12,6 +12,8 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="error_key_invalid">Bad credentials</string>
+    <string name="error_no_column_title">Title can\'t be empty</string>
+    <string name="error_title_change_failed">Title change failed</string>
 
     <string name="text_zero_value">0</string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
