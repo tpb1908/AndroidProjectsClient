@@ -25,9 +25,9 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
-import com.tpb.projects.repo.ProjectDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,7 +181,19 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_card)
     void addCard() {
-        new CardDialog().show(getSupportFragmentManager(), "TAG");
+        final CardDialog dialog = new CardDialog();
+        dialog.setListener(new CardDialog.CardListener() {
+            @Override
+            public void cardEditDone(Card card, boolean isNewCard) {
+                mEditor.createCard(null, mAdapter.getCurrentFragment().mColumn.getId(), card);
+            }
+
+            @Override
+            public void cardEditCancelled() {
+
+            }
+        });
+        dialog.show(getSupportFragmentManager(), "TAG");
     }
 
 

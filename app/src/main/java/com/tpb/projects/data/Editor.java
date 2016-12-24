@@ -6,6 +6,7 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
 
@@ -179,6 +180,32 @@ public class Editor extends APIHandler {
                 });
     }
 
+    //https://developer.github.com/v3/projects/cards/#create-a-project-card
+    public void createCard(CardCreationListener listener, int columnId, Card card) {
+        //TODO Support creating issue cards
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("note", card.getNote());
+        } catch(JSONException jse) {
+            Log.e(TAG, "createCard: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Card: " + response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Card: " + anError.getErrorBody());
+                    }
+                });
+    }
+
     public void moveCard(CardMovementListener listener, int columnId, int cardId, int afterId) {
         final JSONObject obj = new JSONObject();
         try {
@@ -262,6 +289,14 @@ public class Editor extends APIHandler {
         void columnMoved(int columnId);
 
         void columnMovementError();
+    }
+
+    public interface CardCreationListener {
+
+        void cardCreated(Card card);
+
+        void cardCreationError();
+
     }
 
     public interface CardMovementListener {

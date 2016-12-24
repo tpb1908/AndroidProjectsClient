@@ -54,7 +54,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     void addCard(int pos, Card card) {
-        Log.i(TAG, "addCard: Card being added to " + pos);
+        Log.i(TAG, "createCard: Card being added to " + pos);
         mCards.add(pos, card);
         notifyItemInserted(pos);
         final int id = pos == 0 ? -1 : mCards.get(pos - 1).getId();
