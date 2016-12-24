@@ -79,8 +79,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     void removeCard(Card card) {
-        mCards.remove(card);
-        notifyDataSetChanged();
+        final int index = indexOf(card.getId());
+        if(index != -1) {
+            mCards.remove(index);
+            notifyItemRemoved(index);
+        }
         //API call is handled in adapter to which card is added
     }
 

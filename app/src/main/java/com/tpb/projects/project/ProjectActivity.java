@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -157,6 +158,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     }
 
+    void loadIssue(Loader.IssueLoader loader, int issueId) {
+        mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
+    }
+
+
     @OnClick(R.id.project_add_column)
     void addColumn() {
         mMenu.close(true);
@@ -189,65 +195,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         dialog.show();
     }
 
-    @OnClick(R.id.project_add_card)
-    void addCard() {
-        mMenu.close(true);
-        final CardDialog dialog = new CardDialog();
-        showCardDialog(dialog);
-    }
-
-    void editCard(Card card) {
-        final CardDialog dialog = new CardDialog();
-        final Bundle b = new Bundle();
-        b.putParcelable(getString(R.string.parcel_card), card);
-        dialog.setArguments(b);
-        showCardDialog(dialog);
-    }
-
-    void showCardDialog(CardDialog dialog) {
-        final int columnPosition = mCurrentPosition;
-        dialog.setListener(new CardDialog.CardListener() {
-            @Override
-            public void cardEditDone(Card card, boolean isNewCard) {
-                mRefresher.setRefreshing(true);
-                if(isNewCard) {
-                    mEditor.createCard(new Editor.CardCreationListener() {
-                        @Override
-                        public void cardCreated(Card card) {
-                            mAdapter.getExistingFragment(columnPosition).addCard(card);
-                            mRefresher.setRefreshing(false);
-                        }
-
-                        @Override
-                        public void cardCreationError() {
-                            mRefresher.setRefreshing(false);
-                        }
-                    }, mAdapter.getCurrentFragment().mColumn.getId(), card);
-                } else {
-                    mEditor.updateCard(new Editor.CardUpdateListener() {
-                        @Override
-                        public void cardUpdated(Card card) {
-                            mAdapter.getExistingFragment(columnPosition).updateCard(card);
-                            mRefresher.setRefreshing(false);
-                        }
-
-                        @Override
-                        public void cardUpdateError() {
-                            mRefresher.setRefreshing(false);
-                        }
-                    }, card.getId(), card.getNote());
-                }
-            }
-
-            @Override
-            public void cardEditCancelled() {
-
-            }
-        });
-        dialog.show(getSupportFragmentManager(), "TAG");
-    }
-
-
     void deleteColumn(Column column) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.title_delete_column)
@@ -272,8 +219,101 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 }).show();
     }
 
-    void loadIssue(Loader.IssueLoader loader, int issueId) {
-        mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
+    void moveColumn(int tag, int dropTag) {
+        final int from = mAdapter.indexOf(tag);
+        final int to = mAdapter.indexOf(dropTag);
+        Log.i(TAG, "moveColumn: From " + from + ", to " + to);
+        mAdapter.move(from, to);
+        mAdapter.columns.add(to, mAdapter.columns.remove(from));
+        mColumnPager.setCurrentItem(to, true);
+    }
+
+    @OnClick(R.id.project_add_card)
+    void addCard() {
+        mMenu.close(true);
+        final CardDialog dialog = new CardDialog();
+        showCardDialog(dialog);
+    }
+
+    void editCard(Card card) {
+        final CardDialog dialog = new CardDialog();
+        final Bundle b = new Bundle();
+        b.putParcelable(getString(R.string.parcel_card), card);
+        dialog.setArguments(b);
+        showCardDialog(dialog);
+    }
+
+    void deleteCard(Card card) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_delete_card)
+                .setMessage(R.string.text_delete_note_warning)
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+                    mRefresher.setRefreshing(true);
+                    final int columnId = mAdapter.getCurrentFragment().mColumn.getId();
+                    mEditor.deleteCard(new Editor.CardDeletionListener() {
+                        @Override
+                        public void cardDeleted(Card card) {
+                            //TODO Ensure that we restore to the correct column
+                            mRefresher.setRefreshing(false);
+                            mAdapter.getCurrentFragment().removeCard(card);
+                            Snackbar.make(findViewById(R.id.project_coordinator),
+                                    getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
+                                    .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card))
+                            .show();
+                        }
+
+                        @Override
+                        public void cardDeletionError() {
+
+                        }
+                    }, card);
+                }).show();
+    }
+
+    private Editor.CardCreationListener mCardCreationListener = new Editor.CardCreationListener() {
+            @Override
+            public void cardCreated(Card card) {
+                mAdapter.getCurrentFragment().addCard(card);
+                mRefresher.setRefreshing(false);
+            }
+
+            @Override
+            public void cardCreationError() {
+                mRefresher.setRefreshing(false);
+            }
+    };
+
+    void showCardDialog(CardDialog dialog) {
+        final int columnPosition = mCurrentPosition;
+        dialog.setListener(new CardDialog.CardListener() {
+            @Override
+            public void cardEditDone(Card card, boolean isNewCard) {
+                mRefresher.setRefreshing(true);
+                if(isNewCard) {
+                    mEditor.createCard(mCardCreationListener, mAdapter.getCurrentFragment().mColumn.getId(), card);
+                } else {
+                    mEditor.updateCard(new Editor.CardUpdateListener() {
+                        @Override
+                        public void cardUpdated(Card card) {
+                            mAdapter.getExistingFragment(columnPosition).updateCard(card);
+                            mRefresher.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void cardUpdateError() {
+                            mRefresher.setRefreshing(false);
+                        }
+                    }, card.getId(), card.getNote());
+                }
+            }
+
+            @Override
+            public void cardEditCancelled() {
+
+            }
+        });
+        dialog.show(getSupportFragmentManager(), "TAG");
     }
 
     private long lastPageChange;
@@ -289,15 +329,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
             lastPageChange = System.nanoTime();
         }
-    }
-
-    void moveColumn(int tag, int dropTag) {
-        final int from = mAdapter.indexOf(tag);
-        final int to = mAdapter.indexOf(dropTag);
-        Log.i(TAG, "moveColumn: From " + from + ", to " + to);
-        mAdapter.move(from, to);
-        mAdapter.columns.add(to, mAdapter.columns.remove(from));
-        mColumnPager.setCurrentItem(to, true);
     }
 
     public void onToolbarBackPressed(View view) {
@@ -323,7 +354,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
                 Log.i(TAG, "onDrag: Refresher drag listener");
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
-
 
                 if(event.getX() / metrics.widthPixels > 0.85f) {
                     dragRight();

@@ -179,12 +179,18 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mAdapter.updateCard(card);
     }
 
+    void removeCard(Card card) {
+        mAdapter.removeCard(card);
+    }
+
     void openMenu(View view, Card card) {
         //We use the non AppCompat popup as the AppCompat version has a bug which scrolls the RecyclerView up
         final android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
         popup.setOnMenuItemClickListener(menuItem -> {
             if(menuItem.getItemId() == R.id.menu_edit_note) {
                 mParent.editCard(card);
+            } else if(menuItem.getItemId() == R.id.menu_delete_note) {
+                mParent.deleteCard(card);
             }
             return true;
         });

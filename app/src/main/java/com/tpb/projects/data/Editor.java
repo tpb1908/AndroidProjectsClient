@@ -266,6 +266,28 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void deleteCard(CardDeletionListener listener, Card card) {
+        AndroidNetworking.delete(GIT_BASE + "projects/columns/cards/" + Integer.toString(card.getId()))
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Card deleted: " + response.toString());
+                        if(listener != null) listener.cardDeletionError();
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(anError.getErrorCode() == 0 && listener != null) {
+                            listener.cardDeleted(card);
+                        }
+                        Log.i(TAG, "onError: Card deleted: " + anError.getErrorBody());
+                        Log.i(TAG, "onError: Card deleted: " + anError.getErrorCode());
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -345,6 +367,12 @@ public class Editor extends APIHandler {
 
     }
 
+    public interface CardDeletionListener {
 
+        void cardDeleted(Card card);
+
+        void cardDeletionError();
+
+    }
 
 }
