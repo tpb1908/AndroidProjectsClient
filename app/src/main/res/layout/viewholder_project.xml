@@ -49,7 +49,8 @@
             android:visibility="gone"
             android:layout_below="@+id/project_last_updated"
             android:layout_alignParentBottom="true"
-            android:textAppearance="@android:style/TextAppearance.Material.Body1"/>
+            android:textAppearance="@android:style/TextAppearance.Material.Body1"
+            android:autoLink="email|web"/>
 
     </RelativeLayout>
 
