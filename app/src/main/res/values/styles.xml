@@ -13,6 +13,7 @@
         <item name="android:textColorPrimaryInverse">@color/colorPrimaryTextInverse</item>
         <item name="android:textColorSecondaryInverse">@color/colorSecondaryTextInverse</item>
         <item name="drawableColor">@color/md_black_1000</item>
+        <item name="drawableColorSecondary">@color/iconColorSecondaryLight</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
@@ -27,6 +28,7 @@
         <item name="android:textColorPrimaryInverse">@color/colorPrimaryText</item>
         <item name="android:textColorSecondaryInverse">@color/colorSecondaryText</item>
         <item name="drawableColor">@color/md_white_1000</item>
+        <item name="drawableColorSecondary">@color/iconColorSecondaryDark</item>
     </style>
 
     <style name="LoginEditText" parent="TextAppearance.AppCompat">
