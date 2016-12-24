@@ -171,10 +171,13 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .setTitle(R.string.title_new_column)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (dialogInterface, i) -> {
-            mRefresher.setRefreshing(true);
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {});
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+
             final String text = ((EditText) dialog.findViewById(R.id.project_new_column)).getText().toString();
             if(!text.isEmpty()) {
+                mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
                     @Override
                     public void columnAdded(Column column) {
@@ -190,13 +193,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
                     }
                 }, mProject.getId(), text);
+                dialog.dismiss();
             } else {
                 //TODO Ensure that dialog doesn't close
                 Toast.makeText(this, R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
             }
         });
-
-        dialog.show();
     }
 
     void deleteColumn(Column column) {
@@ -258,7 +260,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mEditor.deleteCard(new Editor.CardDeletionListener() {
                         @Override
                         public void cardDeleted(Card card) {
-                            //TODO Ensure that we restore to the correct column
                             mRefresher.setRefreshing(false);
                             mAdapter.getCurrentFragment().removeCard(card);
                             Snackbar.make(findViewById(R.id.project_coordinator),

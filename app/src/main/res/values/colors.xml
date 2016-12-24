@@ -9,7 +9,7 @@
     <color name="colorSecondaryText">@color/md_grey_600</color>
     <color name="colorSecondaryTextInverse">@color/md_grey_400</color>
     <color name="colorDivider">@color/md_grey_400</color>
-    <color name="iconColorSecondaryLight">#6100000</color>
+    <color name="iconColorSecondaryLight">#61000000</color>
     <color name="iconColorSecondaryDark">#80FFFFFF</color>
     <!--grey-->
     <color name="md_grey_50">#FAFAFA</color>
