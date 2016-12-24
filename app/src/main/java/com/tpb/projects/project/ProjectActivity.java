@@ -151,6 +151,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_column)
     void addColumn() {
+        mMenu.close(true);
         final AlertDialog dialog  = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog_new_column)
                 .setTitle(R.string.title_new_column)
@@ -181,6 +182,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_card)
     void addCard() {
+        mMenu.close(true);
         final CardDialog dialog = new CardDialog();
         dialog.setListener(new CardDialog.CardListener() {
             @Override
