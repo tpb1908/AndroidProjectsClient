@@ -197,11 +197,13 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card: " + response.toString());
+                        if(listener != null) listener.cardCreated(Card.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card: " + anError.getErrorBody());
+                        if(listener != null) listener.cardCreationError();
                     }
                 });
     }

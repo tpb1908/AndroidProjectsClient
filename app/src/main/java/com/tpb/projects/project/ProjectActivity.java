@@ -193,10 +193,25 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addCard() {
         mMenu.close(true);
         final CardDialog dialog = new CardDialog();
+        final int columnPosition = mCurrentPosition;
         dialog.setListener(new CardDialog.CardListener() {
             @Override
             public void cardEditDone(Card card, boolean isNewCard) {
-                mEditor.createCard(null, mAdapter.getCurrentFragment().mColumn.getId(), card);
+                if(isNewCard) {
+                    mEditor.createCard(new Editor.CardCreationListener() {
+                        @Override
+                        public void cardCreated(Card card) {
+                            mAdapter.getExistingFragment(columnPosition).addCard(card);
+                        }
+
+                        @Override
+                        public void cardCreationError() {
+
+                        }
+                    }, mAdapter.getCurrentFragment().mColumn.getId(), card);
+                } else {
+                    //TODO Make edit call
+                }
             }
 
             @Override

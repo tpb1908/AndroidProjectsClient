@@ -52,12 +52,25 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     void addCard(Card card) {
+        mCards.add(0, card);
+        notifyItemInserted(0);
+    }
+
+    void updateCard(Card card) {
+        final int index = indexOf(card.getId());
+        if(index != -1) {
+            mCards.set(index, card);
+            notifyItemChanged(index);
+        }
+    }
+
+    void addCardFromDrag(Card card) {
         mCards.add(card);
         notifyItemInserted(mCards.size());
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), -1);
     }
 
-    void addCard(int pos, Card card) {
+    void addCardFromDrag(int pos, Card card) {
         Log.i(TAG, "createCard: Card being added to " + pos);
         mCards.add(pos, card);
         notifyItemInserted(pos);
@@ -71,7 +84,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         //API call is handled in adapter to which card is added
     }
 
-    void moveCard(int oldPos, int newPos) {
+    void moveCardFromDrag(int oldPos, int newPos) {
         final Card card = mCards.get(oldPos);
         mCards.remove(oldPos);
         mCards.add(newPos, card);

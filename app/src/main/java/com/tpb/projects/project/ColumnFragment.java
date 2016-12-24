@@ -171,6 +171,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     }
 
+    void addCard(Card card) {
+        mAdapter.addCard(card);
+    }
+
+    void updateCard(Card card) {
+        mAdapter.updateCard(card);
+    }
+
     void openMenu(View view, Card card) {
         //We use the non AppCompat popup as the AppCompat version has a bug which scrolls the RecyclerView up
         final android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);

@@ -74,19 +74,19 @@ class CardDragListener implements View.OnDragListener {
                     if(source != target) {
                         if(targetPosition >= 0) {
                             Log.i(TAG, "onDrag: Adding to position " + targetPosition);
-                            targetAdapter.addCard(targetPosition, card);
+                            targetAdapter.addCardFromDrag(targetPosition, card);
                         } else {
-                            targetAdapter.addCard(card);
+                            targetAdapter.addCardFromDrag(card);
                         }
                         sourceAdapter.removeCard(card);
                     } else if(sourcePosition != targetPosition) { //We are moving a card
-                        sourceAdapter.moveCard(sourcePosition, targetPosition);
+                        sourceAdapter.moveCardFromDrag(sourcePosition, targetPosition);
                     }
 
                 } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0) {
                     Log.i(TAG, "onDrag: Drop on the recycler");
                     sourceAdapter.removeCard(card);
-                    targetAdapter.addCard(card);
+                    targetAdapter.addCardFromDrag(card);
                 }
                 view.setBackground(selectedBG);
                 break;
