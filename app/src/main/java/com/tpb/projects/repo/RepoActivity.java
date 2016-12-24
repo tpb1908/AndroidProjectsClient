@@ -69,6 +69,7 @@ public class RepoActivity extends AppCompatActivity implements
     private ProjectAdapter mAdapter;
     private Loader mLoader;
     private Repository mRepo;
+    private boolean mCanAccess;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class RepoActivity extends AppCompatActivity implements
     public void openProject(Project project, View name) {
         final Intent i = new Intent(RepoActivity.this, ProjectActivity.class);
         i.putExtra(getString(R.string.parcel_project), project);
+        i.putExtra(getString(R.string.intent_can_edit), mCanAccess);
         startActivity(i,
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                         this,
@@ -213,11 +215,13 @@ public class RepoActivity extends AppCompatActivity implements
         mLoader.loadReadMe(this, mRepo.getFullName());
         if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUsername())) {
             mAdapter.enableRepoAccess();
+            mCanAccess = true;
         } else {
             mLoader.checkAccess(new Loader.AccessCheckListener() {
                 @Override
                 public void checkComplete(boolean canAccess) {
                     Log.i(TAG, "checkComplete: Aaccess " + canAccess);
+                    mCanAccess = canAccess;
                     if(canAccess) mAdapter.enableRepoAccess();
                     Toast.makeText(RepoActivity.this,
                             canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,

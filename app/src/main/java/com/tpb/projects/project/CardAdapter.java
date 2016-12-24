@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import com.commonsware.cwac.anddown.AndDown;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by theo on 20/12/16.
@@ -36,10 +38,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private AndDown md = new AndDown();
     private ColumnFragment mParent;
     private Editor mEditor;
+    private boolean mCanEdit;
 
-    CardAdapter(ColumnFragment parent) {
+    CardAdapter(ColumnFragment parent, boolean canEdit) {
         mParent = parent;
         mEditor = new Editor(mParent.getContext());
+        mCanEdit = canEdit;
     }
 
     void setCards(ArrayList<Card> cards) {
@@ -87,6 +91,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         return mCards;
     }
 
+    private void openMenu(View view, int position) {
+        Log.i(TAG, "openMenu: Opening menu at " + position);
+    }
+
     @Override
     public CardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CardHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_card, parent, false));
@@ -95,19 +103,23 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
-        holder.mCardView.setTag(mCards.get(pos).getId());
-        holder.mCardView.setOnLongClickListener(view -> {
-            final ClipData data = ClipData.newPlainText("", "");
-            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                view.startDragAndDrop(data, shadowBuilder, view, 0);
-            } else {
-                view.startDrag(data, shadowBuilder, view, 0);
-            }
-            view.setVisibility(View.INVISIBLE);
-            return true;
-        });
-        holder.mCardView.setOnDragListener(new CardDragListener(mParent.getContext()));
+        if(mCanEdit) {
+            holder.mCardView.setTag(mCards.get(pos).getId());
+            holder.mCardView.setOnLongClickListener(view -> {
+                final ClipData data = ClipData.newPlainText("", "");
+                final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    view.startDragAndDrop(data, shadowBuilder, view, 0);
+                } else {
+                    view.startDrag(data, shadowBuilder, view, 0);
+                }
+                view.setVisibility(View.INVISIBLE);
+                return true;
+            });
+            holder.mCardView.setOnDragListener(new CardDragListener(mParent.getContext()));
+        } else {
+            holder.mMenuButton.setVisibility(View.GONE);
+        }
 
         if(mCards.get(pos).requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
@@ -144,6 +156,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
+        @BindView(R.id.card_menu_button) ImageButton mMenuButton;
+
+        @OnClick(R.id.card_menu_button)
+        void onMenuClick(View v) {
+            openMenu(v, getAdapterPosition());
+        }
 
         CardHolder(View view) {
             super(view);

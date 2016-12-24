@@ -57,6 +57,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
+    private boolean mCanEdit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +72,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
         }
+        mCanEdit = launchIntent.getBooleanExtra(getString(R.string.intent_can_edit), false);
+        if(!mCanEdit) mMenu.hideMenu(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
@@ -314,7 +317,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
-            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn, mNavListener);
+            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn, mNavListener, mCanEdit);
         }
 
 

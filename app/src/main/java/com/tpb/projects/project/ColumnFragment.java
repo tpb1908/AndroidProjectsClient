@@ -54,13 +54,16 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private ProjectActivity mParent;
     private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
+    private boolean mCanEdit;
 
     private CardAdapter mAdapter;
 
-    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener) {
+
+    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, boolean canEdit) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
         cf.mNavListener = navListener;
+        cf.mCanEdit = canEdit;
         return cf;
     }
 
@@ -77,28 +80,29 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 )
         );
         mViewsValid = true;
-        mAdapter = new CardAdapter(this);
+        mAdapter = new CardAdapter(this, mCanEdit);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
-        mCard.setTag(mColumn.getId());
-        mCard.setOnLongClickListener(v -> {
-            final ClipData data = ClipData.newPlainText("", "");
-            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                v.startDragAndDrop(data, shadowBuilder, v, 0);
-            } else {
-                v.startDrag(data, shadowBuilder, v, 0);
-            }
-           // v.setVisibility(View.INVISIBLE);
-            return true;
-        });
-        final ColumnDragListener listener = new ColumnDragListener(mCard);
-        mCard.setOnDragListener(new ColumnDragListener());
-        mName.setOnDragListener(listener);
-        mLastUpdate.setOnDragListener(listener);
-        mCard.setOnDragListener(listener);
-
+        if(mCanEdit) {
+            mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
+            mCard.setTag(mColumn.getId());
+            mCard.setOnLongClickListener(v -> {
+                final ClipData data = ClipData.newPlainText("", "");
+                final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    v.startDragAndDrop(data, shadowBuilder, v, 0);
+                } else {
+                    v.startDrag(data, shadowBuilder, v, 0);
+                }
+                // v.setVisibility(View.INVISIBLE);
+                return true;
+            });
+            final ColumnDragListener listener = new ColumnDragListener(mCard);
+            mCard.setOnDragListener(new ColumnDragListener());
+            mName.setOnDragListener(listener);
+            mLastUpdate.setOnDragListener(listener);
+            mCard.setOnDragListener(listener);
+        }
         return view;
     }
 
