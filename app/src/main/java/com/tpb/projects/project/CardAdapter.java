@@ -87,7 +87,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
 
-
     void removeCard(Card card) {
         final int index = indexOf(card.getId());
         if(index != -1) {
@@ -96,7 +95,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         }
         //API call is handled in adapter to which card is added
     }
-
 
     int indexOf(int cardId) {
         for(int i = 0; i < mCards.size(); i++) {
@@ -111,6 +109,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void openMenu(View view, int position) {
         mParent.openMenu(view, mCards.get(position));
+    }
+
+    private void cardClick(int position) {
+        mParent.cardClick(mCards.get(position));
     }
 
     @Override
@@ -184,6 +186,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         CardHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            view.setOnClickListener(v -> cardClick(getAdapterPosition()));
         }
 
     }

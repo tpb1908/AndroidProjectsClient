@@ -227,6 +227,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.show();
     }
 
+    void cardClick(Card card) {
+        //TODO other other
+        mParent.editCard(card);
+    }
 
     @Override
     public void onAttach(Context context) {
