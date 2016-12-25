@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
@@ -33,6 +34,7 @@ import butterknife.ButterKnife;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private FirebaseAnalytics mAnalytics;
     private OAuthHandler mApp;
     private boolean mLoginShown = false;
 
@@ -57,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
+
+        mAnalytics = FirebaseAnalytics.getInstance(this);
 
         mApp = new OAuthHandler(this, Constants.CLIENT_ID,
                 Constants.CLIENT_SECRET, Constants.REDIRECT_URL);

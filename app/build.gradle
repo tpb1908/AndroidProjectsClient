@@ -45,8 +45,10 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:support-compat:25.1.0'
+    compile files('src/main/lib/cwac-pager-0.2.5.jar')
+    compile project(':animatingrecycler')
     compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-compat:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:cardview-v7:25.1.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'
@@ -59,8 +61,10 @@ dependencies {
     compile 'com.commonsware.cwac:anddown:0.3.0'
     compile 'org.sufficientlysecure:html-textview:3.1'
     compile 'com.jakewharton:butterknife:8.4.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.google.firebase:firebase-core:10.0.1'
     testCompile 'junit:junit:4.12'
-    compile files('src/main/lib/cwac-pager-0.2.5.jar')
-    compile project(':animatingrecycler')
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'

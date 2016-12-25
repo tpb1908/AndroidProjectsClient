@@ -45,3 +45,8 @@ github
 github.pub
 github_projects
 github_projects.pub
+/app/google-services.json
+.idea/vcs.xml
+animatingrecycler/libs/
+animatingrecycler/src/main/res/drawable/
+app/google-services.json
