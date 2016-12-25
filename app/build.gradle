@@ -62,5 +62,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     testCompile 'junit:junit:4.12'
     compile files('src/main/lib/cwac-pager-0.2.5.jar')
-    compile project(':animatingrecyclerview')
+    compile project(':animatingrecycler')
 }
