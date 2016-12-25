@@ -19,12 +19,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ import butterknife.Unbinder;
 
 public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private static final String TAG = ColumnFragment.class.getSimpleName();
+
+    private FirebaseAnalytics mAnalytics;
 
     private Unbinder unbinder;
     private boolean mViewsValid = false;
@@ -115,6 +119,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mAnalytics = FirebaseAnalytics.getInstance(getContext());
+
         mEditor = new Editor(getContext());
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE) {
@@ -122,19 +129,25 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
                     mName.setText(mColumn.getName());
                 } else {
-                    mEditor.updateColumn(new Editor.ColumnChangeListener() {
+                    mEditor.updateColumnName(new Editor.ColumnNameChangeListener() {
                         @Override
-                        public void columnChanged(Column column) {
+                        public void columnNameChanged(Column column) {
                             if(mViewsValid) {
                                 mColumn.setName(mName.getText().toString());
                                 resetLastUpdate();
                             }
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
                         }
 
                         @Override
-                        public void changeError() {
+                        public void columnNameChangeError() {
                             Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
                             mName.setText(mColumn.getName());
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
                         }
                     }, mColumn.getId(), mName.getText().toString());
 
@@ -180,11 +193,16 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             mRecycler.enableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);
     }
 
     @Override
-    public void loadError() {
-
+    public void cardsLoadError() {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);
     }
 
     void addCard(Card card) {

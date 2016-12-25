@@ -272,7 +272,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Cards: " + anError.getErrorBody());
-                        if(loader != null) loader.loadError();
+                        if(loader != null) loader.cardsLoadError();
                     }
                 });
     }
@@ -347,7 +347,7 @@ public class Loader extends APIHandler {
 
         void cardsLoaded(Card[] cards);
 
-        void loadError();
+        void cardsLoadError();
 
     }
 

@@ -108,14 +108,14 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateColumn(ColumnChangeListener listener, int columnId, String newName) {
+    public void updateColumnName(ColumnNameChangeListener listener, int columnId, String newName) {
         final JSONObject obj = new JSONObject();
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
         try {
             obj.put("name", newName);
         } catch(JSONException jse) {
-            Log.e(TAG, "updateColumn: ", jse);
+            Log.e(TAG, "updateColumnName: ", jse);
         }
         AndroidNetworking.patch(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
                 .addHeaders(PREVIEW_API_AUTH_HEADERS)
@@ -319,11 +319,11 @@ public class Editor extends APIHandler {
 
     }
 
-    public interface ColumnChangeListener {
+    public interface ColumnNameChangeListener {
 
-        void columnChanged(Column column);
+        void columnNameChanged(Column column);
 
-        void changeError();
+        void columnNameChangeError();
 
     }
 

@@ -39,4 +39,7 @@ public class Analytics {
 
     public static final String TAG_CARD_CREATION = "CARD_CREATION";
 
+    public static final String TAG_COLUMN_NAME_CHANGE = "COLUMN_NAME_CHANGE";
+    public static final String TAG_CARDS_LOADED = "CARDS_LOADED";
+
 }
