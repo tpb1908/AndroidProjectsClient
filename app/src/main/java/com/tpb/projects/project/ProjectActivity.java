@@ -164,7 +164,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void loadError() {
+            public void columnsLoadError() {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
@@ -213,7 +213,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
 
                     @Override
-                    public void addColumnError() {
+                    public void columnAdditionError() {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);

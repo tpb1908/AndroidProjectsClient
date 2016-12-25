@@ -155,7 +155,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.addColumnError();
+                        if(listener != null) listener.columnAdditionError();
                     }
                 });
     }
@@ -331,7 +331,7 @@ public class Editor extends APIHandler {
 
         void columnAdded(Column column);
 
-        void addColumnError();
+        void columnAdditionError();
 
     }
 

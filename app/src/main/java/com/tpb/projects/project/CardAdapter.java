@@ -153,7 +153,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
 
                 @Override
-                public void loadError() {
+                public void issueLoadError() {
 
                 }
             }, mCards.get(pos).getIssueId());

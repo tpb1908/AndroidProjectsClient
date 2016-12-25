@@ -245,8 +245,8 @@ public class RepoActivity extends AppCompatActivity implements
         } else {
             mLoader.checkAccess(new Loader.AccessCheckListener() {
                 @Override
-                public void checkComplete(boolean canAccess) {
-                    Log.i(TAG, "checkComplete: Aaccess " + canAccess);
+                public void accessCheckComplete(boolean canAccess) {
+                    Log.i(TAG, "accessCheckComplete: Aaccess " + canAccess);
                     mCanAccess = canAccess;
                     if(canAccess) mAdapter.enableRepoAccess();
                     Toast.makeText(RepoActivity.this,
@@ -256,7 +256,7 @@ public class RepoActivity extends AppCompatActivity implements
                 }
 
                 @Override
-                public void checkError() {
+                public void accessCheckError() {
 
                 }
             }, GitHubSession.getSession(this).getUsername(), mRepo.getFullName());
@@ -284,7 +284,7 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void loadError() {
+    public void readmeLoadError() {
 
     }
 

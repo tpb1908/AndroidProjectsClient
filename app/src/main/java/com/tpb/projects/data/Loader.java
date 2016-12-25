@@ -166,16 +166,16 @@ public class Loader extends APIHandler {
                 for(User u : collaborators) {
                     Log.i(TAG, "collaboratorsLoaded: Comparing " + login + " to " + u.getLogin());
                     if(login.equals(u.getLogin()) && listener != null) {
-                        listener.checkComplete(true);
+                        listener.accessCheckComplete(true);
                         return;
                     }
                 }
-                if(listener != null) listener.checkComplete(false);
+                if(listener != null) listener.accessCheckComplete(false);
             }
 
             @Override
-            public void loadError() {
-                if(listener != null) listener.checkError();
+            public void collaboratorsLoadError() {
+                if(listener != null) listener.accessCheckError();
             }
         }, repoFullname);
     }
@@ -245,7 +245,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: load columnes: " + anError.getErrorBody());
-                        loader.loadError();
+                        loader.columnsLoadError();
                     }
                 });
     }
@@ -290,7 +290,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue: " + anError.getErrorBody());
-                        if(loader != null) loader.loadError();
+                        if(loader != null) loader.issueLoadError();
                     }
                 });
     }
@@ -303,7 +303,7 @@ public class Loader extends APIHandler {
 
         void reposLoaded(Repository[] repos);
 
-        void loadError();
+        void reposLoadError();
 
     }
 
@@ -311,14 +311,14 @@ public class Loader extends APIHandler {
 
         void repoLoaded(Repository repo);
 
-        void loadError();
+        void repoLoadError();
     }
 
     public interface ReadMeLoader {
 
         void readMeLoaded(String readMe);
 
-        void loadError();
+        void readmeLoadError();
 
     }
 
@@ -339,7 +339,7 @@ public class Loader extends APIHandler {
 
         void columnsLoaded(Column[] columns);
 
-        void loadError();
+        void columnsLoadError();
 
     }
 
@@ -356,7 +356,7 @@ public class Loader extends APIHandler {
 
         void collaboratorsLoaded(User[] collaborators);
 
-        void loadError();
+        void collaboratorsLoadError();
 
     }
 
@@ -364,15 +364,15 @@ public class Loader extends APIHandler {
 
         void issueLoaded(Issue issue);
 
-        void loadError();
+        void issueLoadError();
 
     }
 
     public interface AccessCheckListener {
 
-        void checkComplete(boolean canAccess);
+        void accessCheckComplete(boolean canAccess);
 
-        void checkError();
+        void accessCheckError();
 
     }
 

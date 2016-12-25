@@ -145,7 +145,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     @Override
-    public void loadError() {
+    public void reposLoadError() {
 
     }
 
