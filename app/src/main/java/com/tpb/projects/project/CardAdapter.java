@@ -2,6 +2,7 @@ package com.tpb.projects.project;
 
 import android.content.ClipData;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.util.Analytics;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -150,11 +152,17 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     mCards.get(pos).setNote(issue.getTitle());
                     holder.mSpinner.setVisibility(View.INVISIBLE);
                     notifyItemChanged(pos);
+
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
+                    mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
 
                 @Override
                 public void issueLoadError() {
-
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
+                    mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
             }, mCards.get(pos).getIssueId());
         } else {

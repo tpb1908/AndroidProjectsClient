@@ -44,7 +44,7 @@ import butterknife.Unbinder;
 public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
-    private FirebaseAnalytics mAnalytics;
+    FirebaseAnalytics mAnalytics;
 
     private Unbinder unbinder;
     private boolean mViewsValid = false;

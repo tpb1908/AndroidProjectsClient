@@ -180,7 +180,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
-        //TODO Issue loading analytics
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 

@@ -33,7 +33,6 @@ public class Loader extends APIHandler {
         super(context);
     }
 
-
     public void loadRepositories(RepositoriesLoader loader, String user) {
         AndroidNetworking.get(GIT_BASE + "users/" + user + "/repos")
                 .addHeaders(API_AUTH_HEADERS)
