@@ -24,12 +24,14 @@ import com.commonsware.cwac.pager.PageDescriptor;
 import com.commonsware.cwac.pager.v4.ArrayPagerAdapter;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +47,8 @@ import butterknife.OnClick;
 
 public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
     private static final String TAG = ProjectActivity.class.getSimpleName();
+
+    FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.project_name) TextView mName;
     @BindView(R.id.project_refresher) SwipeRefreshLayout mRefresher;
@@ -67,6 +71,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         setTheme(R.style.AppTheme_Dark);
         setContentView(R.layout.activity_project);
         ButterKnife.bind(this);
+
+        mAnalytics = FirebaseAnalytics.getInstance(this);
 
         final Intent launchIntent = getIntent();
         mLoader = new Loader(this);
@@ -117,6 +123,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
         mProject = project;
         mName.setText(project.getName());
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
+
         mLoader.loadColumns(new Loader.ColumnsLoader() {
             @Override
             public void columnsLoaded(Column[] columns) {
@@ -144,21 +155,32 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 } else {
                     mAddCard.setVisibility(View.GONE);
                 }
+
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
+                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.length + 1);
+                mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
+
             }
 
             @Override
             public void loadError() {
-
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
         }, project.getId());
     }
 
     @Override
-    public void loadError() {
-
+    public void projectLoadError() {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
+        //TODO Issue loading analytics
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 

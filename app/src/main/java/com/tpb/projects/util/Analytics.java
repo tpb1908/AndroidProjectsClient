@@ -6,7 +6,8 @@ package com.tpb.projects.util;
 
 public class Analytics {
 
-    public static final String KEY_EDIT_STATUS = "PROJECT_CREATION_STATUS";
+    public static final String KEY_LOAD_STATUS = "LOAD_STATUS";
+    public static final String KEY_EDIT_STATUS = "EDIT_STATUS";
     public static final String VALUE_SUCCESS = "SUCCESS";
     public static final String VALUE_FAILURE = "FAILURE";
 
@@ -26,5 +27,10 @@ public class Analytics {
     public static final String TAG_PROJECT_DELETION = "PROJECT_DELETION";
 
     public static final String TAG_PROJECT_EDIT = "PROJECT_EDIT";
+
+    public static final String TAG_PROJECT_LOADED = "PROJECT_LOADED";
+
+    public static final String TAG_COLUMNS_LOADED = "COLUMNS_LOADED";
+    public static final String KEY_COLUMN_COUNT = "COLUMN_COUNT";
 
 }

@@ -192,7 +192,7 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.loadError();
+                        if(loader != null) loader.projectLoadError();
                     }
                 });
     }
@@ -326,7 +326,7 @@ public class Loader extends APIHandler {
 
         void projectLoaded(Project project);
 
-        void loadError();
+        void projectLoadError();
     }
 
     public interface ProjectsLoader {
