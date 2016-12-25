@@ -108,6 +108,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             mName.setEnabled(false);
             view.findViewById(R.id.column_delete).setVisibility(View.GONE);
         }
+        mName.clearFocus();
         return view;
     }
 
