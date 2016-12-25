@@ -13,6 +13,7 @@ import android.view.View;
 public class AnimatingRecycler extends RecyclerView {
     private boolean mIsScrollable;
     private boolean mShouldAnimate = true;
+    private AnimationType anim = AnimationType.ALPHA;
 
     public AnimatingRecycler(Context context) {
         this(context, null);
@@ -40,6 +41,14 @@ public class AnimatingRecycler extends RecyclerView {
         return mShouldAnimate;
     }
 
+    public void setAnimationType(AnimationType anim) {
+        this.anim = anim;
+    }
+
+    public AnimationType getAnimationType() {
+        return anim;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return !mIsScrollable || super.dispatchTouchEvent(ev);
@@ -50,7 +59,18 @@ public class AnimatingRecycler extends RecyclerView {
         super.onLayout(changed, l, t, r, b);
         if(mShouldAnimate) {
             for(int i = 0; i < getChildCount(); i++) {
-                animate(getChildAt(i), i);
+                switch(anim) {
+                    case HORIZONTAL:
+                        animateHorizontal(getChildAt(i), i);
+                        break;
+                    case VERTICAL:
+                        animateVertical(getChildAt(i), i);
+                        break;
+                    case ALPHA:
+                        animateAlpha(getChildAt(i), i);
+                        break;
+                }
+
 
                 if(i == getChildCount() - 1) {
                     getHandler().postDelayed(() -> mIsScrollable = true, i * 100);
@@ -62,10 +82,29 @@ public class AnimatingRecycler extends RecyclerView {
         mShouldAnimate = false;
     }
 
-    private void animate(View view, final int pos) {
+    private void animateHorizontal(View view, final int pos) {
         view.animate().cancel();
         view.setTranslationX(view.getWidth());
         view.animate().translationX(0).setDuration(300).setStartDelay(pos * 70);
+    }
+
+    private void animateVertical(View view, final int pos) {
+        view.animate().cancel();
+        view.setTranslationY(100);
+        view.setAlpha(0);
+        view.animate().alpha(1.0f).translationY(0).setDuration(300).setStartDelay(pos * 70);
+    }
+
+    private void animateAlpha(View view, final int pos) {
+        view.animate().cancel();
+        view.setAlpha(0.0f);
+        view.animate().alpha(1.0f).setDuration(300).setStartDelay(pos * 70);
+    }
+
+    public enum AnimationType {
+
+        HORIZONTAL, VERTICAL, ALPHA
+
     }
 
 }
