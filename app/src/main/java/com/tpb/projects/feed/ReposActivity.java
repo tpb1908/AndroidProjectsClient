@@ -15,12 +15,14 @@ import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 
 import butterknife.BindView;
@@ -38,6 +40,7 @@ import butterknife.ButterKnife;
 
 public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {
     private static final String TAG = ReposActivity.class.getSimpleName();
+    private FirebaseAnalytics mAnalytics;
 
     private OAuthHandler mApp;
     @BindView(R.id.repos_refresher) SwipeRefreshLayout mRefresher;
@@ -58,6 +61,10 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
+
+        mAnalytics = FirebaseAnalytics.getInstance(this);
+        mAnalytics.logEvent(Analytics.TAG_OPEN_REPOS_ACTIVITY, null);
+
         mApp = new OAuthHandler(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
@@ -86,6 +93,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
                 ).toBundle()
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
+        mAnalytics.logEvent(Analytics.TAG_OPEN_REPO, null);
     }
 
     @Override

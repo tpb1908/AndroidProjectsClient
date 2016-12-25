@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -25,6 +26,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
@@ -45,6 +47,8 @@ public class RepoActivity extends AppCompatActivity implements
         ProjectDialog.ProjectListener,
         Editor.ProjectCreationListener {
     private static final String TAG = RepoActivity.class.getSimpleName();
+
+    private FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.repo_name) TextView mName;
     @BindView(R.id.repo_description) TextView mDescription;
@@ -77,6 +81,9 @@ public class RepoActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme_Dark);
         setContentView(R.layout.activity_repo);
         ButterKnife.bind(this);
+
+        mAnalytics = FirebaseAnalytics.getInstance(this);
+
         final Intent launchIntent = getIntent();
         mReadmeButton.setOnClickListener((v) -> {
             if(mReadme.getVisibility() == GONE) {
@@ -143,17 +150,23 @@ public class RepoActivity extends AppCompatActivity implements
         Log.i(TAG, "deleteProject: Deleting project");
         new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
             @Override
-            public void projectDelete(Project project) {
+            public void projectDeleted(Project project) {
                 Snackbar.make(mCoordinator,
                         R.string.text_project_deleted_undo,
                         Snackbar.LENGTH_LONG
                 ).setAction(R.string.action_undo, view -> new Editor(RepoActivity.this).createProject(RepoActivity.this, project, mRepo.getFullName())
                 ).show();
+
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
             }
 
             @Override
-            public void deletionError() {
-
+            public void projectDeletionError() {
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
             }
         }, project);
     }
@@ -168,11 +181,17 @@ public class RepoActivity extends AppCompatActivity implements
                 public void projectEdited(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
                     mAdapter.updateProject(project);
+
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
                 }
 
                 @Override
-                public void editError() {
-
+                public void projectEditError() {
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
                 }
             }, project);
         }
@@ -187,11 +206,18 @@ public class RepoActivity extends AppCompatActivity implements
     public void projectCreated(Project project) {
         Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
         mAdapter.addProject(project);
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+
     }
 
     @Override
-    public void creationError() {
-
+    public void projectCreationError() {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
     }
 
     @Override
@@ -241,6 +267,10 @@ public class RepoActivity extends AppCompatActivity implements
     public void projectsLoaded(Project[] projects) {
         mRefresher.setRefreshing(false);
         mAdapter.projectsLoaded(projects);
+
+        final Bundle bundle = new Bundle();
+        bundle.putInt(Analytics.KEY_PROJECT_COUNT, projects.length);
+        mAnalytics.logEvent(Analytics.TAG_REPO_ACTIVITY, bundle);
     }
 
     @Override

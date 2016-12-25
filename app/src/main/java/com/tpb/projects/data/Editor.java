@@ -48,7 +48,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.creationError();
+                        if(listener != null) listener.projectCreationError();
                     }
                 });
     }
@@ -76,7 +76,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.editError();
+                        if(listener != null) listener.projectEditError();
                     }
                 });
     }
@@ -92,7 +92,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
-                        listener.deletionError();
+                        listener.projectDeletionError();
                     }
 
                     @Override
@@ -100,9 +100,9 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onError: " + anError.getErrorCode());
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                         if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
-                            listener.projectDelete(project);
+                            listener.projectDeleted(project);
                         } else {
-                            listener.deletionError();
+                            listener.projectDeletionError();
                         }
                     }
                 });
@@ -299,7 +299,7 @@ public class Editor extends APIHandler {
 
         void projectCreated(Project project);
 
-        void creationError();
+        void projectCreationError();
 
     }
 
@@ -307,15 +307,15 @@ public class Editor extends APIHandler {
 
         void projectEdited(Project project);
 
-        void editError();
+        void projectEditError();
 
     }
 
     public interface ProjectDeletionListener {
 
-        void projectDelete(Project project);
+        void projectDeleted(Project project);
 
-        void deletionError();
+        void projectDeletionError();
 
     }
 

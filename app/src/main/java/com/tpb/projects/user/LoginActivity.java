@@ -23,6 +23,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.UI;
 
@@ -75,7 +76,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFail(String error) {
-
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
             }
 
             @Override
@@ -88,6 +91,10 @@ public class LoginActivity extends AppCompatActivity {
                 String details = "";
                 if(!user.getBio().equals(Constants.JSON_NULL)) details += user.getBio();
                 mStats.setText(String.format(getString(R.string.text_user_info), details, user.getLocation(), user.getRepos(), user.getFollowers()));
+
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
 
                 new Handler().postDelayed(() -> finish(), 1500);
             }
