@@ -105,6 +105,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             mLastUpdate.setOnDragListener(listener);
             mCard.setOnDragListener(listener);
         } else {
+            mName.setEnabled(false);
             view.findViewById(R.id.column_delete).setVisibility(View.GONE);
         }
         return view;
