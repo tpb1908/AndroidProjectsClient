@@ -64,9 +64,8 @@ public class AnimatingRecycler extends RecyclerView {
 
     private void animate(View view, final int pos) {
         view.animate().cancel();
-        view.setTranslationY(100);
-        view.setAlpha(0);
-        view.animate().alpha(1.0f).translationY(0).setDuration(300).setStartDelay(pos * 70);
+        view.setTranslationX(view.getWidth());
+        view.animate().translationX(0).setDuration(300).setStartDelay(pos * 70);
     }
 
 }
