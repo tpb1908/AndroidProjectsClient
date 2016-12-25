@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
 import com.mittsu.markedview.MarkedView;
+import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
@@ -26,7 +27,6 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
-import com.tpb.projects.views.AnimatingRecycler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -1,4 +1,4 @@
-package com.tpb.projects.views;
+package com.tpb.animatingrecyclerview;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -49,6 +49,13 @@ public class AnimatingRecycler extends RecyclerView {
         return anim;
     }
 
+    private final Runnable enableScrolling = new Runnable() {
+        @Override
+        public void run() {
+            mIsScrollable = true;
+        }
+    };
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return !mIsScrollable || super.dispatchTouchEvent(ev);
@@ -73,7 +80,7 @@ public class AnimatingRecycler extends RecyclerView {
 
 
                 if(i == getChildCount() - 1) {
-                    getHandler().postDelayed(() -> mIsScrollable = true, i * 100);
+                    getHandler().postDelayed(enableScrolling, i * 100);
                 }
             }
         } else {

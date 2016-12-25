@@ -15,13 +15,13 @@ import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
+import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.util.Constants;
-import com.tpb.projects.views.AnimatingRecycler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

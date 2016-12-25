@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.commonsware.cwac.anddown.AndDown;
+import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
-import com.tpb.projects.views.AnimatingRecycler;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
