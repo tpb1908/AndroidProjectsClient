@@ -71,7 +71,7 @@
                     android:text="@string/text_placeholder"
                     android:background="@drawable/shape_badge"
                     android:layout_below="@id/column_name_layout"
-                    android:layout_toStartOf="@+id/column_delete"/>
+                    android:layout_alignEnd="@+id/column_name_layout"/>
 
             </RelativeLayout>
 

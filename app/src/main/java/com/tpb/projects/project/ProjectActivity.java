@@ -171,10 +171,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .setTitle(R.string.title_new_column)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {});
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {}); //Null is ambiguous so we pass empty lambda
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-
             final String text = ((EditText) dialog.findViewById(R.id.project_new_column)).getText().toString();
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
@@ -195,7 +194,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 }, mProject.getId(), text);
                 dialog.dismiss();
             } else {
-                //TODO Ensure that dialog doesn't close
                 Toast.makeText(this, R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
             }
         });

@@ -79,12 +79,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
 
         mName.setText(mColumn.getName());
-        mLastUpdate.setText(
-                String.format(
-                        getContext().getString(R.string.text_last_updated),
-                        Data.timeAgo(mColumn.getUpdatedAt())
-                )
-        );
+        resetLastUpdate();
+
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mCanEdit);
         mRecycler.setAdapter(mAdapter);
@@ -108,6 +104,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             mName.setOnDragListener(listener);
             mLastUpdate.setOnDragListener(listener);
             mCard.setOnDragListener(listener);
+        } else {
+            view.findViewById(R.id.column_delete).setVisibility(View.GONE);
         }
         return view;
     }
