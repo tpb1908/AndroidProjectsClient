@@ -79,7 +79,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
 
         mName.setText(mColumn.getName());
-        resetLastUpdate();
+        displayLastUpdate();
 
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mCanEdit);
@@ -146,6 +146,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     void resetLastUpdate() {
         mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
+        displayLastUpdate();
+    }
+
+    void displayLastUpdate() {
         mLastUpdate.setText(
                 String.format(
                         getContext().getString(R.string.text_last_updated),
