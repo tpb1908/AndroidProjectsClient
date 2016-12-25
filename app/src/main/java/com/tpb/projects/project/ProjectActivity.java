@@ -207,11 +207,16 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         mAdapter.add(new ColumnPageDescriptor(column));
                         mColumnPager.setCurrentItem(mAdapter.getCount(), true);
                         mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
                     }
 
                     @Override
-                    public void addError() {
-
+                    public void addColumnError() {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
                     }
                 }, mProject.getId(), text);
                 dialog.dismiss();
@@ -235,11 +240,17 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             mAdapter.columns.remove(mCurrentPosition);
                             mRefresher.setRefreshing(false);
                             if(mAdapter.columns.size() == 0) mAddCard.setVisibility(View.GONE);
+
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
                         }
 
                         @Override
-                        public void deletionError() {
-
+                        public void columnDeletionError() {
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
                         }
                     }, column.getId());
                 }).show();
@@ -301,11 +312,17 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         public void cardCreated(int columnId, Card card) {
             mAdapter.getExistingFragment(mAdapter.indexOf(columnId)).addCard(card);
             mRefresher.setRefreshing(false);
+            final Bundle bundle = new Bundle();
+            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
         }
 
         @Override
         public void cardCreationError() {
             mRefresher.setRefreshing(false);
+            final Bundle bundle = new Bundle();
+            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
         }
     };
 

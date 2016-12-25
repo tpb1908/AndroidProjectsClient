@@ -155,7 +155,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.addError();
+                        if(listener != null) listener.addColumnError();
                     }
                 });
     }
@@ -168,7 +168,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Column delete: " + response.toString());
-                        if(listener != null) listener.deletionError();
+                        if(listener != null) listener.columnDeletionError();
                     }
 
                     @Override
@@ -331,7 +331,7 @@ public class Editor extends APIHandler {
 
         void columnAdded(Column column);
 
-        void addError();
+        void addColumnError();
 
     }
 
@@ -339,7 +339,7 @@ public class Editor extends APIHandler {
 
         void columnDeleted();
 
-        void deletionError();
+        void columnDeletionError();
 
     }
 

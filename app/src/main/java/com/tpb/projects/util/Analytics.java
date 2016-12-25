@@ -33,4 +33,10 @@ public class Analytics {
     public static final String TAG_COLUMNS_LOADED = "COLUMNS_LOADED";
     public static final String KEY_COLUMN_COUNT = "COLUMN_COUNT";
 
+    public static final String TAG_COLUMN_ADD = "COLUMN_ADD";
+
+    public static final String TAG_COLUMN_DELETE = "COLUMN_DELETE";
+
+    public static final String TAG_CARD_CREATION = "CARD_CREATION";
+
 }
