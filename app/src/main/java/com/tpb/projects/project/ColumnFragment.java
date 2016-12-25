@@ -232,7 +232,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void cardClick(Card card) {
-        //TODO other other
+        //TODO other options
         mParent.editCard(card);
     }
 
