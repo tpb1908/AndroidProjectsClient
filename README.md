@@ -55,12 +55,12 @@ The setup process can be completed through Android Studios' helper under tools -
 
 
 ### Screenshots
-<img src="./screenshots/repos.png" width="324" height="576" />
+<img src="./screenshots/repos.png" width="720" height="1280" />
 
-<img src="./screenshots/repo.png" width="324" height="576" />
+<img src="./screenshots/repo.png" width="720" height="1280" />
 
 <br />
 
-<img src="./screenshots/project.png" width="324" height="576" />
+<img src="./screenshots/project.png" width="720" height="1280" />
 
-<img src="./screenshots/editing.png" width="324" height="576" />
+<img src="./screenshots/editing.png" width="720" height="1280" />
