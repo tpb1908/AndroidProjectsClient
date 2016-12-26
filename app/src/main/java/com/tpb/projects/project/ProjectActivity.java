@@ -417,7 +417,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
-
     private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {
         private ArrayList<Column> columns = new ArrayList<>();
 

@@ -4,7 +4,7 @@ An Android client for [GitHub projects](https://github.com/blog/2256-a-whole-new
 
 Built using [the official GitHub API](https://developer.github.com/v3/projects/) and [Fast-Android-Networking](https://github.com/amitshekhariitbhu/Fast-Android-Networking).
 
-###Dependencies
+### Dependencies
 
 * [ButterKnife](https://github.com/JakeWharton/butterknife)
 
@@ -27,7 +27,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * [AOSP support library](https://developer.android.com/tools/support-library/features.html)
 
 
-###Setup
+### Setup
 
 **Clone of fork the repository**
 
@@ -55,12 +55,12 @@ The setup process can be completed through Android Studios' helper under tools -
 
 
 ### Screenshots
-<img src="./screenshots/repos.png" width="720" height="1280" />
+<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/repos.png" width="720" height="1280" />
 
-<img src="./screenshots/repo.png" width="720" height="1280" />
+<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/repo.png" width="720" height="1280" />
 
 <br />
 
-<img src="./screenshots/project.png" width="720" height="1280" />
+<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/project.png" width="720" height="1280" />
 
-<img src="./screenshots/editing.png" width="720" height="1280" />
+<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/editing.png" width="720" height="1280" />
