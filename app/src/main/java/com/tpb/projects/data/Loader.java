@@ -14,7 +14,6 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
-import com.tpb.projects.util.Logging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +49,6 @@ public class Loader extends APIHandler {
                         } catch(JSONException jse) {
                             Log.i(TAG, "onResponse: " + jsa.toString());
                             Log.e(TAG, "onResponse: ", jse);
-                            Logging.largeDebugDump(TAG, jse.getMessage());
                         }
                     }
 
@@ -96,7 +94,6 @@ public class Loader extends APIHandler {
                         } catch(JSONException jse) {
                             Log.i(TAG, "onResponse: " + jsa.toString());
                             Log.e(TAG, "onResponse: ", jse);
-                            Logging.largeDebugDump(TAG, jse.getMessage());
                         }
                     }
 

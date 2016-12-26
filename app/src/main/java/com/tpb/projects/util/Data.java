@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by theo on 16/12/16.
@@ -39,6 +40,14 @@ public class Data {
     }
 
     public static String intArrayForPrefs(int[] values) {
+        final StringBuilder builder = new StringBuilder();
+        for(int i : values) {
+            builder.append(i).append(",");
+        }
+        return builder.toString();
+    }
+
+    public static String intArrayForPrefs(List<Integer> values) {
         final StringBuilder builder = new StringBuilder();
         for(int i : values) {
             builder.append(i).append(",");

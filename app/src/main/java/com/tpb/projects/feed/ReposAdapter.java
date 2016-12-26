@@ -70,7 +70,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
                 final int tpos = target.getAdapterPosition();
                 Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
                 notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
-                mSorter.savePosition(mRepos);
                 if(mSorter.isPinned(mRepos.get(tpos).getId())) {
                     ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
                     ((RepoHolder) viewHolder).isPinned = true;
@@ -119,13 +118,14 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
             mRepos.remove(pos);
             final int newPos = mSorter.initialPosition(r.getId());
             mRepos.add(newPos, r);
+            mSorter.unpin(r.getId());
             notifyItemMoved(pos, newPos);
         } else {
             mRepos.remove(pos);
             mRepos.add(0, r);
+            mSorter.pin(r.getId());
             notifyItemMoved(pos, 0);
         }
-        mSorter.savePosition(mRepos);
     }
 
     @Override
@@ -180,20 +180,28 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         private SharedPreferences prefs;
         private static final String PREFS_KEY = "PINS";
         private final String KEY;
-        private int[] pinnedRepos;
+        private ArrayList<Integer> pins = new ArrayList<>();
         private int[] standardPositions;
 
         RepoPinSorter(Context context, String key) {
             prefs = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE);
             KEY = key;
-            pinnedRepos = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
+            final int[] savedPins = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
+            for(int i : savedPins) pins.add(i);
+            pins.removeAll(Collections.singletonList(0)); //FIXME Why are there 0s
+            Log.i(TAG, "RepoPinSorter: Loaded pin positions " + pins.toString());
         }
 
-        void savePosition(ArrayList<Repository> repos) {
-            final int[] ids = new int[repos.size()];
-            for(int i = 0; i < ids.length; i++) ids[i] = repos.get(i).getId();
-            pinnedRepos = ids;
-            prefs.edit().putString(KEY, Data.intArrayForPrefs(ids)).apply();
+        void pin(int id) {
+            if(!pins.contains(id)) {
+                pins.add(id);
+                prefs.edit().putString(KEY, Data.intArrayForPrefs(pins)).apply();
+            }
+        }
+
+        void unpin(int id) {
+            pins.remove(Integer.valueOf(id));
+            prefs.edit().putString(KEY, Data.intArrayForPrefs(pins)).apply();
         }
 
         int initialPosition(int key) {
@@ -201,8 +209,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         }
 
         boolean isPinned(int key) {
-            final int pinPos = Data.indexOf(pinnedRepos, key);
-            return pinPos != -1 && pinPos < Data.indexOf(standardPositions, key);
+            return pins.contains(key);
         }
 
         void sort(ArrayList<Repository> repos) {
@@ -211,9 +218,9 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
                 standardPositions[i] = repos.get(i).getId();
             }
             Collections.sort(repos, (r1, r2) -> {
-                final int i1 = Data.indexOf(pinnedRepos, r1.getId());
-                final int i2 = Data.indexOf(pinnedRepos, r2.getId());
-                return i1 > i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
+                final int i1 =  pins.indexOf(r1.getId());
+                final int i2 = pins.indexOf(r2.getId());
+                return i1 < i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
             });
         }
 
