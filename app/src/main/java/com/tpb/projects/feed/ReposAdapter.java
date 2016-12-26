@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,35 +56,40 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         });
         mUser = GitHubSession.getSession(context).getUsername();
         mSorter = new RepoPinSorter(context, mUser);
-
-        new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
-                        ItemTouchHelper.DOWN | ItemTouchHelper.UP);
-            }
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                final int tpos = target.getAdapterPosition();
-                Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
-                notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
-                if(mSorter.isPinned(mRepos.get(tpos).getId())) {
-                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
-                    ((RepoHolder) viewHolder).isPinned = true;
-                } else {
-                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_not_pinned);
-                    ((RepoHolder) viewHolder).isPinned = false;
-                }
-                return true;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-            }
-
-        }).attachToRecyclerView(recycler);
+//
+//        new ItemTouchHelper(new ItemTouchHelper.Callback() {
+//            @Override
+//            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+//                final Repository r = mRepos.get(viewHolder.getAdapterPosition());
+//                if(mSorter.isPinned(r.getId())) {
+//                    return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+//                            ItemTouchHelper.DOWN | ItemTouchHelper.UP);
+//                } else return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.UP);
+//            }
+//
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                final int tpos = target.getAdapterPosition();
+//                Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
+//                notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
+//                if(mSorter.isPinned(mRepos.get(tpos).getId())) {
+//                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
+//                    ((RepoHolder) viewHolder).isPinned = true;
+//                } else {
+//                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_not_pinned);
+//                    ((RepoHolder) viewHolder).isPinned = false;
+//                }
+//                return true;
+//            }
+//
+//
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//
+//            }
+//
+//        }).attachToRecyclerView(recycler);
     }
 
     @Override
