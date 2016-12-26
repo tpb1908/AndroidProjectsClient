@@ -264,6 +264,11 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void repoLoadError() {
+
+    }
+
+    @Override
     public void projectsLoaded(Project[] projects) {
         mRefresher.setRefreshing(false);
         mAdapter.projectsLoaded(projects);
