@@ -8,23 +8,14 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:transitionName="appbar">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentInsetEnd="0dp"
-            android:contentInsetLeft="0dp"
-            android:contentInsetRight="0dp"
-            android:contentInsetStart="0dp"
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:contentInsetEnd="0dp"
-            app:contentInsetLeft="0dp"
-            app:contentInsetRight="0dp"
-            app:contentInsetStart="0dp"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <ImageButton
@@ -32,9 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:padding="16dp"
-                android:src="@drawable/ic_arrow_back"
-                android:transitionName="button"/>
+                android:src="@drawable/ic_arrow_back"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,7 +33,6 @@
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
-
 
     <ScrollView
         android:layout_width="match_parent"

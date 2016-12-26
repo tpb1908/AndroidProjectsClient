@@ -2,10 +2,12 @@ package com.tpb.projects.data.models;
 
 import android.util.Log;
 
-import com.tpb.projects.util.Constants;
+import com.tpb.projects.util.Data;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
  * Created by theo on 20/12/16.
@@ -32,6 +34,7 @@ public class Issue extends DataModel {
     private String body;
 
     private static final String CLOSED_AT = "closed_at";
+    private long closedAt;
     private boolean closed;
 
     public int getId() {
@@ -66,11 +69,33 @@ public class Issue extends DataModel {
             i.state = obj.getString(STATE);
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
-            i.closed = !Constants.JSON_NULL.equals(obj.getString(CLOSED_AT));
+            if(obj.has(CLOSED_AT)) {
+                try {
+                    i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis() / 1000;
+                } catch(ParseException pe) {
+                    Log.e(TAG, "parse: ", pe);
+                }
+                i.closed = true;
+            }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
         return i;
+    }
+
+    public static JSONObject parse(Issue issue) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, issue.id);
+            obj.put(NUMBER, issue.number);
+            obj.put(STATE, issue.state);
+            obj.put(TITLE, issue.title);
+            obj.put(BODY, issue.body);
+            if(issue.closedAt != 0) obj.put(CLOSED_AT, issue.closedAt);
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
     }
 
     //TODO Labels

@@ -102,6 +102,10 @@ public class Data {
         return fromCalendar(GregorianCalendar.getInstance());
     }
 
+    public static String toISO8061(long t) {
+        return ISO8601.format(new Date(t * 1000));
+    }
+
     /**
      * Transform ISO 8601 string to Calendar.
      */

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.tpb.projects.util.Data;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -109,6 +110,17 @@ public class Project extends DataModel implements Parcelable {
             Log.e(TAG, "parse: ", jse);
         }
         return p;
+    }
+
+    public static JSONObject parse(Project project) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, project.id);
+            //TODO Put JSONObject
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
     }
 
     @Override

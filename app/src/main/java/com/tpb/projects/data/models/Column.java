@@ -78,6 +78,20 @@ public class Column extends DataModel implements Parcelable {
         return c;
     }
 
+    public static JSONObject parse(Column column) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, column.id);
+            obj.put(NAME, column.name);
+            obj.put(PROJECT_URL, column.projectUrl);
+            obj.put(CREATED_AT, Data.toISO8061(column.createdAt));
+            obj.put(UPDATED_AT, Data.toISO8061(column.updatedAt));
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Column && ((Column) obj).id == id;

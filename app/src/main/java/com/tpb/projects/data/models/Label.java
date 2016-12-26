@@ -51,7 +51,6 @@ public class Label extends DataModel implements Parcelable {
         return isDefault;
     }
 
-
     public static Label parse(JSONObject obj) {
         final Label l = new Label();
         try {
@@ -64,6 +63,20 @@ public class Label extends DataModel implements Parcelable {
             Log.e(TAG, "parse: ", jse);
         }
         return l;
+    }
+
+    public static JSONObject parse(Label label) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, label.id);
+            obj.put(URL, label.url);
+            obj.put(NAME, label.name);
+            obj.put(COLOR, label.color);
+            obj.put(DEFAULT, label.isDefault);
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
     }
 
     @Override

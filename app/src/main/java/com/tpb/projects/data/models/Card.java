@@ -135,6 +135,23 @@ public class Card extends DataModel implements Parcelable {
         return c;
     }
 
+    public static JSONObject parse(Card card) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, card.id);
+            obj.put(COLUMN_URL, card.columnUrl);
+            if(card.contentUrl != null) {
+                obj.put(CONTENT_URL, card.contentUrl);
+            }
+            obj.put(NOTE, card.note);
+            obj.put(CREATED_AT, Data.toISO8061(card.createdAt));
+            obj.put(UPDATED_AT, Data.toISO8061(card.updatedAt));
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+
+        return obj;
+    }
 
     @Override
     public boolean equals(Object obj) {
