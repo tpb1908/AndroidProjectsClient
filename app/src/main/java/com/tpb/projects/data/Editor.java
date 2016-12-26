@@ -180,7 +180,6 @@ public class Editor extends APIHandler {
                 });
     }
 
-    //https://developer.github.com/v3/projects/cards/#create-a-project-card
     public void createCard(CardCreationListener listener, int columnId, Card card) {
         //TODO Support creating issue cards
         /*
@@ -240,7 +239,6 @@ public class Editor extends APIHandler {
                     }
                 });
     }
-
 
     public void moveCard(CardMovementListener listener, int columnId, int cardId, int afterId) {
         final JSONObject obj = new JSONObject();

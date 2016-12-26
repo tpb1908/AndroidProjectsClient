@@ -39,4 +39,52 @@ public abstract class APIHandler {
         PREVIEW_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
     }
 
+    public static final int HTTP_OK_200 = 200; //OK
+
+    public static final int HTTP_BAD_REQUEST_400 = 400; //Bad request
+
+    public static final int HTTP_UNAUTHORIZED_401 = 401; //Login required, account locked, permission error
+
+    public static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
+
+    public static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
+
+    public static final int HTTP_419 = 419; //This function can only be executed with an CL-account
+
+    //600 codes are server codes https://github.com/GleSYS/API/wiki/API-Error-codes#6xx---server
+
+    //700 codes are ip errors https://github.com/GleSYS/API/wiki/API-Error-codes#7xx---ip
+
+    //800 codes are archive codes https://github.com/GleSYS/API/wiki/API-Error-codes#8xx---archive
+
+    //900 domain https://github.com/GleSYS/API/wiki/API-Error-codes#9xx---domain
+
+    //1000 email https://github.com/GleSYS/API/wiki/API-Error-codes#10xx---email
+
+    //1100 livechat https://github.com/GleSYS/API/wiki/API-Error-codes#11xx---livechat
+
+    //1200 invoice https://github.com/GleSYS/API/wiki/API-Error-codes#11xx---livechat
+
+    //1300 glera https://github.com/GleSYS/API/wiki/API-Error-codes#13xx---glera
+
+    //1400 transaction https://github.com/GleSYS/API/wiki/API-Error-codes#14xx---transaction
+
+    //1500 vpn https://github.com/GleSYS/API/wiki/API-Error-codes#15xx---vpn
+
+    public static final  int GIT_LOGIN_FAILED_1601 = 1601; //Login failed
+
+    public static final int GIT_LOGIN_FAILED_1602 = 1602; //Login failed unknown
+
+    public static final int GIT_GOOGLE_AUTHENTICATOR_OTP_REQUIRED_1603 = 1603; //Google auth error
+
+    public static final int GIT_YUBIKEY_1604 = 1604; //Yubikey OTP required
+
+    public static final int GIT_NOT_LOGGED_IN_1605 = 1605; //Not logged in as user
+
+    //1700 invite https://github.com/GleSYS/API/wiki/API-Error-codes#17xx---invite
+
+    //1800 test account https://github.com/GleSYS/API/wiki/API-Error-codes#18xx---test-account
+
+    //1900 network https://github.com/GleSYS/API/wiki/API-Error-codes#19xx---network
+
 }
