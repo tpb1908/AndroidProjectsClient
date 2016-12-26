@@ -116,7 +116,16 @@ public class Project extends DataModel implements Parcelable {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(ID, project.id);
-            //TODO Put JSONObject
+            final JSONObject creator = new JSONObject();
+            creator.put(LOGIN, project.creatorUserName);
+            obj.put(CREATOR_KEY, creator);
+            obj.put(NUMBER, project.number);
+            obj.put(BODY, project.body);
+            obj.put(NAME, project.name);
+            obj.put(URL, project.url);
+            obj.put(OWNER_URL, project.ownerUrl);
+            obj.put(CREATED_AT, Data.toISO8061(project.createdAt));
+            obj.put(UPDATED_AT, Data.toISO8061(project.updatedAt));
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
