@@ -115,6 +115,26 @@ public class User extends DataModel {
         return u;
     }
 
+    public static JSONObject parse(User user) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, user.id);
+            obj.put(LOGIN, user.login);
+            obj.put(AVATAR_URL, user.avatarUrl);
+            obj.put(URL, user.url);
+            obj.put(REPOS_URL, user.reposUrl);
+            obj.put(REPOS, user.repos);
+            obj.put(FOLLOWERS, user.followers);
+            if(user.bio != null) obj.put(BIO, user.bio);
+            if(user.email != null) obj.put(EMAIL, user.email);
+            if(user.location != null) obj.put(LOCATION, user.location);
+            if(user.name != null) obj.put(NAME, user.name);
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
+    }
+
     @Override
     public String toString() {
         return "User{" +
