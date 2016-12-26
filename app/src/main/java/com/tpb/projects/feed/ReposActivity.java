@@ -63,6 +63,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         AndroidNetworking.initialize(this);
 
         mAnalytics = FirebaseAnalytics.getInstance(this);
+        mAnalytics.setAnalyticsCollectionEnabled(true);
         mAnalytics.logEvent(Analytics.TAG_OPEN_REPOS_ACTIVITY, null);
 
         mApp = new OAuthHandler(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);

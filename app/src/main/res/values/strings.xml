@@ -45,6 +45,11 @@
     <string name="hint_column_name">Name</string>
     <string name="hint_card_new">Enter a note</string>
 
+    <string name="settings_dark_theme">Dark theme</string>
+    <string name="settings_card_action">Card tap action</string>
+    <string name="settings_enable_analytics">Enable analytics</string>
+
+
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
     <string name="title_activity_repo">Repository</string>
@@ -53,6 +58,7 @@
     <string name="title_edit_card">Edit card</string>
     <string name="title_new_card">New card</string>
     <string name="title_delete_card">Delete card</string>
+    <string name="title_settings">Settings</string>
 
     <string name="menu_copy_card_url">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
