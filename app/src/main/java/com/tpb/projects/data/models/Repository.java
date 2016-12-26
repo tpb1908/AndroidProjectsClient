@@ -167,6 +167,35 @@ public class Repository extends DataModel implements Parcelable {
         return r;
     }
 
+    public static JSONObject parse(Repository repo) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(ID, repo.id);
+            final JSONObject owner = new JSONObject();
+            owner.put(USER_LOGIN, repo.userLogin);
+            owner.put(ID, repo.userId);
+            owner.put(USER_AVATAR, repo.userAvatarUrl);
+            obj.put(OWNER, owner);
+            obj.put(NAME, repo.name);
+            obj.put(FULL_NAME, repo.fullName);
+            obj.put(DESCRIPTION, repo.description);
+            obj.put(PRIVATE, repo.isPrivate);
+            obj.put(FORK, repo.isFork);
+            obj.put(URL, repo.url);
+            obj.put(HTML_URL, repo.htmlUrl);
+            obj.put(LANGUAGE, repo.language);
+            obj.put(HAS_ISSUES, repo.hasIssues);
+            obj.put(STAR_GAZERS, repo.starGazers);
+            obj.put(FORK, repo.forks);
+            obj.put(WATCHERS, repo.watchers);
+            obj.put(ISSUES, repo.issues);
+            obj.put(SIZE, repo.size);
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+        return obj;
+    }
+
     @Override
     public String toString() {
         return "Repository{" +
