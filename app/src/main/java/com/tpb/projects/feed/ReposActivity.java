@@ -123,7 +123,6 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
             startActivity(new Intent(ReposActivity.this, SettingsActivity.class));
         } else if(item.getItemId() == R.id.menu_source) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
-
         }
 
         return true;
@@ -133,6 +132,5 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     protected void onResume() {
         super.onResume();
     }
-
 
 }

@@ -1,6 +1,7 @@
 package com.tpb.projects.repo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -9,7 +10,10 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,6 +30,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
+import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
@@ -47,9 +52,11 @@ public class RepoActivity extends AppCompatActivity implements
         ProjectDialog.ProjectListener,
         Editor.ProjectCreationListener {
     private static final String TAG = RepoActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/repo/RepoActivity.java";
 
     private FirebaseAnalytics mAnalytics;
 
+    @BindView(R.id.repo_toolbar) Toolbar mToolbar;
     @BindView(R.id.repo_name) TextView mName;
     @BindView(R.id.repo_description) TextView mDescription;
     @BindView(R.id.user_image) ANImageView mUserImage;
@@ -83,6 +90,9 @@ public class RepoActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
 
         mAnalytics = FirebaseAnalytics.getInstance(this);
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         final Intent launchIntent = getIntent();
         mReadmeButton.setOnClickListener((v) -> {
@@ -301,5 +311,22 @@ public class RepoActivity extends AppCompatActivity implements
     public void onBackPressed() {
         mReadme.setVisibility(GONE);
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(RepoActivity.this, SettingsActivity.class));
+        } else if(item.getItemId() == R.id.menu_source) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+        }
+
+        return true;
     }
 }

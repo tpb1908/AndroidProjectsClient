@@ -1,6 +1,7 @@
 package com.tpb.projects.project;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -11,9 +12,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -31,6 +35,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
@@ -41,15 +46,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+
 /**
  * Created by theo on 19/12/16.
  */
 
 public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
     private static final String TAG = ProjectActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
     FirebaseAnalytics mAnalytics;
 
+    @BindView(R.id.project_toolbar) Toolbar mToolbar;
     @BindView(R.id.project_name) TextView mName;
     @BindView(R.id.project_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.project_column_pager) ViewPager mColumnPager;
@@ -77,6 +85,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         final Intent launchIntent = getIntent();
         mLoader = new Loader(this);
         mEditor = new Editor(this);
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
         }
@@ -386,6 +398,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mMenu.hideMenuButton(true);
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
+        } else if(item.getItemId() == R.id.menu_source) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+        }
+
+        return true;
     }
 
     class NavigationDragListener implements View.OnDragListener {
