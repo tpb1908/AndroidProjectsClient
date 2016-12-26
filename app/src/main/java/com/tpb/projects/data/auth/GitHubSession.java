@@ -31,10 +31,6 @@ public class GitHubSession {
         return session;
     }
 
-    /**
-     * @param accessToken
-     * @param username
-     */
     void storeAccessToken(String accessToken, int id, String username) {
         Log.i(TAG, "Storing token " + accessToken);
         final SharedPreferences.Editor editor = prefs.edit();

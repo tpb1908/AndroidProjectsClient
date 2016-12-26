@@ -13,9 +13,6 @@ public class Analytics {
 
     public static final String TAG_LOGIN = "LOGIN";
 
-
-
-
     public static final String TAG_OPEN_REPOS_ACTIVITY = "OPEN_REPOS_ACTIVITY";
     public static final String TAG_OPEN_REPO = "OPEN_REPO";
 
