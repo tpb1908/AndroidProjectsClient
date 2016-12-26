@@ -1,6 +1,7 @@
 package com.tpb.projects.feed;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -9,6 +10,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
+import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 
@@ -40,6 +44,8 @@ import butterknife.ButterKnife;
 
 public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {
     private static final String TAG = ReposActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/ReposActivity.java";
+
     private FirebaseAnalytics mAnalytics;
 
     private OAuthHandler mApp;
@@ -69,17 +75,20 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mApp = new OAuthHandler(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+        } else {
+            setSupportActionBar(mToolbar);
+
+            mRecycler.setLayoutManager(new LinearLayoutManager(this));
+            mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
+            mRecycler.setAdapter(mAdapter);
+            mUserName.setText(mApp.getUserName());
+            mApp.validateKey(isValid -> {
+                if(!isValid) {
+                    Toast.makeText(ReposActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+                }
+            });
         }
-        mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
-        mRecycler.setAdapter(mAdapter);
-        mUserName.setText(mApp.getUserName());
-        mApp.validateKey(isValid -> {
-            if(!isValid) {
-                Toast.makeText(ReposActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
-                startActivity(new Intent(ReposActivity.this, LoginActivity.class));
-            }
-        });
     }
 
     @Override
@@ -100,6 +109,24 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @Override
     public void displayUserAvatar(String userImagePath) {
         mUserAvatar.setImageUrl(userImagePath);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(ReposActivity.this, SettingsActivity.class));
+        } else if(item.getItemId() == R.id.menu_source) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+
+        }
+
+        return true;
     }
 
     @Override

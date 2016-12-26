@@ -49,6 +49,11 @@
     <string name="settings_card_action">Card tap action</string>
     <string name="settings_enable_analytics">Enable analytics</string>
 
+    <string-array name="settings_card_actions">
+        <item>Edit note</item>
+        <item>Show in fullscreen</item>
+        <item>Copy note</item>
+    </string-array>
 
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
@@ -65,6 +70,8 @@
     <string name="menu_edit_note">Edit note</string>
     <string name="menu_delete_note">Delete note</string>
     <string name="menu_fullscreen_note">Show in fullscreen</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_source">Source</string>
 
     <string name="intent_repo">repo</string>
     <string name="intent_can_edit">can_edit</string>

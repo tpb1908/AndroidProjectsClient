@@ -39,6 +39,10 @@
 
         </activity>
 
+        <activity android:name=".user.SettingsActivity">
+
+        </activity>
+
     </application>
 
 </manifest>
