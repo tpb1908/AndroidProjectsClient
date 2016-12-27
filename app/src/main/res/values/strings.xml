@@ -84,4 +84,5 @@
     <string name="transition_name" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
     <string name="transition_title" translatable="false">title</string>
+
 </resources>

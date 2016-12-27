@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
@@ -46,7 +46,6 @@ dependencies {
     })
     compile files('src/main/lib/cwac-pager-0.2.5.jar')
     compile project(':animatingrecycler')
-    compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:support-compat:25.1.0'
     compile 'com.android.support:design:25.1.0'

@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 
 import butterknife.ButterKnife;
@@ -23,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme_Dark);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
-
+        ((TextView) findViewById(R.id.text_version_number)).setText(BuildConfig.VERSION_NAME);
     }
 
     public void onSettingsClick(View view) {
