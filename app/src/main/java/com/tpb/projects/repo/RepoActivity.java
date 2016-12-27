@@ -91,6 +91,7 @@ public class RepoActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
 
         mAnalytics = FirebaseAnalytics.getInstance(this);
+        mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
