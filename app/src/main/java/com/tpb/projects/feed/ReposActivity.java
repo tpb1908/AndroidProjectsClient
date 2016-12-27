@@ -62,7 +62,8 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.AppTheme_Dark);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_repos);
 
         ButterKnife.bind(this);
