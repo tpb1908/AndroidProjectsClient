@@ -42,6 +42,10 @@
     <string name="text_version">Version</string>
     <string name="text_changelog">Changelog</string>
     <string name="text_licenses">Licenses</string>
+    <string name="text_view_repo">View repository</string>
+    <string name="text_developer">Theo Pearson-Bray</string>
+    <string name="text_analytics_explanation">Allow the app to collect anonymous information on crashes and the usage of the app's features.
+    You can see exactly what is collected in the app's source.</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>

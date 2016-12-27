@@ -1,5 +1,7 @@
 package com.tpb.projects.user;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 
 import butterknife.ButterKnife;
+
 
 /**
  * Created by theo on 26/12/16.
@@ -44,6 +47,12 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
             case R.id.layout_settings_licenses:
                 Log.i(TAG, "onSettingsClick: Display licenses");
+                break;
+            case R.id.layout_settings_repository:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908/AndroidProjectsClient")));
+                break;
+            case R.id.layout_settings_developer:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908")));
                 break;
         }
     }

@@ -54,7 +54,10 @@
                     android:id="@+id/switch_dark_theme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:text="@string/settings_dark_theme"
                     android:textAppearance="@android:style/TextAppearance.Material.Subhead"
                     android:onClick="onSettingsClick"/>
@@ -70,14 +73,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:layout_margin="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:text="@string/settings_card_action"/>
 
                 <Spinner
                     android:id="@+id/spinner_card_click"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_gravity="bottom"/>
 
             </android.support.v7.widget.CardView>
@@ -91,10 +100,25 @@
                     android:id="@+id/switch_enable_analytics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:text="@string/settings_enable_analytics"
                     android:textAppearance="@android:style/TextAppearance.Material.Subhead"
                     android:onClick="onSettingsClick"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_gravity="bottom"
+                    android:text="@string/text_analytics_explanation"
+                    android:textAppearance="@android:style/TextAppearance.Material.Small"
+                    android:textSize="12sp"/>
 
             </android.support.v7.widget.CardView>
 
@@ -195,12 +219,60 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="8dp">
 
+                    <LinearLayout
+                        android:id="@+id/layout_settings_developer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:onClick="onSettingsClick">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:src="@drawable/ic_person"
+                            android:layout_gravity="center_vertical"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/text_developer"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layout_settings_repository"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:onClick="onSettingsClick">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:src="@drawable/ic_github"
+                            android:layout_gravity="center_vertical"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/text_view_repo"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
         </LinearLayout>
-
-
 
 </LinearLayout>
