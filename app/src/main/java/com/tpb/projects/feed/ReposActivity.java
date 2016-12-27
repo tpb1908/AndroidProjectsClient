@@ -22,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
@@ -91,6 +92,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
                 public void userLoaded(User user) {
                     mUserName.setText(user.getLogin());
                     mUserAvatar.setImageUrl(user.getAvatarUrl());
+                    GitHubSession.getSession(ReposActivity.this).updateUserInfo(user.getLogin());
                 }
 
                 @Override

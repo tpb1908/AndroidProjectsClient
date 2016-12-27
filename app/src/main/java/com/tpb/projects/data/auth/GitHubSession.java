@@ -40,6 +40,10 @@ public class GitHubSession {
         editor.apply();
     }
 
+    public void updateUserInfo(String username) {
+        prefs.edit().putString(API_USERNAME, username).apply();
+    }
+
     void storeAccessToken(String accessToken) {
         Log.i(TAG, "Storing token " + accessToken);
         final SharedPreferences.Editor editor = prefs.edit();

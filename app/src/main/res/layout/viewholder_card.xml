@@ -9,7 +9,7 @@
     android:layout_marginBottom="4dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    android:minHeight="48dp"
+    android:minHeight="32dp"
     app:cardCornerRadius="2dp"
     app:cardElevation="2dp">
 
@@ -29,6 +29,7 @@
             android:id="@+id/card_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/card_menu_button"
             android:layout_margin="8dp"
             android:autoLink="email|web">
