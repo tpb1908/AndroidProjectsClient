@@ -146,7 +146,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             public void columnsLoaded(Column[] columns) {
                 mRefresher.setRefreshing(false);
                 if(columns.length > 0) {
-                    mAddCard.setVisibility(View.VISIBLE);
+                    mAddCard.setVisibility(View.INVISIBLE);
+
                     int id = 0;
                     if(mCurrentPosition != -1) {
                         id = mAdapter.getCurrentFragment().mColumn.getId();
@@ -173,7 +174,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
                 bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.length + 1);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
-
             }
 
             @Override
