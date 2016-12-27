@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
@@ -30,6 +31,26 @@ public class Loader extends APIHandler {
 
     public Loader(Context context) {
         super(context);
+    }
+
+    public void loadAuthenticateUser(AuthenticatedUserLoader loader) {
+        AndroidNetworking.get(GIT_BASE + "user")
+                .addHeaders(API_AUTH_HEADERS)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: User loaded " + response.toString());
+                        if(loader != null) loader.userLoaded(User.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Authenticated user error");
+                        if(loader != null) loader.authenticatedUserLoadError();
+                    }
+                });
     }
 
     public void loadRepositories(RepositoriesLoader loader, String user) {
@@ -127,7 +148,6 @@ public class Loader extends APIHandler {
                     }
                 });
     }
-
 
     private void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/collaborators")
@@ -293,6 +313,14 @@ public class Loader extends APIHandler {
 
     public enum LoadError {
         NOT_FOUND, UNKNOWN
+    }
+
+    public interface AuthenticatedUserLoader {
+
+        void userLoaded(User user);
+
+        void authenticatedUserLoadError();
+
     }
 
     public interface RepositoriesLoader {

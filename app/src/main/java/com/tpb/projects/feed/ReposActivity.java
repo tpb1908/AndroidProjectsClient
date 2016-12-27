@@ -10,7 +10,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +21,10 @@ import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.user.SettingsActivity;
@@ -84,6 +85,20 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
             mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(mAdapter);
             mUserName.setText(mApp.getUserName());
+
+            new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
+                @Override
+                public void userLoaded(User user) {
+                    mUserName.setText(user.getLogin());
+                    mUserAvatar.setImageUrl(user.getAvatarUrl());
+                }
+
+                @Override
+                public void authenticatedUserLoadError() {
+
+                }
+            });
+
             mApp.validateKey(isValid -> {
                 if(!isValid) {
                     Toast.makeText(ReposActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
@@ -106,12 +121,6 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
         mAnalytics.logEvent(Analytics.TAG_OPEN_REPO, null);
-    }
-
-    @Override
-    public void displayUserAvatar(String userImagePath) {
-        Log.i(TAG, "displayUserAvatar: " + userImagePath);
-        mUserAvatar.setImageUrl(userImagePath);
     }
 
     @Override

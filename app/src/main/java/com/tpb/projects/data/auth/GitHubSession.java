@@ -67,6 +67,10 @@ public class GitHubSession {
         return prefs.getString(API_USERNAME, null);
     }
 
+    public int getUserId() {
+        return prefs.getInt(API_ID, -1);
+    }
+
     /**
      * Get access token
      *

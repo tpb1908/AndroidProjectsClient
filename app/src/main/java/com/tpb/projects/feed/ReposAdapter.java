@@ -145,7 +145,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         mSorter.sort(mRepos);
         mRefresher.setRefreshing(false);
         notifyDataSetChanged();
-        if(mRepos.size() > 0) mManager.displayUserAvatar(mRepos.get(0).getUserAvatarUrl());
     }
 
     @Override
@@ -234,7 +233,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
 
         void openRepo(Repository repo, View view);
 
-        void displayUserAvatar(String userImagePath);
 
     }
 
