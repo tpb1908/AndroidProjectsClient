@@ -3,6 +3,8 @@ package com.tpb.projects.user;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 
 import com.tpb.projects.R;
 
@@ -13,6 +15,7 @@ import butterknife.ButterKnife;
  */
 
 public class SettingsActivity extends AppCompatActivity {
+    private static final String TAG = SettingsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,7 +24,29 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
+    }
 
+    public void onSettingsClick(View view) {
+        switch(view.getId()) {
+            case R.id.switch_dark_theme:
+                Log.i(TAG, "onSettingsClick: Toggle dark theme");
+                break;
+            case R.id.switch_enable_analytics:
+                Log.i(TAG, "onSettingsClick: Toggle analytics");
+                break;
+            case R.id.layout_settings_version:
+                Log.i(TAG, "onSettingsClick: Display version");
+                break;
+            case R.id.layout_settings_changelog:
+                Log.i(TAG, "onSettingsClick: Display changelog");
+                break;
+            case R.id.layout_settings_licenses:
+                Log.i(TAG, "onSettingsClick: Display licenses");
+                break;
+        }
+    }
 
+    public void onToolbarBackPressed(View view) {
+        onBackPressed();
     }
 }

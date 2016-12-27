@@ -39,6 +39,9 @@
     <string name="text_delete_column_warning">Are you sure you want to delete this column?</string>
     <string name="text_delete_note_warning">Are you sure you want to delete this note?</string>
     <string name="text_note_deleted">Note deleted</string>
+    <string name="text_version">Version</string>
+    <string name="text_changelog">Changelog</string>
+    <string name="text_licenses">Licenses</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
