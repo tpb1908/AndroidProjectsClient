@@ -65,7 +65,6 @@ The setup process can be completed through Android Studios' helper under tools -
 
 <img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/editing.png" width="720" height="1280" />
 
-
 ### License
 
     Copyright 2016 Theo Pearson-Bray
