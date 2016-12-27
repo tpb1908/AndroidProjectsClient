@@ -15,7 +15,7 @@ import org.json.JSONObject;
 public class Label extends DataModel implements Parcelable {
     private static final String TAG = Label.class.getSimpleName();
 
-    public Label() {
+    private Label() {
 
     }
 
@@ -104,7 +104,7 @@ public class Label extends DataModel implements Parcelable {
         dest.writeByte(this.isDefault ? (byte) 1 : (byte) 0);
     }
 
-    protected Label(Parcel in) {
+    private Label(Parcel in) {
         this.id = in.readInt();
         this.url = in.readString();
         this.name = in.readString();

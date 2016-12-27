@@ -55,7 +55,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
-    FirebaseAnalytics mAnalytics;
+    private FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.project_toolbar) Toolbar mToolbar;
     @BindView(R.id.project_name) TextView mName;
@@ -337,7 +337,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     };
 
-    void showCardDialog(CardDialog dialog) {
+    private void showCardDialog(CardDialog dialog) {
         final int columnPosition = mCurrentPosition;
         dialog.setListener(new CardDialog.CardListener() {
             @Override
@@ -371,14 +371,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private long lastPageChange;
 
-    void dragLeft() {
+    private void dragLeft() {
         if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
             mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
             lastPageChange = System.nanoTime();
         }
     }
 
-    void dragRight() {
+    private void dragRight() {
         if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastPageChange > 5E8) {
             mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
             lastPageChange = System.nanoTime();

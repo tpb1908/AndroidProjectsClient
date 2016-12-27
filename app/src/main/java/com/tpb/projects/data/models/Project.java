@@ -170,7 +170,7 @@ public class Project extends DataModel implements Parcelable {
         dest.writeLong(this.updatedAt);
     }
 
-    protected Project(Parcel in) {
+    private Project(Parcel in) {
         this.id = in.readInt();
         this.ownerUrl = in.readString();
         this.url = in.readString();

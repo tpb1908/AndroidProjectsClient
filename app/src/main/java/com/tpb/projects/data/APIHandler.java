@@ -25,14 +25,14 @@ public abstract class APIHandler {
     static HashMap<String, String> PREVIEW_API_AUTH_HEADERS = new HashMap<>();
 
 
-    public APIHandler(Context context) {
+    protected APIHandler(Context context) {
         if(mSession == null) {
             mSession = GitHubSession.getSession(context);
             initHeaders();
         }
     }
 
-    public void initHeaders() {
+    protected void initHeaders() {
         API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
         PREVIEW_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PREVIEW_ACCEPT_HEADER);

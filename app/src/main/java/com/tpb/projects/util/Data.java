@@ -97,7 +97,7 @@ public class Data {
     /**
      * Transform Calendar to ISO 8601 string.
      */
-    public static String fromCalendar(final Calendar calendar) {
+    private static String fromCalendar(final Calendar calendar) {
         Date date = calendar.getTime();
         String formatted = ISO8601.format(date);
         return formatted.substring(0, 22) + ":" + formatted.substring(22);

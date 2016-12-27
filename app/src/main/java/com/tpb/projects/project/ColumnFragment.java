@@ -159,12 +159,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         new Loader(getContext()).loadCards(this, mColumn.getId());
     }
 
-    void resetLastUpdate() {
+    private void resetLastUpdate() {
         mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
         displayLastUpdate();
     }
 
-    void displayLastUpdate() {
+    private void displayLastUpdate() {
         mLastUpdate.setText(
                 String.format(
                         getContext().getString(R.string.text_last_updated),

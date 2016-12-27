@@ -247,7 +247,7 @@ public class Repository extends DataModel implements Parcelable {
         dest.writeInt(this.size);
     }
 
-    protected Repository(Parcel in) {
+    private Repository(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
         this.userLogin = in.readString();
