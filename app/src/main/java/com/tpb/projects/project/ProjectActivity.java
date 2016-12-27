@@ -196,7 +196,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 
-
     @OnClick(R.id.project_add_column)
     void addColumn() {
         mMenu.close(true);
@@ -463,7 +462,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
-            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn, mNavListener, mCanEdit);
+            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
+                    mNavListener,
+                    mCanEdit,
+                    columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
         }
 
 

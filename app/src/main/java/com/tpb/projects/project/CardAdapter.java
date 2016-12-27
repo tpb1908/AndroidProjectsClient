@@ -125,6 +125,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
+        holder.mCardView.setAlpha(1.0f);
         if(mCanEdit) {
             holder.mCardView.setTag(mCards.get(pos).getId());
             holder.mCardView.setOnLongClickListener(view -> {

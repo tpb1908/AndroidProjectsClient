@@ -78,7 +78,6 @@ public class AnimatingRecycler extends RecyclerView {
                         break;
                 }
 
-
                 if(i == getChildCount() - 1) {
                     getHandler().postDelayed(enableScrolling, i * 100);
                 }

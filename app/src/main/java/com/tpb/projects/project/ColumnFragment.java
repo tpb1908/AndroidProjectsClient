@@ -61,15 +61,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
     private boolean mCanEdit;
+    private boolean mShouldAnimate;
 
     private CardAdapter mAdapter;
 
 
-    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, boolean canEdit) {
+    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, boolean canEdit, boolean shouldAnimate) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
         cf.mNavListener = navListener;
         cf.mCanEdit = canEdit;
+        cf.mShouldAnimate = shouldAnimate;
         return cf;
     }
 
@@ -88,6 +90,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mCanEdit);
         mRecycler.setAdapter(mAdapter);
+        if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mCanEdit) {
             mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
@@ -190,7 +193,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     public void cardsLoaded(Card[] cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
-            mRecycler.enableAnimation();
+            if(mShouldAnimate) {
+                mRecycler.enableAnimation();
+            }
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
         final Bundle bundle = new Bundle();
