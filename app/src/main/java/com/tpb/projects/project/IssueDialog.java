@@ -19,9 +19,12 @@ package com.tpb.projects.project;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
@@ -35,26 +38,74 @@ import com.tpb.projects.data.models.Issue;
  */
 
 public class IssueDialog extends DialogFragment {
+    private static final String TAG = IssueDialog.class.getSimpleName();
+
+    private IssueDialogListener mListener;
+
+    public void setListener(IssueDialogListener listener) {
+        mListener = listener;
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_issue, null);
 
-        final MarkedView mv = (MarkedView) view.findViewById(R.id.issue_body_markdown);
+        final MarkedView md = (MarkedView) view.findViewById(R.id.issue_body_markdown);
         final EditText title = (EditText) view.findViewById(R.id.issue_title_edit);
         final EditText body = (EditText) view.findViewById(R.id.issue_body_edit);
 
 
         final Card card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
-        mv.setMDText(card.getNote());
-        body.setText(card.getNote());
+        final String[] text = card.getNote().split("\n", 2);
+        if(text[0].length() > 140) {
+            text[1] = text[0].substring(140) + text[1];
+            text[0] = text[0].substring(0, 140);
+        }
+        title.setText(text[0]);
+        if(text.length > 1) {
+            md.setMDText(text[1]);
+            body.setText(text[1]);
+        }
+
+        body.addTextChangedListener(new TextWatcher() {
+            final Handler updateHandler = new Handler();
+            long lastUpdated;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                lastUpdated = System.currentTimeMillis();
+                updateHandler.postDelayed(() -> {
+                    if(System.currentTimeMillis() - lastUpdated >= 190) {
+                        md.setMDText(body.getText().toString());
+                        md.reload();
+                    }
+                }, 200);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.title_new_issue);
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+            final Issue issue = new Issue();
+            issue.setTitle(title.getText().toString());
+            issue.setBody(body.getText().toString());
+            if(mListener != null) mListener.issueCreated(issue);
             dismiss();
         });
         builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
+            if(mListener != null) mListener.issueCreationCancelled();
             dismiss();
         });
 

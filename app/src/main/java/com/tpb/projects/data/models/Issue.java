@@ -33,7 +33,7 @@ import java.text.ParseException;
 public class Issue extends DataModel {
     private static final String TAG = Issue.class.getSimpleName();
 
-    private Issue() {
+    public Issue() {
     }
 
     private int id;
@@ -76,6 +76,14 @@ public class Issue extends DataModel {
 
     public boolean isClosed() {
         return closed;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public static Issue parse(JSONObject obj) {

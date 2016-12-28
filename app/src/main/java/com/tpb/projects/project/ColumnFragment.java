@@ -43,6 +43,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -262,6 +263,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     break;
                 case R.id.menu_convert_to_issue:
                     final IssueDialog dialog = new IssueDialog();
+                    dialog.setListener(new IssueDialog.IssueDialogListener() {
+                        @Override
+                        public void issueCreated(Issue issue) {
+
+                        }
+
+                        @Override
+                        public void issueCreationCancelled() {
+
+                        }
+                    });
                     final Bundle b = new Bundle();
                     b.putParcelable(getString(R.string.parcel_card), card);
                     dialog.setArguments(b);
