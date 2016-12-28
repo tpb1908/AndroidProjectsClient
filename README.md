@@ -46,6 +46,14 @@ GITHUB_CLIENT_ID="ID"
 GITHUB_CLIENT_SECRET="SECRET"
 ```
 
+**Add your information to gradle.properties**
+
+```
+REPO_ADDRESS="Address of your fork"
+GITHUB_REDIRECT_URL="Your redirect url"
+FEATURE_REQUEST_EMAIL="Your email"
+BUG_EMAIL="Your email"
+```
 
 **Setup or remove analytics**
 
