@@ -25,6 +25,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_undo">UNDO</string>
     <string name="action_ok">OK</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -71,6 +73,7 @@
     <string name="text_bug_report">Bug report</string>
     <string name="text_assign_yourself">Assign yourself</string>
     <string name="text_issue_created">Issue created</string>
+    <string name="text_close_issue_on_delete">Do you want to close the issue associated with this card?</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
@@ -99,6 +102,7 @@
     <string name="title_delete_card">Delete card</string>
     <string name="title_settings">Settings</string>
     <string name="title_new_issue">New issue</string>
+    <string name="title_close_issue">Close issue</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

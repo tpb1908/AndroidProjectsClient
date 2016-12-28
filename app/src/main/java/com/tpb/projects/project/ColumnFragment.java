@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -266,7 +267,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     mParent.editCard(card);
                     break;
                 case R.id.menu_delete_note:
-                    mParent.deleteCard(card);
+                    mParent.deleteCard(card, true);
                     break;
                 case R.id.menu_copy_card_note:
                     copyToClipboard(card);
@@ -321,6 +322,19 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
                     editDialog.setArguments(c);
                     editDialog.show(getFragmentManager(), TAG);
+                    break;
+                case R.id.menu_delete_issue_card:
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.title_close_issue);
+                    builder.setMessage(R.string.text_close_issue_on_delete);
+                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                        mEditor.closeIssue(null, mParent.mProject.getRepoFullName(), card.getIssue().getNumber());
+                        mParent.deleteCard(card, false);
+                    });
+                    builder.setNeutralButton(R.string.action_cancel, null);
+                    builder.setNegativeButton(R.string.action_no, (dialogInterface, i) -> mParent.deleteCard(card, false));
+                    builder.show();
+
                     break;
                 case 1:
                     final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
@@ -410,7 +424,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 copyToClipboard(card);
                 break;
         }
-
     }
 
     @Override

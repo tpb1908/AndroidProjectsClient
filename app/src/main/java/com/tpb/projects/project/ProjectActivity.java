@@ -317,31 +317,37 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         showCardDialog(dialog);
     }
 
-    void deleteCard(Card card) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.title_delete_card)
-                .setMessage(R.string.text_delete_note_warning)
-                .setNegativeButton(R.string.action_cancel, null)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-                    mRefresher.setRefreshing(true);
-                    final int columnId = mAdapter.getCurrentFragment().mColumn.getId();
-                    mEditor.deleteCard(new Editor.CardDeletionListener() {
-                        @Override
-                        public void cardDeleted(Card card) {
-                            mRefresher.setRefreshing(false);
-                            mAdapter.getCurrentFragment().removeCard(card);
-                            Snackbar.make(findViewById(R.id.project_coordinator),
-                                    getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
-                                    .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card.getNote()))
-                                    .show();
-                        }
+    void deleteCard(Card card, boolean showWarning) {
+        final int columnId = mAdapter.getCurrentFragment().mColumn.getId();
+        final Editor.CardDeletionListener listener = new Editor.CardDeletionListener() {
+            @Override
+            public void cardDeleted(Card card) {
+                mRefresher.setRefreshing(false);
+                mAdapter.getCurrentFragment().removeCard(card);
+                Snackbar.make(findViewById(R.id.project_coordinator),
+                        getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card.getNote()))
+                        .show();
+            }
 
-                        @Override
-                        public void cardDeletionError() {
+            @Override
+            public void cardDeletionError() {
 
-                        }
-                    }, card);
-                }).show();
+            }
+        };
+        if(showWarning) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.title_delete_card)
+                    .setMessage(R.string.text_delete_note_warning)
+                    .setNegativeButton(R.string.action_cancel, null)
+                    .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+                        mRefresher.setRefreshing(true);
+                        mEditor.deleteCard(listener, card);
+                    }).show();
+        } else {
+            mRefresher.setRefreshing(true);
+            mEditor.deleteCard(listener, card);
+        }
     }
 
     private Editor.CardCreationListener mCardCreationListener = new Editor.CardCreationListener() {
@@ -364,6 +370,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     };
 
     private void showCardDialog(CardDialog dialog) {
+        //TODO Allow creating an issue card at this point
         final int columnPosition = mCurrentPosition;
         dialog.setListener(new CardDialog.CardDialogListener() {
             @Override
