@@ -200,7 +200,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createCard(CardCreationListener listener, int columnId, Card card) {
+    public void createCard(CardCreationListener listener, int columnId, String note) {
         //TODO Support creating issue cards
         /*
         Process
@@ -211,7 +211,34 @@ public class Editor extends APIHandler {
          */
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("note", card.getNote());
+            obj.put("note", note);
+        } catch(JSONException jse) {
+            Log.e(TAG, "createCard: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Card: " + response.toString());
+                        if(listener != null) listener.cardCreated(columnId, Card.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Card: " + anError.getErrorBody());
+                        if(listener != null) listener.cardCreationError();
+                    }
+                });
+    }
+
+    public void createCard(CardCreationListener listener, int columnId, int issueId) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("content_type", "Issue");
+            obj.put("content_id", issueId);
         } catch(JSONException jse) {
             Log.e(TAG, "createCard: ", jse);
         }

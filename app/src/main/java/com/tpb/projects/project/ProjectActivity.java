@@ -323,7 +323,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             mAdapter.getCurrentFragment().removeCard(card);
                             Snackbar.make(findViewById(R.id.project_coordinator),
                                     getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
-                                    .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card))
+                                    .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card.getNote()))
                                     .show();
                         }
 
@@ -361,7 +361,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             public void cardEditDone(Card card, boolean isNewCard) {
                 mRefresher.setRefreshing(true);
                 if(isNewCard) {
-                    mEditor.createCard(mCardCreationListener, mAdapter.getCurrentFragment().mColumn.getId(), card);
+                    mEditor.createCard(mCardCreationListener, mAdapter.getCurrentFragment().mColumn.getId(), card.getNote());
                 } else {
                     mEditor.updateCard(new Editor.CardUpdateListener() {
                         @Override

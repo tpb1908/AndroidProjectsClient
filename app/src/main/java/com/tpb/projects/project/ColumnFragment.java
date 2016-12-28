@@ -266,7 +266,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     dialog.setListener(new IssueDialog.IssueDialogListener() {
                         @Override
                         public void issueCreated(Issue issue) {
-
+                            convertCardToIssue(card, issue);
                         }
 
                         @Override
@@ -285,6 +285,31 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         });
         popup.inflate(R.menu.menu_card);
         popup.show();
+    }
+
+    private void convertCardToIssue(Card oldCard, Issue issue) {
+        mEditor.deleteCard(new Editor.CardDeletionListener() {
+            @Override
+            public void cardDeleted(Card card) {
+                mEditor.createCard(new Editor.CardCreationListener() {
+                    @Override
+                    public void cardCreated(int columnId, Card card) {
+                        Log.i(TAG, "cardCreated: Issue card created");
+                        mAdapter.updateCard(card, oldCard.getId());
+                    }
+
+                    @Override
+                    public void cardCreationError() {
+
+                    }
+                }, mColumn.getId(), issue.getId());
+            }
+
+            @Override
+            public void cardDeletionError() {
+
+            }
+        }, oldCard);
     }
 
     void copyToClipboard(Card card) {

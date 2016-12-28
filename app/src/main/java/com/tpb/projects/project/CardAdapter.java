@@ -98,6 +98,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         }
     }
 
+    void updateCard(Card card, int oldId) {
+        final int index = indexOf(oldId);
+        if(index != -1) {
+            mCards.set(index, card);
+            notifyItemChanged(index);
+        }
+    }
     void moveCardFromDrag(int oldPos, int newPos) {
         final Card card = mCards.get(oldPos);
         mCards.remove(oldPos);
