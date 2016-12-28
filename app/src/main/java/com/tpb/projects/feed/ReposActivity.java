@@ -162,6 +162,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @Override
     protected void onResume() {
         super.onResume();
+        mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
     }
 
 }

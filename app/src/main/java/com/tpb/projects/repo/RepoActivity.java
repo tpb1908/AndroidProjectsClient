@@ -348,4 +348,11 @@ public class RepoActivity extends AppCompatActivity implements
 
         return true;
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
+    }
+
 }

@@ -434,6 +434,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
+    }
+
     class NavigationDragListener implements View.OnDragListener {
 
         @Override
