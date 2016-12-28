@@ -19,6 +19,7 @@ package com.tpb.projects.data.models;
 
 import android.util.Log;
 
+import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONException;
@@ -94,7 +95,7 @@ public class Issue extends DataModel {
             i.state = obj.getString(STATE);
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
-            if(obj.has(CLOSED_AT)) {
+            if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis() / 1000;
                 } catch(ParseException pe) {
@@ -125,4 +126,17 @@ public class Issue extends DataModel {
 
     //TODO Labels
 
+
+    @Override
+    public String toString() {
+        return "Issue{" +
+                "id=" + id +
+                ", number=" + number +
+                ", state='" + state + '\'' +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", closedAt=" + closedAt +
+                ", closed=" + closed +
+                '}';
+    }
 }

@@ -18,6 +18,7 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
@@ -25,8 +26,10 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -310,8 +313,37 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createIssue() {
+    public void convertCard() {
 
+    }
+
+    public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("title", title);
+            obj.put("body", body);
+            if(assignees != null) obj.put("assignees", new JSONArray(assignees));
+        } catch(JSONException jse) {
+            Log.e(TAG, "createIssue: ", jse);
+        }
+        Log.i(TAG, "createIssue: " + obj.toString());
+        AndroidNetworking.post(GIT_BASE + "repos/" + fullRepoName + "/issues")
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Issue created ");
+                        if(listener != null) listener.issueCreated(Issue.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue not created " + anError.getErrorBody());
+                        if(listener != null) listener.issueCreationError();
+                    }
+                });
     }
 
     public interface ProjectCreationListener {
@@ -398,6 +430,14 @@ public class Editor extends APIHandler {
         void cardDeleted(Card card);
 
         void cardDeletionError();
+
+    }
+
+    public interface IssueCreationListener {
+
+        void issueCreated(Issue issue);
+
+        void issueCreationError();
 
     }
 

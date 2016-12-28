@@ -276,6 +276,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     });
                     final Bundle b = new Bundle();
                     b.putParcelable(getString(R.string.parcel_card), card);
+                    b.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
                     dialog.setArguments(b);
                     dialog.show(getFragmentManager(), TAG);
             }

@@ -85,7 +85,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
     private Loader mLoader;
-    private Project mProject;
+    Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
     private boolean mCanEdit;

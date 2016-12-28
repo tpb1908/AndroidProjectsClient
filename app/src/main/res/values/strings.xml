@@ -70,6 +70,7 @@
     <string name="text_feature_request">Feature request</string>
     <string name="text_bug_report">Bug report</string>
     <string name="text_assign_yourself">Assign yourself</string>
+    <string name="text_issue_created">Issue created</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>

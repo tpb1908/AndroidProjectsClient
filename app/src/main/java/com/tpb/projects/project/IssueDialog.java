@@ -25,11 +25,15 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Editor;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 
@@ -39,6 +43,10 @@ import com.tpb.projects.data.models.Issue;
 
 public class IssueDialog extends DialogFragment {
     private static final String TAG = IssueDialog.class.getSimpleName();
+
+    private EditText title;
+    private EditText body;
+    private String repoFullName;
 
     private IssueDialogListener mListener;
 
@@ -52,11 +60,13 @@ public class IssueDialog extends DialogFragment {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_issue, null);
 
         final MarkedView md = (MarkedView) view.findViewById(R.id.issue_body_markdown);
-        final EditText title = (EditText) view.findViewById(R.id.issue_title_edit);
-        final EditText body = (EditText) view.findViewById(R.id.issue_body_edit);
+        title = (EditText) view.findViewById(R.id.issue_title_edit);
+        body = (EditText) view.findViewById(R.id.issue_body_edit);
 
 
         final Card card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
+        repoFullName = getArguments().getString(getContext().getString(R.string.intent_repo));
+
         final String[] text = card.getNote().split("\n", 2);
         if(text[0].length() > 140) {
             text[1] = text[0].substring(140) + text[1];
@@ -97,13 +107,7 @@ public class IssueDialog extends DialogFragment {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_new_issue);
 
-        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-            final Issue issue = new Issue();
-            issue.setTitle(title.getText().toString());
-            issue.setBody(body.getText().toString());
-            if(mListener != null) mListener.issueCreated(issue);
-            dismiss();
-        });
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {});
         builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
             if(mListener != null) mListener.issueCreationCancelled();
             dismiss();
@@ -111,6 +115,36 @@ public class IssueDialog extends DialogFragment {
 
         return builder.setView(view).create();
     }
+
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        new Handler().postDelayed(() -> {
+            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view ->
+                    new Editor(getContext()).createIssue(new Editor.IssueCreationListener() {
+                             @Override
+                             public void issueCreated(Issue issue) {
+                                 Toast.makeText(getContext(), R.string.text_issue_created, Toast.LENGTH_SHORT).show();
+                                 if(mListener != null) mListener.issueCreated(issue);
+                                 Log.i(TAG, "issueCreated: " + issue.toString());
+                                 dismiss();
+                             }
+
+                             @Override
+                             public void issueCreationError() {
+
+                             }
+                         },
+                            repoFullName,
+                            title.getText().toString(),
+                            body.getText().toString(),
+                            new String[] {GitHubSession.getSession(getContext()).getUsername()}
+                    )
+            );
+        }, 100);
+    }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
