@@ -125,6 +125,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
                 Log.i(TAG, "onPageSelected: Page changed to  " + position);
+                showFab();
             }
 
             @Override
@@ -146,6 +147,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
 
+    }
+
+    void showFab() {
+        mMenu.showMenuButton(true);
+    }
+
+    void hideFab() {
+        mMenu.hideMenuButton(true);
     }
 
     @Override

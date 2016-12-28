@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -135,6 +136,18 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             view.findViewById(R.id.column_delete).setVisibility(View.GONE);
         }
         mName.clearFocus();
+
+        ((NestedScrollView) view.findViewById(R.id.column_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY - oldScrollY > 10) {
+                    mParent.hideFab();
+                } else if(scrollY - oldScrollY < -10) {
+                    mParent.showFab();
+                }
+            }
+        });
+
         return view;
     }
 
