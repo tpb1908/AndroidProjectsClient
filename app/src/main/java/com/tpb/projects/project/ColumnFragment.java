@@ -282,11 +282,40 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     break;
                 case R.id.menu_edit_issue:
 
+                    break;
+                case 1:
+                    final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+                        @Override
+                        public void issueStateChanged(Issue issue) {
+                            card.setFromIssue(issue);
+                            mAdapter.updateCard(card);
+                        }
+
+                        @Override
+                        public void issueStateChangeError() {
+                            mAdapter.updateCard(card);
+                        }
+                    };
+                    if(card.getIssue().isClosed()) {
+                        Log.i(TAG, "openMenu: Closing issue");
+                        mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    } else {
+                        Log.i(TAG, "openMenu: Opening issue");
+                        mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    }
+
             }
 
             return true;
         });
-        popup.inflate(card.hasIssue() ? R.menu.menu_issue : R.menu.menu_card);
+        if(card.hasIssue()) {
+            popup.inflate(R.menu.menu_issue);
+            popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+        } else {
+            popup.inflate(R.menu.menu_card);
+        }
+
+
         popup.show();
     }
 

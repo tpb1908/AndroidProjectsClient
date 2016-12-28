@@ -17,6 +17,8 @@
 
 package com.tpb.projects.data.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.util.Constants;
@@ -31,7 +33,7 @@ import java.text.ParseException;
  * Created by theo on 20/12/16.
  */
 
-public class Issue extends DataModel {
+public class Issue extends DataModel implements Parcelable {
     private static final String TAG = Issue.class.getSimpleName();
 
     public Issue() {
@@ -127,6 +129,7 @@ public class Issue extends DataModel {
     //TODO Labels
 
 
+
     @Override
     public String toString() {
         return "Issue{" +
@@ -139,4 +142,42 @@ public class Issue extends DataModel {
                 ", closed=" + closed +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeInt(this.number);
+        dest.writeString(this.state);
+        dest.writeString(this.title);
+        dest.writeString(this.body);
+        dest.writeLong(this.closedAt);
+        dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
+    }
+
+    protected Issue(Parcel in) {
+        this.id = in.readInt();
+        this.number = in.readInt();
+        this.state = in.readString();
+        this.title = in.readString();
+        this.body = in.readString();
+        this.closedAt = in.readLong();
+        this.closed = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Issue> CREATOR = new Parcelable.Creator<Issue>() {
+        @Override
+        public Issue createFromParcel(Parcel source) {
+            return new Issue(source);
+        }
+
+        @Override
+        public Issue[] newArray(int size) {
+            return new Issue[size];
+        }
+    };
 }

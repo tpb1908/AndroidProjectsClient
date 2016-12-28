@@ -111,6 +111,7 @@
     <string name="menu_edit_issue">Edit issue</string>
     <string name="menu_reopen_issue">Reopen issue</string>
     <string name="menu_close_issue">Close issue</string>
+    <string name="menu_delete_issue_card">Remove card</string>
 
     <string name="intent_repo">repo</string>
     <string name="intent_can_edit">can_edit</string>

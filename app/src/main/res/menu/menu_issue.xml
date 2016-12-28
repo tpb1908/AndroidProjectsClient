@@ -30,4 +30,8 @@
         android:id="@+id/menu_edit_issue"
         android:title="@string/menu_edit_issue"/>
 
+    <item
+        android:id="@+id/menu_delete_issue_card"
+        android:title="@string/menu_delete_issue_card"/>
+
 </menu>

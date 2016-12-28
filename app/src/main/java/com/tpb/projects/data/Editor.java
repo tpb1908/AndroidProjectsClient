@@ -340,10 +340,6 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void convertCard() {
-
-    }
-
     public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees) {
         final JSONObject obj = new JSONObject();
         try {
@@ -369,6 +365,58 @@ public class Editor extends APIHandler {
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue not created " + anError.getErrorBody());
                         if(listener != null) listener.issueCreationError();
+                    }
+                });
+    }
+
+    public void closeIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("state", "closed");
+        } catch(JSONException jse) {
+            Log.e(TAG, "closeIssue: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issueNumber))
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Issue closed " + response.toString());
+                        if(listener != null) listener.issueStateChanged(Issue.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue close error " + anError.getErrorBody());
+                        if(listener != null) listener.issueStateChangeError();
+                    }
+                });
+    }
+
+    public void openIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("state", "open");
+        } catch(JSONException jse) {
+            Log.e(TAG, "openIssue: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issueNumber))
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Issue opened " + response.toString());
+                        if(listener != null) listener.issueStateChanged(Issue.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue open error " + anError.getErrorBody());
+                        if(listener != null) listener.issueStateChangeError();
                     }
                 });
     }
@@ -465,6 +513,14 @@ public class Editor extends APIHandler {
         void issueCreated(Issue issue);
 
         void issueCreationError();
+
+    }
+
+    public interface IssueStateChangeListener {
+
+        void issueStateChanged(Issue issue);
+
+        void issueStateChangeError();
 
     }
 

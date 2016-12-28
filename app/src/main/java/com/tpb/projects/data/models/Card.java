@@ -47,6 +47,8 @@ public class Card extends DataModel implements Parcelable {
 
     private int issueId;
 
+    private Issue issue;
+
     private int id;
 
     private static final String NOTE = "note";
@@ -114,6 +116,10 @@ public class Card extends DataModel implements Parcelable {
         return issueId != 0;
     }
 
+    public Issue getIssue() {
+        return issue;
+    }
+
     public boolean requiresLoadingFromIssue() {
         return requiresLoadingFromIssue;
     }
@@ -125,6 +131,7 @@ public class Card extends DataModel implements Parcelable {
     public void setFromIssue(Issue issue) {
         requiresLoadingFromIssue = false;
         note = issue.getTitle();
+        this.issue = issue;
     }
 
     public static Card parse(JSONObject object) {
@@ -135,6 +142,7 @@ public class Card extends DataModel implements Parcelable {
             if(object.has(CONTENT_URL)) {
                 c.contentUrl = object.getString(CONTENT_URL);
                 c.issueId = Integer.parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
+
             }
             c.note = object.getString(NOTE);
             if(Constants.JSON_NULL.equals(c.note)) {
@@ -190,6 +198,7 @@ public class Card extends DataModel implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -200,6 +209,7 @@ public class Card extends DataModel implements Parcelable {
         dest.writeString(this.columnUrl);
         dest.writeString(this.contentUrl);
         dest.writeInt(this.issueId);
+        dest.writeParcelable(this.issue, flags);
         dest.writeInt(this.id);
         dest.writeString(this.note);
         dest.writeByte(this.requiresLoadingFromIssue ? (byte) 1 : (byte) 0);
@@ -207,10 +217,11 @@ public class Card extends DataModel implements Parcelable {
         dest.writeLong(this.updatedAt);
     }
 
-    private Card(Parcel in) {
+    protected Card(Parcel in) {
         this.columnUrl = in.readString();
         this.contentUrl = in.readString();
         this.issueId = in.readInt();
+        this.issue = in.readParcelable(Issue.class.getClassLoader());
         this.id = in.readInt();
         this.note = in.readString();
         this.requiresLoadingFromIssue = in.readByte() != 0;
@@ -218,7 +229,7 @@ public class Card extends DataModel implements Parcelable {
         this.updatedAt = in.readLong();
     }
 
-    public static final Parcelable.Creator<Card> CREATOR = new Parcelable.Creator<Card>() {
+    public static final Creator<Card> CREATOR = new Creator<Card>() {
         @Override
         public Card createFromParcel(Parcel source) {
             return new Card(source);
