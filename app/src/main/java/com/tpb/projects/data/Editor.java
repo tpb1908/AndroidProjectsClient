@@ -310,6 +310,10 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void createIssue() {
+
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);

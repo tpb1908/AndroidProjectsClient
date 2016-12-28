@@ -259,6 +259,13 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     break;
                 case R.id.menu_card_fullscreen:
                     showFullscreen(card);
+                    break;
+                case R.id.menu_convert_to_issue:
+                    final IssueDialog dialog = new IssueDialog();
+                    final Bundle b = new Bundle();
+                    b.putParcelable(getString(R.string.parcel_card), card);
+                    dialog.setArguments(b);
+                    dialog.show(getFragmentManager(), TAG);
             }
 
             return true;

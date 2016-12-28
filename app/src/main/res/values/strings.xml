@@ -69,11 +69,14 @@
     <string name="text_contact">Contact</string>
     <string name="text_feature_request">Feature request</string>
     <string name="text_bug_report">Bug report</string>
+    <string name="text_assign_yourself">Assign yourself</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
     <string name="hint_column_name">Name</string>
     <string name="hint_card_new">Enter a note</string>
+    <string name="hint_issue_title">Title</string>
+    <string name="hint_issue_body">Body</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
