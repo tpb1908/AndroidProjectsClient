@@ -37,6 +37,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
@@ -47,7 +48,6 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.LoginActivity;
 import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,7 +93,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
         mAnalytics.logEvent(Analytics.TAG_OPEN_REPOS_ACTIVITY, null);
 
-        mApp = new OAuthHandler(this, Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
+        mApp = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
         } else {

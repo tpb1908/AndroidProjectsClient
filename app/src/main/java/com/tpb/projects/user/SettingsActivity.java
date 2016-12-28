@@ -74,6 +74,8 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         spinner.setSelection(preferences.getCardAction().toInt());
+
+        Log.i(TAG, "onCreate: Emails " + BuildConfig.BUG_EMAIL + ", " + BuildConfig.FEATURE_REQUEST_EMAIL);
     }
 
     public void onSettingsClick(View view) {
@@ -100,10 +102,26 @@ public class SettingsActivity extends AppCompatActivity {
                         .create().show();
                 break;
             case R.id.layout_settings_repository:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908/AndroidProjectsClient")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.REPO_ADDRESS)));
                 break;
             case R.id.layout_settings_developer:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908")));
+                break;
+            case R.id.layout_settings_bug_report:
+                final Intent bugIntent = new Intent(Intent.ACTION_SEND);
+                bugIntent.setType("text/email");
+                bugIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {BuildConfig.BUG_EMAIL});
+                bugIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Projects bug report");
+                bugIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                startActivity(Intent.createChooser(bugIntent, "Send email:"));
+                break;
+            case R.id.layout_settings_feature_request:
+                final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("text/email");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {BuildConfig.FEATURE_REQUEST_EMAIL});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Projects feature request");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                startActivity(Intent.createChooser(emailIntent, "Send email:"));
                 break;
         }
     }

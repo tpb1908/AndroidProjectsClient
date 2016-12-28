@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
@@ -79,8 +80,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mAnalytics = FirebaseAnalytics.getInstance(this);
 
-        mApp = new OAuthHandler(this, Constants.CLIENT_ID,
-                Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
+        mApp = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
         mApp.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
