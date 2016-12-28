@@ -43,6 +43,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 
@@ -254,15 +255,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     mParent.deleteCard(card);
                     break;
                 case R.id.menu_copy_card_note:
-                    final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                    cm.setPrimaryClip(ClipData.newPlainText("Card text", card.getNote()));
+                    copyToClipboard(card);
                     break;
                 case R.id.menu_card_fullscreen:
-                    final FullScreenDialog dialog = new FullScreenDialog();
-                    final Bundle b = new Bundle();
-                    b.putParcelable(getString(R.string.parcel_card), card);
-                    dialog.setArguments(b);
-                    dialog.show(getFragmentManager(), TAG);
+                    showFullscreen(card);
             }
 
             return true;
@@ -271,9 +267,33 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.show();
     }
 
+    void copyToClipboard(Card card) {
+        final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(ClipData.newPlainText("Card text", card.getNote()));
+        Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+    }
+
+    void showFullscreen(Card card) {
+        final FullScreenDialog dialog = new FullScreenDialog();
+        final Bundle b = new Bundle();
+        b.putParcelable(getString(R.string.parcel_card), card);
+        dialog.setArguments(b);
+        dialog.show(getFragmentManager(), TAG);
+    }
+
     void cardClick(Card card) {
-        //TODO other options
-        mParent.editCard(card);
+        switch(SettingsActivity.Preferences.getPreferences(getContext()).getCardAction()) {
+            case EDIT:
+                mParent.editCard(card);
+                break;
+            case FULLSCREEN:
+                showFullscreen(card);
+                break;
+            case COPY:
+                copyToClipboard(card);
+                break;
+        }
+
     }
 
     @Override

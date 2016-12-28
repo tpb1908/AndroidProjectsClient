@@ -65,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.user_id) TextView mId;
     @BindView(R.id.user_stats) TextView mStats;
 
-
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
             ViewGroup.LayoutParams.FILL_PARENT);
@@ -187,7 +186,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
-
 
 }
 

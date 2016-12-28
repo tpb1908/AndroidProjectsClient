@@ -27,13 +27,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-
-import butterknife.ButterKnife;
 
 
 /**
@@ -51,10 +52,28 @@ public class SettingsActivity extends AppCompatActivity {
         preferences = SettingsActivity.Preferences.getPreferences(this);
         setTheme(preferences.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
         ((TextView) findViewById(R.id.text_version_number)).setText(BuildConfig.VERSION_NAME);
         ((Switch) findViewById(R.id.switch_dark_theme)).setChecked(preferences.isDarkThemeEnabled());
         ((Switch) findViewById(R.id.switch_enable_analytics)).setChecked(preferences.areAnalyticsEnabled());
+
+        final Spinner spinner = (Spinner) findViewById(R.id.spinner_card_click);
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.settings_card_actions));
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                preferences.setCardAction(Preferences.CardAction.fromInt(i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        spinner.setSelection(preferences.getCardAction().toInt());
     }
 
     public void onSettingsClick(View view) {
@@ -122,14 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         public CardAction getCardAction() {
-            switch(prefs.getInt(KEY_CARD_ACTION, 0)) {
-                case 0:
-                    return CardAction.EDIT;
-                case 1:
-                    return CardAction.FULLSCREEN;
-                default:
-                    return CardAction.COPY;
-            }
+            return CardAction.fromInt(prefs.getInt(KEY_CARD_ACTION, 0));
         }
 
         public void setDarkThemeEnabled(boolean enabled) {
@@ -141,23 +153,36 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         public void setCardAction(CardAction action) {
-            int a = 0;
-            switch(action) {
-                case EDIT:
-                    a = 0;
-                    break;
-                case FULLSCREEN:
-                    a = 1;
-                    break;
-                case COPY:
-                    a = 2;
-                    break;
-            }
-            prefs.edit().putInt(KEY_CARD_ACTION, a).apply();
+            prefs.edit().putInt(KEY_CARD_ACTION, action.toInt()).apply();
         }
 
         public enum CardAction {
-            EDIT, FULLSCREEN, COPY
+            EDIT, FULLSCREEN, COPY;
+
+            int toInt() {
+                switch(this) {
+                    case EDIT:
+                        return 0;
+                    case FULLSCREEN:
+                        return 1;
+                    case COPY:
+                        return 2;
+                }
+                return -1;
+            }
+
+            static CardAction fromInt(int i) {
+                switch(i) {
+                    case 0:
+                        return EDIT;
+                    case 1:
+                        return FULLSCREEN;
+                    case 2:
+                        return COPY;
+                    default:
+                        return EDIT;
+                }
+            }
         }
 
     }
