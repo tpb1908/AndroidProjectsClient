@@ -100,13 +100,17 @@
     <string name="title_settings">Settings</string>
     <string name="title_new_issue">New issue</string>
 
-    <string name="menu_copy_card_url">Copy card note</string>
+    <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
     <string name="menu_edit_note">Edit note</string>
     <string name="menu_delete_note">Delete note</string>
     <string name="menu_fullscreen_note">Show in fullscreen</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_source">Source</string>
+    <string name="menu_copy_issue">Copy issue text</string>
+    <string name="menu_edit_issue">Edit issue</string>
+    <string name="menu_reopen_issue">Reopen issue</string>
+    <string name="menu_close_issue">Close issue</string>
 
     <string name="intent_repo">repo</string>
     <string name="intent_can_edit">can_edit</string>

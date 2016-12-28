@@ -279,11 +279,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     b.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
                     dialog.setArguments(b);
                     dialog.show(getFragmentManager(), TAG);
+                    break;
+                case R.id.menu_edit_issue:
+
             }
 
             return true;
         });
-        popup.inflate(R.menu.menu_card);
+        popup.inflate(card.hasIssue() ? R.menu.menu_issue : R.menu.menu_card);
         popup.show();
     }
 
