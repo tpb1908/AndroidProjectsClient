@@ -41,8 +41,8 @@ import com.tpb.projects.data.models.Issue;
  * Created by theo on 28/12/16.
  */
 
-public class IssueDialog extends DialogFragment {
-    private static final String TAG = IssueDialog.class.getSimpleName();
+public class NewIssueDialog extends DialogFragment {
+    private static final String TAG = NewIssueDialog.class.getSimpleName();
 
     private EditText title;
     private EditText body;

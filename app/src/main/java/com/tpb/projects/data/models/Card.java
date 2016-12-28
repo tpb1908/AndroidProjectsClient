@@ -130,7 +130,7 @@ public class Card extends DataModel implements Parcelable {
 
     public void setFromIssue(Issue issue) {
         requiresLoadingFromIssue = false;
-        note = issue.getTitle();
+        note = issue.getTitle() + "\n" + issue.getBody();
         this.issue = issue;
     }
 

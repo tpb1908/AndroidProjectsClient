@@ -275,8 +275,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     showFullscreen(card);
                     break;
                 case R.id.menu_convert_to_issue:
-                    final IssueDialog dialog = new IssueDialog();
-                    dialog.setListener(new IssueDialog.IssueDialogListener() {
+                    final NewIssueDialog newDialog = new NewIssueDialog();
+                    newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
                         @Override
                         public void issueCreated(Issue issue) {
                             convertCardToIssue(card, issue);
@@ -290,18 +290,43 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Bundle b = new Bundle();
                     b.putParcelable(getString(R.string.parcel_card), card);
                     b.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
-                    dialog.setArguments(b);
-                    dialog.show(getFragmentManager(), TAG);
+                    newDialog.setArguments(b);
+                    newDialog.show(getFragmentManager(), TAG);
                     break;
                 case R.id.menu_edit_issue:
+                    final EditIssueDialog editDialog = new EditIssueDialog();
+                    editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
+                        @Override
+                        public void issueEdited(Issue issue) {
+                            mEditor.editIssue(new Editor.IssueEditListener() {
+                                @Override
+                                public void issueEdited(Issue issue) {
+                                    card.setFromIssue(issue);
+                                    mAdapter.updateCard(card);
+                                }
 
+                                @Override
+                                public void issueEditError() {
+
+                                }
+                            }, mParent.mProject.getRepoFullName(), issue);
+                        }
+
+                        @Override
+                        public void issueEditCancelled() {
+
+                        }
+                    });
+                    final Bundle c = new Bundle();
+                    c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
+                    editDialog.setArguments(c);
+                    editDialog.show(getFragmentManager(), TAG);
                     break;
                 case 1:
                     final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
                         @Override
                         public void issueStateChanged(Issue issue) {
                             card.setFromIssue(issue);
-                            mAdapter.updateCard(card);
                         }
 
                         @Override

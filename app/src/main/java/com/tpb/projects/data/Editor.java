@@ -421,6 +421,33 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("title", issue.getTitle());
+            obj.put("body", issue.getBody());
+        } catch(JSONException jse) {
+            Log.e(TAG, "createIssue: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issue.getNumber()))
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Issue edited " + response.toString());
+                        if(listener != null) listener.issueEdited(Issue.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue not edited");
+                        if(listener != null) listener.issueEditError();
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -522,6 +549,13 @@ public class Editor extends APIHandler {
 
         void issueStateChangeError();
 
+    }
+
+    public interface IssueEditListener {
+
+        void issueEdited(Issue issue);
+
+        void issueEditError();
     }
 
 }

@@ -113,11 +113,12 @@
     <string name="menu_close_issue">Close issue</string>
     <string name="menu_delete_issue_card">Remove card</string>
 
-    <string name="intent_repo">repo</string>
-    <string name="intent_can_edit">can_edit</string>
-    <string name="parcel_project">project</string>
-    <string name="parcel_column">column</string>
-    <string name="parcel_card">card</string>
+    <string name="intent_repo" translatable="false">repo</string>
+    <string name="intent_can_edit" translatable="false">can_edit</string>
+    <string name="parcel_project" translatable="false">project</string>
+    <string name="parcel_column" translatable="false">column</string>
+    <string name="parcel_card" translatable="false">card</string>
+    <string name="parcel_issue" translatable="false">issue</string>
     <string name="transition_name" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
     <string name="transition_title" translatable="false">title</string>
