@@ -42,4 +42,6 @@
     <color name="md_black_1000">#000000</color>
     <color name="md_white_1000">#ffffff</color>
 
+    <color name="github_issue_open">#6cc644</color>
+    <color name="github_issue_closed">#bd2c00</color>
 </resources>

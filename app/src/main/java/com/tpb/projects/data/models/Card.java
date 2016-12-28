@@ -113,7 +113,7 @@ public class Card extends DataModel implements Parcelable {
     }
 
     public boolean hasIssue() {
-        return issueId != 0;
+        return issue != null;
     }
 
     public Issue getIssue() {

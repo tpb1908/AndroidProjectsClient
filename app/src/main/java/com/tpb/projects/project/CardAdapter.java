@@ -18,6 +18,8 @@
 package com.tpb.projects.project;
 
 import android.content.ClipData;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -169,8 +171,18 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }
-        holder.mIssueIcon.setVisibility(card.hasIssue() ? View.VISIBLE : View.GONE);
-        
+        if(card.hasIssue()) {
+            holder.mIssueIcon.setVisibility(View.VISIBLE);
+            holder.mIssueIcon.getDrawable().setColorFilter(
+                    new PorterDuffColorFilter(
+                            holder.mIssueIcon.getContext().getResources().getColor(
+                                    card.getIssue().isClosed() ? R.color.github_issue_closed : R.color.github_issue_open),
+                            PorterDuff.Mode.SRC_ATOP)
+            );
+        } else {
+            holder.mIssueIcon.setVisibility(View.GONE);
+        }
+
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
             mParent.loadIssue(new Loader.IssueLoader() {
