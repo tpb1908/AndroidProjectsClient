@@ -186,16 +186,31 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }, card.getIssueId());
         } else {
+
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
-                            card.getNote()
+                            formatMD(card.getNote())
                     ),
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
     }
 
+    private static String formatMD(String s) {
+        final StringBuilder builder = new StringBuilder();
+        char p = ' ';
+        char pp = ' ';
+        for(char c : s.toCharArray()) {
+            if(pp != '\n' && c == '\n') {
+                builder.append('\n');
+            }
+            builder.append(c);
+            pp = p;
+            p = c;
 
+        }
+        return builder.toString();
+    }
 
     @Override
     public int getItemCount() {

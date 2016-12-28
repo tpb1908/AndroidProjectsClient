@@ -140,8 +140,6 @@ public class Card extends DataModel implements Parcelable {
             if(Constants.JSON_NULL.equals(c.note)) {
                 c.note = "";
                 c.requiresLoadingFromIssue = true;
-            } else {
-                c.note = c.note.replace("\n", "\n\n");
             }
             try {
                 c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;

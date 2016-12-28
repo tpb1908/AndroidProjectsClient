@@ -39,7 +39,7 @@ import com.tpb.projects.data.models.Card;
 public class CardDialog extends DialogFragment {
     private static final String TAG = CardDialog.class.getSimpleName();
 
-    private CardListener mListener;
+    private CardDialogListener mListener;
 
 
     @NonNull
@@ -111,11 +111,11 @@ public class CardDialog extends DialogFragment {
         getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
     }
 
-    public void setListener(CardListener listener) {
+    public void setListener(CardDialogListener listener) {
         mListener = listener;
     }
 
-    public interface CardListener {
+    public interface CardDialogListener {
 
         void cardEditDone(Card card, boolean isNewCard);
 

@@ -356,7 +356,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private void showCardDialog(CardDialog dialog) {
         final int columnPosition = mCurrentPosition;
-        dialog.setListener(new CardDialog.CardListener() {
+        dialog.setListener(new CardDialog.CardDialogListener() {
             @Override
             public void cardEditDone(Card card, boolean isNewCard) {
                 mRefresher.setRefreshing(true);

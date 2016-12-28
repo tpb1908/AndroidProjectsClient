@@ -28,6 +28,7 @@ import android.widget.EditText;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Issue;
 
 /**
  * Created by theo on 28/12/16.
@@ -48,9 +49,16 @@ public class IssueDialog extends DialogFragment {
         final Card card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
         mv.setMDText(card.getNote());
         body.setText(card.getNote());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+            dismiss();
+        });
+        builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
+            dismiss();
+        });
 
-        return new AlertDialog.Builder(getActivity()).setView(view).create();
+        return builder.setView(view).create();
     }
 
     @Override
@@ -58,4 +66,12 @@ public class IssueDialog extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
         getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
     }
+
+    public interface IssueDialogListener {
+
+        void issueCreated(Issue issue);
+
+        void issueCreationCancelled();
+    }
+
 }
