@@ -70,7 +70,6 @@ public class Card extends DataModel implements Parcelable {
         return contentUrl;
     }
 
-
     public void setContentUrl(String contentUrl) {
         this.contentUrl = contentUrl;
     }
@@ -111,6 +110,10 @@ public class Card extends DataModel implements Parcelable {
         return issueId;
     }
 
+    public boolean hasIssue() {
+        return issueId != 0;
+    }
+
     public boolean requiresLoadingFromIssue() {
         return requiresLoadingFromIssue;
     }
@@ -121,7 +124,7 @@ public class Card extends DataModel implements Parcelable {
 
     public void setFromIssue(Issue issue) {
         requiresLoadingFromIssue = false;
-
+        note = issue.getTitle();
     }
 
     public static Card parse(JSONObject object) {

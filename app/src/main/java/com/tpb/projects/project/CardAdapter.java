@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.commonsware.cwac.anddown.AndDown;
@@ -142,9 +143,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
+        final Card card = mCards.get(pos);
         holder.mCardView.setAlpha(1.0f);
         if(mCanEdit) {
-            holder.mCardView.setTag(mCards.get(pos).getId());
+            holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
                 final ClipData data = ClipData.newPlainText("", "");
                 final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
@@ -160,14 +162,14 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }
-
-        if(mCards.get(pos).requiresLoadingFromIssue()) {
+        holder.mIssueIcon.setVisibility(card.hasIssue() ? View.VISIBLE : View.GONE);
+        
+        if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
             mParent.loadIssue(new Loader.IssueLoader() {
                 @Override
                 public void issueLoaded(Issue issue) {
-                    mCards.get(pos).setRequiresLoadingFromIssue(false);
-                    mCards.get(pos).setNote(issue.getTitle());
+                    card.setFromIssue(issue);
                     holder.mSpinner.setVisibility(View.INVISIBLE);
                     notifyItemChanged(pos);
 
@@ -182,16 +184,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                     mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
-            }, mCards.get(pos).getIssueId());
+            }, card.getIssueId());
         } else {
+
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
-                            mCards.get(pos).getNote()
+                            card.getNote()
                     ),
                     new HtmlHttpImageGetter(holder.mMarkDown)
             );
         }
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -203,6 +208,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) ImageButton mMenuButton;
+        @BindView(R.id.card_issue_drawable) ImageView mIssueIcon;
 
         @OnClick(R.id.card_menu_button)
         void onMenuClick(View v) {
