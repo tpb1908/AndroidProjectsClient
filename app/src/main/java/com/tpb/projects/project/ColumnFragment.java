@@ -284,7 +284,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     void cardClick(Card card) {
         switch(SettingsActivity.Preferences.getPreferences(getContext()).getCardAction()) {
             case EDIT:
-                mParent.editCard(card);
+                if(!card.hasIssue()) {
+                    mParent.editCard(card);
+                }
                 break;
             case FULLSCREEN:
                 showFullscreen(card);

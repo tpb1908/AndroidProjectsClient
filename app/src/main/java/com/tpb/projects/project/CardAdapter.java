@@ -145,7 +145,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final int pos = holder.getAdapterPosition();
         final Card card = mCards.get(pos);
         holder.mCardView.setAlpha(1.0f);
-        if(mCanEdit) {
+        if(mCanEdit && !card.hasIssue()) {
             holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
                 final ClipData data = ClipData.newPlainText("", "");
@@ -186,7 +186,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }, card.getIssueId());
         } else {
-
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
                             card.getNote()
