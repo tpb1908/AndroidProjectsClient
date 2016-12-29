@@ -379,6 +379,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         @Override
                         public void issueStateChanged(Issue issue) {
                             card.setFromIssue(issue);
+                            mAdapter.updateCard(card);
                         }
 
                         @Override
