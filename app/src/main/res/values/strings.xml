@@ -103,6 +103,7 @@
     <string name="title_settings">Settings</string>
     <string name="title_new_issue">New issue</string>
     <string name="title_close_issue">Close issue</string>
+    <string name="title_edit_issue">Edit issue</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

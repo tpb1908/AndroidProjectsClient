@@ -306,16 +306,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addCard() {
         mMenu.close(true);
         final CardDialog dialog = new CardDialog();
-        showCardDialog(dialog);
+        mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
 
-    void editCard(Card card) {
-        final CardDialog dialog = new CardDialog();
-        final Bundle b = new Bundle();
-        b.putParcelable(getString(R.string.parcel_card), card);
-        dialog.setArguments(b);
-        showCardDialog(dialog);
-    }
 
     void deleteCard(Card card, boolean showWarning) {
         final int columnId = mAdapter.getCurrentFragment().mColumn.getId();
@@ -326,7 +319,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mAdapter.getCurrentFragment().removeCard(card);
                 Snackbar.make(findViewById(R.id.project_coordinator),
                         getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.action_undo), view -> mEditor.createCard(mCardCreationListener, columnId, card.getNote()))
+                        .setAction(getString(R.string.action_undo), view ->  mAdapter.getCurrentFragment().recreateCard(card))
                         .show();
             }
 
@@ -348,58 +341,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mRefresher.setRefreshing(true);
             mEditor.deleteCard(listener, card);
         }
-    }
-
-    private Editor.CardCreationListener mCardCreationListener = new Editor.CardCreationListener() {
-        @Override
-        public void cardCreated(int columnId, Card card) {
-            mAdapter.getExistingFragment(mAdapter.indexOf(columnId)).addCard(card);
-            mRefresher.setRefreshing(false);
-            final Bundle bundle = new Bundle();
-            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
-        }
-
-        @Override
-        public void cardCreationError() {
-            mRefresher.setRefreshing(false);
-            final Bundle bundle = new Bundle();
-            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
-        }
-    };
-
-    private void showCardDialog(CardDialog dialog) {
-        //TODO Allow creating an issue card at this point
-        final int columnPosition = mCurrentPosition;
-        dialog.setListener(new CardDialog.CardDialogListener() {
-            @Override
-            public void cardEditDone(Card card, boolean isNewCard) {
-                mRefresher.setRefreshing(true);
-                if(isNewCard) {
-                    mEditor.createCard(mCardCreationListener, mAdapter.getCurrentFragment().mColumn.getId(), card.getNote());
-                } else {
-                    mEditor.updateCard(new Editor.CardUpdateListener() {
-                        @Override
-                        public void cardUpdated(Card card) {
-                            mAdapter.getExistingFragment(columnPosition).updateCard(card);
-                            mRefresher.setRefreshing(false);
-                        }
-
-                        @Override
-                        public void cardUpdateError() {
-                            mRefresher.setRefreshing(false);
-                        }
-                    }, card.getId(), card.getNote());
-                }
-            }
-
-            @Override
-            public void cardEditCancelled() {
-
-            }
-        });
-        dialog.show(getSupportFragmentManager(), "TAG");
     }
 
     private long lastPageChange;

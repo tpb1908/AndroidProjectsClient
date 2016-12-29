@@ -248,14 +248,74 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         resetLastUpdate();
     }
 
-    void updateCard(Card card) {
-        mAdapter.updateCard(card);
-        resetLastUpdate();
-    }
-
     void removeCard(Card card) {
         mAdapter.removeCard(card);
         resetLastUpdate();
+    }
+
+    void recreateCard(Card card) {
+        mParent.mRefresher.setRefreshing(true);
+        mEditor.createCard(new Editor.CardCreationListener() {
+            @Override
+            public void cardCreated(int columnId, Card card) {
+                addCard(card);
+                mParent.mRefresher.setRefreshing(false);
+            }
+
+            @Override
+            public void cardCreationError() {
+                mParent.mRefresher.setRefreshing(false);
+            }
+        }, mColumn.getId(), card.getNote());
+    }
+
+    void showCardDialog(CardDialog dialog) {
+        dialog.setListener(new CardDialog.CardDialogListener() {
+            @Override
+            public void cardEditDone(Card card, boolean isNewCard) {
+                mParent.mRefresher.setRefreshing(false);
+                if(isNewCard) {
+                    mEditor.createCard(new Editor.CardCreationListener() {
+                        @Override
+                        public void cardCreated(int columnId, Card card) {
+                            addCard(card);
+                            mParent.mRefresher.setRefreshing(false);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+                        }
+
+                        @Override
+                        public void cardCreationError() {
+                            mParent.mRefresher.setRefreshing(false);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+                        }
+                    }, mColumn.getId(), card.getNote());
+                } else {
+                    mEditor.updateCard(new Editor.CardUpdateListener() {
+                        @Override
+                        public void cardUpdated(Card card) {
+                            mAdapter.updateCard(card);
+                            resetLastUpdate();
+                            mParent.mRefresher.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void cardUpdateError() {
+                            mParent.mRefresher.setRefreshing(false);
+                        }
+                    }, card.getId(), card.getNote());
+                }
+            }
+
+            @Override
+            public void cardEditCancelled() {
+
+            }
+        });
+        dialog.show(getFragmentManager(), "TAG");
     }
 
     void openMenu(View view, Card card) {
@@ -264,7 +324,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case R.id.menu_edit_note:
-                    mParent.editCard(card);
+                    final CardDialog dialog = new CardDialog();
+                    final Bundle b = new Bundle();
+                    b.putParcelable(getString(R.string.parcel_card), card);
+                    dialog.setArguments(b);
+                    showCardDialog(dialog);
                     break;
                 case R.id.menu_delete_note:
                     mParent.deleteCard(card, true);
@@ -288,40 +352,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
                         }
                     });
-                    final Bundle b = new Bundle();
-                    b.putParcelable(getString(R.string.parcel_card), card);
-                    b.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
-                    newDialog.setArguments(b);
+                    final Bundle c = new Bundle();
+                    c.putParcelable(getString(R.string.parcel_card), card);
+                    c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
+                    newDialog.setArguments(c);
                     newDialog.show(getFragmentManager(), TAG);
                     break;
                 case R.id.menu_edit_issue:
-                    final EditIssueDialog editDialog = new EditIssueDialog();
-                    editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
-                        @Override
-                        public void issueEdited(Issue issue) {
-                            mEditor.editIssue(new Editor.IssueEditListener() {
-                                @Override
-                                public void issueEdited(Issue issue) {
-                                    card.setFromIssue(issue);
-                                    mAdapter.updateCard(card);
-                                }
-
-                                @Override
-                                public void issueEditError() {
-
-                                }
-                            }, mParent.mProject.getRepoFullName(), issue);
-                        }
-
-                        @Override
-                        public void issueEditCancelled() {
-
-                        }
-                    });
-                    final Bundle c = new Bundle();
-                    c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
-                    editDialog.setArguments(c);
-                    editDialog.show(getFragmentManager(), TAG);
+                    editIssue(card);
                     break;
                 case R.id.menu_delete_issue_card:
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -371,6 +409,36 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.show();
     }
 
+    private void editIssue(Card card) {
+        final EditIssueDialog editDialog = new EditIssueDialog();
+        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
+            @Override
+            public void issueEdited(Issue issue) {
+                mEditor.editIssue(new Editor.IssueEditListener() {
+                    @Override
+                    public void issueEdited(Issue issue) {
+                        card.setFromIssue(issue);
+                        mAdapter.updateCard(card);
+                    }
+
+                    @Override
+                    public void issueEditError() {
+
+                    }
+                }, mParent.mProject.getRepoFullName(), issue);
+            }
+
+            @Override
+            public void issueEditCancelled() {
+
+            }
+        });
+        final Bundle c = new Bundle();
+        c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
+        editDialog.setArguments(c);
+        editDialog.show(getFragmentManager(), TAG);
+    }
+
     private void convertCardToIssue(Card oldCard, Issue issue) {
         mEditor.deleteCard(new Editor.CardDeletionListener() {
             @Override
@@ -413,8 +481,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     void cardClick(Card card) {
         switch(SettingsActivity.Preferences.getPreferences(getContext()).getCardAction()) {
             case EDIT:
-                if(!card.hasIssue()) {
-                    mParent.editCard(card);
+                if(card.hasIssue()) {
+                    editIssue(card);
+                } else {
+                    final CardDialog dialog = new CardDialog();
+                    final Bundle b = new Bundle();
+                    b.putParcelable(getString(R.string.parcel_card), card);
+                    dialog.setArguments(b);
+                    showCardDialog(dialog);
                 }
                 break;
             case FULLSCREEN:

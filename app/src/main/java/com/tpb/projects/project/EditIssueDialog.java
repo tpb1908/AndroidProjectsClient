@@ -85,7 +85,7 @@ public class EditIssueDialog extends DialogFragment {
         });
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.title_new_issue);
+        builder.setTitle(R.string.title_edit_issue);
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             issue.setTitle(title.getText().toString());
