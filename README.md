@@ -43,6 +43,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Conversion of cards to issues
 * Editing of issues (Not available on site)
 * Editing of issue collaborators (Not available on site)
+* Editing of issue labels (Not available on site)
 * Opening and closing of associated issues (Not available on site)
 * Option to close issues when their card is removed (Not available on site)
 * Fullscreen viewer for cards
@@ -52,7 +53,6 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 ### Upcoming features
 
-* Label support on issues
 * Link handling
 * Backup and restore
 * Cache of changes

@@ -147,9 +147,6 @@ public class Issue extends DataModel implements Parcelable {
         return obj;
     }
 
-    //TODO Labels
-
-
     @Override
     public String toString() {
         return "Issue{" +
