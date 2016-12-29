@@ -421,11 +421,12 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue) {
+    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("title", issue.getTitle());
             obj.put("body", issue.getBody());
+            if(assignees != null) obj.put("assignees", new JSONArray(assignees));
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
