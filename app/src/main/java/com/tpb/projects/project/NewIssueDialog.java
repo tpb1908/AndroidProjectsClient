@@ -64,7 +64,7 @@ public class NewIssueDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_issue, null);
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_issue, null);
 
         final MarkedView md = (MarkedView) view.findViewById(R.id.issue_body_markdown);
         title = (EditText) view.findViewById(R.id.issue_title_edit);

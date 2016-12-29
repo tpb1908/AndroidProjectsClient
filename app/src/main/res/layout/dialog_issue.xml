@@ -77,8 +77,8 @@
             android:id="@+id/issue_assignees_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/issue_body_markdown"
