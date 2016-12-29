@@ -65,35 +65,58 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/issue_add_assignees_button"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/hint_choose_assignees"
-            android:background="?android:attr/selectableItemBackground"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/issue_assignees_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <Button
-            android:id="@+id/issue_add_labels_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/hint_choose_labels"
-            android:background="?android:attr/selectableItemBackground"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+                <Button
+                    android:id="@+id/issue_add_assignees_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_choose_assignees"
+                    android:background="?android:attr/selectableItemBackground"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
 
-        <TextView
-            android:id="@+id/issue_labels_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"/>
+                <TextView
+                    android:id="@+id/issue_assignees_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/issue_add_labels_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_choose_labels"
+                    android:background="?android:attr/selectableItemBackground"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
+
+                <TextView
+                    android:id="@+id/issue_labels_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/issue_body_markdown"
