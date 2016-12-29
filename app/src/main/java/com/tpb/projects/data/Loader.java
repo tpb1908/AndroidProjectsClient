@@ -28,6 +28,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
@@ -193,25 +194,29 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
-        loadCollaborators(new CollaboratorsLoader() {
-            @Override
-            public void collaboratorsLoaded(User[] collaborators) {
-                for(User u : collaborators) {
-                    Log.i(TAG, "collaboratorsLoaded: Comparing " + login + " to " + u.getLogin());
-                    if(login.equals(u.getLogin()) && listener != null) {
-                        listener.accessCheckComplete(true);
-                        return;
+    public void loadLabels(LabelsLoader loader, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/labels")
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Label[] labels = new Label[response.length()];
+                        for(int i = 0; i < labels.length; i++) {
+                            try {
+                                labels[i] = Label.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: Label parsing: ", jse);
+                            }
+                        }
+                        Log.i(TAG, "onResponse: Labels: " + response.toString());
                     }
-                }
-                if(listener != null) listener.accessCheckComplete(false);
-            }
 
-            @Override
-            public void collaboratorsLoadError() {
-                if(listener != null) listener.accessCheckError();
-            }
-        }, repoFullname);
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Labels: " + anError.getErrorBody());
+                    }
+                });
     }
 
     public void loadProject(ProjectLoader loader, int id) {
@@ -329,6 +334,27 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
+        loadCollaborators(new CollaboratorsLoader() {
+            @Override
+            public void collaboratorsLoaded(User[] collaborators) {
+                for(User u : collaborators) {
+                    Log.i(TAG, "collaboratorsLoaded: Comparing " + login + " to " + u.getLogin());
+                    if(login.equals(u.getLogin()) && listener != null) {
+                        listener.accessCheckComplete(true);
+                        return;
+                    }
+                }
+                if(listener != null) listener.accessCheckComplete(false);
+            }
+
+            @Override
+            public void collaboratorsLoadError() {
+                if(listener != null) listener.accessCheckError();
+            }
+        }, repoFullname);
+    }
+
     public interface AuthenticatedUserLoader {
 
         void userLoaded(User user);
@@ -389,12 +415,19 @@ public class Loader extends APIHandler {
 
     }
 
-
     public interface CollaboratorsLoader {
 
         void collaboratorsLoaded(User[] collaborators);
 
         void collaboratorsLoadError();
+
+    }
+
+    public interface LabelsLoader {
+
+        void labelsLoaded(Label[] labels);
+
+        void labelLoadError();
 
     }
 

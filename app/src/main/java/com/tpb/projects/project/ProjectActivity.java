@@ -149,6 +149,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
 
+        mLoader.loadLabels(null, mProject.getRepoFullName());
+
     }
 
     void showFab() {

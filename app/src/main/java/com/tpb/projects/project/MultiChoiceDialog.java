@@ -22,6 +22,9 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.AppCompatCheckedTextView;
+import android.util.Log;
+import android.widget.ListView;
 
 import com.tpb.projects.R;
 
@@ -34,6 +37,8 @@ public class MultiChoiceDialog extends DialogFragment {
     private MultiChoiceDialogListener listener;
     private String[] choices;
     private boolean[] checked;
+    private ListView listView;
+    private int[] colors;
 
     @NonNull
     @Override
@@ -50,7 +55,24 @@ public class MultiChoiceDialog extends DialogFragment {
         builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
             if(listener != null) listener.ChoicesCancelled();
         });
-        return builder.create();
+        final AlertDialog dialog = builder.create();
+        listView = dialog.getListView();
+
+        Log.i("Test", "onCreateDialog: Does the listview work? " + dialog.getListView());
+        dialog.setOnShowListener(dialogInterface -> {
+            if(colors != null) {
+                for(int i = 0; i < listView.getChildCount() && i < colors.length; i++) {
+                    try {
+                        ((AppCompatCheckedTextView) listView.getChildAt(i)).setTextColor(colors[i]);
+                    } catch(ClassCastException ignored) {}
+                }
+            }
+        });
+        return dialog;
+    }
+
+    public void setTextColors(int[] colors) {
+        this.colors = colors;
     }
 
     public void setChoices(String[] choices, boolean[] checked) {
