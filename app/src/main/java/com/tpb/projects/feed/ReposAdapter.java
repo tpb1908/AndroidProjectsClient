@@ -57,9 +57,9 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     private ArrayList<Repository> mRepos = new ArrayList<>();
     private String mUser;
     private RepoPinSorter mSorter;
-    private ReposManager mManager;
+    private RepositoriesManager mManager;
 
-    ReposAdapter(Context context, ReposManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
+    ReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mLoader.loadRepositories(this);
         mManager = opener;
@@ -133,7 +133,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     private void togglePin(int pos) {
-        //TODO Pin to top or move back to original pos
         final Repository r = mRepos.get(pos);
         if(mSorter.isPinned(r.getId())) {
             mRepos.remove(pos);
@@ -155,8 +154,8 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     @Override
-    public void reposLoaded(Repository[] repos) {
-        Log.i(TAG, "reposLoaded: " + repos.length);
+    public void repositoriesLoaded(Repository[] repos) {
+        Log.i(TAG, "repositoriesLoaded: " + repos.length);
         mRecycler.enableAnimation();
         mRepos = new ArrayList<>(Arrays.asList(repos));
         mSorter.sort(mRepos);
@@ -165,7 +164,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     }
 
     @Override
-    public void reposLoadError() {
+    public void repositoryLoadError() {
 
     }
 
@@ -246,7 +245,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
 
     }
 
-    interface ReposManager {
+    interface RepositoriesManager {
 
         void openRepo(Repository repo, View view);
 

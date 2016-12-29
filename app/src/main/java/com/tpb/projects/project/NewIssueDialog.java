@@ -70,19 +70,21 @@ public class NewIssueDialog extends DialogFragment {
         title = (EditText) view.findViewById(R.id.issue_title_edit);
         body = (EditText) view.findViewById(R.id.issue_body_edit);
 
-
-        final Card card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
         repoFullName = getArguments().getString(getContext().getString(R.string.intent_repo));
 
-        final String[] text = card.getNote().split("\n", 2);
-        if(text[0].length() > 140) {
-            text[1] = text[0].substring(140) + text[1];
-            text[0] = text[0].substring(0, 140);
-        }
-        title.setText(text[0]);
-        if(text.length > 1) {
-            md.setMDText(text[1]);
-            body.setText(text[1]);
+        if(getArguments().containsKey(getString(R.string.parcel_card))) {
+            final Card card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
+
+            final String[] text = card.getNote().split("\n", 2);
+            if(text[0].length() > 140) {
+                text[1] = text[0].substring(140) + text[1];
+                text[0] = text[0].substring(0, 140);
+            }
+            title.setText(text[0]);
+            if(text.length > 1) {
+                md.setMDText(text[1]);
+                body.setText(text[1]);
+            }
         }
 
         body.addTextChangedListener(new TextWatcher() {

@@ -55,6 +55,7 @@
     <string name="text_cannot_access_repo">Can\'t edit this repo</string>
     <string name="text_fab_new_card">New card</string>
     <string name="text_fab_new_column">New column</string>
+    <string name="text_fab_new_issue">New issue</string>
     <string name="text_delete_column_warning">Are you sure you want to delete this column?</string>
     <string name="text_delete_note_warning">Are you sure you want to delete this note?</string>
     <string name="text_note_deleted">Note deleted</string>

@@ -443,18 +443,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mEditor.deleteCard(new Editor.CardDeletionListener() {
             @Override
             public void cardDeleted(Card card) {
-                mEditor.createCard(new Editor.CardCreationListener() {
-                    @Override
-                    public void cardCreated(int columnId, Card card) {
-                        Log.i(TAG, "cardCreated: Issue card created");
-                        mAdapter.updateCard(card, oldCard.getId());
-                    }
-
-                    @Override
-                    public void cardCreationError() {
-
-                    }
-                }, mColumn.getId(), issue.getId());
+                createIssueCard(issue, oldCard.getId());
             }
 
             @Override
@@ -462,6 +451,29 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
             }
         }, oldCard);
+    }
+
+    void createIssueCard(Issue issue) {
+        createIssueCard(issue, -1);
+    }
+
+    void createIssueCard(Issue issue, int oldCardId) {
+        mEditor.createCard(new Editor.CardCreationListener() {
+            @Override
+            public void cardCreated(int columnId, Card card) {
+                Log.i(TAG, "cardCreated: Issue card created");
+                if(oldCardId == -1) {
+                    mAdapter.addCard(card);
+                } else {
+                    mAdapter.updateCard(card, oldCardId);
+                }
+            }
+
+            @Override
+            public void cardCreationError() {
+
+            }
+        }, mColumn.getId(), issue.getId());
     }
 
     void copyToClipboard(Card card) {

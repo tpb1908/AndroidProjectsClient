@@ -84,7 +84,7 @@ public class Loader extends APIHandler {
                                 repos[i] = Repository.parse(jsa.getJSONObject(i));
                             }
                             Log.i(TAG, "onResponse: successfully parsed repos");
-                            if(loader != null) loader.reposLoaded(repos);
+                            if(loader != null) loader.repositoriesLoaded(repos);
                         } catch(JSONException jse) {
                             Log.i(TAG, "onResponse: " + jsa.toString());
                             Log.e(TAG, "onResponse: ", jse);
@@ -129,7 +129,7 @@ public class Loader extends APIHandler {
                                 repos[i] = Repository.parse(jsa.getJSONObject(i));
                             }
                             Log.i(TAG, "onResponse: successfully parsed repos");
-                            if(loader != null) loader.reposLoaded(repos);
+                            if(loader != null) loader.repositoriesLoaded(repos);
                         } catch(JSONException jse) {
                             Log.i(TAG, "onResponse: " + jsa.toString());
                             Log.e(TAG, "onResponse: ", jse);
@@ -339,9 +339,9 @@ public class Loader extends APIHandler {
 
     public interface RepositoriesLoader {
 
-        void reposLoaded(Repository[] repos);
+        void repositoriesLoaded(Repository[] repos);
 
-        void reposLoadError();
+        void repositoryLoadError();
 
     }
 

@@ -62,7 +62,7 @@ import butterknife.ButterKnife;
  * https://github.com/falnatsheh/MarkdownView best demo
  */
 
-public class ReposActivity extends AppCompatActivity implements ReposAdapter.ReposManager {
+public class ReposActivity extends AppCompatActivity implements ReposAdapter.RepositoriesManager {
     private static final String TAG = ReposActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/ReposActivity.java";
 

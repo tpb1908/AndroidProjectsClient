@@ -51,6 +51,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
@@ -81,6 +82,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_fab_menu) FloatingActionMenu mMenu;
     @BindView(R.id.project_add_card) FloatingActionButton mAddCard;
     @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
+    @BindView(R.id.project_add_issue) FloatingActionButton mAddIssue;
 
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
@@ -173,6 +175,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mRefresher.setRefreshing(false);
                 if(columns.length > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
+                    mAddIssue.setVisibility(View.INVISIBLE);
 
                     int id = 0;
                     if(mCurrentPosition != -1) {
@@ -194,6 +197,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
                 } else {
                     mAddCard.setVisibility(View.GONE);
+                    mAddIssue.setVisibility(View.GONE);
                 }
 
                 final Bundle bundle = new Bundle();
@@ -240,6 +244,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     @Override
                     public void columnAdded(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
+                        mAddIssue.setVisibility(View.INVISIBLE);
                         mAdapter.columns.add(column);
                         mAdapter.add(new ColumnPageDescriptor(column));
                         mColumnPager.setCurrentItem(mAdapter.getCount(), true);
@@ -263,6 +268,26 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         });
     }
 
+    @OnClick(R.id.project_add_issue)
+    void addIssue() {
+        final NewIssueDialog newDialog = new NewIssueDialog();
+        newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
+            @Override
+            public void issueCreated(Issue issue) {
+                mAdapter.getCurrentFragment().createIssueCard(issue);
+            }
+
+            @Override
+            public void issueCreationCancelled() {
+
+            }
+        });
+        final Bundle c = new Bundle();
+        c.putString(getString(R.string.intent_repo), mProject.getRepoFullName());
+        newDialog.setArguments(c);
+        newDialog.show(getSupportFragmentManager(), TAG);
+    }
+
     void deleteColumn(Column column) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.title_delete_column)
@@ -276,8 +301,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             mAdapter.remove(mCurrentPosition);
                             mAdapter.columns.remove(mCurrentPosition);
                             mRefresher.setRefreshing(false);
-                            if(mAdapter.columns.size() == 0) mAddCard.setVisibility(View.GONE);
-
+                            if(mAdapter.columns.size() == 0) {
+                                mAddCard.setVisibility(View.GONE);
+                                mAddIssue.setVisibility(View.GONE);
+                            }
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                             mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
