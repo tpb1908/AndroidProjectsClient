@@ -239,7 +239,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
                     @Override
                     public void columnAdded(Column column) {
-                        mAddCard.setVisibility(View.VISIBLE);
+                        mAddCard.setVisibility(View.INVISIBLE);
                         mAdapter.columns.add(column);
                         mAdapter.add(new ColumnPageDescriptor(column));
                         mColumnPager.setCurrentItem(mAdapter.getCount(), true);
@@ -308,7 +308,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         final CardDialog dialog = new CardDialog();
         mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
-
 
     void deleteCard(Card card, boolean showWarning) {
         final Editor.CardDeletionListener listener = new Editor.CardDeletionListener() {

@@ -405,7 +405,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             popup.inflate(R.menu.menu_card);
         }
 
-
         popup.show();
     }
 
