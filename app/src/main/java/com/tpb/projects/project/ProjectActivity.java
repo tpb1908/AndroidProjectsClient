@@ -311,7 +311,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
 
     void deleteCard(Card card, boolean showWarning) {
-        final int columnId = mAdapter.getCurrentFragment().mColumn.getId();
         final Editor.CardDeletionListener listener = new Editor.CardDeletionListener() {
             @Override
             public void cardDeleted(Card card) {

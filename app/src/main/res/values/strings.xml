@@ -87,9 +87,9 @@
     <string name="settings_enable_analytics">Enable analytics</string>
 
     <string-array name="settings_card_actions">
-        <item>Edit note</item>
+        <item>Edit card</item>
         <item>Show in fullscreen</item>
-        <item>Copy note</item>
+        <item>Copy text</item>
     </string-array>
 
     <string name="title_new_project">New project</string>
