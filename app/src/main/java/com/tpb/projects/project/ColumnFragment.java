@@ -412,7 +412,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final EditIssueDialog editDialog = new EditIssueDialog();
         editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
             @Override
-            public void issueEdited(Issue issue, @Nullable String[] assignees) {
+            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
                 mEditor.editIssue(new Editor.IssueEditListener() {
                     @Override
                     public void issueEdited(Issue issue) {
@@ -424,7 +424,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     public void issueEditError() {
 
                     }
-                }, mParent.mProject.getRepoFullName(), issue, assignees);
+                }, mParent.mProject.getRepoFullName(), issue, assignees, labels);
             }
 
             @Override

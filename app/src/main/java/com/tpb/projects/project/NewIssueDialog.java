@@ -24,7 +24,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +41,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 
 import java.util.ArrayList;
@@ -53,7 +57,9 @@ public class NewIssueDialog extends DialogFragment {
     private EditText body;
     private String repoFullName;
     private TextView assigneesText;
+    private TextView labelsText;
     private ArrayList<String> assignees = new ArrayList<>();
+    private ArrayList<String> selectedLabels = new ArrayList<>();
 
     private IssueDialogListener mListener;
 
@@ -115,8 +121,11 @@ public class NewIssueDialog extends DialogFragment {
 
         final Button setAssigneesButton = (Button) view.findViewById(R.id.issue_add_assignees_button);
         assigneesText = (TextView) view.findViewById(R.id.issue_assignees_text);
-
         setAssigneesButton.setOnClickListener((v) -> showAssigneesDialog());
+
+        final Button setLabelsButton = (Button) view.findViewById(R.id.issue_add_labels_button);
+        labelsText = (TextView) view.findViewById(R.id.issue_labels_text);
+        setLabelsButton.setOnClickListener((v) -> showLabelsDialog());
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_new_issue);
@@ -151,7 +160,8 @@ public class NewIssueDialog extends DialogFragment {
                     repoFullName,
                     title.getText().toString(),
                     body.getText().toString(),
-                    assignees.toArray(new String[0])
+                    assignees.toArray(new String[0]),
+                    selectedLabels.toArray(new String[0])
             );
         }
     };
@@ -213,7 +223,61 @@ public class NewIssueDialog extends DialogFragment {
 
             }
         }, repoFullName);
+    }
 
+    private void showLabelsDialog() {
+        Toast.makeText(getContext(), R.string.text_loading_labels, Toast.LENGTH_SHORT).show();
+        new Loader(getContext()).loadLabels(new Loader.LabelsLoader() {
+            @Override
+            public void labelsLoaded(Label[] labels) {
+                final MultiChoiceDialog mcd = new MultiChoiceDialog();
+
+                final Bundle b = new Bundle();
+                b.putInt(getString(R.string.intent_title_res), R.string.title_choose_labels);
+                mcd.setArguments(b);
+
+                final String[] labelTexts = new String[labels.length];
+                final int[] colors = new int[labels.length];
+                final boolean[] choices = new boolean[labels.length];
+                for(int i = 0; i < labels.length; i++) {
+                    labelTexts[i] = labels[i].getName();
+                    colors[i] = labels[i].getColor();
+                    choices[i] = selectedLabels.indexOf(labels[i].getName()) != -1;
+                }
+
+
+                mcd.setChoices(labelTexts, choices);
+                mcd.setTextColors(colors);
+                mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
+                    @Override
+                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                        final SpannableStringBuilder builder = new SpannableStringBuilder();
+                        selectedLabels.clear();
+                        for(int i = 0; i < choices.length; i++) {
+                            if(checked[i]) {
+                                selectedLabels.add(choices[i]);
+                                final SpannableString s = new SpannableString(choices[i]);
+                                s.setSpan(new ForegroundColorSpan(labels[i].getColor()), 0, choices[i].length(), 0);
+                                builder.append(s);
+                                builder.append(' ');
+                            }
+                        }
+                        labelsText.setText(builder, TextView.BufferType.SPANNABLE);
+                    }
+
+                    @Override
+                    public void ChoicesCancelled() {
+
+                    }
+                });
+                mcd.show(getFragmentManager(), TAG);
+            }
+
+            @Override
+            public void labelLoadError() {
+
+            }
+        }, repoFullName);
     }
 
     @Override

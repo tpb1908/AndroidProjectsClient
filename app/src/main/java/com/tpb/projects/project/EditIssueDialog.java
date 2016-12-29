@@ -54,6 +54,7 @@ public class EditIssueDialog extends DialogFragment {
     private String repoFullName;
     private TextView assigneesText;
     private ArrayList<String> assignees = new ArrayList<>();
+    private ArrayList<String> selectedLabels = new ArrayList<>();
 
 
     @NonNull
@@ -123,7 +124,7 @@ public class EditIssueDialog extends DialogFragment {
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             issue.setTitle(title.getText().toString());
             issue.setBody(body.getText().toString());
-            if(mListener != null) mListener.issueEdited(issue, assignees.toArray(new String[0]));
+            if(mListener != null) mListener.issueEdited(issue, assignees.toArray(new String[0]), selectedLabels.toArray(new String[0]));
         });
         builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
             if(mListener != null) mListener.issueEditCancelled();
@@ -200,7 +201,7 @@ public class EditIssueDialog extends DialogFragment {
 
     public interface EditIssueDialogListener {
 
-        void issueEdited(Issue issue, @Nullable String[] assignees);
+        void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels);
 
         void issueEditCancelled();
 

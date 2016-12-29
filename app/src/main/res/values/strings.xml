@@ -76,6 +76,7 @@
     <string name="text_issue_created">Issue created</string>
     <string name="text_close_issue_on_delete">Do you want to close the issue associated with this card?</string>
     <string name="text_loading_collaborators">Loading collaborators</string>
+    <string name="text_loading_labels">Loading labels</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
@@ -84,6 +85,8 @@
     <string name="hint_issue_title">Title</string>
     <string name="hint_issue_body">Body</string>
     <string name="hint_choose_assignees">Choose assignees</string>
+    <string name="hint_choose_labels">Choose labels
+    </string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -108,6 +111,7 @@
     <string name="title_close_issue">Close issue</string>
     <string name="title_edit_issue">Edit issue</string>
     <string name="title_choose_assignees">Assign to</string>
+    <string name="title_choose_labels">Labels</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

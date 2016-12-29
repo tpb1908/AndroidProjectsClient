@@ -24,10 +24,12 @@ import android.util.Log;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
+import java.util.Arrays;
 
 /**
  * Created by theo on 20/12/16.
@@ -56,6 +58,8 @@ public class Issue extends DataModel implements Parcelable {
     private static final String CLOSED_AT = "closed_at";
     private long closedAt;
     private boolean closed;
+
+    private String[] labels;
 
     public int getId() {
         return id;
@@ -89,6 +93,14 @@ public class Issue extends DataModel implements Parcelable {
         this.body = body;
     }
 
+    public long getClosedAt() {
+        return closedAt;
+    }
+
+    public String[] getLabels() {
+        return labels;
+    }
+
     public static Issue parse(JSONObject obj) {
         final Issue i = new Issue();
         try {
@@ -104,6 +116,15 @@ public class Issue extends DataModel implements Parcelable {
                     Log.e(TAG, "parse: ", pe);
                 }
                 i.closed = true;
+            }
+            try {
+                final JSONArray lbs = obj.getJSONArray("labels");
+                i.labels = new String[lbs.length()];
+                for(int j = 0; j < lbs.length(); j++) {
+                    i.labels[j] = lbs.getString(j);
+                }
+            } catch(JSONException jse) {
+                Log.e(TAG, "parse: Labels: ", jse);
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -129,7 +150,6 @@ public class Issue extends DataModel implements Parcelable {
     //TODO Labels
 
 
-
     @Override
     public String toString() {
         return "Issue{" +
@@ -140,6 +160,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
                 ", closed=" + closed +
+                ", labels=" + Arrays.toString(labels) +
                 '}';
     }
 
@@ -157,6 +178,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
+        dest.writeStringArray(this.labels);
     }
 
     protected Issue(Parcel in) {
@@ -167,9 +189,10 @@ public class Issue extends DataModel implements Parcelable {
         this.body = in.readString();
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
+        this.labels = in.createStringArray();
     }
 
-    public static final Parcelable.Creator<Issue> CREATOR = new Parcelable.Creator<Issue>() {
+    public static final Creator<Issue> CREATOR = new Creator<Issue>() {
         @Override
         public Issue createFromParcel(Parcel source) {
             return new Issue(source);

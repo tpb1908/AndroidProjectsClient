@@ -339,12 +339,13 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees) {
+    public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("title", title);
             obj.put("body", body);
             if(assignees != null) obj.put("assignees", new JSONArray(assignees));
+            if(labels != null) obj.put("labels", new JSONArray(labels));
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
@@ -420,12 +421,13 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees) {
+    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees,  @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("title", issue.getTitle());
             obj.put("body", issue.getBody());
             if(assignees != null) obj.put("assignees", new JSONArray(assignees));
+            if(labels != null) obj.put("labels", new JSONArray(labels));
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }

@@ -209,12 +209,14 @@ public class Loader extends APIHandler {
                                 Log.e(TAG, "onResponse: Label parsing: ", jse);
                             }
                         }
+                        if(loader != null) loader.labelsLoaded(labels);
                         Log.i(TAG, "onResponse: Labels: " + response.toString());
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Labels: " + anError.getErrorBody());
+                        if(loader != null) loader.labelLoadError();
                     }
                 });
     }
