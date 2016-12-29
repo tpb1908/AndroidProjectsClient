@@ -394,7 +394,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         Log.i(TAG, "openMenu: Opening issue");
                         mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
                     }
-
             }
 
             return true;

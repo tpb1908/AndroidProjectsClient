@@ -18,6 +18,7 @@
 package com.tpb.projects.user;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,6 +42,7 @@ import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.feed.ReposActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.UI;
@@ -113,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
                 mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
 
-                new Handler().postDelayed(() -> finish(), 1500);
+                new Handler().postDelayed(() -> startActivity(new Intent(LoginActivity.this, ReposActivity.class)), 1500);
             }
         });
         CookieSyncManager.createInstance(this);

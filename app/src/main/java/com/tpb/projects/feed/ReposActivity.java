@@ -96,6 +96,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         mApp = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
             startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+            finish();
         } else {
             setSupportActionBar(mToolbar);
 

@@ -329,10 +329,6 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public enum LoadError {
-        NOT_FOUND, UNKNOWN
-    }
-
     public interface AuthenticatedUserLoader {
 
         void userLoaded(User user);
@@ -416,6 +412,10 @@ public class Loader extends APIHandler {
 
         void accessCheckError();
 
+    }
+
+    public enum LoadError {
+        NOT_FOUND, AUTHENTICATION_FAILED, UNKNOWN
     }
 
 }

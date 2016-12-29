@@ -201,7 +201,7 @@ public class Editor extends APIHandler {
     }
 
     public void createCard(CardCreationListener listener, int columnId, String note) {
-        //TODO Support creating issue cards
+        //TODO Support creating card as an issue
         /*
         Process
         * Show dialog for the issue title and body

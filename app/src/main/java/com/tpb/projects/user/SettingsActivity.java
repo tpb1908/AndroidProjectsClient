@@ -112,7 +112,7 @@ public class SettingsActivity extends AppCompatActivity {
                 bugIntent.setType("text/email");
                 bugIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {BuildConfig.BUG_EMAIL});
                 bugIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Projects bug report");
-                bugIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                bugIntent.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(bugIntent, "Send email:"));
                 break;
             case R.id.layout_settings_feature_request:
@@ -120,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
                 emailIntent.setType("text/email");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {BuildConfig.FEATURE_REQUEST_EMAIL});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Projects feature request");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Bug:\n\n\nSteps to reproduce:");
                 startActivity(Intent.createChooser(emailIntent, "Send email:"));
                 break;
         }
