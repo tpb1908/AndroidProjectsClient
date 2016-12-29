@@ -59,7 +59,7 @@ public class Issue extends DataModel implements Parcelable {
     private long closedAt;
     private boolean closed;
 
-    private String[] labels;
+    private Label[] labels;
 
     public int getId() {
         return id;
@@ -97,7 +97,7 @@ public class Issue extends DataModel implements Parcelable {
         return closedAt;
     }
 
-    public String[] getLabels() {
+    public Label[] getLabels() {
         return labels;
     }
 
@@ -119,9 +119,9 @@ public class Issue extends DataModel implements Parcelable {
             }
             try {
                 final JSONArray lbs = obj.getJSONArray("labels");
-                i.labels = new String[lbs.length()];
+                i.labels = new Label[lbs.length()];
                 for(int j = 0; j < lbs.length(); j++) {
-                    i.labels[j] = lbs.getString(j);
+                    i.labels[j] = Label.parse(lbs.getJSONObject(j));
                 }
             } catch(JSONException jse) {
                 Log.e(TAG, "parse: Labels: ", jse);
@@ -164,6 +164,7 @@ public class Issue extends DataModel implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -178,7 +179,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
-        dest.writeStringArray(this.labels);
+        dest.writeTypedArray(this.labels, flags);
     }
 
     protected Issue(Parcel in) {
@@ -189,7 +190,7 @@ public class Issue extends DataModel implements Parcelable {
         this.body = in.readString();
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
-        this.labels = in.createStringArray();
+        this.labels = in.createTypedArray(Label.CREATOR);
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

@@ -25,7 +25,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +39,7 @@ import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 
 import java.util.ArrayList;
@@ -53,6 +57,7 @@ public class EditIssueDialog extends DialogFragment {
 
     private String repoFullName;
     private TextView assigneesText;
+    private TextView labelsText;
     private ArrayList<String> assignees = new ArrayList<>();
     private ArrayList<String> selectedLabels = new ArrayList<>();
 
@@ -118,6 +123,21 @@ public class EditIssueDialog extends DialogFragment {
 
         setAssigneesButton.setOnClickListener((v) -> showAssigneesDialog());
 
+        final Button setLabelsButton = (Button) view.findViewById(R.id.issue_add_labels_button);
+        labelsText = (TextView) view.findViewById(R.id.issue_labels_text);
+        setLabelsButton.setOnClickListener((v) -> showLabelsDialog());
+
+        if(issue.getLabels() != null) {
+            final ArrayList<String> names = new ArrayList<>();
+            final ArrayList<Integer> colours = new ArrayList<>();
+            for(Label l : issue.getLabels()) {
+                names.add(l.getName());
+                colours.add(l.getColor());
+            }
+            setLabelsText(names, colours);
+        }
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_edit_issue);
 
@@ -142,6 +162,19 @@ public class EditIssueDialog extends DialogFragment {
         }
 
         assigneesText.setText(builder.toString());
+    }
+
+    private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
+        selectedLabels.clear();
+        for(int i = 0; i < names.size(); i++) {
+            selectedLabels.add(names.get(i));
+            final SpannableString s = new SpannableString(names.get(i));
+            s.setSpan(new ForegroundColorSpan(colors.get(i)), 0, names.get(i).length(), 0);
+            builder.append(s);
+            builder.append(' ');
+        }
+        labelsText.setText(builder, TextView.BufferType.SPANNABLE);
     }
 
     private void showAssigneesDialog() {
@@ -184,6 +217,59 @@ public class EditIssueDialog extends DialogFragment {
 
             @Override
             public void collaboratorsLoadError() {
+
+            }
+        }, repoFullName);
+    }
+
+    private void showLabelsDialog() {
+        Toast.makeText(getContext(), R.string.text_loading_labels, Toast.LENGTH_SHORT).show();
+        new Loader(getContext()).loadLabels(new Loader.LabelsLoader() {
+            @Override
+            public void labelsLoaded(Label[] labels) {
+                final MultiChoiceDialog mcd = new MultiChoiceDialog();
+
+                final Bundle b = new Bundle();
+                b.putInt(getString(R.string.intent_title_res), R.string.title_choose_labels);
+                mcd.setArguments(b);
+
+                final String[] labelTexts = new String[labels.length];
+                final int[] colors = new int[labels.length];
+                final boolean[] choices = new boolean[labels.length];
+                for(int i = 0; i < labels.length; i++) {
+                    labelTexts[i] = labels[i].getName();
+                    colors[i] = labels[i].getColor();
+                    choices[i] = selectedLabels.indexOf(labels[i].getName()) != -1;
+                }
+
+                mcd.setChoices(labelTexts, choices);
+                mcd.setTextColors(colors);
+                mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
+                    @Override
+                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                        selectedLabels.clear();
+                        final ArrayList<String> labels = new ArrayList<>();
+                        final ArrayList<Integer> colours = new ArrayList<>();
+                        for(int i = 0; i < choices.length; i++) {
+                            if(checked[i]) {
+                                selectedLabels.add(choices[i]);
+                                labels.add(choices[i]);
+                                colours.add(colors[i]);
+                            }
+                        }
+                        setLabelsText(labels, colours);
+                    }
+
+                    @Override
+                    public void ChoicesCancelled() {
+
+                    }
+                });
+                mcd.show(getFragmentManager(), TAG);
+            }
+
+            @Override
+            public void labelLoadError() {
 
             }
         }, repoFullName);
