@@ -27,15 +27,20 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.User;
+
+import java.util.ArrayList;
 
 /**
  * Created by theo on 28/12/16.
@@ -47,6 +52,8 @@ public class NewIssueDialog extends DialogFragment {
     private EditText title;
     private EditText body;
     private String repoFullName;
+    private TextView assigneesText;
+    private ArrayList<String> assignees = new ArrayList<>();
 
     private IssueDialogListener mListener;
 
@@ -104,6 +111,11 @@ public class NewIssueDialog extends DialogFragment {
             }
         });
 
+        final Button setAssigneesButton = (Button) view.findViewById(R.id.issue_add_assignees_button);
+        assigneesText = (TextView) view.findViewById(R.id.issue_assignees_text);
+
+        setAssigneesButton.setOnClickListener((v) -> showAssigneesDialog());
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_new_issue);
 
@@ -116,12 +128,11 @@ public class NewIssueDialog extends DialogFragment {
         return builder.setView(view).create();
     }
 
-    @Override
-    public void setupDialog(Dialog dialog, int style) {
-        super.setupDialog(dialog, style);
-        new Handler().postDelayed(() -> {
-            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view ->
-                    new Editor(getContext()).createIssue(new Editor.IssueCreationListener() {
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            new Editor(getContext()).createIssue(
+                    new Editor.IssueCreationListener() {
                              @Override
                              public void issueCreated(Issue issue) {
                                  Toast.makeText(getContext(), R.string.text_issue_created, Toast.LENGTH_SHORT).show();
@@ -135,16 +146,72 @@ public class NewIssueDialog extends DialogFragment {
 
                              }
                          },
-                            repoFullName,
-                            title.getText().toString(),
-                            body.getText().toString(),
-                            new String[] {GitHubSession.getSession(getContext()).getUsername()}
-                    )
+                    repoFullName,
+                    title.getText().toString(),
+                    body.getText().toString(),
+                    assignees.toArray(new String[0])
             );
+        }
+    };
+
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        new Handler().postDelayed(() -> {
+            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(onClickListener);
         }, 100);
     }
 
+    private void showAssigneesDialog() {
+        Toast.makeText(getContext(), R.string.text_loading_collaborators, Toast.LENGTH_SHORT).show();
+        new Loader(getContext()).loadCollaborators(new Loader.CollaboratorsLoader() {
+            @Override
+            public void collaboratorsLoaded(User[] collaborators) {
+                final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
+                final Bundle b = new Bundle();
+                b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
+                mcd.setArguments(b);
+
+                final String[] collabNames = new String[collaborators.length];
+                final boolean[] checked = new boolean[collabNames.length];
+                for(int i = 0; i < collabNames.length; i++) {
+                    collabNames[i] = collaborators[i].getLogin();
+                    if(assignees.indexOf(collabNames[i]) != -1) {
+                        checked[i] = true;
+                    }
+                }
+                mcd.setChoices(collabNames, checked);
+                mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
+                    @Override
+                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                        final StringBuilder builder = new StringBuilder();
+                        assignees.clear();
+                        for(int i = 0; i < choices.length; i++) {
+                            if(checked[i]) {
+                                assignees.add(choices[i]);
+                                builder.append(choices[i]);
+                                builder.append(' ');
+                            }
+                        }
+
+                        assigneesText.setText(builder.toString());
+                    }
+
+                    @Override
+                    public void ChoicesCancelled() {
+
+                    }
+                });
+                mcd.show(getFragmentManager(), TAG);
+            }
+
+            @Override
+            public void collaboratorsLoadError() {
+
+            }
+        }, repoFullName);
+
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

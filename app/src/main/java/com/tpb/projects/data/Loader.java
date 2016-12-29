@@ -167,7 +167,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    private void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
+    public void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/collaborators")
                 .addHeaders(API_AUTH_HEADERS)
                 .build()

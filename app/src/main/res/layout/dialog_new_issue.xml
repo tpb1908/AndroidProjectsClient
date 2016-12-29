@@ -65,12 +65,20 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <CheckBox
+        <Button
+            android:id="@+id/issue_add_assignees_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_choose_assignees"
+            android:background="?android:attr/selectableItemBackground"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <TextView
+            android:id="@+id/issue_assignees_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/text_assign_yourself"/>
+            android:layout_marginEnd="16dp"/>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/issue_body_markdown"

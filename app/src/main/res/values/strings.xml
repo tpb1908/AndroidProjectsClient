@@ -74,6 +74,7 @@
     <string name="text_assign_yourself">Assign yourself</string>
     <string name="text_issue_created">Issue created</string>
     <string name="text_close_issue_on_delete">Do you want to close the issue associated with this card?</string>
+    <string name="text_loading_collaborators">Loading collaborators</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
@@ -81,6 +82,7 @@
     <string name="hint_card_new">Enter a note</string>
     <string name="hint_issue_title">Title</string>
     <string name="hint_issue_body">Body</string>
+    <string name="hint_choose_assignees">Choose assignees</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -104,6 +106,7 @@
     <string name="title_new_issue">New issue</string>
     <string name="title_close_issue">Close issue</string>
     <string name="title_edit_issue">Edit issue</string>
+    <string name="title_choose_assignees">Assign to</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
@@ -120,6 +123,7 @@
 
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
+    <string name="intent_title_res" translatable="false">title</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>
     <string name="parcel_card" translatable="false">card</string>
