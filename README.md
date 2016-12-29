@@ -27,6 +27,39 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * [AOSP support library](https://developer.android.com/tools/support-library/features.html)
 
 
+### Features
+
+* Secure sign in with OAUTH
+* Creating projects on a repository
+* Editing projects within a repository
+* Deleting projects within a repository
+* Viewing of projects columns and their cards
+* MarkDown support throughout
+* Editing of column names
+* Creation of new columns
+* Deletion of columns
+* Creation of new cards
+* Creation of new issue cards (Not available on site)
+* Conversion of cards to issues
+* Editing of issues (Not available on site)
+* Editing of issue collaborators (Not available on site)
+* Opening and closing of associated issues (Not available on site)
+* Option to close issues when their card is removed (Not available on site)
+* Fullscreen viewer for cards
+* Drag and drop to move cards between columns
+* Drag and drop to rearrange columns in a project
+
+
+### Upcoming features
+
+* Label support on issues
+* Link handling
+* Backup and restore
+* Cache of changes
+* Offline storage
+* Moving of columns between projects
+* Moving of cards between projects
+
 ### Setup
 
 **Clone of fork the repository**
