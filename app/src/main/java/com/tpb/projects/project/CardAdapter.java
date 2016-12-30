@@ -227,14 +227,18 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         card.getIssue().getClosedBy().getLogin()));
             }
             Log.i(TAG, "onBindViewHolder: Text: "+ builder.toString());
-            holder.mIssueText.setVisibility(View.VISIBLE);
-            holder.mIssueText.setMovementMethod(LinkMovementMethod.getInstance());
-            holder.mIssueText.setText(Html.fromHtml(builder.toString()));
+            if(!builder.toString().isEmpty()) {
+                holder.mIssueText.setVisibility(View.VISIBLE);
+                holder.mIssueText.setMovementMethod(LinkMovementMethod.getInstance());
+                holder.mIssueText.setText(Html.fromHtml(builder.toString()));
+            } else {
+                holder.mIssueText.setVisibility(View.GONE);
+            }
 
             //TODO Find out what happens when there are multiple assignees
 
         } else {
-            holder.mIssueText.setVisibility(View.GONE);
+
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
                             formatMD(card.getNote())
