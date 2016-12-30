@@ -274,6 +274,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_issue)
     void addIssue() {
+        mMenu.close(true);
         final NewIssueDialog newDialog = new NewIssueDialog();
         newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
             @Override
