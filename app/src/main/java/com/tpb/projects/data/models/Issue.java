@@ -58,6 +58,10 @@ public class Issue extends DataModel implements Parcelable {
     private static final String CLOSED_AT = "closed_at";
     private long closedAt;
     private boolean closed;
+    
+    
+    private User closedBy;
+    
     private User assignee;
 
     private Label[] labels;
@@ -106,6 +110,10 @@ public class Issue extends DataModel implements Parcelable {
         return assignee;
     }
 
+    public User getClosedBy() {
+        return closedBy;
+    }
+
     public static Issue parse(JSONObject obj) {
         final Issue i = new Issue();
         try {
@@ -125,6 +133,10 @@ public class Issue extends DataModel implements Parcelable {
             if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
                 i.assignee = User.parse(obj.getJSONObject("assignee"));
                 Log.i(TAG, "parse: Parsed issue assignee " + i.assignee.toString());
+            }
+            if(obj.has("closed_by") && !obj.getString("closed_by").equals(Constants.JSON_NULL)) {
+                i.closedBy = User.parse(obj.getJSONObject("closed_by"));
+                Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
             }
             try {
                 final JSONArray lbs = obj.getJSONArray("labels");
@@ -166,10 +178,12 @@ public class Issue extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
                 ", closed=" + closed +
+                ", closedBy=" + closedBy +
                 ", assignee=" + assignee +
                 ", labels=" + Arrays.toString(labels) +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -185,6 +199,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.closedBy, flags);
         dest.writeParcelable(this.assignee, flags);
         dest.writeTypedArray(this.labels, flags);
     }
@@ -197,6 +212,7 @@ public class Issue extends DataModel implements Parcelable {
         this.body = in.readString();
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
+        this.closedBy = in.readParcelable(User.class.getClassLoader());
         this.assignee = in.readParcelable(User.class.getClassLoader());
         this.labels = in.createTypedArray(Label.CREATOR);
     }

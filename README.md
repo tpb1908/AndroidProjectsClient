@@ -54,6 +54,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Sharing
 * Link handling
+* Linking of usernames in cards
 * Creating/Editing labels for a repository
 * Moving of columns between projects
 * Moving of cards between projects

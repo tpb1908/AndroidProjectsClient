@@ -208,6 +208,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             }
             if(card.getIssue().getAssignee() != null) {
                 builder.append(String.format(mParent.getString(R.string.text_assigned_to), card.getIssue().getAssignee().getLogin()));
+                builder.append("<br>");
+            }
+            if(card.getIssue().getClosedBy() != null) {
+                builder.append(String.format(mParent.getString(R.string.text_closed_by), card.getIssue().getClosedBy().getLogin()));
             }
             holder.mMarkDown.setHtml(builder.toString(), new HtmlHttpImageGetter(holder.mMarkDown));
         } else {
