@@ -134,6 +134,9 @@ public class Issue extends DataModel implements Parcelable {
                 }
                 i.closed = true;
             }
+            if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
+                i.assignees = new User[] {User.parse(obj.getJSONObject("assignee")) };
+            }
             if(obj.has("assignees") && obj.getJSONArray("assignees").length() > 0) {
                 Log.i(TAG, "parse: Issue: " + obj.toString());
                 final JSONArray as = obj.getJSONArray("assignees");
@@ -142,9 +145,7 @@ public class Issue extends DataModel implements Parcelable {
                     i.assignees[j] = User.parse(as.getJSONObject(j));
                 }
             }
-            if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
-                i.assignees = new User[] {User.parse(obj.getJSONObject("assignee")) };
-            }
+
             if(obj.has("closed_by") && !obj.getString("closed_by").equals(Constants.JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject("closed_by"));
                 Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());

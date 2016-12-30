@@ -212,6 +212,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
             if(card.getIssue().getAssignees() != null) {
+                builder.append(mParent.getString(R.string.text_assigned_to));
+                builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
                     builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
                             u.getHtmlUrl(),
@@ -234,8 +236,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             } else {
                 holder.mIssueText.setVisibility(View.GONE);
             }
-
-            //TODO Find out what happens when there are multiple assignees
 
         } else {
 
