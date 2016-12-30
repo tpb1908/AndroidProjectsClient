@@ -215,7 +215,6 @@ public class NewIssueDialog extends DialogFragment {
                     }
                 });
                 mcd.show(getFragmentManager(), TAG);
-                mcd.setTextColors(new int[]{getContext().getResources().getColor(R.color.github_issue_open)});
             }
 
             @Override
