@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatCheckedTextView;
-import android.util.Log;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.tpb.projects.R;
@@ -58,16 +58,30 @@ public class MultiChoiceDialog extends DialogFragment {
         final AlertDialog dialog = builder.create();
         listView = dialog.getListView();
 
-        Log.i("Test", "onCreateDialog: Does the listview work? " + dialog.getListView());
         dialog.setOnShowListener(dialogInterface -> {
             if(colors != null) {
-                for(int i = 0; i < listView.getChildCount() && i < colors.length; i++) {
-                    try {
-                        ((AppCompatCheckedTextView) listView.getChildAt(i)).setTextColor(colors[i]);
-                    } catch(ClassCastException ignored) {}
-                }
+                listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+                    }
+
+                    /*
+                    We have to get the views after they are bound, so we wait for a scroll
+                    and then iterate through the views on screen
+                     */
+
+                    @Override
+                    public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
+                        for(int i = 0; i < visibleCount; i++) {
+                            try {
+                                ((AppCompatCheckedTextView) listView.getChildAt(i)).setTextColor(colors[firstVisible + i]);
+                            } catch(ClassCastException ignored) {}
+                        }
+                    }
+                });
             }
         });
+
         return dialog;
     }
 
