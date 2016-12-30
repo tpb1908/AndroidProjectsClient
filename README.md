@@ -12,8 +12,6 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [Fast-Android-Networking](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
 
-* [Android-Iconics](https://github.com/mikepenz/Android-Iconics)
-
 * [Clans FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 
 * [CWAC AndDown](https://github.com/commonsguy/cwac-anddown)
@@ -41,6 +39,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Creation of new cards
 * Creation of new issue cards (Not available on site)
 * Conversion of cards to issues
+* Issue labels displayed on issue cards
 * Editing of issues (Not available on site)
 * Editing of issue collaborators (Not available on site)
 * Editing of issue labels (Not available on site)

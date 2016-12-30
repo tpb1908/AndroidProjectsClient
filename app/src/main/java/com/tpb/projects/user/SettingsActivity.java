@@ -216,8 +216,6 @@ public class SettingsActivity extends AppCompatActivity {
                     "Fast-Android-Networking\nhttps://github.com/amitshekhariitbhu/Fast-Android-Networking\n" +
                     "    -Copyright (C) 2011 Android Open Source Project\n" +
                     "\n" +
-                    "Android-Iconics\nhttps://github.com/mikepenz/Android-Iconics\n" +
-                    "\n" +
                     "Clans FloatingActionButton\nhttps://github.com/Clans/FloatingActionButton\n" +
                     "\n" +
                     "CWAC AndDown\nhttps://github.com/commonsguy/cwac-anddown\n" +

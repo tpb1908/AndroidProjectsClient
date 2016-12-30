@@ -8,8 +8,6 @@ OkHttp https://github.com/square/okhttp
 Fast-Android-Networking https://github.com/amitshekhariitbhu/Fast-Android-Networking
     -Copyright (C) 2011 Android Open Source Project
 
-Android-Iconics https://github.com/mikepenz/Android-Iconics
-
 Clans FloatingActionButton https://github.com/Clans/FloatingActionButton
 
 CWAC AndDown https://github.com/commonsguy/cwac-anddown
