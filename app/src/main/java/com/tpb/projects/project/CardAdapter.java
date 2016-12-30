@@ -110,6 +110,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             notifyItemChanged(index);
         }
     }
+
     void moveCardFromDrag(int oldPos, int newPos) {
         final Card card = mCards.get(oldPos);
         mCards.remove(oldPos);
@@ -250,19 +251,45 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     private static String formatMD(String s) {
+        //TODO Search for usernames
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
-        for(char c : s.toCharArray()) {
-            if(pp != '\n' && c == '\n') {
+        final char[] cs = s.toCharArray();
+        for(int i = 0; i < s.length(); i++) {
+            if(pp != '\n' && cs[i] == '\n') {
                 builder.append('\n');
             }
-            builder.append(c);
+            builder.append(cs[i]);
             pp = p;
-            p = c;
-
+            p = cs[i];
+            if(cs[i] == '@') {
+                //Max username length is 39 characters
+                //Usernames can be alphanumeric with single hyphens
+                i = parseUsername(builder, cs, i);
+            }
         }
+        Log.i(TAG, "formatMD: " + builder.toString());
         return builder.toString();
+    }
+
+    private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
+        final StringBuilder nameBuilder = new StringBuilder();
+        for(int i = ++pos; i < cs.length; i++) {
+            if(cs[i] == ' ') {
+                //Name end case
+                //Search the names and look for matches
+                builder.append("<a href=\"https://github.com/");
+                builder.append(nameBuilder.toString());
+                builder.append("\">");
+                builder.append(nameBuilder.toString());
+                builder.append("</a>");
+                Log.i(TAG, "parseUsername: " + nameBuilder.toString());
+                return i;
+            }
+            nameBuilder.append(cs[i]);
+        }
+        return pos;
     }
 
     @Override
