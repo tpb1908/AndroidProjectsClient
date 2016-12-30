@@ -60,7 +60,7 @@ class CardDragListener implements View.OnDragListener {
         switch(action) {
             case DragEvent.ACTION_DROP:
                 isDropped = true;
-                int sourcePosition, targetPosition = -1;
+                int sourcePosition, targetPosition;
 
                 view.setVisibility(View.VISIBLE);
 

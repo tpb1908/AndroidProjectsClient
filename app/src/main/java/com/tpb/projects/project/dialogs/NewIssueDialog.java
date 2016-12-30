@@ -168,9 +168,7 @@ public class NewIssueDialog extends DialogFragment {
 
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        new Handler().postDelayed(() -> {
-            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(onClickListener);
-        }, 100);
+        new Handler().postDelayed(() -> ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(onClickListener), 100);
     }
 
     private void showAssigneesDialog() {
