@@ -53,6 +53,8 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.project.dialogs.CardDialog;
+import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 

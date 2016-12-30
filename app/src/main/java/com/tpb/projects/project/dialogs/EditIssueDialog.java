@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.project;
+package com.tpb.projects.project.dialogs;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;

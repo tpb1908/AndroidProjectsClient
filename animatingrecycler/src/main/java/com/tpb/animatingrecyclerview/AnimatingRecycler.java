@@ -90,7 +90,7 @@ public class AnimatingRecycler extends RecyclerView {
 
     private void animateHorizontal(View view, final int pos) {
         view.animate().cancel();
-        view.setTranslationX(view.getWidth());
+        view.setTranslationX(-view.getWidth());
         view.animate().translationX(0).setDuration(300).setStartDelay(pos * 70);
     }
 

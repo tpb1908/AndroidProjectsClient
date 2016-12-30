@@ -46,6 +46,10 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.project.dialogs.CardDialog;
+import com.tpb.projects.project.dialogs.EditIssueDialog;
+import com.tpb.projects.project.dialogs.FullScreenDialog;
+import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.user.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -111,6 +115,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mCanEdit);
         mRecycler.setAdapter(mAdapter);
+        mRecycler.setAnimationType(AnimatingRecycler.AnimationType.HORIZONTAL);
         if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mCanEdit) {
