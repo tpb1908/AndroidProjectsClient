@@ -65,16 +65,12 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:stretchColumns="*">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            <TableRow>
 
                 <Button
                     android:id="@+id/issue_add_assignees_button"
@@ -84,21 +80,6 @@
                     android:background="?android:attr/selectableItemBackground"
                     style="@style/Widget.AppCompat.Button.Borderless"/>
 
-                <TextView
-                    android:id="@+id/issue_assignees_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
                 <Button
                     android:id="@+id/issue_add_labels_button"
                     android:layout_width="match_parent"
@@ -107,16 +88,29 @@
                     android:background="?android:attr/selectableItemBackground"
                     style="@style/Widget.AppCompat.Button.Borderless"/>
 
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/issue_assignees_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"/>
+
                 <TextView
                     android:id="@+id/issue_labels_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAlignment="center"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"/>
 
-            </LinearLayout>
+            </TableRow>
 
-        </LinearLayout>
+        </TableLayout>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/issue_body_markdown"
