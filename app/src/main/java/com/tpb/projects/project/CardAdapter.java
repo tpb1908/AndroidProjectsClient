@@ -22,6 +22,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
@@ -199,22 +202,34 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }, card.getIssueId());
         } else if(card.hasIssue()){
+
+            holder.mMarkDown.setHtml(md.markdownToHtml(formatMD(card.getNote())), new HtmlHttpImageGetter(holder.mMarkDown));
+
             final StringBuilder builder = new StringBuilder();
-            builder.append(md.markdownToHtml(
-                    formatMD(card.getNote())
-            ));
+
             if(card.getIssue().getLabels() != null) {
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
             if(card.getIssue().getAssignee() != null) {
-                builder.append(String.format(mParent.getString(R.string.text_assigned_to), card.getIssue().getAssignee().getLogin()));
+                builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
+                        card.getIssue().getAssignee().getHtmlUrl(),
+                        card.getIssue().getAssignee().getLogin()));
                 builder.append("<br>");
             }
             if(card.getIssue().getClosedBy() != null) {
-                builder.append(String.format(mParent.getString(R.string.text_closed_by), card.getIssue().getClosedBy().getLogin()));
+                builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
+                        card.getIssue().getClosedBy().getHtmlUrl(),
+                        card.getIssue().getClosedBy().getLogin()));
             }
-            holder.mMarkDown.setHtml(builder.toString(), new HtmlHttpImageGetter(holder.mMarkDown));
+            Log.i(TAG, "onBindViewHolder: Text: "+ builder.toString());
+            holder.mIssueText.setVisibility(View.VISIBLE);
+            holder.mIssueText.setMovementMethod(LinkMovementMethod.getInstance());
+            holder.mIssueText.setText(Html.fromHtml(builder.toString()));
+
+            //TODO Find out what happens when there are multiple assignees
+
         } else {
+            holder.mIssueText.setVisibility(View.GONE);
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
                             formatMD(card.getNote())
@@ -247,6 +262,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     class CardHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
+        @BindView(R.id.card_issue_information) TextView mIssueText;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) ImageButton mMenuButton;
@@ -260,7 +276,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         CardHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener(v -> cardClick(getAdapterPosition()));
+            //mCardView.setOnClickListener(v -> cardClick(getAdapterPosition()));
+            mIssueText.setClickable(true);
         }
 
     }

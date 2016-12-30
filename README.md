@@ -40,6 +40,8 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Creation of new issue cards (Not available on site)
 * Conversion of cards to issues
 * Issue labels displayed on issue cards
+* Issue assigness displayed on issue cards
+* Assignees formatted as links
 * Editing of issues (Not available on site)
 * Editing of issue collaborators (Not available on site)
 * Editing of issue labels (Not available on site)
@@ -54,7 +56,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Sharing
 * Link handling
-* Linking of usernames in cards
+* @username handling throughout
 * Creating/Editing labels for a repository
 * Moving of columns between projects
 * Moving of cards between projects

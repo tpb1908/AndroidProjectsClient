@@ -46,6 +46,10 @@ public class User extends DataModel implements Parcelable {
     private static final String URL = "url";
     private String url;
 
+
+    private static final String HTML_URL = "html_url";
+    private String htmlUrl;
+
     private static final String REPOS_URL = "repos_url";
     private String reposUrl;
 
@@ -113,12 +117,17 @@ public class User extends DataModel implements Parcelable {
         return bio;
     }
 
+    public String getHtmlUrl() {
+        return htmlUrl;
+    }
+
     public static User parse(JSONObject obj) {
         final User u = new User();
         try {
             u.id = obj.getInt(ID);
             u.login = obj.getString(LOGIN);
             u.avatarUrl = obj.getString(AVATAR_URL);
+            u.htmlUrl = obj.getString(HTML_URL);
             u.url = obj.getString(URL);
             u.reposUrl = obj.getString(REPOS_URL);
             if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
@@ -161,6 +170,7 @@ public class User extends DataModel implements Parcelable {
                 ", id=" + id +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", url='" + url + '\'' +
+                ", htmlUrl='" + htmlUrl + '\'' +
                 ", reposUrl='" + reposUrl + '\'' +
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
@@ -170,6 +180,7 @@ public class User extends DataModel implements Parcelable {
                 ", bio='" + bio + '\'' +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -182,6 +193,7 @@ public class User extends DataModel implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.avatarUrl);
         dest.writeString(this.url);
+        dest.writeString(this.htmlUrl);
         dest.writeString(this.reposUrl);
         dest.writeString(this.name);
         dest.writeString(this.location);
@@ -196,6 +208,7 @@ public class User extends DataModel implements Parcelable {
         this.id = in.readInt();
         this.avatarUrl = in.readString();
         this.url = in.readString();
+        this.htmlUrl = in.readString();
         this.reposUrl = in.readString();
         this.name = in.readString();
         this.location = in.readString();
@@ -205,7 +218,7 @@ public class User extends DataModel implements Parcelable {
         this.bio = in.readString();
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel source) {
             return new User(source);

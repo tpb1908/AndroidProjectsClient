@@ -51,16 +51,29 @@
             android:layout_alignParentStart="true"
             android:visibility="gone"/>
 
+
+
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/card_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/card_issue_drawable"
             android:layout_toStartOf="@+id/card_menu_button"
             android:layout_margin="8dp"
-            android:autoLink="email|web">
+            android:autoLink="all">
         </org.sufficientlysecure.htmltextview.HtmlTextView>
+
+        <TextView
+            android:id="@+id/card_issue_information"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/card_issue_drawable"
+            android:layout_toStartOf="@+id/card_menu_button"
+            android:layout_below="@+id/card_markdown"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
 
         <ImageButton
             android:id="@+id/card_menu_button"
