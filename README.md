@@ -50,15 +50,17 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Drag and drop to rearrange columns in a project
 
 
-### Upcoming features
+### Upcoming features (In order of ease of implementation)
 
+* Sharing
 * Link handling
 * Creating/Editing labels for a repository
+* Moving of columns between projects
+* Moving of cards between projects
 * Backup and restore
 * Cache of changes
 * Offline storage
-* Moving of columns between projects
-* Moving of cards between projects
+* Notification service for new cards, issues etc
 
 ### Setup
 
