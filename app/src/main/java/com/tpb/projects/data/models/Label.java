@@ -105,6 +105,7 @@ public class Label extends DataModel implements Parcelable {
             builder.append("</font>");
             builder.append(spacer);
         }
+        builder.setLength(Math.max(0, builder.length() - spacer.length())); //Strip the last spacer
         return builder;
     }
 

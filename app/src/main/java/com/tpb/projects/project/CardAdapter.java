@@ -212,6 +212,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
             if(card.getIssue().getAssignees() != null) {
+                builder.append("<br>");
                 builder.append(mParent.getString(R.string.text_assigned_to));
                 builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
@@ -220,10 +221,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                             u.getLogin()));
                     builder.append(' ');
                 }
-                builder.append("<br>");
             }
 
             if(card.getIssue().getClosedBy() != null) {
+                builder.append("<br>");
                 builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
                         card.getIssue().getClosedBy().getHtmlUrl(),
                         card.getIssue().getClosedBy().getLogin()));
