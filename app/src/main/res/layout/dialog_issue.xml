@@ -54,9 +54,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:hint="@string/hint_issue_body"
-            app:counterEnabled="true"
-            app:counterMaxLength="250">
+            android:hint="@string/hint_issue_body">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/issue_body_edit"
