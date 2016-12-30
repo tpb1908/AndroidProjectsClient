@@ -160,10 +160,8 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
         } else if(item.getItemId() == R.id.menu_source) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
         } else if(item.getItemId() == R.id.menu_share) {
-
             mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mApp.getUserName())));
         }
-
 
         return true;
     }
