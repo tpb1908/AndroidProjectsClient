@@ -82,6 +82,7 @@
     <string name="text_assigned_to">Assigned to </string>
     <string name="text_assigned_to_link">[%1$s](%2$s)</string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s)</string>
+    <string name="text_href"><![CDATA[<a href=\"%1$s\">%2$s</a>]]></string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>

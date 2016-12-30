@@ -24,9 +24,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -199,12 +201,13 @@ public class NewIssueDialog extends DialogFragment {
                         for(int i = 0; i < choices.length; i++) {
                             if(checked[i]) {
                                 assignees.add(choices[i]);
-                                builder.append(choices[i]);
-                                builder.append('\n');
+                                builder.append(String.format(getContext().getString(R.string.text_href), "https://github/com/" + choices[i], choices[i]));
+                                builder.append("<br>");
                             }
                         }
 
-                        assigneesText.setText(builder.toString());
+                        assigneesText.setMovementMethod(LinkMovementMethod.getInstance());
+                        assigneesText.setText(Html.fromHtml(builder.toString()));
                     }
 
                     @Override
