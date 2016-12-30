@@ -206,7 +206,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             if(card.getIssue().getLabels() != null) {
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
-            holder.mMarkDown.setHtml(builder.toString());
+            holder.mMarkDown.setHtml(builder.toString(), new HtmlHttpImageGetter(holder.mMarkDown));
         } else {
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
