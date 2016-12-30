@@ -77,6 +77,8 @@
     <string name="text_close_issue_on_delete">Do you want to close the issue associated with this card?</string>
     <string name="text_loading_collaborators">Loading collaborators</string>
     <string name="text_loading_labels">Loading labels</string>
+    <string name="text_delete_project">Delete project</string>
+    <string name="text_delete_project_warning">Do you want to delete this project?</string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>

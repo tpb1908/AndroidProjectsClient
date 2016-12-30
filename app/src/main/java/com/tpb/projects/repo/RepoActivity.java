@@ -22,9 +22,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -175,29 +175,31 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteProject(final Project project) {
+    public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
         Log.i(TAG, "deleteProject: Deleting project");
-        new Editor(this).deleteProject(new Editor.ProjectDeletionListener() {
-            @Override
-            public void projectDeleted(Project project) {
-                Snackbar.make(mCoordinator,
-                        R.string.text_project_deleted_undo,
-                        Snackbar.LENGTH_LONG
-                ).setAction(R.string.action_undo, view -> new Editor(RepoActivity.this).createProject(RepoActivity.this, project, mRepo.getFullName())
-                ).show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.text_delete_project)
+                .setMessage(R.string.text_delete_project_warning)
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Editor(RepoActivity.this).deleteProject(new Editor.ProjectDeletionListener() {
+                    @Override
+                    public void projectDeleted(Project project1) {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
+                        listener.projectDeleted(project1);
+                    }
 
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-            }
+                    @Override
+                    public void projectDeletionError() {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
+                    }
+                }, project))
+                .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
 
-            @Override
-            public void projectDeletionError() {
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-            }
-        }, project);
+                }).show();
+
     }
 
     @Override

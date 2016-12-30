@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
@@ -66,9 +67,20 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                editor.deleteProject(mProjects.get(viewHolder.getAdapterPosition()));
-                mProjects.remove(viewHolder.getAdapterPosition());
-                notifyItemRemoved(viewHolder.getAdapterPosition());
+                final int pos = viewHolder.getAdapterPosition();
+                editor.deleteProject(mProjects.get(pos), new Editor.ProjectDeletionListener() {
+                    @Override
+                    public void projectDeleted(Project project) {
+                        mProjects.remove(pos);
+                        notifyItemRemoved(pos);
+                    }
+
+                    @Override
+                    public void projectDeletionError() {
+
+                    }
+                });
+                notifyItemChanged(pos);
             }
         }).attachToRecyclerView(recycler);
     }
@@ -158,7 +170,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         void editProject(Project project);
 
-        void deleteProject(Project project);
+        void deleteProject(Project project, Editor.ProjectDeletionListener listener);
     }
 
 }
