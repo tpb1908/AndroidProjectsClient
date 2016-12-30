@@ -148,35 +148,31 @@
                                 android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp">
 
-                                <com.mikepenz.iconics.view.IconicsImageView
+                                <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-database"
-                                    app:iiv_color="?attr/drawableColor"/>
+                                    android:src="@drawable/ic_database"/>
 
-                                <com.mikepenz.iconics.view.IconicsImageView
+                                <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-issue-opened"
-                                    app:iiv_color="?attr/drawableColor"/>
+                                    android:src="@drawable/ic_issue"/>
 
-                                <com.mikepenz.iconics.view.IconicsImageView
+                                <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-repo-forked"
-                                    app:iiv_color="?attr/drawableColor"/>
+                                    android:layout_marginStart="8dp"
+                                    android:src="@drawable/ic_forked"/>
 
-                                <com.mikepenz.iconics.view.IconicsImageView
+                                <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-star"
-                                    app:iiv_color="?attr/drawableColor"/>
+                                    android:src="@drawable/ic_stars"/>
 
-                                <com.mikepenz.iconics.view.IconicsImageView
+                                <ImageView
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    app:iiv_icon="oct-eye"
-                                    app:iiv_color="?attr/drawableColor"/>
+                                    android:src="@drawable/ic_watchers"/>
 
                             </TableRow>
 

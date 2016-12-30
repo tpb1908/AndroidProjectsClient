@@ -177,7 +177,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         @BindView(R.id.repo_description) TextView mDescription;
         @BindView(R.id.repo_forks) TextView mForks;
         @BindView(R.id.repo_stars) TextView mStars;
-        @BindView(R.id.repo_private) TextView mPrivate;
         @BindView(R.id.repo_pin_button) ImageButton mPin;
         private boolean isPinned = false;
 

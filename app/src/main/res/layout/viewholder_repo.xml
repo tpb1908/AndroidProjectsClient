@@ -85,12 +85,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_zero_value"/>
 
-                <com.mikepenz.iconics.view.IconicsImageView
+                <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center"
-                    app:iiv_icon="oct-repo-forked"
-                    app:iiv_color="?attr/drawableColor"/>
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/ic_forked"/>
 
             </LinearLayout>
 
@@ -106,34 +106,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_zero_value"/>
 
-                <com.mikepenz.iconics.view.IconicsImageView
+                <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center"
-                    app:iiv_icon="oct-star"
-                    app:iiv_color="?attr/drawableColor"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                android:duplicateParentState="true">
-
-                <TextView
-                    android:id="@+id/repo_private"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_zero_value"/>
-
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    app:iiv_icon="oct-gist-secret"
-                    app:iiv_color="?attr/drawableColor"/>
+                    android:src="@drawable/ic_stars"/>
 
             </LinearLayout>
 

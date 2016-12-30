@@ -75,8 +75,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.amitshekhar.android:android-networking:0.2.0'
     compile 'com.mittsu:markedview:1.0.4@aar'
-    compile 'com.mikepenz:iconics-core:2.8.1@aar'
-    compile 'com.mikepenz:octicons-typeface:3.2.0.2@aar'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.commonsware.cwac:anddown:0.3.0'
     compile 'org.sufficientlysecure:html-textview:3.1'
