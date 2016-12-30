@@ -58,6 +58,7 @@ public class Issue extends DataModel implements Parcelable {
     private static final String CLOSED_AT = "closed_at";
     private long closedAt;
     private boolean closed;
+    private User assignee;
 
     private Label[] labels;
 
@@ -101,6 +102,10 @@ public class Issue extends DataModel implements Parcelable {
         return labels;
     }
 
+    public User getAssignee() {
+        return assignee;
+    }
+
     public static Issue parse(JSONObject obj) {
         final Issue i = new Issue();
         try {
@@ -116,6 +121,10 @@ public class Issue extends DataModel implements Parcelable {
                     Log.e(TAG, "parse: ", pe);
                 }
                 i.closed = true;
+            }
+            if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
+                i.assignee = User.parse(obj.getJSONObject("assignee"));
+                Log.i(TAG, "parse: Parsed issue assignee " + i.assignee.toString());
             }
             try {
                 final JSONArray lbs = obj.getJSONArray("labels");
@@ -157,10 +166,10 @@ public class Issue extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
                 ", closed=" + closed +
+                ", assignee=" + assignee +
                 ", labels=" + Arrays.toString(labels) +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
@@ -176,6 +185,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.assignee, flags);
         dest.writeTypedArray(this.labels, flags);
     }
 
@@ -187,6 +197,7 @@ public class Issue extends DataModel implements Parcelable {
         this.body = in.readString();
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
+        this.assignee = in.readParcelable(User.class.getClassLoader());
         this.labels = in.createTypedArray(Label.CREATOR);
     }
 
