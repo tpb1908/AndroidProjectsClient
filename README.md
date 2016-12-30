@@ -39,11 +39,13 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Creation of new cards
 * Creation of new issue cards (Not available on site)
 * Conversion of cards to issues
+* Tagged users displayed as links on card
 * Issue labels displayed on issue cards
-* Issue assigness displayed on issue cards
+* Issue assignees displayed on issue cards
 * Assignees formatted as links
 * Editing of issues (Not available on site)
 * Editing of issue collaborators (Not available on site)
+* Collaborators displayed as links
 * Editing of issue labels (Not available on site)
 * Opening and closing of associated issues (Not available on site)
 * Option to close issues when their card is removed (Not available on site)
