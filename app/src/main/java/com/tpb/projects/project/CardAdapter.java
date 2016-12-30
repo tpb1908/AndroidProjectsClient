@@ -22,8 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
@@ -205,11 +202,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             }, card.getIssueId());
         } else if(card.hasIssue()){
 
-            holder.mMarkDown.setHtml(md.markdownToHtml(formatMD(card.getNote())), new HtmlHttpImageGetter(holder.mMarkDown));
 
             final StringBuilder builder = new StringBuilder();
+            builder.append(formatMD(card.getNote()));
 
             if(card.getIssue().getLabels() != null) {
+                builder.append("<br>");
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
             if(card.getIssue().getAssignees() != null) {
@@ -218,8 +216,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
                     builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
-                            u.getHtmlUrl(),
-                            u.getLogin()));
+                            u.getLogin(),
+                            u.getHtmlUrl()));
                     builder.append(' ');
                 }
             }
@@ -227,20 +225,14 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             if(card.getIssue().getClosedBy() != null) {
                 builder.append("<br>");
                 builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
-                        card.getIssue().getClosedBy().getHtmlUrl(),
-                        card.getIssue().getClosedBy().getLogin()));
+                        card.getIssue().getClosedBy().getLogin(),
+                        card.getIssue().getClosedBy().getHtmlUrl()));
             }
             Log.i(TAG, "onBindViewHolder: Text: "+ builder.toString());
-            if(!builder.toString().isEmpty()) {
-                holder.mIssueText.setVisibility(View.VISIBLE);
-                holder.mIssueText.setMovementMethod(LinkMovementMethod.getInstance());
-                holder.mIssueText.setText(Html.fromHtml(builder.toString()));
-            } else {
-                holder.mIssueText.setVisibility(View.GONE);
-            }
 
+            holder.mMarkDown.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mMarkDown));
         } else {
-
+            Log.i(TAG, "onBindViewHolder: md parsed " + md.markdownToHtml(formatMD(card.getNote())));
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
                             formatMD(card.getNote())
@@ -260,14 +252,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             if(pp != '\n' && cs[i] == '\n') {
                 builder.append('\n');
             }
-            builder.append(cs[i]);
-            pp = p;
-            p = cs[i];
             if(cs[i] == '@') {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
+            } else {
+                builder.append(cs[i]);
             }
+            pp = p;
+            p = cs[i];
         }
         Log.i(TAG, "formatMD: " + builder.toString());
         return builder.toString();
@@ -276,14 +269,16 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
         for(int i = ++pos; i < cs.length; i++) {
-            if(cs[i] == ' ') {
+            if(cs[i] == ' ' || cs[i] == '\n') {
                 //Name end case
                 //Search the names and look for matches
-                builder.append("<a href=\"https://github.com/");
+                builder.append("[@");
                 builder.append(nameBuilder.toString());
-                builder.append("\">");
+                builder.append(']');
+                builder.append('(');
+                builder.append("https://github.com/");
                 builder.append(nameBuilder.toString());
-                builder.append("</a>");
+                builder.append(')');
                 Log.i(TAG, "parseUsername: " + nameBuilder.toString());
                 return i;
             }
@@ -299,7 +294,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     class CardHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
-        @BindView(R.id.card_issue_information) TextView mIssueText;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) ImageButton mMenuButton;
@@ -314,7 +308,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
-            mIssueText.setOnClickListener(v -> cardClick(getAdapterPosition()));
         }
 
     }
