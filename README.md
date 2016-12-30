@@ -54,6 +54,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 ### Upcoming features
 
 * Link handling
+* Creating/Editing labels for a repository
 * Backup and restore
 * Cache of changes
 * Offline storage
