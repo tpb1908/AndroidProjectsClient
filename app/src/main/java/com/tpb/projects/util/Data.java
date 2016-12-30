@@ -82,7 +82,7 @@ public class Data {
 
     public static int[] intArrayFromPrefs(String value) {
         final String[] values = value.split(",");
-        final int[] ints = new int[values.length + 1];
+        final int[] ints = new int[values.length ];
         if(value.length() == 0) return ints;
         for(int i = 0; i < values.length; i++) ints[i] = Integer.parseInt(values[i]);
         return ints;

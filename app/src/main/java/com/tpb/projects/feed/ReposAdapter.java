@@ -207,7 +207,6 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
             KEY = key;
             final int[] savedPins = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
             for(int i : savedPins) pins.add(i);
-            pins.removeAll(Collections.singletonList(0)); //FIXME Why are there 0s
             Log.i(TAG, "RepoPinSorter: Loaded pin positions " + pins.toString());
         }
 
