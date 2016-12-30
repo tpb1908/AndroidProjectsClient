@@ -18,6 +18,7 @@
 package com.tpb.projects.project;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -33,7 +34,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
@@ -179,7 +179,10 @@ public class EditIssueDialog extends DialogFragment {
     }
 
     private void showAssigneesDialog() {
-        Toast.makeText(getContext(), R.string.text_loading_collaborators, Toast.LENGTH_SHORT).show();
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setTitle(R.string.text_loading_collaborators);
+        pd.setCancelable(false);
+        pd.show();
         new Loader(getContext()).loadCollaborators(new Loader.CollaboratorsLoader() {
             @Override
             public void collaboratorsLoaded(User[] collaborators) {
@@ -213,6 +216,7 @@ public class EditIssueDialog extends DialogFragment {
 
                     }
                 });
+                pd.dismiss();
                 mcd.show(getFragmentManager(), TAG);
             }
 
@@ -224,7 +228,10 @@ public class EditIssueDialog extends DialogFragment {
     }
 
     private void showLabelsDialog() {
-        Toast.makeText(getContext(), R.string.text_loading_labels, Toast.LENGTH_SHORT).show();
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setTitle(R.string.text_loading_labels);
+        pd.setCancelable(false);
+        pd.show();
         new Loader(getContext()).loadLabels(new Loader.LabelsLoader() {
             @Override
             public void labelsLoaded(Label[] labels) {
@@ -266,6 +273,7 @@ public class EditIssueDialog extends DialogFragment {
 
                     }
                 });
+                pd.dismiss();
                 mcd.show(getFragmentManager(), TAG);
             }
 
