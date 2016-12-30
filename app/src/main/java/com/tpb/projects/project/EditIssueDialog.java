@@ -76,6 +76,7 @@ public class EditIssueDialog extends DialogFragment {
 
         title.setText(issue.getTitle());
         body.setText(issue.getBody());
+        md.setMDText(issue.getBody());
 
         body.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
