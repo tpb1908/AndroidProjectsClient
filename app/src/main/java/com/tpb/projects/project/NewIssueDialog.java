@@ -202,7 +202,7 @@ public class NewIssueDialog extends DialogFragment {
                             if(checked[i]) {
                                 assignees.add(choices[i]);
                                 builder.append(choices[i]);
-                                builder.append(' ');
+                                builder.append('\n');
                             }
                         }
 
@@ -258,7 +258,7 @@ public class NewIssueDialog extends DialogFragment {
                                 final SpannableString s = new SpannableString(choices[i]);
                                 s.setSpan(new ForegroundColorSpan(labels[i].getColor()), 0, choices[i].length(), 0);
                                 builder.append(s);
-                                builder.append(' ');
+                                builder.append('\n');
                             }
                         }
                         labelsText.setText(builder, TextView.BufferType.SPANNABLE);

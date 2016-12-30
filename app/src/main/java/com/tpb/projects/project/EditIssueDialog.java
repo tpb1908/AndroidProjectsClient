@@ -159,7 +159,7 @@ public class EditIssueDialog extends DialogFragment {
         final StringBuilder builder = new StringBuilder();
         for(String a : assignees) {
             builder.append(a);
-            builder.append(' ');
+            builder.append('\n');
         }
 
         assigneesText.setText(builder.toString());
@@ -173,7 +173,7 @@ public class EditIssueDialog extends DialogFragment {
             final SpannableString s = new SpannableString(names.get(i));
             s.setSpan(new ForegroundColorSpan(colors.get(i)), 0, names.get(i).length(), 0);
             builder.append(s);
-            builder.append(' ');
+            builder.append('\n');
         }
         labelsText.setText(builder, TextView.BufferType.SPANNABLE);
     }
