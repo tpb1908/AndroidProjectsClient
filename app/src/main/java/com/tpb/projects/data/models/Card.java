@@ -89,7 +89,7 @@ public class Card extends DataModel implements Parcelable {
     }
 
     public void setNote(String note) {
-        this.note = note.replace("\n", "\n\n");
+        this.note = note;
     }
 
     public long getCreatedAt() {
@@ -130,7 +130,7 @@ public class Card extends DataModel implements Parcelable {
 
     public void setFromIssue(Issue issue) {
         requiresLoadingFromIssue = false;
-        note = issue.getTitle() + "\n" + issue.getBody();
+        note = issue.getTitle() + "\n\n" + issue.getBody();
         this.issue = issue;
     }
 
