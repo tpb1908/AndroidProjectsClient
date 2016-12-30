@@ -36,6 +36,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.Analytics;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
@@ -197,6 +198,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
             }, card.getIssueId());
+        } else if(card.hasIssue()){
+            final StringBuilder builder = new StringBuilder();
+            builder.append(md.markdownToHtml(
+                    formatMD(card.getNote())
+            ));
+            if(card.getIssue().getLabels() != null) {
+                Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
+            }
+            holder.mMarkDown.setHtml(builder.toString());
         } else {
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(

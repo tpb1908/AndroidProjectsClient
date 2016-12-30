@@ -96,6 +96,18 @@ public class Label extends DataModel implements Parcelable {
         return obj;
     }
 
+    public static StringBuilder appendLabels(StringBuilder builder, Label[] labels, String spacer) {
+        for(Label label : labels) {
+            builder.append("<font color=\"");
+            builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
+            builder.append("\">");
+            builder.append(label.getName());
+            builder.append("</font>");
+            builder.append(spacer);
+        }
+        return builder;
+    }
+
     @Override
     public String toString() {
         return "Label{" +
