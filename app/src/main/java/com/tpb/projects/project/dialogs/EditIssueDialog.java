@@ -106,21 +106,13 @@ public class EditIssueDialog extends DialogFragment {
 
         final Button setAssigneesButton = (Button) view.findViewById(R.id.issue_add_assignees_button);
         assigneesText = (TextView) view.findViewById(R.id.issue_assignees_text);
-        new Loader(getContext()).loadCollaborators(new Loader.CollaboratorsLoader() {
-            @Override
-            public void collaboratorsLoaded(User[] collaborators) {
-                assignees.clear();
-                for(User u : collaborators) {
-                    assignees.add(u.getLogin());
-                }
-                setAssigneesText();
-            }
 
-            @Override
-            public void collaboratorsLoadError() {
-
+        if(issue.getAssignees() != null) {
+            for(User u : issue.getAssignees()) {
+                assignees.add(u.getLogin());
             }
-        }, repoFullName);
+        }
+        setAssigneesText();
 
         setAssigneesButton.setOnClickListener((v) -> showAssigneesDialog());
 

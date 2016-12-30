@@ -40,6 +40,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
@@ -210,12 +211,16 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             if(card.getIssue().getLabels() != null) {
                 Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
             }
-            if(card.getIssue().getAssignee() != null) {
-                builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
-                        card.getIssue().getAssignee().getHtmlUrl(),
-                        card.getIssue().getAssignee().getLogin()));
+            if(card.getIssue().getAssignees() != null) {
+                for(User u : card.getIssue().getAssignees()) {
+                    builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
+                            u.getHtmlUrl(),
+                            u.getLogin()));
+                    builder.append(' ');
+                }
                 builder.append("<br>");
             }
+
             if(card.getIssue().getClosedBy() != null) {
                 builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
                         card.getIssue().getClosedBy().getHtmlUrl(),
@@ -276,7 +281,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         CardHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            //mCardView.setOnClickListener(v -> cardClick(getAdapterPosition()));
+            view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mIssueText.setClickable(true);
         }
 

@@ -19,6 +19,7 @@ package com.tpb.projects.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.tpb.projects.util.Constants;
@@ -62,7 +63,7 @@ public class Issue extends DataModel implements Parcelable {
     
     private User closedBy;
     
-    private User assignee;
+    private User[] assignees;
 
     private Label[] labels;
 
@@ -102,12 +103,14 @@ public class Issue extends DataModel implements Parcelable {
         return closedAt;
     }
 
+    @Nullable
     public Label[] getLabels() {
         return labels;
     }
 
-    public User getAssignee() {
-        return assignee;
+    @Nullable
+    public User[] getAssignees() {
+        return assignees;
     }
 
     public User getClosedBy() {
@@ -116,6 +119,7 @@ public class Issue extends DataModel implements Parcelable {
 
     public static Issue parse(JSONObject obj) {
         final Issue i = new Issue();
+
         try {
             i.id = obj.getInt(ID);
             i.number = obj.getInt(NUMBER);
@@ -130,9 +134,16 @@ public class Issue extends DataModel implements Parcelable {
                 }
                 i.closed = true;
             }
+            if(obj.has("assignees") && obj.getJSONArray("assignees").length() > 0) {
+                Log.i(TAG, "parse: Issue: " + obj.toString());
+                final JSONArray as = obj.getJSONArray("assignees");
+                i.assignees = new User[as.length()];
+                for(int j = 0; j < as.length(); j++) {
+                    i.assignees[j] = User.parse(as.getJSONObject(j));
+                }
+            }
             if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
-                i.assignee = User.parse(obj.getJSONObject("assignee"));
-                Log.i(TAG, "parse: Parsed issue assignee " + i.assignee.toString());
+                i.assignees = new User[] {User.parse(obj.getJSONObject("assignee")) };
             }
             if(obj.has("closed_by") && !obj.getString("closed_by").equals(Constants.JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject("closed_by"));
@@ -179,7 +190,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", closedAt=" + closedAt +
                 ", closed=" + closed +
                 ", closedBy=" + closedBy +
-                ", assignee=" + assignee +
+                ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
                 '}';
     }
@@ -200,7 +211,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.closedBy, flags);
-        dest.writeParcelable(this.assignee, flags);
+        dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
     }
 
@@ -213,7 +224,7 @@ public class Issue extends DataModel implements Parcelable {
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
         this.closedBy = in.readParcelable(User.class.getClassLoader());
-        this.assignee = in.readParcelable(User.class.getClassLoader());
+        this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);
     }
 
