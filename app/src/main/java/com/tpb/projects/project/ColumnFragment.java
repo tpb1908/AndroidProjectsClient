@@ -350,6 +350,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         @Override
                         public void issueCreated(Issue issue) {
                             convertCardToIssue(card, issue);
+                            resetLastUpdate();
                         }
 
                         @Override
@@ -395,9 +396,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     if(card.getIssue().isClosed()) {
                         Log.i(TAG, "openMenu: Closing issue");
                         mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                        resetLastUpdate();
                     } else {
                         Log.i(TAG, "openMenu: Opening issue");
                         mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                        resetLastUpdate();
                     }
             }
 
@@ -418,16 +421,19 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
             @Override
             public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+                mParent.mRefresher.setRefreshing(true);
                 mEditor.editIssue(new Editor.IssueEditListener() {
                     @Override
                     public void issueEdited(Issue issue) {
                         card.setFromIssue(issue);
                         mAdapter.updateCard(card);
+                        mParent.mRefresher.setRefreshing(false);
+                        resetLastUpdate();
                     }
 
                     @Override
                     public void issueEditError() {
-
+                        mParent.mRefresher.setRefreshing(false);
                     }
                 }, mParent.mProject.getRepoFullName(), issue, assignees, labels);
             }
@@ -449,6 +455,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             @Override
             public void cardDeleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
+                resetLastUpdate();
             }
 
             @Override
@@ -463,20 +470,23 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void createIssueCard(Issue issue, int oldCardId) {
+        mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             @Override
             public void cardCreated(int columnId, Card card) {
                 Log.i(TAG, "cardCreated: Issue card created");
+                mParent.mRefresher.setRefreshing(false);
                 if(oldCardId == -1) {
                     mAdapter.addCard(card);
                 } else {
                     mAdapter.updateCard(card, oldCardId);
                 }
+                resetLastUpdate();
             }
 
             @Override
             public void cardCreationError() {
-
+                mParent.mRefresher.setRefreshing(false);
             }
         }, mColumn.getId(), issue.getId());
     }
