@@ -117,7 +117,6 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
                     }
                 }, fullRepoName);
             });
-            //TODO Allow choosing an open issue
         }
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {

@@ -375,6 +375,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
                         @Override
                         public void issueCreated(Issue issue) {
+                            convertCardToIssue(card, issue);
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                             mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
@@ -382,9 +383,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
                         @Override
                         public void issueCreationCancelled() {
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                         }
                     });
                     final Bundle c = new Bundle();
