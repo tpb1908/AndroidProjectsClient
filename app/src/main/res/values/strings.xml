@@ -95,6 +95,7 @@
     <string name="hint_issue_body">Body</string>
     <string name="hint_choose_assignees">Assignees</string>
     <string name="hint_choose_labels">Labels</string>
+    <string name="hint_from_issue">From issue</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>

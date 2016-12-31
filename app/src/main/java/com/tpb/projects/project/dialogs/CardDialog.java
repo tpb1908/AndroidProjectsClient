@@ -25,12 +25,15 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Issue;
 
 /**
  * Created by theo on 23/12/16.
@@ -52,7 +55,7 @@ public class CardDialog extends DialogFragment {
         final boolean isNewCard;
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);
 
-        if(getArguments() != null && getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) {
+        if(getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) {
             card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
             builder.setTitle(R.string.title_edit_card);
             noteEdit.setText(card.getNote());
@@ -62,6 +65,28 @@ public class CardDialog extends DialogFragment {
             card = new Card();
             builder.setTitle(R.string.title_new_card);
             isNewCard = true;
+
+            final String fullRepoName = getArguments().getString(getContext().getString(R.string.intent_repo));
+
+            final View issueButton = view.findViewById(R.id.card_from_issue_button);
+            issueButton.setVisibility(View.VISIBLE);
+            issueButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new Loader(getContext()).loadOpenIssues(new Loader.IssuesLoader() {
+                        @Override
+                        public void issuesLoaded(Issue[] issues) {
+                            Log.i(TAG, "issuesLoaded: Repos loaded into dialog");
+                        }
+
+                        @Override
+                        public void issuesLoadError() {
+
+                        }
+                    }, fullRepoName);
+                }
+            });
+            //TODO Allow choosing an open issue
         }
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {

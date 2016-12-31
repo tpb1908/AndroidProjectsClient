@@ -47,6 +47,15 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <Button
+            android:id="@+id/card_from_issue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_from_issue"
+            android:background="?android:attr/selectableItemBackground"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:visibility="gone"/>
+
         <com.mittsu.markedview.MarkedView
             android:id="@+id/card_note_markdown"
             android:layout_width="match_parent"

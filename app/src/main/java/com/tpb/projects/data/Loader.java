@@ -38,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -336,6 +337,34 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void loadOpenIssues(IssuesLoader loader, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues")
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final ArrayList<Issue> issues = new ArrayList<>();
+                        for(int i = 0; i < response.length() ; i++) {
+                            try {
+                                final Issue is = Issue.parse(response.getJSONObject(i));
+                                if(!is.isClosed()) issues.add(is);
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: Parsing open issues", jse);
+                            }
+                        }
+                        if(loader != null) loader.issuesLoaded(issues.toArray(new Issue[0]));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue load: " + anError.getErrorBody());
+                        if(loader != null) loader.issuesLoadError();
+                    }
+                });
+
+    }
+
     public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
         loadCollaborators(new CollaboratorsLoader() {
             @Override
@@ -438,6 +467,14 @@ public class Loader extends APIHandler {
         void issueLoaded(Issue issue);
 
         void issueLoadError();
+
+    }
+
+    public interface IssuesLoader {
+
+        void issuesLoaded(Issue[] issues);
+
+        void issuesLoadError();
 
     }
 

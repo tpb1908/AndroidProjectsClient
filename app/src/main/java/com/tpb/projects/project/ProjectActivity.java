@@ -365,6 +365,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addCard() {
         mMenu.close(true);
         final CardDialog dialog = new CardDialog();
+        final Bundle bundle = new Bundle();
+        bundle.putString(getString(R.string.intent_repo), mProject.getRepoFullName());
+        dialog.setArguments(bundle);
         mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
 
