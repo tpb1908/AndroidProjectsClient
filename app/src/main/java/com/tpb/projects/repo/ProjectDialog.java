@@ -18,6 +18,7 @@
 package com.tpb.projects.repo;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.mittsu.markedview.MarkedView;
@@ -108,7 +110,14 @@ public class ProjectDialog extends DialogFragment {
             }
         });
 
-        return builder.create();
+
+        final Dialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> {
+            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(nameEdit, InputMethodManager.SHOW_IMPLICIT);
+        });
+
+        return dialog;
     }
 
     @Override

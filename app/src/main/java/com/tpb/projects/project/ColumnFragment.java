@@ -216,6 +216,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     @OnClick(R.id.column_delete)
     void deleteColumn() {
+        //TODO Move this to an options menu for the column
         mParent.deleteColumn(mColumn);
     }
 

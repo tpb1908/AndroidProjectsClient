@@ -54,15 +54,13 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Drag and drop to move cards between columns
 * Drag and drop to rearrange columns in a project
 
-
 ### Upcoming features (In order of ease of precedence)
 
-* Sharing
-* Link handling
+* Sharing (Of columns and cards)
+* Link handling (Opening of links outside of the app, and allowing for opening users or links within the app)
 * Nougat app shortcuts for projects/repos pinned by the user (this requires link/intent handling)
 * Creating/Editing labels for a repository
 * Extra column in project to display all issues, and allow creating cards from them
-* @username handling throughout
 * Moving of columns between projects
 * Moving of cards between projects
 * Backup and restore

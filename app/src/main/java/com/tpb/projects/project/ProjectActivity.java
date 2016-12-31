@@ -17,6 +17,7 @@
 
 package com.tpb.projects.project;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -244,7 +246,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {}); //Null is ambiguous so we pass empty lambda
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            final String text = ((EditText) dialog.findViewById(R.id.project_new_column)).getText().toString();
+            final EditText editor = (EditText) dialog.findViewById(R.id.project_new_column);
+            final String text = editor.getText().toString();
+            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(imm.isActive()) {
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
@@ -273,6 +280,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 Toast.makeText(this, R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
             }
         });
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(imm.isActive()) {
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
+            dialog.dismiss();
+        });
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
     @OnClick(R.id.project_add_issue)

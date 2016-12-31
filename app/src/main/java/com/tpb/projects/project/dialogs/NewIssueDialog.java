@@ -18,6 +18,7 @@
 package com.tpb.projects.project.dialogs;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -31,6 +32,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -128,7 +130,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
         labelsText = (TextView) view.findViewById(R.id.issue_labels_text);
         setLabelsButton.setOnClickListener((v) -> showLabelsDialog());
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);
         builder.setTitle(R.string.title_new_issue);
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {});
@@ -137,7 +139,13 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
             dismiss();
         });
 
-        return builder.setView(view).create();
+        final Dialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> {
+            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(title, InputMethodManager.SHOW_IMPLICIT);
+        });
+
+        return dialog;
     }
 
     private final View.OnClickListener onClickListener = new View.OnClickListener() {

@@ -19,6 +19,7 @@ package com.tpb.projects.project.dialogs;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -157,7 +159,12 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
             }
         });
 
-        return builder.create();
+        final Dialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> {
+            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(noteEdit, InputMethodManager.SHOW_IMPLICIT);
+        });
+        return dialog;
     }
 
     @Override
