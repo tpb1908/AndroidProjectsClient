@@ -305,11 +305,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                             mAdapter.updateCard(card);
                             resetLastUpdate();
                             mParent.mRefresher.setRefreshing(false);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
                         }
 
                         @Override
                         public void cardUpdateError() {
                             mParent.mRefresher.setRefreshing(false);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
                         }
                     }, card.getId(), card.getNote());
                 }
@@ -362,11 +368,16 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         public void issueCreated(Issue issue) {
                             convertCardToIssue(card, issue);
                             resetLastUpdate();
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                         }
 
                         @Override
                         public void issueCreationCancelled() {
-
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                         }
                     });
                     final Bundle c = new Bundle();
@@ -397,11 +408,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         public void issueStateChanged(Issue issue) {
                             card.setFromIssue(issue);
                             mAdapter.updateCard(card);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                            mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
                         }
 
                         @Override
                         public void issueStateChangeError() {
                             mAdapter.updateCard(card);
+                            final Bundle bundle = new Bundle();
+                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                            mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                         }
                     };
                     if(card.getIssue().isClosed()) {
@@ -440,11 +457,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         mAdapter.updateCard(card);
                         mParent.mRefresher.setRefreshing(false);
                         resetLastUpdate();
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
 
                     @Override
                     public void issueEditError() {
                         mParent.mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
                 }, mParent.mProject.getRepoFullName(), issue, assignees, labels);
             }
