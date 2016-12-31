@@ -110,7 +110,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
 
         mName.setText(mColumn.getName());
-        displayLastUpdate();
 
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mCanEdit);
@@ -153,7 +152,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 }
             }
         });
-
+        displayLastUpdate();
         return view;
     }
 
@@ -212,7 +211,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         Data.timeAgo(mColumn.getUpdatedAt())
                 )
         );
-        mCardCount.setText(mAdapter.getItemCount());
+        mCardCount.setText(Integer.toString(mAdapter.getItemCount()));
     }
 
     @OnClick(R.id.column_delete)

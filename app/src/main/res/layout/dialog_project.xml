@@ -48,7 +48,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:hint="@string/hint_project_description"
-            android:inputType="textCapSentences"/>
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNone"
+            android:scrollHorizontally="false"/>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/project_description_markdwon"
