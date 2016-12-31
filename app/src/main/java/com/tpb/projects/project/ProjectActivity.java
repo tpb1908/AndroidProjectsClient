@@ -233,6 +233,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 
+    boolean isIssueInProject(Issue issue) {
+        for(int i = 0; i < mAdapter.getCount(); i++) {
+            for(Card c : mAdapter.getExistingFragment(i).getCards()) {
+                if(c.hasIssue() && c.getIssue().getId() == issue.getId()) return true;
+            }
+        }
+        return false;
+    }
+
     @OnClick(R.id.project_add_column)
     void addColumn() {
         mMenu.close(true);

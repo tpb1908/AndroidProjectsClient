@@ -274,6 +274,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }, mColumn.getId(), card.getNote());
     }
 
+    ArrayList<Card> getCards() {
+        return mAdapter.getCards();
+    }
+
     void showCardDialog(CardDialog dialog) {
         dialog.setListener(new CardDialog.CardDialogListener() {
             @Override
@@ -323,7 +327,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
             @Override
             public void issueCardCreated(Issue issue) {
-
+                if(mParent.isIssueInProject(issue)) {
+                    Toast.makeText(getContext(), R.string.error_issue_already_in_project, Toast.LENGTH_LONG).show();
+                } else {
+                    createIssueCard(issue);
+                }
             }
 
             @Override

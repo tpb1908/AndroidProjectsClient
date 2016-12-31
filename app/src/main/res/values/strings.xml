@@ -34,6 +34,7 @@
     <string name="error_no_column_title">Title can\'t be empty</string>
     <string name="error_title_change_failed">Title change failed</string>
     <string name="error_no_issues">No issues to create from</string>
+    <string name="error_issue_already_in_project">This issue already has a card in the project</string>
 
     <string name="text_zero_value">0</string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
