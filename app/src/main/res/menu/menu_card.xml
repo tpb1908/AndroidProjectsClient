@@ -30,13 +30,12 @@
         android:title="@string/menu_fullscreen_note"/>
 
     <item
-        android:id="@+id/menu_convert_to_issue"
-        android:title="@string/menu_convert_to_issue"/>
-
-    <item
         android:id="@+id/menu_edit_note"
         android:title="@string/menu_edit_note"/>
 
+    <item
+        android:id="@+id/menu_convert_to_issue"
+        android:title="@string/menu_convert_to_issue"/>
 
     <item
         android:id="@+id/menu_delete_note"

@@ -29,12 +29,13 @@
           android:title="@string/menu_copy_issue_url" />
 
     <item
+        android:id="@+id/menu_edit_issue"
+        android:title="@string/menu_edit_issue"/>
+
+    <item
         android:id="@+id/menu_card_fullscreen"
         android:title="@string/menu_fullscreen_note"/>
 
-    <item
-        android:id="@+id/menu_edit_issue"
-        android:title="@string/menu_edit_issue"/>
 
     <item
         android:id="@+id/menu_delete_issue_card"
