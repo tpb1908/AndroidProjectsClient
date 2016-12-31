@@ -203,13 +203,18 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else if(card.hasIssue()){
 
             final StringBuilder builder = new StringBuilder();
-            builder.append(formatMD(card.getNote()));
+            builder.append(formatMD(card.getIssue().getTitle()));
+            builder.append("<br>");
+            if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
+                builder.append(card.getIssue().getBody());
+                builder.append("<br>");
+            }
 
             builder.append("\\#");
             builder.append(String.format(mParent.getString(R.string.text_opened_by), card.getIssue().getNumber(),
-                    String.format(mParent.getString(R.string.text_md_link),
-                            card.getIssue().getOpenedBy().getLogin(),
-                            card.getIssue().getOpenedBy().getHtmlUrl()))
+                    String.format(mParent.getString(R.string.text_href),
+                            card.getIssue().getOpenedBy().getHtmlUrl(),
+                            card.getIssue().getOpenedBy().getLogin()))
             );
 
             if(card.getIssue().getAssignees() != null) {
@@ -217,9 +222,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(mParent.getString(R.string.text_assigned_to));
                 builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
-                    builder.append(String.format(mParent.getString(R.string.text_md_link),
-                            u.getLogin(),
-                            u.getHtmlUrl()));
+                    builder.append(String.format(mParent.getString(R.string.text_href),
+                            u.getHtmlUrl(),
+                            u.getLogin()));
                     builder.append(' ');
                 }
             }
@@ -231,15 +236,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         card.getIssue().getClosedBy().getHtmlUrl()));
             }
 
-            if(card.getIssue().getLabels() != null) {
+            if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
                 builder.append("<br>");
-                Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
+                Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
             }
-
-
             holder.mMarkDown.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mMarkDown));
         } else {
-            Log.i(TAG, "onBindViewHolder: md parsed " + md.markdownToHtml(formatMD(card.getNote())));
             holder.mMarkDown.setHtml(
                     md.markdownToHtml(
                             formatMD(card.getNote())
@@ -276,18 +278,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final StringBuilder nameBuilder = new StringBuilder();
         char p = ' ';
         for(int i = ++pos; i < cs.length; i++) {
-             if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
+            if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
                     (cs[i] >= '0' && cs[i] <= '9') ||
                     (cs[i] >= 'a' && cs[i] <= 'z') ||
                     (cs[i] == '-' && p != '-')) &&
                     i - pos < 38 &&
-                     i != cs.length - 1) {
+                    i != cs.length - 1) {
                 nameBuilder.append(cs[i]);
+                Log.i(TAG, "parseUsername: Appending " + cs[i]);
                 p = cs[i];
             } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
-                 if(i == cs.length - 1) {
-                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
-                 }
+                if(i == cs.length - 1) {
+                    nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
+                }
                 builder.append("[@");
                 builder.append(nameBuilder.toString());
                 builder.append(']');
@@ -295,16 +298,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("https://github.com/");
                 builder.append(nameBuilder.toString());
                 builder.append(')');
-                 if(i != cs.length - 1) {
-                     builder.append(cs[i]); // We still need to append the space or newline
-                 }
+                if(i != cs.length - 1) {
+                    builder.append(cs[i]); // We still need to append the space or newline
+                }
                 return i;
             } else {
-                 builder.append("@");
-                 builder.append(nameBuilder.toString());
+                builder.append("@");
+                builder.append(nameBuilder.toString());
                 return i;
             }
-
 
         }
         builder.append("@");
