@@ -339,7 +339,18 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     mParent.deleteCard(card, true);
                     break;
                 case R.id.menu_copy_card_note:
-                    copyToClipboard(card);
+                    copyToClipboard(card.getNote());
+                    break;
+                case R.id.menu_copy_card_url:
+                    copyToClipboard(String.format(mParent.getString(R.string.text_card_url),
+                            mParent.mProject.getRepoFullName(),
+                            mParent.mProject.getNumber(),
+                            mCard.getId()));
+                    break;
+                case R.id.menu_copy_issue_url:
+                    copyToClipboard(String.format(mParent.getString(R.string.text_issue_url),
+                            mParent.mProject.getRepoFullName(),
+                            card.getIssue().getNumber()));
                     break;
                 case R.id.menu_card_fullscreen:
                     showFullscreen(card);
@@ -491,9 +502,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }, mColumn.getId(), issue.getId());
     }
 
-    void copyToClipboard(Card card) {
+    void copyToClipboard(String text) {
         final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        cm.setPrimaryClip(ClipData.newPlainText("Card text", card.getNote()));
+        cm.setPrimaryClip(ClipData.newPlainText("Card", text));
         Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
     }
 
@@ -522,7 +533,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 showFullscreen(card);
                 break;
             case COPY:
-                copyToClipboard(card);
+                copyToClipboard(card.getNote());
                 break;
         }
     }

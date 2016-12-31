@@ -84,6 +84,8 @@
     <string name="text_closed_by_link">Closed by [%1$s](%2$s)</string>
     <string name="text_opened_by">%1$d opened by %2$s</string>
     <string name="text_href"><![CDATA[<a href=\"%1$s\">%2$s</a>]]></string>
+    <string name="text_card_url"><![CDATA[https://github.com/%1$s/projects/%2$d#-%3$d]]></string>
+    <string name="text_issue_url"><![CDATA[https://github.com/%1$s/issues/%2$d]]></string>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
@@ -133,6 +135,8 @@
     <string name="menu_close_issue">Close issue</string>
     <string name="menu_delete_issue_card">Remove card</string>
     <string name="menu_share">Share</string>
+    <string name="menu_copy_card_url">Copy card url</string>
+    <string name="menu_copy_issue_url">Copy issue url</string>
 
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
