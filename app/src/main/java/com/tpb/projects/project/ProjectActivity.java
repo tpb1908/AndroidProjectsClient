@@ -451,7 +451,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(mMenu.isOpened()) {
             mMenu.close(true);
         } else {
-            if(mAdapter.getCurrentFragment() != null) mAdapter.getCurrentFragment().hideRecycler();
+            /*
+            This seems to fix the problem with RecyclerView view detaching
+            Quick and dirty way of removing the views
+             */
+            mColumnPager.setAdapter(new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>()));
             mMenu.hideMenuButton(true);
             super.onBackPressed();
         }

@@ -20,6 +20,8 @@ package com.tpb.projects.project;
 import android.content.ClipData;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -155,6 +157,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final int pos = holder.getAdapterPosition();
         final Card card = mCards.get(pos);
         holder.mCardView.setAlpha(1.0f);
+        holder.mSpinner.setVisibility(View.INVISIBLE);
         if(mCanEdit) {
             holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
@@ -185,8 +188,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
-                    holder.mSpinner.setVisibility(View.INVISIBLE);
-                    notifyItemChanged(pos);
+                    new Handler(Looper.getMainLooper()).post(() -> notifyItemChanged(pos));
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
