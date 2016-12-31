@@ -283,6 +283,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             @Override
             public void issueCreated(Issue issue) {
                 mAdapter.getCurrentFragment().createIssueCard(issue);
+
             }
 
             @Override

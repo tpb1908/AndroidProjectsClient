@@ -467,11 +467,16 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             public void cardDeleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
                 resetLastUpdate();
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_CARD_DELETION, bundle);
             }
 
             @Override
             public void cardDeletionError() {
-
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_CARD_DELETION, bundle);
             }
         }, oldCard);
     }
@@ -493,11 +498,18 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     mAdapter.updateCard(card, oldCardId);
                 }
                 resetLastUpdate();
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_CARD_TO_ISSUE, bundle);
+
             }
 
             @Override
             public void cardCreationError() {
                 mParent.mRefresher.setRefreshing(false);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_CARD_TO_ISSUE, bundle);
             }
         }, mColumn.getId(), issue.getId());
     }

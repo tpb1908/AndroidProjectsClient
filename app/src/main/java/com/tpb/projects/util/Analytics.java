@@ -58,4 +58,8 @@ public class Analytics {
 
     public static final String TAG_ISSUE_LOADED = "ISSUE_LOADED";
 
+    public static final String TAG_CARD_TO_ISSUE = "CARD_TO_ISSUE";
+
+    public static final String TAG_CARD_DELETION = "CARD_DELETION";
+
 }
