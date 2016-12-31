@@ -278,7 +278,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         dialog.setListener(new CardDialog.CardDialogListener() {
             @Override
             public void cardEditDone(Card card, boolean isNewCard) {
-                mParent.mRefresher.setRefreshing(false);
+                mParent.mRefresher.setRefreshing(true);
                 if(isNewCard) {
                     mEditor.createCard(new Editor.CardCreationListener() {
                         @Override
