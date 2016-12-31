@@ -59,7 +59,8 @@ public class Issue extends DataModel implements Parcelable {
     private static final String CLOSED_AT = "closed_at";
     private long closedAt;
     private boolean closed;
-    
+
+    private User openedBy;
     
     private User closedBy;
     
@@ -101,6 +102,10 @@ public class Issue extends DataModel implements Parcelable {
 
     public long getClosedAt() {
         return closedAt;
+    }
+
+    public User getOpenedBy() {
+        return openedBy;
     }
 
     @Nullable
@@ -145,7 +150,7 @@ public class Issue extends DataModel implements Parcelable {
                     i.assignees[j] = User.parse(as.getJSONObject(j));
                 }
             }
-
+            i.openedBy = User.parse(obj.getJSONObject("user"));
             if(obj.has("closed_by") && !obj.getString("closed_by").equals(Constants.JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject("closed_by"));
                 Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
@@ -190,6 +195,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
                 ", closed=" + closed +
+                ", openedBy=" + openedBy +
                 ", closedBy=" + closedBy +
                 ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
@@ -211,6 +217,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
         dest.writeByte(this.closed ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.openedBy, flags);
         dest.writeParcelable(this.closedBy, flags);
         dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
@@ -224,6 +231,7 @@ public class Issue extends DataModel implements Parcelable {
         this.body = in.readString();
         this.closedAt = in.readLong();
         this.closed = in.readByte() != 0;
+        this.openedBy = in.readParcelable(User.class.getClassLoader());
         this.closedBy = in.readParcelable(User.class.getClassLoader());
         this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);

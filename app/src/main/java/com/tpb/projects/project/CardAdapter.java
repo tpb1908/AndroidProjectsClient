@@ -202,20 +202,22 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             }, card.getIssueId());
         } else if(card.hasIssue()){
 
-
             final StringBuilder builder = new StringBuilder();
             builder.append(formatMD(card.getNote()));
 
-            if(card.getIssue().getLabels() != null) {
-                builder.append("<br>");
-                Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
-            }
+            builder.append("\\#");
+            builder.append(String.format(mParent.getString(R.string.text_opened_by), card.getIssue().getNumber(),
+                    String.format(mParent.getString(R.string.text_md_link),
+                            card.getIssue().getOpenedBy().getLogin(),
+                            card.getIssue().getOpenedBy().getHtmlUrl()))
+            );
+
             if(card.getIssue().getAssignees() != null) {
                 builder.append("<br>");
                 builder.append(mParent.getString(R.string.text_assigned_to));
                 builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
-                    builder.append(String.format(mParent.getString(R.string.text_assigned_to_link),
+                    builder.append(String.format(mParent.getString(R.string.text_md_link),
                             u.getLogin(),
                             u.getHtmlUrl()));
                     builder.append(' ');
@@ -228,7 +230,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         card.getIssue().getClosedBy().getLogin(),
                         card.getIssue().getClosedBy().getHtmlUrl()));
             }
-            Log.i(TAG, "onBindViewHolder: Text: "+ builder.toString());
+
+            if(card.getIssue().getLabels() != null) {
+                builder.append("<br>");
+                Label.appendLabels(builder, card.getIssue().getLabels(), "<br>");
+            }
+
 
             holder.mMarkDown.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mMarkDown));
         } else {
