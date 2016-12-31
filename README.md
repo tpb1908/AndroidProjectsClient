@@ -37,6 +37,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Creation of new columns
 * Deletion of columns
 * Creation of new cards
+* Creation of new issue cards from existing open issues (Not available on site)
 * Creation of new issue cards (Not available on site)
 * Conversion of cards to issues
 * Tagged users displayed as links on card
