@@ -251,7 +251,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             if(pp != '\n' && cs[i] == '\n') {
                 builder.append('\n');
             }
-            if(cs[i] == '@') {
+            if(cs[i] == '@' && (p == ' '  || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
@@ -280,7 +280,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(')');
                 Log.i(TAG, "parseUsername: " + nameBuilder.toString());
                 return i;
-            }
+            } //TODO Match illegal characters
             nameBuilder.append(cs[i]);
         }
         return pos;
