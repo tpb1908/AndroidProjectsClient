@@ -622,9 +622,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
                 final int sourceTag = (int) sourceView.getTag();
                 final int targetTag = (int) (mActualTarget == null ? view.getTag() : mActualTarget.getTag());
-                Log.i(TAG, "onDrop: Column drop " + sourceTag + ", " + targetTag);
+                Log.i(TAG, "onDrop: Column drop " + sourceTag + ", " + targetTag + ", direction " + (event.getX() < view.getWidth() / 2));
                 if(sourceTag != targetTag && sourceView.getId() == R.id.column_card) {
-                    mParent.moveColumn(sourceTag, targetTag);
+                    mParent.moveColumn(sourceTag, targetTag, event.getX() < view.getWidth() / 2);
                 }
             }
             return true;

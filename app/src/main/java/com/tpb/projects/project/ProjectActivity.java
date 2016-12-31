@@ -329,13 +329,36 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 }).show();
     }
 
-    void moveColumn(int tag, int dropTag) {
+    /**
+     *
+     * @param tag id of the column being moved
+     * @param dropTag id of the column being dropped onto
+     * @param direction side of the drop column to drop to true=left false=right
+     */
+    void moveColumn(int tag, int dropTag, boolean direction) {
         final int from = mAdapter.indexOf(tag);
-        final int to = mAdapter.indexOf(dropTag);
+        final int to;
+        if(direction) {
+            Log.i(TAG, "moveColumn: Dropping to the left");
+            to = Math.max(0, mAdapter.indexOf(dropTag) - 1);
+        } else {
+            to = Math.min(mAdapter.getCount() - 1,  mAdapter.indexOf(dropTag) + 1);
+        }
         Log.i(TAG, "moveColumn: From " + from + ", to " + to);
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
+        mEditor.moveColumn(new Editor.ColumnMovementListener() {
+            @Override
+            public void columnMoved(int columnId) {
+
+            }
+
+            @Override
+            public void columnMovementError() {
+
+            }
+        }, tag, dropTag, to);
     }
 
     @OnClick(R.id.project_add_card)

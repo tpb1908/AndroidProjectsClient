@@ -180,6 +180,36 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void moveColumn(ColumnMovementListener listener, int columnId, int dropPositionId, int position) {
+        final JSONObject obj = new JSONObject();
+        try {
+            if(position == 0) {
+                obj.put("position", "first");
+            } else {
+                obj.put("position", "after:" + Integer.toString(dropPositionId));
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "moveColumn: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/moves")
+                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Column moved: " + response.toString());
+                        if(listener != null) listener.columnMoved(columnId);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Column not moved: " + anError.getErrorBody());
+                        if(listener != null) listener.columnMovementError();
+                    }
+                });
+    }
+
     public void deleteColumn(ColumnDeletionListener listener, int columnId) {
         AndroidNetworking.delete(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
                 .addHeaders(PREVIEW_API_AUTH_HEADERS)

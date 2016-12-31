@@ -285,7 +285,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     i - pos < 38 &&
                     i != cs.length - 1) {
                 nameBuilder.append(cs[i]);
-                Log.i(TAG, "parseUsername: Appending " + cs[i]);
                 p = cs[i];
             } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
                 if(i == cs.length - 1) {
