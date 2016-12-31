@@ -28,6 +28,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
@@ -43,6 +44,7 @@ public class CardDialog extends DialogFragment {
     private static final String TAG = CardDialog.class.getSimpleName();
 
     private CardDialogListener mListener;
+    private int selectedIssuePosition = 0;
 
 
     @NonNull
@@ -70,22 +72,39 @@ public class CardDialog extends DialogFragment {
 
             final View issueButton = view.findViewById(R.id.card_from_issue_button);
             issueButton.setVisibility(View.VISIBLE);
-            issueButton.setOnClickListener(new View.OnClickListener() {
+            issueButton.setOnClickListener(view1 -> new Loader(getContext()).loadOpenIssues(new Loader.IssuesLoader() {
                 @Override
-                public void onClick(View view) {
-                    new Loader(getContext()).loadOpenIssues(new Loader.IssuesLoader() {
-                        @Override
-                        public void issuesLoaded(Issue[] issues) {
-                            Log.i(TAG, "issuesLoaded: Repos loaded into dialog");
-                        }
+                public void issuesLoaded(Issue[] issues) {
+                    Log.i(TAG, "issuesLoaded: Repos loaded into dialog");
+                    if(issues.length == 0) {
+                        Toast.makeText(getContext(), R.string.error_no_issues, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final String[] texts = new String[issues.length];
+                    for(int i = 0; i < issues.length; i++) {
+                        texts[i] = String.format(getContext().getString(R.string.text_issue_single_line),
+                                issues[i].getNumber(), issues[i].getTitle());
+                    }
 
-                        @Override
-                        public void issuesLoadError() {
-
-                        }
-                    }, fullRepoName);
+                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                    builder1.setTitle(R.string.title_choose_issue);
+                    builder1.setSingleChoiceItems(texts, 0, (dialogInterface, i) -> {
+                        selectedIssuePosition = i;
+                    });
+                    builder1.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
+                       if(mListener != null) mListener.issueCardCreated(issues[selectedIssuePosition]);
+                        dialogInterface.dismiss();
+                        CardDialog.this.dismiss();
+                    }));
+                    builder1.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+                    builder1.create().show();
                 }
-            });
+
+                @Override
+                public void issuesLoadError() {
+
+                }
+            }, fullRepoName));
             //TODO Allow choosing an open issue
         }
 
@@ -143,6 +162,8 @@ public class CardDialog extends DialogFragment {
     public interface CardDialogListener {
 
         void cardEditDone(Card card, boolean isNewCard);
+
+        void issueCardCreated(Issue issue);
 
         void cardEditCancelled();
 

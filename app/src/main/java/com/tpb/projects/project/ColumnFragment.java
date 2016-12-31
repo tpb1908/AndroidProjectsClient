@@ -322,6 +322,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
+            public void issueCardCreated(Issue issue) {
+
+            }
+
+            @Override
             public void cardEditCancelled() {
 
             }
