@@ -143,6 +143,7 @@
     <string name="menu_copy_card_url">Copy card url</string>
     <string name="menu_copy_issue_url">Copy issue url</string>
 
+    <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
     <string name="intent_title_res" translatable="false">title</string>

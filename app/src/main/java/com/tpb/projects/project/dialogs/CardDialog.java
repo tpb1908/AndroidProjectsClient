@@ -35,6 +35,8 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 
+import java.util.ArrayList;
+
 /**
  * Created by theo on 23/12/16.
  */
@@ -43,7 +45,6 @@ public class CardDialog extends DialogFragment {
     private static final String TAG = CardDialog.class.getSimpleName();
 
     private CardDialogListener mListener;
-    private int selectedIssuePosition = 0;
 
 
     @NonNull
@@ -68,20 +69,26 @@ public class CardDialog extends DialogFragment {
             isNewCard = true;
 
             final String fullRepoName = getArguments().getString(getContext().getString(R.string.intent_repo));
+            final ArrayList<Integer> invalidIds = getArguments().getIntegerArrayList(getContext().getString(R.string.intent_int_arraylist));
 
             final View issueButton = view.findViewById(R.id.card_from_issue_button);
             issueButton.setVisibility(View.VISIBLE);
             issueButton.setOnClickListener(view1 -> new Loader(getContext()).loadOpenIssues(new Loader.IssuesLoader() {
+                private int selectedIssuePosition = 0;
                 @Override
-                public void issuesLoaded(Issue[] issues) {
-                    if(issues.length == 0) {
+                public void issuesLoaded(Issue[] loadedIssues) {
+                    if(loadedIssues.length == 0) {
                         Toast.makeText(getContext(), R.string.error_no_issues, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    final String[] texts = new String[issues.length];
-                    for(int i = 0; i < issues.length; i++) {
+                    final ArrayList<Issue> validIssues = new ArrayList<>();
+                    for(Issue i : loadedIssues) {
+                        if(invalidIds.indexOf(i.getId()) == -1) validIssues.add(i);
+                    }
+                    final String[] texts = new String[validIssues.size()];
+                    for(int i = 0; i < validIssues.size(); i++) {
                         texts[i] = String.format(getContext().getString(R.string.text_issue_single_line),
-                                issues[i].getNumber(), issues[i].getTitle());
+                                validIssues.get(i).getNumber(), validIssues.get(i).getTitle());
                     }
 
                     final AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
@@ -90,7 +97,7 @@ public class CardDialog extends DialogFragment {
                         selectedIssuePosition = i;
                     });
                     builder1.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
-                       if(mListener != null) mListener.issueCardCreated(issues[selectedIssuePosition]);
+                       if(mListener != null) mListener.issueCardCreated(validIssues.get(selectedIssuePosition));
                         dialogInterface.dismiss();
                         CardDialog.this.dismiss();
                     }));

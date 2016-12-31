@@ -233,15 +233,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
     }
 
-    boolean isIssueInProject(Issue issue) {
-        for(int i = 0; i < mAdapter.getCount(); i++) {
-            for(Card c : mAdapter.getExistingFragment(i).getCards()) {
-                if(c.hasIssue() && c.getIssue().getId() == issue.getId()) return true;
-            }
-        }
-        return false;
-    }
-
     @OnClick(R.id.project_add_column)
     void addColumn() {
         mMenu.close(true);
@@ -374,8 +365,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addCard() {
         mMenu.close(true);
         final CardDialog dialog = new CardDialog();
+        final ArrayList<Integer> ids = new ArrayList<>();
+        for(int i = 0; i < mAdapter.getCount(); i++) {
+            for(Card c : mAdapter.getExistingFragment(i).getCards()) {
+                if(c.hasIssue()) ids.add(c.getIssue().getId());
+            }
+        }
         final Bundle bundle = new Bundle();
         bundle.putString(getString(R.string.intent_repo), mProject.getRepoFullName());
+        bundle.putIntegerArrayList(getString(R.string.intent_int_arraylist), ids);
         dialog.setArguments(bundle);
         mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
