@@ -42,7 +42,8 @@
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/card_note_edit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"/>
 
         </android.support.design.widget.TextInputLayout>
 

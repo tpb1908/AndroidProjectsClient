@@ -38,7 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="140"
-            android:hint="@string/hint_column_name"/>
+            android:hint="@string/hint_column_name"
+            android:inputType="textCapSentences"/>
 
     </android.support.design.widget.TextInputLayout>
 

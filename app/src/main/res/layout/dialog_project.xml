@@ -35,7 +35,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:hint="@string/hint_project_name"/>
+            android:hint="@string/hint_project_name"
+            android:inputType="textCapSentences"/>
 
         <EditText
             android:id="@+id/project_description_edit"
@@ -46,7 +47,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:hint="@string/hint_project_description"/>
+            android:hint="@string/hint_project_description"
+            android:inputType="textCapSentences"/>
 
         <com.mittsu.markedview.MarkedView
             android:id="@+id/project_description_markdwon"
