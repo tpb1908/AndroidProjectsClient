@@ -54,12 +54,13 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Drag and drop to rearrange columns in a project
 
 
-### Upcoming features (In order of ease of implementation)
+### Upcoming features (In order of ease of precedence)
 
 * Sharing
 * Link handling
-* @username handling throughout
 * Creating/Editing labels for a repository
+* Extra column in project to display all issues, and allow creating cards from them
+* @username handling throughout
 * Moving of columns between projects
 * Moving of cards between projects
 * Backup and restore
