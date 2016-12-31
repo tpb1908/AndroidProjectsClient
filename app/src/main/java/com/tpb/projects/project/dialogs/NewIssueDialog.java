@@ -21,7 +21,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Html;
@@ -52,7 +51,7 @@ import java.util.ArrayList;
  * Created by theo on 28/12/16.
  */
 
-public class NewIssueDialog extends DialogFragment {
+public class NewIssueDialog extends KeyboardDismissingDialogFragment {
     private static final String TAG = NewIssueDialog.class.getSimpleName();
 
     private EditText title;

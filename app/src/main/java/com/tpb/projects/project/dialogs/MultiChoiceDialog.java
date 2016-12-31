@@ -21,7 +21,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatCheckedTextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -32,7 +31,7 @@ import com.tpb.projects.R;
  * Created by theo on 29/12/16.
  */
 
-public class MultiChoiceDialog extends DialogFragment {
+public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
 
     private MultiChoiceDialogListener listener;
     private String[] choices;

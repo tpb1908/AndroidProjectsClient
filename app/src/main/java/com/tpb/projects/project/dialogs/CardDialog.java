@@ -22,7 +22,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,7 +41,7 @@ import java.util.ArrayList;
  * Created by theo on 23/12/16.
  */
 
-public class CardDialog extends DialogFragment {
+public class CardDialog extends KeyboardDismissingDialogFragment {
     private static final String TAG = CardDialog.class.getSimpleName();
 
     private CardDialogListener mListener;
@@ -181,5 +180,7 @@ public class CardDialog extends DialogFragment {
         void cardEditCancelled();
 
     }
+
+
 
 }

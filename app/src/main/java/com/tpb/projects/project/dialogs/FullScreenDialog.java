@@ -20,7 +20,6 @@ package com.tpb.projects.project.dialogs;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
 
@@ -32,7 +31,7 @@ import com.tpb.projects.data.models.Card;
  * Created by theo on 24/12/16.
  */
 
-public class FullScreenDialog extends DialogFragment {
+public class FullScreenDialog extends KeyboardDismissingDialogFragment {
 
     @NonNull
     @Override
