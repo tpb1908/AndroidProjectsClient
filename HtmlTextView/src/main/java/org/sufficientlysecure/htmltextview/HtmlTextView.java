@@ -17,6 +17,7 @@
 package org.sufficientlysecure.htmltextview;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -139,6 +140,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         public void updateDrawState(TextPaint ds) {
             super.updateDrawState(ds);
             ds.setUnderlineText(false);
+            ds.setTypeface(Typeface.DEFAULT_BOLD);
         }
 
 
