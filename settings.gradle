@@ -1,1 +1,1 @@
-include ':app', ':animatingrecycler'
+include ':app', ':animatingrecycler', ':HtmlTextView'
