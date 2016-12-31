@@ -274,10 +274,20 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
+        char p = ' ';
         for(int i = ++pos; i < cs.length; i++) {
-            if(cs[i] == ' ' || cs[i] == '\n') {
-                //Name end case
-                //Search the names and look for matches
+             if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
+                    (cs[i] >= '0' && cs[i] <= '9') ||
+                    (cs[i] >= 'a' && cs[i] <= 'z') ||
+                    (cs[i] == '-' && p != '-')) &&
+                    i - pos < 38 &&
+                     i != cs.length - 1) {
+                nameBuilder.append(cs[i]);
+                p = cs[i];
+            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
+                 if(i == cs.length - 1) {
+                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
+                 }
                 builder.append("[@");
                 builder.append(nameBuilder.toString());
                 builder.append(']');
@@ -285,11 +295,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("https://github.com/");
                 builder.append(nameBuilder.toString());
                 builder.append(')');
-                Log.i(TAG, "parseUsername: " + nameBuilder.toString());
+                 if(i != cs.length - 1) {
+                     builder.append(cs[i]); // We still need to append the space or newline
+                 }
                 return i;
-            } //TODO Match illegal characters
-            nameBuilder.append(cs[i]);
+            } else {
+                 builder.append("@");
+                 builder.append(nameBuilder.toString());
+                return i;
+            }
+
+
         }
+        builder.append("@");
         return pos;
     }
 
