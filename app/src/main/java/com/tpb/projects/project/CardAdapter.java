@@ -240,13 +240,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
                 Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
             }
-            holder.mMarkDown.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mMarkDown));
+            holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
         } else {
-            holder.mMarkDown.setHtml(
+            holder.mText.setHtml(
                     md.markdownToHtml(
                             formatMD(card.getNote())
                     ),
-                    new HtmlHttpImageGetter(holder.mMarkDown)
+                    new HtmlHttpImageGetter(holder.mText)
             );
         }
     }
@@ -318,7 +318,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.card_markdown) HtmlTextView mMarkDown;
+        @BindView(R.id.card_markdown) HtmlTextView mText;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) ImageButton mMenuButton;

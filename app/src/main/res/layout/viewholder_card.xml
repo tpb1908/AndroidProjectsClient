@@ -58,7 +58,8 @@
             android:layout_toEndOf="@+id/card_issue_drawable"
             android:layout_toStartOf="@+id/card_menu_button"
             android:layout_centerVertical="true"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:textColorLink="@android:color/secondary_text_dark">
         </org.sufficientlysecure.htmltextview.HtmlTextView>
 
         <ImageButton
