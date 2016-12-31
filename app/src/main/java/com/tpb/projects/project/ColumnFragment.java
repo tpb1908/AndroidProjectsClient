@@ -212,6 +212,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         Data.timeAgo(mColumn.getUpdatedAt())
                 )
         );
+        mCardCount.setText(mAdapter.getItemCount());
     }
 
     @OnClick(R.id.column_delete)
@@ -379,8 +380,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
                         @Override
                         public void issueCreated(Issue issue) {
-                            convertCardToIssue(card, issue);
-                            resetLastUpdate();
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                             mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);

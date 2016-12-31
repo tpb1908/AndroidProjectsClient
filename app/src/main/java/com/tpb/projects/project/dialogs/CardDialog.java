@@ -25,7 +25,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -75,7 +74,6 @@ public class CardDialog extends DialogFragment {
             issueButton.setOnClickListener(view1 -> new Loader(getContext()).loadOpenIssues(new Loader.IssuesLoader() {
                 @Override
                 public void issuesLoaded(Issue[] issues) {
-                    Log.i(TAG, "issuesLoaded: Repos loaded into dialog");
                     if(issues.length == 0) {
                         Toast.makeText(getContext(), R.string.error_no_issues, Toast.LENGTH_SHORT).show();
                         return;
