@@ -243,7 +243,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     private static String formatMD(String s) {
-        //TODO Search for usernames
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';

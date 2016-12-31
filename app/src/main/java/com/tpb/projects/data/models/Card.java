@@ -130,7 +130,7 @@ public class Card extends DataModel implements Parcelable {
 
     public void setFromIssue(Issue issue) {
         requiresLoadingFromIssue = false;
-        note = issue.getTitle() + "\n\n" + issue.getBody();
+        note = issue.getTitle() + "\n" + (issue.getBody() != null && !issue.getBody().isEmpty() ? '\n' + issue.getBody() : "");
         this.issue = issue;
     }
 
@@ -197,7 +197,6 @@ public class Card extends DataModel implements Parcelable {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
