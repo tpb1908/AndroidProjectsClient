@@ -54,7 +54,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Drag and drop to move cards between columns
 * Drag and drop to rearrange columns in a project
 
-### Upcoming features (In order of ease of precedence)
+### Upcoming features (In order of precedence)
 
 * Sharing (Of columns and cards)
 * Link handling (Opening of links outside of the app, and allowing for opening users or links within the app)
