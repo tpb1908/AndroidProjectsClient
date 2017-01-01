@@ -85,14 +85,15 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
                     @Override
                     public void issuesLoaded(Issue[] loadedIssues) {
                         pd.dismiss();
-                        if(loadedIssues.length == 0) {
-                            Toast.makeText(getContext(), R.string.error_no_issues, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
                         final ArrayList<Issue> validIssues = new ArrayList<>();
                         for(Issue i : loadedIssues) {
                             if(invalidIds.indexOf(i.getId()) == -1) validIssues.add(i);
                         }
+                        if(validIssues.isEmpty()) {
+                            Toast.makeText(getContext(), R.string.error_no_issues, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         final String[] texts = new String[validIssues.size()];
                         for(int i = 0; i < validIssues.size(); i++) {
                             texts[i] = String.format(getContext().getString(R.string.text_issue_single_line),

@@ -33,7 +33,7 @@
     <string name="error_key_invalid">Bad credentials</string>
     <string name="error_no_column_title">Title can\'t be empty</string>
     <string name="error_title_change_failed">Title change failed</string>
-    <string name="error_no_issues">No issues to create from</string>
+    <string name="error_no_issues">There are no open issues which aren\'t already in the project</string>
     <string name="error_issue_already_in_project">This issue already has a card in the project</string>
 
     <string name="text_zero_value">0</string>
