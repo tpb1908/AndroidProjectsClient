@@ -61,6 +61,7 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.ShortcutDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -482,13 +483,49 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_settings) {
-            startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
-        } else if(item.getItemId() == R.id.menu_source) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
-        } else if(item.getItemId() == R.id.menu_share) {
-            mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mProject.getRepoFullName() + "/projects/" + Integer.toString(mProject.getNumber()))));
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
+                break;
+            case R.id.menu_source:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+                break;
+            case R.id.menu_share:
+                mShareActionProvider.setShareIntent(
+                        new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(
+                                        "https://github.com/" +
+                                                mProject.getRepoFullName() +
+                                                "/projects/" +
+                                                Integer.toString(mProject.getNumber())
+                                )
+                        )
+                );
+                break;
+            case R.id.menu_save_to_homescreen:
+                final ShortcutDialog dialog = new ShortcutDialog();
+                final Bundle args = new Bundle();
+                args.putInt(getString(R.string.intent_title_res), R.string.title_save_project_shortcut);
+                args.putString(getString(R.string.intent_name), mProject.getName());
+
+                dialog.setArguments(args);
+                dialog.setListener((name, iconFlag) -> {
+                    final Intent i = new Intent(getApplicationContext(), ProjectActivity.class);
+                    i.putExtra(getString(R.string.intent_repo), mProject.getRepoFullName());
+                    i.putExtra(getString(R.string.intent_project_number), mProject.getNumber());
+
+                    final Intent add = new Intent();
+                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                    add.putExtra("duplicate", false);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                    getApplicationContext().sendBroadcast(add);
+                });
+                dialog.show(getSupportFragmentManager(), TAG);
+                break;
         }
+
 
         return true;
     }

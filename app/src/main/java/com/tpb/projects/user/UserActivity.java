@@ -204,7 +204,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mApp.getUserName())));
                 break;
             case R.id.menu_save_to_homescreen:
-                Log.i(TAG, "onOptionsItemSelected: Creating shortcut");
                 final ShortcutDialog dialog = new ShortcutDialog();
                 final Bundle args = new Bundle();
                 args.putInt(getString(R.string.intent_title_res), R.string.title_save_user_shortcut);
@@ -212,30 +211,23 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 args.putString(getString(R.string.intent_name), mUserName.getText().toString());
 
                 dialog.setArguments(args);
-                dialog.setListener(new ShortcutDialog.ShortcutDialogListener() {
-                    @Override
-                    public void onPositive(String name, boolean iconFlag) {
-                        final Intent i = new Intent(getApplicationContext(), UserActivity.class);
-                        i.putExtra(getString(R.string.intent_username), mUserName.getText().toString());
+                dialog.setListener((name, iconFlag) -> {
+                    final Intent i = new Intent(getApplicationContext(), UserActivity.class);
+                    i.putExtra(getString(R.string.intent_username), mUserName.getText().toString());
 
-                        final Intent add = new Intent();
-                        add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
-                        add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-                        add.putExtra("duplicate", false);
-                        if(iconFlag) {
-                            add.putExtra(Intent.EXTRA_SHORTCUT_ICON, ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
-                        } else {
-                            add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-                        }
-                        add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-                        getApplicationContext().sendBroadcast(add);
+                    final Intent add = new Intent();
+                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                    add.putExtra("duplicate", false);
+                    if(iconFlag) {
+                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON, ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
+                    } else {
+                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
                     }
+                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                    getApplicationContext().sendBroadcast(add);
                 });
                 dialog.show(getSupportFragmentManager(), TAG);
-
-
-
-
                 break;
         }
 

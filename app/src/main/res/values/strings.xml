@@ -137,6 +137,8 @@
     <string name="title_choose_labels">Set labels</string>
     <string name="title_choose_issue">Choose issue</string>
     <string name="title_save_user_shortcut">Save user</string>
+    <string name="title_save_repository_shortcut">Save repository</string>
+    <string name="title_save_project_shortcut">Save project</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
