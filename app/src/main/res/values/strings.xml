@@ -150,6 +150,7 @@
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
+    <string name="intent_username" translatable="false">username</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
     <string name="intent_title_res" translatable="false">title</string>
     <string name="parcel_project" translatable="false">project</string>

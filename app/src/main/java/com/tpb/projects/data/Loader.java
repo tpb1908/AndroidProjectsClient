@@ -145,8 +145,6 @@ public class Loader extends APIHandler {
                 });
     }
 
-
-
     public void loadReadMe(ReadMeLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/readme")
                 .addHeaders(API_AUTH_HEADERS)
@@ -367,6 +365,26 @@ public class Loader extends APIHandler {
 
     }
 
+    public void loadUser(UserLoader loader, String username) {
+        AndroidNetworking.get(GIT_BASE + "users/" + username)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: User loaded");
+                        if(loader != null) loader.userLoaded(User.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: User not loaded: " + anError.getErrorBody());
+                        if(loader != null) loader.userLoadError();
+                    }
+                });
+
+    }
+
     public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
         loadCollaborators(new CollaboratorsLoader() {
             @Override
@@ -386,6 +404,14 @@ public class Loader extends APIHandler {
                 if(listener != null) listener.accessCheckError();
             }
         }, repoFullname);
+    }
+
+    public interface UserLoader {
+
+        void userLoaded(User user);
+
+        void userLoadError();
+
     }
 
     public interface AuthenticatedUserLoader {

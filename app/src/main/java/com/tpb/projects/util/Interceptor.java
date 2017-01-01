@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.tpb.projects.R;
+import com.tpb.projects.user.UserActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,22 @@ public class Interceptor extends Activity {
             final Uri uri  = getIntent().getData();
             if(uri != null) {
                 //TODO Create intent and launch then finish
-                fail();
+                if("github.com".equals(uri.getHost())) {
+                    final List<String> segments = uri.getPathSegments();
+                    Log.i(TAG, "onCreate: Path: " + segments.toString());
+                    switch(segments.size()) {
+                        case 1: //User
+                            final Intent i = new Intent(Interceptor.this, UserActivity.class);
+                            i.putExtra(getString(R.string.intent_username), segments.get(0));
+                            startActivity(i);
+                            finish();
+                            break;
+                        default:
+                            fail();
+                    }
+                } else {
+                    fail();
+                }
             } else {
                 fail();
             }

@@ -106,22 +106,42 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
             mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(mAdapter);
-            mUserName.setText(mApp.getUserName());
+            final String user;
+            if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
+                user = getIntent().getStringExtra(getString(R.string.intent_username));
+                mUserName.setText(user);
+                new Loader(this).loadUser(new Loader.UserLoader() {
+                    @Override
+                    public void userLoaded(User user) {
+                        mUserName.setText(user.getLogin());
+                        mUserAvatar.setImageUrl(user.getAvatarUrl());
+                    }
 
-            mAdapter.loadReposForUser(mApp.getUserName());
-            new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
-                @Override
-                public void userLoaded(User user) {
-                    mUserName.setText(user.getLogin());
-                    mUserAvatar.setImageUrl(user.getAvatarUrl());
-                    GitHubSession.getSession(UserActivity.this).updateUserInfo(user.getLogin());
-                }
+                    @Override
+                    public void userLoadError() {
 
-                @Override
-                public void authenticatedUserLoadError() {
+                    }
+                }, user);
 
-                }
-            });
+            } else {
+                user = mApp.getUserName();
+                new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
+                    @Override
+                    public void userLoaded(User user) {
+                        mUserName.setText(user.getLogin());
+                        mUserAvatar.setImageUrl(user.getAvatarUrl());
+                        GitHubSession.getSession(UserActivity.this).updateUserInfo(user.getLogin());
+                    }
+
+                    @Override
+                    public void authenticatedUserLoadError() {
+
+                    }
+                });
+            }
+
+            mUserName.setText(user);
+            mAdapter.loadReposForUser(user);
 
             mApp.validateKey(isValid -> {
                 if(!isValid) {
