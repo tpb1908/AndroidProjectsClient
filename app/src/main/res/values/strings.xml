@@ -35,6 +35,7 @@
     <string name="error_title_change_failed">Title change failed</string>
     <string name="error_no_issues">There are no open issues which aren\'t already in the project</string>
     <string name="error_issue_already_in_project">This issue already has a card in the project</string>
+    <string name="error_project_not_found">Project not found</string>
 
     <string name="text_zero_value">0</string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
@@ -152,6 +153,7 @@
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_username" translatable="false">username</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
+    <string name="intent_project_numner" translatable="false">project_number</string>
     <string name="intent_title_res" translatable="false">title</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>

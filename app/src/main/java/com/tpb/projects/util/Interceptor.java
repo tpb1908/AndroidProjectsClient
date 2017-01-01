@@ -16,6 +16,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.R;
+import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.UserActivity;
 
@@ -54,6 +55,28 @@ public class Interceptor extends Activity {
                     r.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                     startActivity(r);
                     finish();
+                    break;
+                case 3:
+                    if("projects".equals(segments.get(2))) {
+                        final Intent pr = new Intent(Interceptor.this, RepoActivity.class);
+                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        startActivity(pr);
+                        finish();
+                    } else {
+                        fail();
+                    }
+                    break;
+                case 4: //Project
+                    if("projects".equals(segments.get(2))) {
+                        final Intent p = new Intent(Interceptor.this, ProjectActivity.class);
+                        p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        p.putExtra(getString(R.string.intent_project_numner), Integer.parseInt(segments.get(3)));
+                        startActivity(p);
+                        finish();
+                    } else {
+                        fail();
+                    }
+                    break;
                 default:
                     fail();
             }

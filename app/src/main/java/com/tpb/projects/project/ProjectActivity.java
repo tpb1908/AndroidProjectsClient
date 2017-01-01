@@ -53,13 +53,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
-import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
-    private boolean mCanEdit;
+    private boolean mCanEdit; //TODO Load this on project load
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,9 +118,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
+        } else {
+            final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+            final int number = launchIntent.getIntExtra(getString(R.string.intent_project_numner), 1);
+            //We have to load all of the projects to get the id that we want
+            mLoader.loadProjects(projects -> {
+                for(Project p : projects) {
+                    if(number == p.getNumber()) {
+                        projectLoaded(p);
+                        return;
+                    }
+                }
+                Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
+                finish();
+            }, repo);
         }
         mCanEdit = launchIntent.getBooleanExtra(getString(R.string.intent_can_edit), false);
-        if(!mCanEdit) mMenu.hideMenu(false);
+       // if(!mCanEdit) mMenu.hideMenu(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
@@ -155,9 +169,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mRefresher.setOnDragListener(mNavListener);
 
         new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
-
-        mLoader.loadLabels(null, mProject.getRepoFullName());
-
     }
 
     void showFab() {
@@ -172,6 +183,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     public void projectLoaded(Project project) {
         Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
         mProject = project;
+        mLoader.loadLabels(null, mProject.getRepoFullName());
         mName.setText(project.getName());
 
         final Bundle bundle = new Bundle();
@@ -243,7 +255,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .setTitle(R.string.title_new_column)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {}); //Null is ambiguous so we pass empty lambda
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {
+        }); //Null is ambiguous so we pass empty lambda
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             final EditText editor = (EditText) dialog.findViewById(R.id.project_new_column);
@@ -346,9 +359,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     /**
-     *
-     * @param tag id of the column being moved
-     * @param dropTag id of the column being dropped onto
+     * @param tag       id of the column being moved
+     * @param dropTag   id of the column being dropped onto
      * @param direction side of the drop column to drop to true=left false=right
      */
     void moveColumn(int tag, int dropTag, boolean direction) {
@@ -358,7 +370,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             Log.i(TAG, "moveColumn: Dropping to the left");
             to = Math.max(0, mAdapter.indexOf(dropTag) - 1);
         } else {
-            to = Math.min(mAdapter.getCount() - 1,  mAdapter.indexOf(dropTag) + 1);
+            to = Math.min(mAdapter.getCount() - 1, mAdapter.indexOf(dropTag) + 1);
         }
         Log.i(TAG, "moveColumn: From " + from + ", to " + to);
         mAdapter.move(from, to);
@@ -402,7 +414,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mAdapter.getCurrentFragment().removeCard(card);
                 Snackbar.make(findViewById(R.id.project_coordinator),
                         getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.action_undo), view ->  mAdapter.getCurrentFragment().recreateCard(card))
+                        .setAction(getString(R.string.action_undo), view -> mAdapter.getCurrentFragment().recreateCard(card))
                         .show();
             }
 
@@ -534,7 +546,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
             return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
                     mNavListener,
-                    mCanEdit,
+                    true,
                     columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
         }
 
