@@ -25,11 +25,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -73,7 +71,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 
     private FirebaseAnalytics mAnalytics;
-    private ShareActionProvider mShareActionProvider;
 
     private OAuthHandler mApp;
     @BindView(R.id.repos_refresher) SwipeRefreshLayout mRefresher;
@@ -187,7 +184,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity, menu);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.menu_share));
         return true;
     }
 
@@ -201,7 +197,11 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
                 break;
             case R.id.menu_share:
-                mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mApp.getUserName())));
+                final Intent share = new Intent();
+                share.setAction(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mApp.getUserName());
+                share.setType("text/plain");
+                startActivity(share);
                 break;
             case R.id.menu_save_to_homescreen:
                 final ShortcutDialog dialog = new ShortcutDialog();

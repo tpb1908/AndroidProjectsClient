@@ -25,12 +25,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -79,7 +77,6 @@ public class RepoActivity extends AppCompatActivity implements
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/repo/RepoActivity.java";
 
     private FirebaseAnalytics mAnalytics;
-    private ShareActionProvider mShareActionProvider;
 
     @BindView(R.id.repo_toolbar) Toolbar mToolbar;
     @BindView(R.id.repo_name) TextView mName;
@@ -362,7 +359,6 @@ public class RepoActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity, menu);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.menu_share));
         return true;
     }
 
@@ -376,7 +372,11 @@ public class RepoActivity extends AppCompatActivity implements
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
                 break;
             case R.id.menu_share:
-                mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(mRepo.getHtmlUrl())));
+                final Intent share = new Intent();
+                share.setAction(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_TEXT, mRepo.getHtmlUrl());
+                share.setType("text/plain");
+                startActivity(share);
                 break;
             case R.id.menu_save_to_homescreen:
                 final ShortcutDialog dialog = new ShortcutDialog();
