@@ -60,6 +60,28 @@
 
         </activity>
 
+        <activity
+            android:name=".util.Interceptor"
+            android:theme="@android:style/Theme.NoDisplay"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <data
+                    android:host="github.com"
+                    android:scheme="http"
+                    />
+                <data
+                    android:host="github.com"
+                    android:scheme="https"
+                    />
+                <data android:pathPattern=".*"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
