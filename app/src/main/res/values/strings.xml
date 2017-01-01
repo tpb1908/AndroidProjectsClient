@@ -117,6 +117,7 @@
     </string-array>
 
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_user">Repositories</string>
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
     <string name="title_activity_repo">Repository</string>

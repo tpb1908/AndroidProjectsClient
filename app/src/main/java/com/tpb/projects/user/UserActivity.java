@@ -45,13 +45,13 @@ import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.login.LoginActivity;
-import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
 
 import butterknife.BindView;
@@ -105,6 +105,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             finish();
         } else {
             setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
 
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
             mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
@@ -113,6 +114,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
+                ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
                 new Loader(this).loadUser(new Loader.UserLoader() {
                     @Override
                     public void userLoaded(User user) {
@@ -128,6 +130,10 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
             } else {
                 user = mApp.getUserName();
+                ((TextView) findViewById(R.id.title_user)).setText(getTitle());
+                if(isTaskRoot()) {
+                    findViewById(R.id.back_button).setVisibility(View.GONE);
+                }
                 new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
                     @Override
                     public void userLoaded(User user) {
@@ -201,6 +207,10 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     protected void onResume() {
         super.onResume();
         mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
+    }
+
+    public void onToolbarBackPressed(View view) {
+        onBackPressed();
     }
 
 }

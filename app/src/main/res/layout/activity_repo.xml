@@ -42,13 +42,13 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back"
+                android:layout_marginEnd="32dp"
                 android:onClick="onToolbarBackPressed"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title_activity_repo"
-                android:layout_marginStart="32dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
@@ -97,7 +97,6 @@
                             android:layout_height="wrap_content"
                             android:text="@string/text_placeholder"/>
                     </LinearLayout>
-
 
                 </android.support.v7.widget.CardView>
 
