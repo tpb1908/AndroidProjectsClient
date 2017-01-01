@@ -53,11 +53,11 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Fullscreen viewer for cards
 * Drag and drop to move cards between columns
 * Drag and drop to rearrange columns in a project
+* Link handling to open users, repositories, and projects
 
 ### Upcoming features (In order of precedence)
 
 * Sharing (Of columns and cards)
-* Link handling (Opening of links outside of the app, and allowing for opening users or links within the app)
 * Adding milestone when creating issue, and editing milestones when editing issues
 * Comment viewer for issues, and the ability to reply to comments
 * Nougat app shortcuts for projects/repos pinned by the user (this requires link/intent handling)
