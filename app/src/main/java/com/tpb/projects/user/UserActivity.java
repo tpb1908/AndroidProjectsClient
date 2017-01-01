@@ -18,6 +18,8 @@
 package com.tpb.projects.user;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,7 +90,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
-        setContentView(R.layout.activity_repos);
+        setContentView(R.layout.activity_user);
 
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
@@ -139,8 +142,15 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
                 });
             }
-
             mUserName.setText(user);
+
+            if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
+                Log.i(TAG, "onCreate: Getting bitmap");
+                final Bitmap bm = getIntent().getParcelableExtra(getString(R.string.intent_drawable));
+                mUserAvatar.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
+
+            }
+
             mAdapter.loadReposForUser(user);
 
             mApp.validateKey(isValid -> {

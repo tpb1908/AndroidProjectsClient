@@ -18,11 +18,13 @@
 package com.tpb.projects.repo;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -45,11 +47,11 @@ import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
-import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
@@ -159,7 +161,16 @@ public class RepoActivity extends AppCompatActivity implements
         if(mRepo != null) {
             final Intent i = new Intent(RepoActivity.this, UserActivity.class);
             i.putExtra(getString(R.string.intent_username), mRepo.getUserLogin());
-            startActivity(i);
+            if(mUserImage.getDrawable() != null) {
+                Log.i(TAG, "openUser: Putting bitmap");
+                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
+            }
+            startActivity(i,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this,
+                    new Pair<View, String>(mUserName, getString(R.string.transition_username)),
+                    new Pair<View, String>(mUserImage, getString(R.string.transition_user_image))
+            ).toBundle());
         }
     }
 

@@ -75,7 +75,8 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_margin="16dp"
-                            android:layout_gravity="center_vertical"/>
+                            android:layout_gravity="center_vertical"
+                            android:transitionName="@string/transition_user_image"/>
 
                         <TextView
                             android:id="@+id/user_name"
@@ -83,7 +84,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:text="@string/text_placeholder"
-                            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+                            android:textAppearance="@android:style/TextAppearance.Material.Title"
+                            android:transitionName="@string/transition_username"/>
 
                     </LinearLayout>
 

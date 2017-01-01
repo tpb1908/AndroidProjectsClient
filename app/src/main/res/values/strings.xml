@@ -155,6 +155,7 @@
     <string name="intent_can_edit" translatable="false">can_edit</string>
     <string name="intent_project_numner" translatable="false">project_number</string>
     <string name="intent_title_res" translatable="false">title</string>
+    <string name="intent_drawable" translatable="false">drawable</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>
     <string name="parcel_card" translatable="false">card</string>
@@ -162,5 +163,7 @@
     <string name="transition_name" translatable="false">card</string>
     <string name="transition_appbar" translatable="false">appbar</string>
     <string name="transition_title" translatable="false">title</string>
+    <string name="transition_username" translatable="false">user_name</string>
+    <string name="transition_user_image" translatable="false">user_image</string>
 
 </resources>
