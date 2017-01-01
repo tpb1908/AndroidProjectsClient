@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -37,33 +36,24 @@ public class Interceptor extends Activity {
 
         createFailIntent();
 
-        if(getIntent().getAction().equals(Intent.ACTION_VIEW)) {
-            final Uri uri  = getIntent().getData();
-            if(uri != null) {
-                //TODO Create intent and launch then finish
-                if("github.com".equals(uri.getHost())) {
-                    final List<String> segments = uri.getPathSegments();
-                    Log.i(TAG, "onCreate: Path: " + segments.toString());
-                    switch(segments.size()) {
-                        case 1: //User
-                            final Intent i = new Intent(Interceptor.this, UserActivity.class);
-                            i.putExtra(getString(R.string.intent_username), segments.get(0));
-                            startActivity(i);
-                            finish();
-                            break;
-                        default:
-                            fail();
-                    }
-                } else {
+        if(getIntent().getAction().equals(Intent.ACTION_VIEW) &&
+                getIntent().getData() != null &&
+                "github.com".equals(getIntent().getData().getHost())) {
+            final List<String> segments = getIntent().getData().getPathSegments();
+            Log.i(TAG, "onCreate: Path: " + segments.toString());
+            switch(segments.size()) {
+                case 1: //User
+                    final Intent i = new Intent(Interceptor.this, UserActivity.class);
+                    i.putExtra(getString(R.string.intent_username), segments.get(0));
+                    startActivity(i);
+                    finish();
+                    break;
+                default:
                     fail();
-                }
-            } else {
-                fail();
             }
         } else {
             fail();
         }
-
     }
 
     private void fail() {
