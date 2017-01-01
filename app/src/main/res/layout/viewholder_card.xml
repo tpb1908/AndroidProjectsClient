@@ -57,9 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/card_issue_drawable"
             android:layout_toStartOf="@+id/card_menu_button"
-            android:layout_centerVertical="true"
-            android:layout_margin="8dp"
-            android:textColorLink="@android:color/secondary_text_dark">
+            android:layout_centerVertical="true">
         </org.sufficientlysecure.htmltextview.HtmlTextView>
 
         <ImageButton
