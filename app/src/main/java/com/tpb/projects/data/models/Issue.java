@@ -68,6 +68,9 @@ public class Issue extends DataModel implements Parcelable {
 
     private Label[] labels;
 
+    private static final String COMMENTS = "comments";
+    private int comments;
+
     public int getId() {
         return id;
     }
@@ -108,6 +111,10 @@ public class Issue extends DataModel implements Parcelable {
         return openedBy;
     }
 
+    public int getComments() {
+        return comments;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -131,6 +138,7 @@ public class Issue extends DataModel implements Parcelable {
             i.state = obj.getString(STATE);
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
+            i.comments = obj.getInt(COMMENTS);
             if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis() / 1000;
@@ -199,6 +207,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", closedBy=" + closedBy +
                 ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
+                ", comments=" + comments +
                 '}';
     }
 
@@ -221,6 +230,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeParcelable(this.closedBy, flags);
         dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
+        dest.writeInt(this.comments);
     }
 
     protected Issue(Parcel in) {
@@ -235,6 +245,7 @@ public class Issue extends DataModel implements Parcelable {
         this.closedBy = in.readParcelable(User.class.getClassLoader());
         this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);
+        this.comments = in.readInt();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

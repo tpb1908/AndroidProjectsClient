@@ -242,6 +242,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
                 Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
             }
+            if(card.getIssue().getComments() > 0) {
+                builder.append("<br>");
+                builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
+            }
             holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
         } else {
             holder.mText.setHtml(

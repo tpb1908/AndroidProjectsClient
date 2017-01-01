@@ -58,6 +58,8 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Sharing (Of columns and cards)
 * Link handling (Opening of links outside of the app, and allowing for opening users or links within the app)
+* Adding milestone when creating issue, and editing milestones when editing issues
+* Comment viewer for issues, and the ability to reply to comments
 * Nougat app shortcuts for projects/repos pinned by the user (this requires link/intent handling)
 * Creating/Editing labels for a repository
 * Extra column in project to display all issues, and allow creating cards from them

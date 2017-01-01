@@ -90,6 +90,10 @@
     <string name="text_issue_url"><![CDATA[https://github.com/%1$s/issues/%2$d]]></string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
+    <plurals name="text_issue_comment_count">
+        <item quantity="one">%d comment</item>
+        <item quantity="other">%d comments</item>
+    </plurals>
 
     <string name="hint_project_name">Name</string>
     <string name="hint_project_description">Description</string>
