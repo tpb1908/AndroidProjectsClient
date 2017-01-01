@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.user;
+package com.tpb.projects.data;
 
 import android.content.Context;
 import android.content.Intent;

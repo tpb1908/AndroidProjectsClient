@@ -26,7 +26,7 @@
              android:paddingLeft="@dimen/activity_horizontal_margin"
              android:paddingRight="@dimen/activity_horizontal_margin"
              android:paddingTop="@dimen/activity_vertical_margin"
-             tools:context="com.tpb.projects.user.LoginActivity"
+             tools:context="com.tpb.projects.login.LoginActivity"
              android:background="@color/colorPrimary"
              android:animateLayoutChanges="true">
 

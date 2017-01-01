@@ -50,7 +50,7 @@ import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.FullScreenDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
-import com.tpb.projects.user.SettingsActivity;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 

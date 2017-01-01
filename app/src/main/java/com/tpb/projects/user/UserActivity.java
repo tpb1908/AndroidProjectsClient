@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.feed;
+package com.tpb.projects.user;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -47,8 +47,8 @@ import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.user.LoginActivity;
-import com.tpb.projects.user.SettingsActivity;
+import com.tpb.projects.login.LoginActivity;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 
 import butterknife.BindView;
@@ -64,9 +64,9 @@ import butterknife.ButterKnife;
  * https://github.com/falnatsheh/MarkdownView best demo
  */
 
-public class ReposActivity extends AppCompatActivity implements ReposAdapter.RepositoriesManager {
-    private static final String TAG = ReposActivity.class.getSimpleName();
-    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/ReposActivity.java";
+public class UserActivity extends AppCompatActivity implements UserReposAdapter.RepositoriesManager {
+    private static final String TAG = UserActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 
     private FirebaseAnalytics mAnalytics;
     private ShareActionProvider mShareActionProvider;
@@ -80,7 +80,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @BindView(R.id.user_image) ANImageView mUserAvatar;
     @BindView(R.id.user_name) TextView mUserName;
 
-    private ReposAdapter mAdapter;
+    private UserReposAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,22 +98,23 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
         mApp = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
         if(!mApp.hasAccessToken()) {
-            startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+            startActivity(new Intent(UserActivity.this, LoginActivity.class));
             finish();
         } else {
             setSupportActionBar(mToolbar);
 
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
-            mAdapter = new ReposAdapter(this, this, mRecycler, mRefresher);
+            mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(mAdapter);
             mUserName.setText(mApp.getUserName());
 
+            mAdapter.loadReposForUser(mApp.getUserName());
             new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
                 @Override
                 public void userLoaded(User user) {
                     mUserName.setText(user.getLogin());
                     mUserAvatar.setImageUrl(user.getAvatarUrl());
-                    GitHubSession.getSession(ReposActivity.this).updateUserInfo(user.getLogin());
+                    GitHubSession.getSession(UserActivity.this).updateUserInfo(user.getLogin());
                 }
 
                 @Override
@@ -124,8 +125,8 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
             mApp.validateKey(isValid -> {
                 if(!isValid) {
-                    Toast.makeText(ReposActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(ReposActivity.this, LoginActivity.class));
+                    Toast.makeText(UserActivity.this, R.string.error_key_invalid, Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(UserActivity.this, LoginActivity.class));
                 }
             });
         }
@@ -133,7 +134,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
 
     @Override
     public void openRepo(Repository repo, View view) {
-        final Intent i = new Intent(ReposActivity.this, RepoActivity.class);
+        final Intent i = new Intent(UserActivity.this, RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
         mRecycler.disableAnimation();
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -156,7 +157,7 @@ public class ReposActivity extends AppCompatActivity implements ReposAdapter.Rep
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_settings) {
-            startActivity(new Intent(ReposActivity.this, SettingsActivity.class));
+            startActivity(new Intent(UserActivity.this, SettingsActivity.class));
         } else if(item.getItemId() == R.id.menu_source) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
         } else if(item.getItemId() == R.id.menu_share) {

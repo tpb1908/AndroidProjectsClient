@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.feed;
+package com.tpb.projects.user;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -32,7 +32,6 @@ import android.widget.TextView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
@@ -48,8 +47,8 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
-    private static final String TAG = ReposAdapter.class.getSimpleName();
+class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
+    private static final String TAG = UserReposAdapter.class.getSimpleName();
 
     private Loader mLoader;
     private SwipeRefreshLayout mRefresher;
@@ -59,9 +58,8 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
     private RepoPinSorter mSorter;
     private RepositoriesManager mManager;
 
-    ReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
+    UserReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
-        mLoader.loadRepositories(this);
         mManager = opener;
         mRecycler = recycler;
         mRefresher = refresher;
@@ -69,44 +67,15 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         mRefresher.setOnRefreshListener(() -> {
             mRepos.clear();
             notifyDataSetChanged();
-            mLoader.loadRepositories(ReposAdapter.this);
+            mLoader.loadRepositories(UserReposAdapter.this, mUser);
         });
-        mUser = GitHubSession.getSession(context).getUsername();
-        mSorter = new RepoPinSorter(context, mUser);
-//
-//        new ItemTouchHelper(new ItemTouchHelper.Callback() {
-//            @Override
-//            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-//                final Repository r = mRepos.get(viewHolder.getAdapterPosition());
-//                if(mSorter.isPinned(r.getId())) {
-//                    return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
-//                            ItemTouchHelper.DOWN | ItemTouchHelper.UP);
-//                } else return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.UP);
-//            }
-//
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                final int tpos = target.getAdapterPosition();
-//                Collections.swap(mRepos, viewHolder.getAdapterPosition(), tpos);
-//                notifyItemMoved(viewHolder.getAdapterPosition(), tpos);
-//                if(mSorter.isPinned(mRepos.get(tpos).getId())) {
-//                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_pinned);
-//                    ((RepoHolder) viewHolder).isPinned = true;
-//                } else {
-//                    ((RepoHolder) viewHolder).mPin.setImageResource(R.drawable.ic_not_pinned);
-//                    ((RepoHolder) viewHolder).isPinned = false;
-//                }
-//                return true;
-//            }
-//
-//
-//
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-//
-//            }
-//
-//        }).attachToRecyclerView(recycler);
+        mSorter = new RepoPinSorter(context);
+    }
+
+    void loadReposForUser(String user) {
+        mUser = user;
+        mSorter.setKey(mUser);
+        mLoader.loadRepositories(this, user);
     }
 
     @Override
@@ -183,7 +152,7 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener((v) -> ReposAdapter.this.openItem(mName, getAdapterPosition()));
+            view.setOnClickListener((v) -> UserReposAdapter.this.openItem(mName, getAdapterPosition()));
             mPin.setOnClickListener((v) -> {
                 togglePin(getAdapterPosition());
                 isPinned = !isPinned;
@@ -197,14 +166,18 @@ class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoHolder> impleme
 
         private SharedPreferences prefs;
         private static final String PREFS_KEY = "PINS";
-        private final String KEY;
+        private String KEY;
         private ArrayList<Integer> pins = new ArrayList<>();
         private int[] standardPositions;
 
-        RepoPinSorter(Context context, String key) {
+        RepoPinSorter(Context context) {
             prefs = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE);
+        }
+
+        void setKey(String key) {
             KEY = key;
             final int[] savedPins = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
+            pins.clear();
             for(int i : savedPins) pins.add(i);
             Log.i(TAG, "RepoPinSorter: Loaded pin positions " + pins.toString());
         }

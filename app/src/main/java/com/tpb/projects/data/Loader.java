@@ -100,24 +100,6 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadRepository(RepositoryLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName)
-                .addHeaders(API_AUTH_HEADERS)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        final Repository repo = Repository.parse(response);
-                        if(loader != null) loader.repoLoaded(repo);
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: load Repo: " + anError.getErrorBody());
-                    }
-                });
-    }
-
     public void loadRepositories(RepositoriesLoader loader) {
         AndroidNetworking.get(GIT_BASE + "user/repos")
                 .addHeaders(API_AUTH_HEADERS)
@@ -144,6 +126,26 @@ public class Loader extends APIHandler {
                     }
                 });
     }
+
+    public void loadRepository(RepositoryLoader loader, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        final Repository repo = Repository.parse(response);
+                        if(loader != null) loader.repoLoaded(repo);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: load Repo: " + anError.getErrorBody());
+                    }
+                });
+    }
+
+
 
     public void loadReadMe(ReadMeLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/readme")

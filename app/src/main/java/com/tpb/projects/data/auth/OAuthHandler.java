@@ -30,7 +30,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.user.LoginActivity;
+import com.tpb.projects.login.LoginActivity;
 
 import org.json.JSONObject;
 

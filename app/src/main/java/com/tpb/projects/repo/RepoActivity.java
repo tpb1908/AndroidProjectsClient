@@ -49,7 +49,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
-import com.tpb.projects.user.SettingsActivity;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
