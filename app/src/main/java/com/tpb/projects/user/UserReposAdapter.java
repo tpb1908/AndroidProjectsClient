@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
@@ -70,12 +71,18 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             mLoader.loadRepositories(UserReposAdapter.this, mUser);
         });
         mSorter = new RepoPinSorter(context);
+        mUser = GitHubSession.getSession(context).getUsername();
     }
 
     void loadReposForUser(String user) {
-        mUser = user;
+        if(user.equals(mUser)) { //The session user
+            mLoader.loadRepositories(this);
+        } else {
+            mUser = user;
+            mLoader.loadRepositories(this, user);
+        }
         mSorter.setKey(mUser);
-        mLoader.loadRepositories(this, user);
+
     }
 
     @Override

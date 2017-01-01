@@ -50,12 +50,14 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.view.View.GONE;
 
@@ -149,6 +151,15 @@ public class RepoActivity extends AppCompatActivity implements
             repoLoaded(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
         } else {
             mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
+        }
+    }
+
+    @OnClick({R.id.user_name, R.id.user_image})
+    void openUser() {
+        if(mRepo != null) {
+            final Intent i = new Intent(RepoActivity.this, UserActivity.class);
+            i.putExtra(getString(R.string.intent_username), mRepo.getUserLogin());
+            startActivity(i);
         }
     }
 
