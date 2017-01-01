@@ -129,7 +129,7 @@
     <string name="title_close_issue">Close issue</string>
     <string name="title_edit_issue">Edit issue</string>
     <string name="title_choose_assignees">Assign to</string>
-    <string name="title_choose_labels">Labels</string>
+    <string name="title_choose_labels">Set labels</string>
     <string name="title_choose_issue">Choose issue</string>
 
     <string name="menu_copy_card">Copy card note</string>
