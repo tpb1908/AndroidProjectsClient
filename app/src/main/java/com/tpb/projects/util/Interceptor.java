@@ -16,6 +16,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.R;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.UserActivity;
 
 import java.util.ArrayList;
@@ -43,11 +44,16 @@ public class Interceptor extends Activity {
             Log.i(TAG, "onCreate: Path: " + segments.toString());
             switch(segments.size()) {
                 case 1: //User
-                    final Intent i = new Intent(Interceptor.this, UserActivity.class);
-                    i.putExtra(getString(R.string.intent_username), segments.get(0));
-                    startActivity(i);
+                    final Intent u = new Intent(Interceptor.this, UserActivity.class);
+                    u.putExtra(getString(R.string.intent_username), segments.get(0));
+                    startActivity(u);
                     finish();
                     break;
+                case 2: //Repo
+                    final Intent r = new Intent(Interceptor.this, RepoActivity.class);
+                    r.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                    startActivity(r);
+                    finish();
                 default:
                     fail();
             }

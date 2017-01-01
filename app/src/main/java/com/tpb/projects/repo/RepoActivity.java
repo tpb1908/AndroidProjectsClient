@@ -149,7 +149,6 @@ public class RepoActivity extends AppCompatActivity implements
             repoLoaded(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
         } else {
             mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
-            //TODO Begin loading repo from url
         }
     }
 
