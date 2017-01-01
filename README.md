@@ -32,6 +32,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Editing projects within a repository
 * Deleting projects within a repository
 * Viewing of projects columns and their cards
+* Home screen shortcuts for users, repositories, and projects
 * MarkDown support throughout
 * Editing of column names
 * Creation of new columns
