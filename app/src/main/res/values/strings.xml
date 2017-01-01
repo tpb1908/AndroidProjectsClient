@@ -91,6 +91,8 @@
     <string name="text_issue_url"><![CDATA[https://github.com/%1$s/issues/%2$d]]></string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
+    <string name="text_use_user_image">Use user icon for shortcut</string>
+
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
         <item quantity="other">%d comments</item>
@@ -105,6 +107,7 @@
     <string name="hint_choose_assignees">Assignees</string>
     <string name="hint_choose_labels">Labels</string>
     <string name="hint_from_issue">From issue</string>
+    <string name="hint_shortcut_name">Name</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -133,6 +136,7 @@
     <string name="title_choose_assignees">Assign to</string>
     <string name="title_choose_labels">Set labels</string>
     <string name="title_choose_issue">Choose issue</string>
+    <string name="title_save_user_shortcut">Save user</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
@@ -149,13 +153,15 @@
     <string name="menu_share">Share</string>
     <string name="menu_copy_card_url">Copy card url</string>
     <string name="menu_copy_issue_url">Copy issue url</string>
+    <string name="menu_save_to_homescreen">Add shortcut to home</string>
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_username" translatable="false">username</string>
     <string name="intent_can_edit" translatable="false">can_edit</string>
-    <string name="intent_project_numner" translatable="false">project_number</string>
+    <string name="intent_project_number" translatable="false">project_number</string>
     <string name="intent_title_res" translatable="false">title</string>
+    <string name="intent_name" translatable="false">name</string>
     <string name="intent_drawable" translatable="false">drawable</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>

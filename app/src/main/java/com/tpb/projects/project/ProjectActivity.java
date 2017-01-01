@@ -120,7 +120,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
-            final int number = launchIntent.getIntExtra(getString(R.string.intent_project_numner), 1);
+            final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
             //We have to load all of the projects to get the id that we want
             mLoader.loadProjects(projects -> {
                 for(Project p : projects) {

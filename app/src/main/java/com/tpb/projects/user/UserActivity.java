@@ -53,6 +53,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.ShortcutDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,7 +81,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     @BindView(R.id.repos_toolbar) Toolbar mToolbar;
     @BindView(R.id.repos_appbar) AppBarLayout mAppbar;
 
-    @BindView(R.id.user_image) ANImageView mUserAvatar;
+    @BindView(R.id.user_image) ANImageView mUserImage;
     @BindView(R.id.user_name) TextView mUserName;
 
     private UserReposAdapter mAdapter;
@@ -119,7 +120,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
-                        mUserAvatar.setImageUrl(user.getAvatarUrl());
+                        mUserImage.setImageUrl(user.getAvatarUrl());
                     }
 
                     @Override
@@ -138,7 +139,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
-                        mUserAvatar.setImageUrl(user.getAvatarUrl());
+                        mUserImage.setImageUrl(user.getAvatarUrl());
                         GitHubSession.getSession(UserActivity.this).updateUserInfo(user.getLogin());
                     }
 
@@ -153,7 +154,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
                 Log.i(TAG, "onCreate: Getting bitmap");
                 final Bitmap bm = getIntent().getParcelableExtra(getString(R.string.intent_drawable));
-                mUserAvatar.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
+                mUserImage.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
 
             }
 
@@ -192,12 +193,50 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_settings) {
-            startActivity(new Intent(UserActivity.this, SettingsActivity.class));
-        } else if(item.getItemId() == R.id.menu_source) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
-        } else if(item.getItemId() == R.id.menu_share) {
-            mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mApp.getUserName())));
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(UserActivity.this, SettingsActivity.class));
+                break;
+            case R.id.menu_source:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+                break;
+            case R.id.menu_share:
+                mShareActionProvider.setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/" + mApp.getUserName())));
+                break;
+            case R.id.menu_save_to_homescreen:
+                Log.i(TAG, "onOptionsItemSelected: Creating shortcut");
+                final ShortcutDialog dialog = new ShortcutDialog();
+                final Bundle args = new Bundle();
+                args.putInt(getString(R.string.intent_title_res), R.string.title_save_user_shortcut);
+                args.putBoolean(getString(R.string.intent_drawable), mUserImage.getDrawable() != null);
+                args.putString(getString(R.string.intent_name), mUserName.getText().toString());
+
+                dialog.setArguments(args);
+                dialog.setListener(new ShortcutDialog.ShortcutDialogListener() {
+                    @Override
+                    public void onPositive(String name, boolean iconFlag) {
+                        final Intent i = new Intent(getApplicationContext(), UserActivity.class);
+                        i.putExtra(getString(R.string.intent_username), mUserName.getText().toString());
+
+                        final Intent add = new Intent();
+                        add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+                        add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                        add.putExtra("duplicate", false);
+                        if(iconFlag) {
+                            add.putExtra(Intent.EXTRA_SHORTCUT_ICON, ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
+                        } else {
+                            add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                        }
+                        add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                        getApplicationContext().sendBroadcast(add);
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), TAG);
+
+
+
+
+                break;
         }
 
         return true;

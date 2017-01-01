@@ -70,7 +70,7 @@ public class Interceptor extends Activity {
                     if("projects".equals(segments.get(2))) {
                         final Intent p = new Intent(Interceptor.this, ProjectActivity.class);
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        p.putExtra(getString(R.string.intent_project_numner), Integer.parseInt(segments.get(3)));
+                        p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         startActivity(p);
                         finish();
                     } else {

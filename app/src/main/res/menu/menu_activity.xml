@@ -25,6 +25,10 @@
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
 
     <item
+        android:id="@+id/menu_save_to_homescreen"
+        android:title="@string/menu_save_to_homescreen"/>
+
+    <item
         android:id="@+id/menu_settings"
         android:title="@string/menu_settings"/>
 
