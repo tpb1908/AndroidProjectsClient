@@ -28,6 +28,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -53,7 +54,6 @@ import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.FullScreenDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -230,7 +230,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mLastUpdate.setText(
                 String.format(
                         getContext().getString(R.string.text_last_updated),
-                        Data.timeAgo(mColumn.getUpdatedAt())
+                        DateUtils.getRelativeTimeSpanString(mColumn.getUpdatedAt())
                 )
         );
         mCardCount.setText(Integer.toString(mAdapter.getItemCount()));

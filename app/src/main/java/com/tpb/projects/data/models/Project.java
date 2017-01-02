@@ -121,8 +121,8 @@ public class Project extends DataModel implements Parcelable {
             p.name = object.getString(NAME);
             p.url = object.getString(URL);
             p.ownerUrl = object.getString(OWNER_URL);
-            p.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
-            p.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+            p.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
+            p.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
         } catch(Exception jse) {
             Log.e(TAG, "parse: ", jse);
         }

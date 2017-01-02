@@ -150,8 +150,8 @@ public class Card extends DataModel implements Parcelable {
                 c.requiresLoadingFromIssue = true;
             }
             try {
-                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
-                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
+                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }

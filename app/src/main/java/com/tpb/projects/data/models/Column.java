@@ -84,8 +84,8 @@ public class Column extends DataModel implements Parcelable {
             c.name = object.getString(NAME);
             c.projectUrl = object.getString(PROJECT_URL);
             try {
-                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis() / 1000;
-                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis() / 1000;
+                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
+                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }

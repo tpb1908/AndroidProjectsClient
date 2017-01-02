@@ -141,7 +141,7 @@ public class Issue extends DataModel implements Parcelable {
             i.comments = obj.getInt(COMMENTS);
             if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
                 try {
-                    i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis() / 1000;
+                    i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }

@@ -19,6 +19,7 @@ package com.tpb.projects.repo;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,6 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.Data;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -98,7 +98,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.mLastUpdate.setText(
                 String.format(
                         holder.itemView.getContext().getString(R.string.text_last_updated),
-                        Data.timeAgo(mProjects.get(position).getUpdatedAt())
+                        DateUtils.getRelativeTimeSpanString(mProjects.get(position).getUpdatedAt())
                 )
         );
         if(!(Constants.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
