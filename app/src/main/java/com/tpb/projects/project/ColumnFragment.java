@@ -43,6 +43,7 @@ import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
@@ -51,7 +52,6 @@ import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.FullScreenDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
-import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 
@@ -62,6 +62,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static com.tpb.projects.data.SettingsActivity.Preferences.CardAction.COPY;
 
 /**
  * Created by theo on 19/12/16.
@@ -119,40 +121,13 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-            mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
-            mCard.setTag(mColumn.getId());
-            mCard.setOnLongClickListener(v -> {
-                final ClipData data = ClipData.newPlainText("", "");
-                final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    v.startDragAndDrop(data, shadowBuilder, v, 0);
-                } else {
-                    v.startDrag(data, shadowBuilder, v, 0);
-                }
-                // v.setVisibility(View.INVISIBLE);
-                return true;
-            });
-            final ColumnDragListener listener = new ColumnDragListener(mCard);
-            mCard.setOnDragListener(new ColumnDragListener());
-            mName.setOnDragListener(listener);
-            mLastUpdate.setOnDragListener(listener);
-            mCard.setOnDragListener(listener);
+            enableAccess(view);
         } else {
-            mName.setEnabled(false);
-            view.findViewById(R.id.column_delete).setVisibility(View.GONE);
+            disableAccess(view);
         }
         mName.clearFocus();
 
-        ((NestedScrollView) view.findViewById(R.id.column_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(scrollY - oldScrollY > 10) {
-                    mParent.hideFab();
-                } else if(scrollY - oldScrollY < -10) {
-                    mParent.showFab();
-                }
-            }
-        });
+
         displayLastUpdate();
         return view;
     }
@@ -200,6 +175,52 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         new Loader(getContext()).loadCards(this, mColumn.getId());
     }
 
+    void setAccessLevel(Repository.AccessLevel accessLevel) {
+        mAccessLevel = accessLevel;
+        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+            enableAccess(getView());
+        } else {
+            disableAccess(getView());
+        }
+        mAdapter.setAccessLevel(accessLevel);
+    }
+
+    private void enableAccess(View view) {
+        mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
+        mCard.setTag(mColumn.getId());
+        mCard.setOnLongClickListener(v -> {
+            final ClipData data = ClipData.newPlainText("", "");
+            final View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(data, shadowBuilder, v, 0);
+            } else {
+                v.startDrag(data, shadowBuilder, v, 0);
+            }
+            // v.setVisibility(View.INVISIBLE);
+            return true;
+        });
+        final ColumnDragListener listener = new ColumnDragListener(mCard);
+        mCard.setOnDragListener(new ColumnDragListener());
+        mName.setOnDragListener(listener);
+        mLastUpdate.setOnDragListener(listener);
+        mCard.setOnDragListener(listener);
+        ((NestedScrollView) view.findViewById(R.id.column_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY - oldScrollY > 10) {
+                    mParent.hideFab();
+                } else if(scrollY - oldScrollY < -10) {
+                    mParent.showFab();
+                }
+            }
+        });
+    }
+
+    private void disableAccess(View view) {
+        mName.setEnabled(false);
+        view.findViewById(R.id.column_delete).setVisibility(View.GONE);
+    }
+
     private void resetLastUpdate() {
         mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
         displayLastUpdate();
@@ -223,10 +244,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
         mParent.loadIssue(loader, issueId);
-    }
-
-    void hideRecycler() {
-        if(mRecycler != null) mRecycler.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -559,7 +576,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void cardClick(Card card) {
-        switch(SettingsActivity.Preferences.getPreferences(getContext()).getCardAction()) {
+
+        final SettingsActivity.Preferences.CardAction action;
+        if(mAccessLevel == Repository.AccessLevel.NONE || mAccessLevel == Repository.AccessLevel.READ) {
+            action = COPY;
+        } else {
+            action = SettingsActivity.Preferences.getPreferences(getContext()).getCardAction();
+        }
+        switch(action) {
             case EDIT:
                 if(card.hasIssue()) {
                     editIssue(card);

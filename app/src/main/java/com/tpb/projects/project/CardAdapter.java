@@ -71,6 +71,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         mAccessLevel = accessLevel;
     }
 
+    void setAccessLevel(Repository.AccessLevel accessLevel) {
+        mAccessLevel = accessLevel;
+        notifyDataSetChanged();
+    }
+
     void setCards(ArrayList<Card> cards) {
         mCards = cards;
         notifyDataSetChanged();

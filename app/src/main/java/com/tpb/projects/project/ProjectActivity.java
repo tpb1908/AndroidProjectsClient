@@ -119,7 +119,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
             mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
-            new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+            if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+            }
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
@@ -149,7 +151,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
                 Log.i(TAG, "onPageSelected: Page changed to  " + position);
-                showFab();
+                if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                    showFab();
+                }
             }
 
             @Override
@@ -174,11 +178,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoader.checkAccess(new Loader.AccessCheckListener() {
             @Override
             public void accessCheckComplete(Repository.AccessLevel accessLevel) {
+                Log.i(TAG, "accessCheckComplete: " + accessLevel);
                 mAccessLevel = accessLevel;
                 if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                     mMenu.showMenuButton(true);
                 } else {
                     mMenu.hideMenuButton(false);
+                }
+                for(int i = 0; i < mAdapter.getCount(); i++) {
+                    mAdapter.getExistingFragment(i).setAccessLevel(mAccessLevel);
                 }
             }
 

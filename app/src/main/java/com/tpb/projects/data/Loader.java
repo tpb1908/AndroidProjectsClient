@@ -416,8 +416,15 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Access check: " + anError.getErrorBody());
-                        if(listener != null) listener.accessCheckError();
+                        Log.i(TAG, "onError: Access check: " + anError.getErrorCode() + " " + anError.getErrorBody());
+                        if(listener != null) {
+                            if(anError.getErrorCode() == 403) {
+                                //403 Must have push access to view collaborator permission
+                                listener.accessCheckComplete(Repository.AccessLevel.NONE);
+                            } else {
+                                listener.accessCheckError();
+                            }
+                        }
                     }
                 });
     }
