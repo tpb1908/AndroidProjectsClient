@@ -26,11 +26,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +42,8 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -59,7 +59,7 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
     private EditIssueDialogListener mListener;
 
     private String repoFullName;
-    private TextView assigneesText;
+    private HtmlTextView assigneesText;
     private TextView labelsText;
     private ArrayList<String> assignees = new ArrayList<>();
     private ArrayList<String> selectedLabels = new ArrayList<>();
@@ -107,7 +107,8 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
         });
 
         final Button setAssigneesButton = (Button) view.findViewById(R.id.issue_add_assignees_button);
-        assigneesText = (TextView) view.findViewById(R.id.issue_assignees_text);
+        assigneesText = (HtmlTextView) view.findViewById(R.id.issue_assignees_text);
+        assigneesText.setShowUnderLines(false);
 
         if(issue.getAssignees() != null) {
             for(User u : issue.getAssignees()) {
@@ -161,8 +162,7 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
             builder.append(String.format(getContext().getString(R.string.text_href), "https://github.com/" + a, a));
             builder.append("<br>");
         }
-        assigneesText.setMovementMethod(LinkMovementMethod.getInstance());
-        assigneesText.setText(Html.fromHtml(builder.toString()));
+        assigneesText.setHtml(builder.toString());
     }
 
     private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {

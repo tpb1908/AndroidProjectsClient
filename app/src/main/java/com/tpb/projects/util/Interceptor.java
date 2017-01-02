@@ -139,9 +139,9 @@ public class Interceptor extends Activity {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
 
                 for (ResolveInfo resolveInfo : resolveInfos) {
-                    String packageName = resolveInfo.activityInfo.packageName;
+                    final String packageName = resolveInfo.activityInfo.packageName;
                     if (!packageName.equals(getPackageName())) {
-                        Intent targetedShareIntent = new Intent(getIntent().getAction());
+                        final Intent targetedShareIntent = new Intent(getIntent().getAction());
                         targetedShareIntent.setData(getIntent().getData());
                         targetedShareIntent.setPackage(packageName);
                         targetedShareIntents.add(targetedShareIntent);

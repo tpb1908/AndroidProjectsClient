@@ -24,11 +24,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -47,6 +45,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
 
 /**
@@ -59,7 +59,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
     private EditText title;
     private EditText body;
     private String repoFullName;
-    private TextView assigneesText;
+    private HtmlTextView assigneesText;
     private TextView labelsText;
     private ArrayList<String> assignees = new ArrayList<>();
     private ArrayList<String> selectedLabels = new ArrayList<>();
@@ -123,7 +123,8 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
         });
 
         final Button setAssigneesButton = (Button) view.findViewById(R.id.issue_add_assignees_button);
-        assigneesText = (TextView) view.findViewById(R.id.issue_assignees_text);
+        assigneesText = (HtmlTextView) view.findViewById(R.id.issue_assignees_text);
+        assigneesText.setShowUnderLines(false);
         setAssigneesButton.setOnClickListener((v) -> showAssigneesDialog());
 
         final Button setLabelsButton = (Button) view.findViewById(R.id.issue_add_labels_button);
@@ -212,9 +213,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
                                 builder.append("<br>");
                             }
                         }
-
-                        assigneesText.setMovementMethod(LinkMovementMethod.getInstance());
-                        assigneesText.setText(Html.fromHtml(builder.toString()));
+                        assigneesText.setHtml(builder.toString());
                     }
 
                     @Override
