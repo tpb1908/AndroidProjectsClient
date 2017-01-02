@@ -302,7 +302,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     i != cs.length - 1) {
                 nameBuilder.append(cs[i]);
                 p = cs[i];
-            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
+                //nameBuilder.length() > 0 stop us linking a single @
+            } else if((cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) && nameBuilder.length() > 0) {
                 if(i == cs.length - 1) {
                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
                 }
@@ -319,13 +320,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 return i;
             } else {
                 builder.append("@");
-                builder.append(nameBuilder.toString());
-                return i;
+                return --pos;
             }
 
         }
         builder.append("@");
-        return pos;
+        return --pos;
     }
 
     private int parseIssue(StringBuilder builder, char[] cs, int pos) {
@@ -339,7 +339,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         numBuilder.append(cs[i]);
                     } else {
                         builder.append("#");
-                        return pos;
+                        return --pos;
                     }
                 }
                 builder.append("[#");
@@ -355,10 +355,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     builder.append(cs[i]); // We still need to append the space or newline
                 }
                 return i;
+            } else {
+                builder.append("#");
+                return --pos;
             }
         }
         builder.append("#");
-        return pos;
+        return --pos;
     }
 
     @Override
