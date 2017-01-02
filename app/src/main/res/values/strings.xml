@@ -35,6 +35,7 @@
     <string name="error_title_change_failed">Title change failed</string>
     <string name="error_no_issues">There are no open issues which aren\'t already in the project</string>
     <string name="error_issue_already_in_project">This issue already has a card in the project</string>
+    <string name="error_user_not_found">User not found</string>
     <string name="error_project_not_found">Project not found</string>
 
     <string name="text_zero_value">0</string>
@@ -108,6 +109,7 @@
     <string name="hint_choose_labels">Labels</string>
     <string name="hint_from_issue">From issue</string>
     <string name="hint_shortcut_name">Name</string>
+    <string name="hint_username">Username</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -139,6 +141,7 @@
     <string name="title_save_user_shortcut">Save user</string>
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
+    <string name="title_open_user">Open user</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

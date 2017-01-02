@@ -24,8 +24,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +36,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +58,7 @@ import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,6 +115,20 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
             mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(mAdapter);
+
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_user_fab);
+            ((NestedScrollView) findViewById(R.id.user_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    if(scrollY - oldScrollY > 10) {
+                       fab.hide();
+                    } else if(scrollY - oldScrollY < -10) {
+                        fab.show();
+                    }
+                }
+            });
+            fab.setOnClickListener(view -> showOpenUserDialog());
+
             final String user;
             if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
@@ -179,6 +200,40 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         );
         overridePendingTransition(R.anim.slide_up, R.anim.none);
         mAnalytics.logEvent(Analytics.TAG_OPEN_REPO, null);
+    }
+
+    private void showOpenUserDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_open_user);
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        input.setHint(R.string.hint_username);
+        final FrameLayout container = new FrameLayout(this);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = UI.pxFromDp(16);
+        params.rightMargin = UI.pxFromDp(16);
+        input.setLayoutParams(params);
+        container.addView(input);
+        builder.setView(container);
+
+        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Loader(UserActivity.this).loadUser(new Loader.UserLoader() {
+            @Override
+            public void userLoaded(User user) {
+                final Intent u = new Intent(UserActivity.this, UserActivity.class);
+                u.putExtra(getString(R.string.intent_username), user.getLogin());
+                startActivity(u);
+                overridePendingTransition(R.anim.slide_up, R.anim.none);
+
+            }
+
+            @Override
+            public void userLoadError() {
+                Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
+            }
+        }, input.getText().toString()));
+
+        builder.create().show();
     }
 
     @Override

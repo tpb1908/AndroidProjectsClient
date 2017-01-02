@@ -69,6 +69,7 @@
         android:fitsSystemWindows="true">
 
         <android.support.v4.widget.NestedScrollView
+            android:id="@+id/user_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -121,5 +122,14 @@
         </android.support.v4.widget.NestedScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/user_open_user_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_account_search"
+        app:layout_anchor="@id/repos_refresher"
+        app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>
