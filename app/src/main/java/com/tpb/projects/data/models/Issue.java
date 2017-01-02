@@ -71,6 +71,8 @@ public class Issue extends DataModel implements Parcelable {
     private static final String COMMENTS = "comments";
     private int comments;
 
+    private long createdAt;
+
     public int getId() {
         return id;
     }
@@ -115,6 +117,10 @@ public class Issue extends DataModel implements Parcelable {
         return comments;
     }
 
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -146,6 +152,11 @@ public class Issue extends DataModel implements Parcelable {
                     Log.e(TAG, "parse: ", pe);
                 }
                 i.closed = true;
+            }
+            try {
+                i.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
             }
             if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
                 i.assignees = new User[] {User.parse(obj.getJSONObject("assignee")) };
@@ -208,6 +219,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
                 ", comments=" + comments +
+                ", createdAt=" + createdAt +
                 '}';
     }
 
@@ -231,6 +243,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
         dest.writeInt(this.comments);
+        dest.writeLong(this.createdAt);
     }
 
     protected Issue(Parcel in) {
@@ -246,6 +259,7 @@ public class Issue extends DataModel implements Parcelable {
         this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);
         this.comments = in.readInt();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

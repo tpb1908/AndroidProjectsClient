@@ -222,10 +222,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(String.format(mParent.getString(R.string.text_opened_by),
                     String.format(mParent.getString(R.string.text_md_link),
                             "#" + Integer.toString(card.getIssue().getNumber()),
-                            "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())),
+                            "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())
+                    ),
                     String.format(mParent.getString(R.string.text_md_link),
                             card.getIssue().getOpenedBy().getLogin(),
-                            card.getIssue().getOpenedBy().getHtmlUrl()))
+                            card.getIssue().getOpenedBy().getHtmlUrl()
+                    ),
+                    DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
             );
 
             if(card.getIssue().getAssignees() != null) {
