@@ -214,7 +214,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(formatMD(card.getIssue().getTitle()));
             builder.append("<br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(card.getIssue().getBody());
+                builder.append(formatMD(card.getIssue().getBody()));
                 builder.append("<br>");
             }
 
@@ -270,7 +270,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final char[] cs = s.toCharArray();
         for(int i = 0; i < s.length(); i++) {
             if(pp != '\n' && cs[i] == '\n') {
-                builder.append('\n');
+                builder.append("\n");
             }
             if(cs[i] == '@' && (p == ' '  || p == '\n')) {
                 //Max username length is 39 characters
@@ -278,9 +278,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 i = parseUsername(builder, cs, i);
             } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
                 i = parseIssue(builder, cs, i);
-            }
-
-            else {
+            } else {
                 builder.append(cs[i]);
             }
             pp = p;
