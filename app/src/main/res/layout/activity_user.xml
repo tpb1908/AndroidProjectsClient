@@ -129,6 +129,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/ic_account_search"
+        android:visibility="invisible"
         app:layout_anchor="@id/repos_refresher"
         app:layout_anchorGravity="bottom|right|end"/>
 

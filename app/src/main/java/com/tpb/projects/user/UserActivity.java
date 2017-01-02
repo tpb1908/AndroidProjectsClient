@@ -128,6 +128,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 }
             });
             fab.setOnClickListener(view -> showOpenUserDialog());
+            fab.postDelayed(fab::show, 300);
 
             final String user;
             if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
