@@ -59,6 +59,7 @@ public class Loader extends APIHandler {
     private static final String SEGMENT_COLUMNS = "/columns";
     private static final String SEGMENT_ISSUES = "/issues";
     private static final String SEGMENT_PERMISSION = "/permission";
+    private static final String SEGMENT_CARDS = "/cards";
 
     private static final String PERMISSION = "permission";
     private static final String PERMISSION_NONE = "none";
@@ -92,7 +93,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(RepositoriesLoader loader, String user) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + user + SEGMENT_REPOS)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -241,7 +242,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadProject(ProjectLoader loader, int id) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + Integer.toString(id))
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -284,7 +285,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadColumns(ColumnsLoader loader, int projectId) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + Integer.toString(projectId) + SEGMENT_COLUMNS)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -311,7 +312,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadCards(CardsLoader loader, int columnId) {
-        AndroidNetworking.get(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -338,7 +339,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + fullRepoName + SEGMENT_ISSUES + "/" + Integer.toString(issueNumber))
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" +  fullRepoName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {

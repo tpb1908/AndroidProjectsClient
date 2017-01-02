@@ -55,6 +55,7 @@ public class OAuthHandler extends APIHandler {
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
     private static final String SCOPE = "user repo";
+    private static final String RATE_LIMIT = "/rate_limit";
 
     private static final String TAG = OAuthHandler.class.getSimpleName();
 
@@ -155,7 +156,7 @@ public class OAuthHandler extends APIHandler {
 
     //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization
     public void validateKey(OAuthValidationListener listener) {
-        AndroidNetworking.get(GIT_BASE + "rate_limit")
+        AndroidNetworking.get(GIT_BASE + RATE_LIMIT)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
