@@ -143,7 +143,7 @@ public class OAuthHandler extends APIHandler {
     }
 
     public String getUserName() {
-        return mSession.getUsername();
+        return mSession.getUserLogin();
     }
 
     public void resetAccessToken() {

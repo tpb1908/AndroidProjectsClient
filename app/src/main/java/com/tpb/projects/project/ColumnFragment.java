@@ -46,6 +46,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.FullScreenDialog;
@@ -85,17 +86,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private ProjectActivity mParent;
     private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
-    private boolean mCanEdit;
+    private Repository.AccessLevel mAccessLevel;
     private boolean mShouldAnimate;
 
     private CardAdapter mAdapter;
 
 
-    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, boolean canEdit, boolean shouldAnimate) {
+    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel, boolean shouldAnimate) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
         cf.mNavListener = navListener;
-        cf.mCanEdit = canEdit;
+        cf.mAccessLevel = accessLevel;
         cf.mShouldAnimate = shouldAnimate;
         return cf;
     }
@@ -112,12 +113,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mName.setText(mColumn.getName());
 
         mViewsValid = true;
-        mAdapter = new CardAdapter(this, mCanEdit);
+        mAdapter = new CardAdapter(this, mAccessLevel);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setAnimationType(AnimatingRecycler.AnimationType.HORIZONTAL);
         if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        if(mCanEdit) {
+        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             mRecycler.setOnDragListener(new CardDragListener(getContext(), mNavListener));
             mCard.setTag(mColumn.getId());
             mCard.setOnLongClickListener(v -> {

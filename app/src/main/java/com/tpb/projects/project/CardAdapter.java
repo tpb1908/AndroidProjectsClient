@@ -39,6 +39,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
 
@@ -62,12 +63,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private AndDown md = new AndDown();
     private ColumnFragment mParent;
     private Editor mEditor;
-    private boolean mCanEdit;
+    private Repository.AccessLevel mAccessLevel;
 
-    CardAdapter(ColumnFragment parent, boolean canEdit) {
+    CardAdapter(ColumnFragment parent, Repository.AccessLevel accessLevel) {
         mParent = parent;
         mEditor = new Editor(mParent.getContext());
-        mCanEdit = canEdit;
+        mAccessLevel = accessLevel;
     }
 
     void setCards(ArrayList<Card> cards) {
@@ -158,7 +159,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final Card card = mCards.get(pos);
         holder.mCardView.setAlpha(1.0f);
         holder.mSpinner.setVisibility(View.INVISIBLE);
-        if(mCanEdit) {
+        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
                 final ClipData data = ClipData.newPlainText("", "");

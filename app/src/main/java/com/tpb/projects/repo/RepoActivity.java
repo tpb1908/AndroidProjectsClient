@@ -292,7 +292,7 @@ public class RepoActivity extends AppCompatActivity implements
         mRefresher.setRefreshing(true);
         mLoader.loadProjects(this, mRepo.getFullName());
         mLoader.loadReadMe(this, mRepo.getFullName());
-        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUsername())) {
+        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUserLogin())) {
             mAdapter.enableEditAccess();
             mAccessLevel = Repository.AccessLevel.ADMIN;
             findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
@@ -317,7 +317,7 @@ public class RepoActivity extends AppCompatActivity implements
                 public void accessCheckError() {
                     mAccessLevel = Repository.AccessLevel.NONE;
                 }
-            }, GitHubSession.getSession(this).getUsername(), mRepo.getFullName());
+            }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
         }
     }
 

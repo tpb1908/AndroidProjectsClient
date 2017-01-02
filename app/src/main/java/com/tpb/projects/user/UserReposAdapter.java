@@ -71,7 +71,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             mLoader.loadRepositories(UserReposAdapter.this, mUser);
         });
         mSorter = new RepoPinSorter(context);
-        mUser = GitHubSession.getSession(context).getUsername();
+        mUser = GitHubSession.getSession(context).getUserLogin();
     }
 
     void loadReposForUser(String user) {

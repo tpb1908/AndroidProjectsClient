@@ -52,10 +52,12 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
@@ -95,7 +97,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
-    private boolean mCanEdit; //TODO Load this on project load
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE; //TODO Load this on project load
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,6 +118,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
+            mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
+            new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
@@ -124,6 +128,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 for(Project p : projects) {
                     if(number == p.getNumber()) {
                         projectLoaded(p);
+                        checkAccess(p);
                         return;
                     }
                 }
@@ -131,8 +136,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 finish();
             }, repo);
         }
-        mCanEdit = launchIntent.getBooleanExtra(getString(R.string.intent_access_level), false);
-       // if(!mCanEdit) mMenu.hideMenu(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
@@ -165,8 +168,25 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mRefresher.setOnRefreshListener(() -> mLoader.loadProject(ProjectActivity.this, mProject.getId()));
         mNavListener = new NavigationDragListener();
         mRefresher.setOnDragListener(mNavListener);
+    }
 
-        new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+    private void checkAccess(Project project) {
+        mLoader.checkAccess(new Loader.AccessCheckListener() {
+            @Override
+            public void accessCheckComplete(Repository.AccessLevel accessLevel) {
+                mAccessLevel = accessLevel;
+                if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                    mMenu.showMenuButton(true);
+                } else {
+                    mMenu.hideMenuButton(false);
+                }
+            }
+
+            @Override
+            public void accessCheckError() {
+
+            }
+        }, GitHubSession.getSession(this).getUserLogin(), project.getRepoFullName());
     }
 
     void showFab() {
@@ -577,7 +597,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
             return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
                     mNavListener,
-                    true,
+                    mAccessLevel,
                     columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
         }
 

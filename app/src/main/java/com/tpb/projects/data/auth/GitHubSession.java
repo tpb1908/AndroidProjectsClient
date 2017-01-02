@@ -84,7 +84,7 @@ public class GitHubSession {
      *
      * @return User name
      */
-    public String getUsername() {
+    public String getUserLogin() {
         return prefs.getString(API_USERNAME, null);
     }
 
