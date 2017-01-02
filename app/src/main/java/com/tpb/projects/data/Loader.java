@@ -49,12 +49,30 @@ import java.util.Arrays;
 public class Loader extends APIHandler {
     private static final String TAG = Loader.class.getSimpleName();
 
+    private static final String SEGMENT_USER = "/user";
+    private static final String SEGMENT_USERS = "/users";
+    private static final String SEGMENT_REPOS = "/repos";
+    private static final String SEGMENT_README = "/readme";
+    private static final String SEGMENT_COLLABORATORS = "/collaborators";
+    private static final String SEGMENT_LABELS = "/labels";
+    private static final String SEGMENT_PROJECTS = "/projects";
+    private static final String SEGMENT_COLUMNS = "/columns";
+    private static final String SEGMENT_ISSUES = "/issues";
+    private static final String SEGMENT_PERMISSION = "/permission";
+
+    private static final String PERMISSION = "permission";
+    private static final String PERMISSION_NONE = "none";
+    private static final String PERMISSION_ADMIN = "admin";
+    private static final String PERMISSION_WRITE = "write";
+    private static final String PERMISSION_READ = "read";
+    private static final String CONTENT = "content";
+
     public Loader(Context context) {
         super(context);
     }
 
     public void loadAuthenticateUser(AuthenticatedUserLoader loader) {
-        AndroidNetworking.get(GIT_BASE + "user")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USER)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -74,7 +92,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(RepositoriesLoader loader, String user) {
-        AndroidNetworking.get(GIT_BASE + "users/" + user + "/repos")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + user + SEGMENT_REPOS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -101,7 +119,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(RepositoriesLoader loader) {
-        AndroidNetworking.get(GIT_BASE + "user/repos")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -128,7 +146,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepository(RepositoryLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -146,14 +164,14 @@ public class Loader extends APIHandler {
     }
 
     public void loadReadMe(ReadMeLoader loader, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/readme")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_README)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            final String readme = Data.base64Decode(response.getString("content"));
+                            final String readme = Data.base64Decode(response.getString(CONTENT));
                             Log.i(TAG, "onResponse: " + readme);
                             if(loader != null) loader.readMeLoaded(readme);
                         } catch(JSONException jse) {
@@ -170,7 +188,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadCollaborators(final CollaboratorsLoader loader, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/collaborators")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -196,7 +214,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadLabels(LabelsLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/labels")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_LABELS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -223,7 +241,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadProject(ProjectLoader loader, int id) {
-        AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(id))
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + Integer.toString(id))
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -240,7 +258,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadProjects(ProjectsLoader loader, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -266,7 +284,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadColumns(ColumnsLoader loader, int projectId) {
-        AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + Integer.toString(projectId) + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -320,7 +338,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber))
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + fullRepoName + SEGMENT_ISSUES + "/" + Integer.toString(issueNumber))
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -338,7 +356,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadOpenIssues(IssuesLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -366,7 +384,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadUser(UserLoader loader, String username) {
-        AndroidNetworking.get(GIT_BASE + "users/" + username)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + username)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -386,30 +404,30 @@ public class Loader extends APIHandler {
     }
 
     public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
-        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullname + "/collaborators/" + login + "/permission")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullname + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        String permission = "none";
-                        if(response.has("permission")) {
+                        String permission = PERMISSION_NONE;
+                        if(response.has(PERMISSION)) {
                             try {
-                                permission = response.getString("permission");
+                                permission = response.getString(PERMISSION);
                             } catch(JSONException ignored) {}
                         }
                         if(listener != null) {
                             switch(permission) {
-                                case "admin":
+                                case PERMISSION_ADMIN:
                                     listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
                                     break;
-                                case "write":
+                                case PERMISSION_WRITE:
                                     listener.accessCheckComplete(Repository.AccessLevel.WRITE);
                                     break;
-                                case "read":
+                                case PERMISSION_READ:
                                      listener.accessCheckComplete(Repository.AccessLevel.READ);
                                     break;
-                                case "none":
+                                case PERMISSION_NONE:
                                     listener.accessCheckComplete(Repository.AccessLevel.NONE);
                                     break;
                             }
