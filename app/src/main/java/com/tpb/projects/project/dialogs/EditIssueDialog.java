@@ -64,7 +64,6 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
     private ArrayList<String> assignees = new ArrayList<>();
     private ArrayList<String> selectedLabels = new ArrayList<>();
 
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -159,7 +158,7 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
     private void setAssigneesText() {
         final StringBuilder builder = new StringBuilder();
         for(String a : assignees) {
-            builder.append(String.format(getContext().getString(R.string.text_href), "https://github/com/" + a, a));
+            builder.append(String.format(getContext().getString(R.string.text_href), "https://github.com/" + a, a));
             builder.append("<br>");
         }
         assigneesText.setMovementMethod(LinkMovementMethod.getInstance());

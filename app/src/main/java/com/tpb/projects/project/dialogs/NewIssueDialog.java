@@ -208,7 +208,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
                         for(int i = 0; i < choices.length; i++) {
                             if(checked[i]) {
                                 assignees.add(choices[i]);
-                                builder.append(String.format(getContext().getString(R.string.text_href), "https://github/com/" + choices[i], choices[i]));
+                                builder.append(String.format(getContext().getString(R.string.text_href), "https://github.com/" + choices[i], choices[i]));
                                 builder.append("<br>");
                             }
                         }
