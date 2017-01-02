@@ -278,9 +278,11 @@
                     android:nestedScrollingEnabled="false"/>
 
                 <android.support.v7.widget.CardView
+                    android:id="@+id/repo_new_project_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    android:visibility="gone">
 
                     <Button
                         android:id="@+id/repo_new_project"

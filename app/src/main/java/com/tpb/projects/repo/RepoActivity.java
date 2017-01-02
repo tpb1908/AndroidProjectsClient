@@ -295,6 +295,7 @@ public class RepoActivity extends AppCompatActivity implements
         if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUsername())) {
             mAdapter.enableEditAccess();
             mAccessLevel = Repository.AccessLevel.ADMIN;
+            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
         } else {
             mLoader.checkAccess(new Loader.AccessCheckListener() {
                 @Override
@@ -303,6 +304,7 @@ public class RepoActivity extends AppCompatActivity implements
                     mAccessLevel = level;
                     if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                         mAdapter.enableEditAccess();
+                        findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
                     }
 //                    if(canAccess) mAdapter.enableEditAccess();
 //                    Toast.makeText(RepoActivity.this,
