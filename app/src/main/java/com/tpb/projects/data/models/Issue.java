@@ -60,12 +60,17 @@ public class Issue extends DataModel implements Parcelable {
     private long closedAt;
     private boolean closed;
 
+    private static final String USER = "user";
     private User openedBy;
-    
+
+    private static final String CLOSED_BY = "closed_by";
     private User closedBy;
-    
+
+    private static final String ASSIGNEE = "assignee";
+    private static final String ASSIGNEES = "assignees";
     private User[] assignees;
 
+    private static final String LABELS = "labels";
     private Label[] labels;
 
     private static final String COMMENTS = "comments";
@@ -158,24 +163,24 @@ public class Issue extends DataModel implements Parcelable {
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
-            if(obj.has("assignee") && !obj.getString("assignee").equals(Constants.JSON_NULL)) {
-                i.assignees = new User[] {User.parse(obj.getJSONObject("assignee")) };
+            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(Constants.JSON_NULL)) {
+                i.assignees = new User[] {User.parse(obj.getJSONObject(ASSIGNEE))};
             }
-            if(obj.has("assignees") && obj.getJSONArray("assignees").length() > 0) {
+            if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
                 Log.i(TAG, "parse: Issue: " + obj.toString());
-                final JSONArray as = obj.getJSONArray("assignees");
+                final JSONArray as = obj.getJSONArray(ASSIGNEES);
                 i.assignees = new User[as.length()];
                 for(int j = 0; j < as.length(); j++) {
                     i.assignees[j] = User.parse(as.getJSONObject(j));
                 }
             }
-            i.openedBy = User.parse(obj.getJSONObject("user"));
-            if(obj.has("closed_by") && !obj.getString("closed_by").equals(Constants.JSON_NULL)) {
-                i.closedBy = User.parse(obj.getJSONObject("closed_by"));
+            i.openedBy = User.parse(obj.getJSONObject(USER));
+            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(Constants.JSON_NULL)) {
+                i.closedBy = User.parse(obj.getJSONObject(CLOSED_BY));
                 Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
             }
             try {
-                final JSONArray lbs = obj.getJSONArray("labels");
+                final JSONArray lbs = obj.getJSONArray(LABELS);
                 i.labels = new Label[lbs.length()];
                 for(int j = 0; j < lbs.length(); j++) {
                     i.labels[j] = Label.parse(lbs.getJSONObject(j));

@@ -40,6 +40,34 @@ import org.json.JSONObject;
 public class Editor extends APIHandler {
     private static final String TAG = Editor.class.getSimpleName();
 
+    private static final String NAME = "name";
+    private static final String BODY = "body";
+    private static final String NOTE = "note";
+    private static final String TITLE = "title";
+    private static final String ASSIGNEES = "assignees";
+    private static final String LABELS = "labels";
+
+    private static final String STATE = "state";
+    private static final String STATE_CLOSED = "closed";
+    private static final String STATE_OPEN = "open";
+
+    private static final String CONTENT_TYPE = "content_type";
+    private static final String CONTENT_TYPE_ISSUE = "Issue";
+    private static final String CONTENT_ID = "content_id";
+
+    private static final String POSITION = "position";
+    private static final String POSITION_FIRST = "first";
+    private static final String POSITION_AFTER = "after:";
+    private static final String POSITION_TOP = "top";
+    private static final String COLUMN_ID = "column_id";
+
+    private static final String SEGMENT_REPOS = "/repos";
+    private static final String SEGMENT_PROJECTS = "/projects";
+    private static final String SEGMENT_COLUMNS = "/columns";
+    private static final String SEGMENT_MOVES = "/moves";
+    private static final String SEGMENT_CARDS = "/cards";
+    private static final String SEGMENT_ISSUES = "/issues";
+
     public Editor(Context context) {
         super(context);
     }
@@ -49,12 +77,12 @@ public class Editor extends APIHandler {
         JSONObject obj = new JSONObject();
         //Unsure why GitHub can't parse the JSON if I add these as body parameters
         try {
-            obj.put("name", project.getName());
-            obj.put("body", project.getBody());
+            obj.put(NAME, project.getName());
+            obj.put(BODY, project.getBody());
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + "repos/" + fullRepoName + "/projects")
+        AndroidNetworking.post(GIT_BASE +  SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -77,12 +105,12 @@ public class Editor extends APIHandler {
         final JSONObject obj = new JSONObject();
         //Unsure why GitHub can't parse the JSON if I add these as body parameters
         try {
-            obj.put("name", project.getName());
-            obj.put("body", project.getBody());
+            obj.put(NAME, project.getName());
+            obj.put(BODY, project.getBody());
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "projects/" + project.getId())
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + "/" + project.getId())
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -105,7 +133,7 @@ public class Editor extends APIHandler {
         /*
         It seems that on a successful deletion, this returns an error with null body
          */
-        AndroidNetworking.delete(GIT_BASE + "projects/" + project.getId())
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + "/" + project.getId())
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -133,17 +161,18 @@ public class Editor extends APIHandler {
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
         try {
-            obj.put("name", newName);
+            obj.put(NAME, newName);
         } catch(JSONException jse) {
             Log.e(TAG, "updateColumnName: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        //TODO Use the listener
                         Log.i(TAG, "onResponse: Column update: " + response.toString());
                     }
 
@@ -157,11 +186,11 @@ public class Editor extends APIHandler {
     public void addColumn(ColumnAdditionListener listener, int projectId, String name) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("name", name);
+            obj.put(NAME, name);
         } catch(JSONException jse) {
             Log.e(TAG, "addColumn: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -184,14 +213,14 @@ public class Editor extends APIHandler {
         final JSONObject obj = new JSONObject();
         try {
             if(position == 0) {
-                obj.put("position", "first");
+                obj.put(POSITION, POSITION_FIRST);
             } else {
-                obj.put("position", "after:" + Integer.toString(dropPositionId));
+                obj.put(POSITION, POSITION_AFTER + dropPositionId);
             }
         } catch(JSONException jse) {
             Log.e(TAG, "moveColumn: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/moves")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_MOVES)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -211,7 +240,7 @@ public class Editor extends APIHandler {
     }
 
     public void deleteColumn(ColumnDeletionListener listener, int columnId) {
-        AndroidNetworking.delete(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -240,11 +269,11 @@ public class Editor extends APIHandler {
          */
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("note", note);
+            obj.put(NOTE, note);
         } catch(JSONException jse) {
             Log.e(TAG, "createCard: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -266,12 +295,12 @@ public class Editor extends APIHandler {
     public void createCard(CardCreationListener listener, int columnId, int issueId) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("content_type", "Issue");
-            obj.put("content_id", issueId);
+            obj.put(CONTENT_TYPE, CONTENT_TYPE_ISSUE);
+            obj.put(CONTENT_ID, issueId);
         } catch(JSONException jse) {
             Log.e(TAG, "createCard: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -293,11 +322,11 @@ public class Editor extends APIHandler {
     public void updateCard(CardUpdateListener listener, int cardId, String note) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("note", note);
+            obj.put(NOTE, note);
         } catch(JSONException jse) {
             Log.e(TAG, "updateCard: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId))
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -320,22 +349,23 @@ public class Editor extends APIHandler {
         final JSONObject obj = new JSONObject();
         try {
             if(afterId == -1) {
-                obj.put("position", "top");
+                obj.put(POSITION, POSITION_TOP);
             } else {
-                obj.put("position", "after:" + Integer.toString(afterId));
+                obj.put(POSITION, POSITION_AFTER + afterId);
             }
-            if(columnId != -1) obj.put("column_id", columnId);
+            if(columnId != -1) obj.put(COLUMN_ID, columnId);
         } catch(JSONException jse) {
             Log.e(TAG, "moveCard: ", jse);
         }
         Log.i(TAG, "moveCard: " + obj.toString() + ", card " + cardId);
-        AndroidNetworking.post(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId) + "/moves")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId + SEGMENT_MOVES)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        //TODO Use listener
                         Log.i(TAG, "onResponse: Card moved " + response.toString());
 
                     }
@@ -348,7 +378,7 @@ public class Editor extends APIHandler {
     }
 
     public void deleteCard(CardDeletionListener listener, Card card) {
-        AndroidNetworking.delete(GIT_BASE + "projects/columns/cards/" + Integer.toString(card.getId()))
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + card.getId())
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -372,15 +402,15 @@ public class Editor extends APIHandler {
     public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("title", title);
-            obj.put("body", body);
-            if(assignees != null) obj.put("assignees", new JSONArray(assignees));
-            if(labels != null) obj.put("labels", new JSONArray(labels));
+            obj.put(TITLE, title);
+            obj.put(BODY, body);
+            if(assignees != null) obj.put(ASSIGNEES, new JSONArray(assignees));
+            if(labels != null) obj.put(LABELS, new JSONArray(labels));
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
         Log.i(TAG, "createIssue: " + obj.toString());
-        AndroidNetworking.post(GIT_BASE + "repos/" + fullRepoName + "/issues")
+        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -402,11 +432,11 @@ public class Editor extends APIHandler {
     public void closeIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("state", "closed");
+            obj.put(STATE, STATE_CLOSED);
         } catch(JSONException jse) {
             Log.e(TAG, "closeIssue: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issueNumber))
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -428,11 +458,11 @@ public class Editor extends APIHandler {
     public void openIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("state", "open");
+            obj.put(STATE, STATE_OPEN);
         } catch(JSONException jse) {
             Log.e(TAG, "openIssue: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issueNumber))
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -454,14 +484,14 @@ public class Editor extends APIHandler {
     public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees,  @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put("title", issue.getTitle());
-            obj.put("body", issue.getBody());
-            if(assignees != null) obj.put("assignees", new JSONArray(assignees));
-            if(labels != null) obj.put("labels", new JSONArray(labels));
+            obj.put(TITLE, issue.getTitle());
+            obj.put(BODY, issue.getBody());
+            if(assignees != null) obj.put(ASSIGNEES, new JSONArray(assignees));
+            if(labels != null) obj.put(LABELS, new JSONArray(labels));
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + "repos/" + fullRepoPath + "/issues/" + Integer.toString(issue.getNumber()))
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath +  SEGMENT_ISSUES + "/" + issue.getNumber())
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
