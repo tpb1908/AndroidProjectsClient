@@ -218,11 +218,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
             }
 
-            builder.append("\\#");
-            builder.append(String.format(mParent.getString(R.string.text_opened_by), card.getIssue().getNumber(),
-                    String.format(mParent.getString(R.string.text_href),
-                            card.getIssue().getOpenedBy().getHtmlUrl(),
-                            card.getIssue().getOpenedBy().getLogin()))
+            builder.append(String.format(mParent.getString(R.string.text_opened_by),
+                    String.format(mParent.getString(R.string.text_md_link),
+                            "#" + Integer.toString(card.getIssue().getNumber()),
+                            "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())),
+                    String.format(mParent.getString(R.string.text_md_link),
+                            card.getIssue().getOpenedBy().getLogin(),
+                            card.getIssue().getOpenedBy().getHtmlUrl()))
             );
 
             if(card.getIssue().getAssignees() != null) {
@@ -230,9 +232,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(mParent.getString(R.string.text_assigned_to));
                 builder.append(' ');
                 for(User u : card.getIssue().getAssignees()) {
-                    builder.append(String.format(mParent.getString(R.string.text_href),
-                            u.getHtmlUrl(),
-                            u.getLogin()));
+                    builder.append(String.format(mParent.getString(R.string.text_md_link),
+                            u.getLogin(),
+                            u.getHtmlUrl()));
                     builder.append(' ');
                 }
             }
