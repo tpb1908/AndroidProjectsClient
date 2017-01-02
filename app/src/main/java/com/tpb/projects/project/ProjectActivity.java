@@ -240,6 +240,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
                     }
                     mColumnPager.setOffscreenPageLimit(mAdapter.getCount());
+                    if(mCurrentPosition >= mAdapter.getCount()) {
+                        mCurrentPosition = mAdapter.getCount() - 1;
+                        //If the end column has been deleted
+                    }
                     mColumnPager.setCurrentItem(mCurrentPosition, true);
                     mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
                 } else {
