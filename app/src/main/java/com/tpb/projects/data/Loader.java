@@ -224,7 +224,7 @@ public class Loader extends APIHandler {
 
     public void loadProject(ProjectLoader loader, int id) {
         AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(id))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -241,7 +241,7 @@ public class Loader extends APIHandler {
 
     public void loadProjects(ProjectsLoader loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + "repos/" + repoFullName + "/projects")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -267,7 +267,7 @@ public class Loader extends APIHandler {
 
     public void loadColumns(ColumnsLoader loader, int projectId) {
         AndroidNetworking.get(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -294,7 +294,7 @@ public class Loader extends APIHandler {
 
     public void loadCards(CardsLoader loader, int columnId) {
         AndroidNetworking.get(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -321,7 +321,7 @@ public class Loader extends APIHandler {
 
     public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
         AndroidNetworking.get(GIT_BASE + "repos/" + fullRepoName + "/issues/" + Integer.toString(issueNumber))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -386,24 +386,40 @@ public class Loader extends APIHandler {
     }
 
     public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
-        loadCollaborators(new CollaboratorsLoader() {
-            @Override
-            public void collaboratorsLoaded(User[] collaborators) {
-                for(User u : collaborators) {
-                    Log.i(TAG, "collaboratorsLoaded: Comparing " + login + " to " + u.getLogin());
-                    if(login.equals(u.getLogin()) && listener != null) {
-                        listener.accessCheckComplete(true);
-                        return;
+        AndroidNetworking.get(GIT_BASE + "repos/" + repoFullname + "/collaborators/" + login + "/permission")
+                .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String permission = "none";
+                        if(response.has("permission")) {
+                            try {
+                                permission = response.getString("permission");
+                            } catch(JSONException ignored) {}
+                        }
+                        switch(permission) {
+                            case "admin":
+                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
+                                break;
+                            case "write":
+                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.WRITE);
+                                break;
+                            case "read":
+                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.READ);
+                                break;
+                            case "none":
+                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.NONE);
+                                break;
+                        }
                     }
-                }
-                if(listener != null) listener.accessCheckComplete(false);
-            }
 
-            @Override
-            public void collaboratorsLoadError() {
-                if(listener != null) listener.accessCheckError();
-            }
-        }, repoFullname);
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Access check: " + anError.getErrorBody());
+                        if(listener != null) listener.accessCheckError();
+                    }
+                });
     }
 
     public interface UserLoader {
@@ -508,7 +524,7 @@ public class Loader extends APIHandler {
 
     public interface AccessCheckListener {
 
-        void accessCheckComplete(boolean canAccess);
+        void accessCheckComplete(Repository.AccessLevel accessLevel);
 
         void accessCheckError();
 

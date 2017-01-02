@@ -55,7 +55,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createProject: ", jse);
         }
         AndroidNetworking.post(GIT_BASE + "repos/" + fullRepoName + "/projects")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -83,7 +83,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createProject: ", jse);
         }
         AndroidNetworking.patch(GIT_BASE + "projects/" + project.getId())
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -106,7 +106,7 @@ public class Editor extends APIHandler {
         It seems that on a successful deletion, this returns an error with null body
          */
         AndroidNetworking.delete(GIT_BASE + "projects/" + project.getId())
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -138,7 +138,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "updateColumnName: ", jse);
         }
         AndroidNetworking.patch(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -162,7 +162,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "addColumn: ", jse);
         }
         AndroidNetworking.post(GIT_BASE + "projects/" + Integer.toString(projectId) + "/columns")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -192,7 +192,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "moveColumn: ", jse);
         }
         AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/moves")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -212,7 +212,7 @@ public class Editor extends APIHandler {
 
     public void deleteColumn(ColumnDeletionListener listener, int columnId) {
         AndroidNetworking.delete(GIT_BASE + "projects/columns/" + Integer.toString(columnId))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -245,7 +245,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createCard: ", jse);
         }
         AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -272,7 +272,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createCard: ", jse);
         }
         AndroidNetworking.post(GIT_BASE + "projects/columns/" + Integer.toString(columnId) + "/cards")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -298,7 +298,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "updateCard: ", jse);
         }
         AndroidNetworking.patch(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -330,7 +330,7 @@ public class Editor extends APIHandler {
         }
         Log.i(TAG, "moveCard: " + obj.toString() + ", card " + cardId);
         AndroidNetworking.post(GIT_BASE + "projects/columns/cards/" + Integer.toString(cardId) + "/moves")
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -349,7 +349,7 @@ public class Editor extends APIHandler {
 
     public void deleteCard(CardDeletionListener listener, Card card) {
         AndroidNetworking.delete(GIT_BASE + "projects/columns/cards/" + Integer.toString(card.getId()))
-                .addHeaders(PREVIEW_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override

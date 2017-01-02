@@ -131,7 +131,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 finish();
             }, repo);
         }
-        mCanEdit = launchIntent.getBooleanExtra(getString(R.string.intent_can_edit), false);
+        mCanEdit = launchIntent.getBooleanExtra(getString(R.string.intent_access_level), false);
        // if(!mCanEdit) mMenu.hideMenu(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());

@@ -102,7 +102,7 @@ public class RepoActivity extends AppCompatActivity implements
     private ProjectAdapter mAdapter;
     private Loader mLoader;
     private Repository mRepo;
-    private boolean mCanAccess;
+    private Repository.AccessLevel mAccessLevel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -176,7 +176,7 @@ public class RepoActivity extends AppCompatActivity implements
     public void openProject(Project project, View name) {
         final Intent i = new Intent(RepoActivity.this, ProjectActivity.class);
         i.putExtra(getString(R.string.parcel_project), project);
-        i.putExtra(getString(R.string.intent_can_edit), mCanAccess);
+        i.putExtra(getString(R.string.intent_access_level), mAccessLevel);
         startActivity(i,
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                         this,
@@ -293,24 +293,27 @@ public class RepoActivity extends AppCompatActivity implements
         mLoader.loadProjects(this, mRepo.getFullName());
         mLoader.loadReadMe(this, mRepo.getFullName());
         if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUsername())) {
-            mAdapter.enableRepoAccess();
-            mCanAccess = true;
+            mAdapter.enableEditAccess();
+            mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
             mLoader.checkAccess(new Loader.AccessCheckListener() {
                 @Override
-                public void accessCheckComplete(boolean canAccess) {
-                    Log.i(TAG, "accessCheckComplete: Aaccess " + canAccess);
-                    mCanAccess = canAccess;
-                    if(canAccess) mAdapter.enableRepoAccess();
-                    Toast.makeText(RepoActivity.this,
-                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
-                            Toast.LENGTH_SHORT)
-                            .show();
+                public void accessCheckComplete(Repository.AccessLevel level) {
+                    Log.i(TAG, "accessCheckComplete: Access " + level);
+                    mAccessLevel = level;
+                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                        mAdapter.enableEditAccess();
+                    }
+//                    if(canAccess) mAdapter.enableEditAccess();
+//                    Toast.makeText(RepoActivity.this,
+//                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
+//                            Toast.LENGTH_SHORT)
+//                            .show();
                 }
 
                 @Override
                 public void accessCheckError() {
-
+                    mAccessLevel = Repository.AccessLevel.NONE;
                 }
             }, GitHubSession.getSession(this).getUsername(), mRepo.getFullName());
         }

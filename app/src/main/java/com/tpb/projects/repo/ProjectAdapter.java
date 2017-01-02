@@ -112,7 +112,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
     }
 
-    void enableRepoAccess() {
+    void enableEditAccess() {
         canAccessRepo = true;
         if(mProjects.size() > 0) notifyDataSetChanged();
     }
