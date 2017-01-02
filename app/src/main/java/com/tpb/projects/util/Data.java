@@ -157,23 +157,23 @@ public class Data {
         final long delta = (now - time);
         if(delta / (365 * 24 * 3600) > 0) {
             final long div = delta / (365 * 24 * 3600);
-            return div + (div == 1 ? " year" : " years");
+            return div + (div == 1 ? " year" : " years") + " ago";
         } else if(delta / (28 * 24 * 3600) > 0) {
             final long div = delta / (28 * 24 * 3600);
-            return div + (div == 1 ? " month" : " months");
+            return div + (div == 1 ? " month" : " months") + " ago";
         } else if(delta / (7 * 24 * 3600) > 0) {
             final long div = delta / (7 * 24 * 3600);
-            return div + (div == 1 ? " week" : " weeks");
+            return div + (div == 1 ? " week" : " weeks") + " ago";
         } else if(delta / (24 * 3600) > 0) {
             final long div = delta / (24 * 3600);
-            return div + (div == 1 ? " day" : " days");
+            return div + (div == 1 ? " day" : " days") + " ago";
         } else if(delta / (3600) > 0) {
             final long div = delta / (3600);
-            return div + (div == 1 ? " hour" : " hours");
+            return div + (div == 1 ? " hour" : " hours") + " ago";
         } else {
             final long div = delta / 60;
             if(div > 5) {
-                return div + (div == 1 ? " minute" : " minutes");
+                return div + (div == 1 ? " minute" : " minutes") + " ago";
             } else {
                 return "just now";
             }

@@ -42,6 +42,7 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.Data;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -243,7 +244,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
                 builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
                         card.getIssue().getClosedBy().getLogin(),
-                        card.getIssue().getClosedBy().getHtmlUrl()));
+                        card.getIssue().getClosedBy().getHtmlUrl(),
+                        Data.timeAgo(card.getIssue().getClosedAt())));
             }
 
             if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
