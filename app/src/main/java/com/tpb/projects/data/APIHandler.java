@@ -30,7 +30,7 @@ import java.util.HashMap;
 public abstract class APIHandler {
     public static final String TAG = APIHandler.class.getSimpleName();
 
-    protected static final String GIT_BASE = "https://api.github.com/";
+    protected static final String GIT_BASE = "https://api.github.com";
     private static final String ACCEPT_HEADER_KEY = "Accept";
     private static final String ACCEPT_HEADER = "application/vnd.github.v3+json";
     private static final String ORGANIZATIONS_PREVIEW_ACCEPT_HEADER = "application/vnd.github.korra-preview";
