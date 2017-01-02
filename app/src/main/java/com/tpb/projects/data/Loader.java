@@ -398,19 +398,21 @@ public class Loader extends APIHandler {
                                 permission = response.getString("permission");
                             } catch(JSONException ignored) {}
                         }
-                        switch(permission) {
-                            case "admin":
-                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
-                                break;
-                            case "write":
-                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.WRITE);
-                                break;
-                            case "read":
-                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.READ);
-                                break;
-                            case "none":
-                                if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.NONE);
-                                break;
+                        if(listener != null) {
+                            switch(permission) {
+                                case "admin":
+                                    listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
+                                    break;
+                                case "write":
+                                    listener.accessCheckComplete(Repository.AccessLevel.WRITE);
+                                    break;
+                                case "read":
+                                     listener.accessCheckComplete(Repository.AccessLevel.READ);
+                                    break;
+                                case "none":
+                                    listener.accessCheckComplete(Repository.AccessLevel.NONE);
+                                    break;
+                            }
                         }
                     }
 

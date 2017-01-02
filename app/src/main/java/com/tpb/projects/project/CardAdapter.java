@@ -263,7 +263,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         }
     }
 
-    private static String formatMD(String s) {
+    private String formatMD(String s) {
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
@@ -276,7 +276,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
-            } else {
+            } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
+                i = parseIssue(builder, cs, i);
+            }
+
+            else {
                 builder.append(cs[i]);
             }
             pp = p;
@@ -321,6 +325,39 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
         }
         builder.append("@");
+        return pos;
+    }
+
+    private int parseIssue(StringBuilder builder, char[] cs, int pos) {
+        final StringBuilder numBuilder = new StringBuilder();
+        for(int i = ++pos; i < cs.length; i++) {
+            if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
+                numBuilder.append(cs[i]);
+            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
+                if(i == cs.length - 1) {
+                    if(cs[i] >= '0' && cs[i] <= '9') {
+                        numBuilder.append(cs[i]);
+                    } else {
+                        builder.append("#");
+                        return pos;
+                    }
+                }
+                builder.append("[#");
+                builder.append(numBuilder.toString());
+                builder.append("]");
+                builder.append("(");
+                builder.append("https://github.com/");
+                builder.append(mParent.mParent.mProject.getRepoFullName());
+                builder.append("/issues/");
+                builder.append(numBuilder.toString());
+                builder.append(")");
+                if(i != cs.length - 1) {
+                    builder.append(cs[i]); // We still need to append the space or newline
+                }
+                return i;
+            }
+        }
+        builder.append("#");
         return pos;
     }
 

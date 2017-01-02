@@ -85,7 +85,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     @BindView(R.id.column_card_count) TextView mCardCount;
     @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
 
-    private ProjectActivity mParent;
+    ProjectActivity mParent;
     private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
     private Repository.AccessLevel mAccessLevel;
