@@ -276,7 +276,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         char pp = ' ';
         final char[] cs = s.toCharArray();
         for(int i = 0; i < s.length(); i++) {
-            if(pp != '\n' && cs[i] == '\n') {
+            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
                 builder.append("\n");
             }
             if(cs[i] == '@' && (p == ' '  || p == '\n')) {
