@@ -49,6 +49,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
@@ -142,7 +143,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
 
                     @Override
-                    public void userLoadError() {
+                    public void userLoadError(APIHandler.APIError error) {
 
                     }
                 }, user);
@@ -162,7 +163,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
 
                     @Override
-                    public void authenticatedUserLoadError() {
+                    public void authenticatedUserLoadError(APIHandler.APIError error) {
 
                     }
                 });
@@ -230,7 +231,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
 
                     @Override
-                    public void repoLoadError() {
+                    public void repoLoadError(APIHandler.APIError error) {
                         Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
                     }
                 }, input.getText().toString());
@@ -245,7 +246,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
 
                     @Override
-                    public void userLoadError() {
+                    public void userLoadError(APIHandler.APIError error) {
                         Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
                     }
                 }, input.getText().toString());

@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Repository;
@@ -140,7 +141,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     }
 
     @Override
-    public void repositoryLoadError() {
+    public void repositoryLoadError(APIHandler.APIError error) {
 
     }
 

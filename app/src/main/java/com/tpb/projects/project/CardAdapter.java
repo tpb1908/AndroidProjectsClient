@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
@@ -194,7 +195,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
 
                 @Override
-                public void issueLoadError() {
+                public void issueLoadError(APIHandler.APIError error) {
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                     mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);

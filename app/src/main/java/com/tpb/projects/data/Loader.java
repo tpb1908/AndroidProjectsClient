@@ -75,7 +75,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Authenticated user error");
-                        if(loader != null) loader.authenticatedUserLoadError();
+                        if(loader != null) loader.authenticatedUserLoadError(parseError(anError));
                     }
                 });
     }
@@ -103,6 +103,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
+                        if(loader != null) loader.repositoryLoadError(parseError(anError));
                     }
                 });
     }
@@ -130,6 +131,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: User repos" + anError.getErrorBody());
+                        if(loader != null) loader.repositoryLoadError(parseError(anError));
                     }
                 });
     }
@@ -148,6 +150,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: load Repo: " + anError.getErrorBody());
+                        if(loader != null) loader.repoLoadError(parseError(anError));
                     }
                 });
     }
@@ -172,6 +175,7 @@ public class Loader extends APIHandler {
                     public void onError(ANError anError) {
                         Log.e(TAG, "onError: load ReadMe: ", anError);
                         Log.i(TAG, "onError: load ReadMe: " + anError.getErrorBody());
+                        if(loader != null) loader.readmeLoadError(parseError(anError));
                     }
                 });
     }
@@ -198,6 +202,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Collaborators" + anError.getErrorBody());
+                        if(loader != null) loader.collaboratorsLoadError(parseError(anError));
                     }
                 });
     }
@@ -224,7 +229,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Labels: " + anError.getErrorBody());
-                        if(loader != null) loader.labelLoadError();
+                        if(loader != null) loader.labelLoadError(parseError(anError));
                     }
                 });
     }
@@ -241,7 +246,7 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.projectLoadError();
+                        if(loader != null) loader.projectLoadError(parseError(anError));
                     }
                 });
     }
@@ -268,6 +273,7 @@ public class Loader extends APIHandler {
                     public void onError(ANError anError) {
                         Log.e(TAG, "onError: load Projects: ", anError);
                         Log.i(TAG, "onError: load Projects: " + anError.getErrorBody());
+                        if(loader != null) loader.projectsLoadError(parseError(anError));
                     }
                 });
     }
@@ -294,7 +300,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: load columnes: " + anError.getErrorBody());
-                        loader.columnsLoadError();
+                        loader.columnsLoadError(parseError(anError));
                     }
                 });
     }
@@ -321,7 +327,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Cards: " + anError.getErrorBody());
-                        if(loader != null) loader.cardsLoadError();
+                        if(loader != null) loader.cardsLoadError(parseError(anError));
                     }
                 });
     }
@@ -339,7 +345,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue: " + anError.getErrorBody());
-                        if(loader != null) loader.issueLoadError();
+                        if(loader != null) loader.issueLoadError(parseError(anError));
                     }
                 });
     }
@@ -366,7 +372,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue load: " + anError.getErrorBody());
-                        if(loader != null) loader.issuesLoadError();
+                        if(loader != null) loader.issuesLoadError(parseError(anError));
                     }
                 });
 
@@ -386,7 +392,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: User not loaded: " + anError.getErrorBody());
-                        if(loader != null) loader.userLoadError();
+                        if(loader != null) loader.userLoadError(parseError(anError));
                     }
                 });
 
@@ -431,7 +437,7 @@ public class Loader extends APIHandler {
                                 //403 Must have push access to view collaborator permission
                                 listener.accessCheckComplete(Repository.AccessLevel.NONE);
                             } else {
-                                listener.accessCheckError();
+                                listener.accessCheckError(parseError(anError));
                             }
                         }
                     }
@@ -442,7 +448,7 @@ public class Loader extends APIHandler {
 
         void userLoaded(User user);
 
-        void userLoadError();
+        void userLoadError(APIError error);
 
     }
 
@@ -450,7 +456,7 @@ public class Loader extends APIHandler {
 
         void userLoaded(User user);
 
-        void authenticatedUserLoadError();
+        void authenticatedUserLoadError(APIError error);
 
     }
 
@@ -458,7 +464,7 @@ public class Loader extends APIHandler {
 
         void repositoriesLoaded(Repository[] repos);
 
-        void repositoryLoadError();
+        void repositoryLoadError(APIError error);
 
     }
 
@@ -466,14 +472,14 @@ public class Loader extends APIHandler {
 
         void repoLoaded(Repository repo);
 
-        void repoLoadError();
+        void repoLoadError(APIError error);
     }
 
     public interface ReadMeLoader {
 
         void readMeLoaded(String readMe);
 
-        void readmeLoadError();
+        void readmeLoadError(APIError error);
 
     }
 
@@ -481,12 +487,14 @@ public class Loader extends APIHandler {
 
         void projectLoaded(Project project);
 
-        void projectLoadError();
+        void projectLoadError(APIError error);
     }
 
     public interface ProjectsLoader {
 
         void projectsLoaded(Project[] projects);
+
+        void projectsLoadError(APIError error);
 
     }
 
@@ -494,7 +502,7 @@ public class Loader extends APIHandler {
 
         void columnsLoaded(Column[] columns);
 
-        void columnsLoadError();
+        void columnsLoadError(APIError error);
 
     }
 
@@ -502,7 +510,7 @@ public class Loader extends APIHandler {
 
         void cardsLoaded(Card[] cards);
 
-        void cardsLoadError();
+        void cardsLoadError(APIError error);
 
     }
 
@@ -510,7 +518,7 @@ public class Loader extends APIHandler {
 
         void collaboratorsLoaded(User[] collaborators);
 
-        void collaboratorsLoadError();
+        void collaboratorsLoadError(APIError error);
 
     }
 
@@ -518,7 +526,7 @@ public class Loader extends APIHandler {
 
         void labelsLoaded(Label[] labels);
 
-        void labelLoadError();
+        void labelLoadError(APIError error);
 
     }
 
@@ -526,7 +534,7 @@ public class Loader extends APIHandler {
 
         void issueLoaded(Issue issue);
 
-        void issueLoadError();
+        void issueLoadError(APIError error);
 
     }
 
@@ -534,7 +542,7 @@ public class Loader extends APIHandler {
 
         void issuesLoaded(Issue[] issues);
 
-        void issuesLoadError();
+        void issuesLoadError(APIError error);
 
     }
 
@@ -542,7 +550,7 @@ public class Loader extends APIHandler {
 
         void accessCheckComplete(Repository.AccessLevel accessLevel);
 
-        void accessCheckError();
+        void accessCheckError(APIError error);
 
     }
 

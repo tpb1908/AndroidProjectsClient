@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
@@ -264,7 +265,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     @Override
-    public void cardsLoadError() {
+    public void cardsLoadError(APIHandler.APIError error) {
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);

@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
@@ -225,7 +226,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
             }
 
             @Override
-            public void collaboratorsLoadError() {
+            public void collaboratorsLoadError(APIHandler.APIError error) {
 
             }
         }, repoFullName);
@@ -280,7 +281,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
             }
 
             @Override
-            public void labelLoadError() {
+            public void labelLoadError(APIHandler.APIError error) {
 
             }
         }, repoFullName);

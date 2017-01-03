@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
@@ -128,6 +129,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();
         mRecycler.enableAnimation();
+    }
+
+    @Override
+    public void projectsLoadError(APIHandler.APIError error) {
+
     }
 
     void clearProjects() {

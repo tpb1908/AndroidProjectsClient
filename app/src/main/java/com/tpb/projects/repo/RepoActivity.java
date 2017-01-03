@@ -44,6 +44,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
@@ -316,7 +317,7 @@ public class RepoActivity extends AppCompatActivity implements
                 }
 
                 @Override
-                public void accessCheckError() {
+                public void accessCheckError(APIHandler.APIError error) {
                     mAccessLevel = Repository.AccessLevel.NONE;
                 }
             }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
@@ -324,7 +325,7 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void repoLoadError() {
+    public void repoLoadError(APIHandler.APIError error) {
 
     }
 
@@ -339,6 +340,11 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void projectsLoadError(APIHandler.APIError error) {
+
+    }
+
+    @Override
     public void readMeLoaded(String readMe) {
         Log.i(TAG, "readMeLoaded: ");
         mReadmeButton.setVisibility(View.VISIBLE);
@@ -349,7 +355,7 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void readmeLoadError() {
+    public void readmeLoadError(APIHandler.APIError error) {
 
     }
 

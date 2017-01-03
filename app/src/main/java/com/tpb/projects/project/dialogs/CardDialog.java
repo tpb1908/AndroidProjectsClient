@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
@@ -115,7 +116,7 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
                     }
 
                     @Override
-                    public void issuesLoadError() {
+                    public void issuesLoadError(APIHandler.APIError error) {
                         pd.dismiss();
                     }
                 }, fullRepoName);

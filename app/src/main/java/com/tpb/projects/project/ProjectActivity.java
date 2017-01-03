@@ -50,6 +50,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
@@ -127,16 +128,24 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
             //We have to load all of the projects to get the id that we want
-            mLoader.loadProjects(projects -> {
-                for(Project p : projects) {
-                    if(number == p.getNumber()) {
-                        projectLoaded(p);
-                        checkAccess(p);
-                        return;
+            mLoader.loadProjects(new Loader.ProjectsLoader() {
+                @Override
+                public void projectsLoaded(Project[] projects) {
+                    for(Project p : projects) {
+                        if(number == p.getNumber()) {
+                            projectLoaded(p);
+                            checkAccess(p);
+                            return;
+                        }
                     }
+                    Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
+                    finish();
                 }
-                Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
-                finish();
+
+                @Override
+                public void projectsLoadError(APIHandler.APIError error) {
+
+                }
             }, repo);
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -192,7 +201,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void accessCheckError() {
+            public void accessCheckError(APIHandler.APIError error) {
 
             }
         }, GitHubSession.getSession(this).getUserLogin(), project.getRepoFullName());
@@ -259,7 +268,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void columnsLoadError() {
+            public void columnsLoadError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
@@ -268,7 +277,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     @Override
-    public void projectLoadError() {
+    public void projectLoadError(APIHandler.APIError error) {
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
