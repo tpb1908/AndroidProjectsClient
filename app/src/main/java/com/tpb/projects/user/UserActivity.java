@@ -17,6 +17,7 @@
 
 package com.tpb.projects.user;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -251,8 +252,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             }
 
         });
-
-        builder.create().show();
+        final Dialog dialog = builder.create();
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
     }
 
     @Override

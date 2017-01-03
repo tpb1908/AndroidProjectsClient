@@ -17,6 +17,7 @@
 
 package com.tpb.projects.repo;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -199,7 +200,7 @@ public class RepoActivity extends AppCompatActivity implements
     @Override
     public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
         Log.i(TAG, "deleteProject: Deleting project");
-        new AlertDialog.Builder(this)
+        final Dialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.text_delete_project)
                 .setMessage(R.string.text_delete_project_warning)
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Editor(RepoActivity.this).deleteProject(new Editor.ProjectDeletionListener() {
@@ -220,8 +221,9 @@ public class RepoActivity extends AppCompatActivity implements
                 }, project))
                 .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
 
-                }).show();
-
+                }).create();
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
     }
 
     @Override

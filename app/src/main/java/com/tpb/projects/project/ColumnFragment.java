@@ -17,6 +17,7 @@
 
 package com.tpb.projects.project;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -425,8 +426,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     });
                     builder.setNeutralButton(R.string.action_cancel, null);
                     builder.setNegativeButton(R.string.action_no, (dialogInterface, i) -> mParent.deleteCard(card, false));
-                    builder.show();
-
+                    final Dialog deleteDialog = builder.create();
+                    deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                    deleteDialog.show();
                     break;
                 case 1:
                     toggleIssueState(card);

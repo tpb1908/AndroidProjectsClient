@@ -205,8 +205,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else {
             bindStandardCard(holder, card);
         }
-
-
     }
 
     private void bindStandardCard(CardHolder holder, Card card) {

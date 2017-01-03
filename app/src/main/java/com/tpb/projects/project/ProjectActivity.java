@@ -17,6 +17,7 @@
 
 package com.tpb.projects.project;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -287,6 +288,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_ok), (di, w) -> {
         }); //Null is ambiguous so we pass empty lambda
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             final EditText editor = (EditText) dialog.findViewById(R.id.project_new_column);
@@ -357,7 +359,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     void deleteColumn(Column column) {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.DialogAnimation)
                 .setTitle(R.string.title_delete_column)
                 .setMessage(R.string.text_delete_column_warning)
                 .setNegativeButton(R.string.action_cancel, null)
@@ -386,6 +388,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
                     }, column.getId());
                 }).show();
+
     }
 
     /**
@@ -454,14 +457,16 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
         };
         if(showWarning) {
-            new AlertDialog.Builder(this)
+            final Dialog dialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.title_delete_card)
                     .setMessage(R.string.text_delete_note_warning)
                     .setNegativeButton(R.string.action_cancel, null)
                     .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                         mRefresher.setRefreshing(true);
                         mEditor.deleteCard(listener, card);
-                    }).show();
+                    }).create();
+            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            dialog.show();
         } else {
             mRefresher.setRefreshing(true);
             mEditor.deleteCard(listener, card);
