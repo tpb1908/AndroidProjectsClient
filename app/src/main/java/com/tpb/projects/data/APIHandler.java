@@ -19,6 +19,7 @@ package com.tpb.projects.data;
 
 import android.content.Context;
 
+import com.androidnetworking.error.ANError;
 import com.tpb.projects.data.auth.GitHubSession;
 
 import java.util.HashMap;
@@ -91,13 +92,15 @@ public abstract class APIHandler {
     public static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded. Please try again later.";
 
     /*
-    Unauthenticated requests have a 5000/h limit
-    Authenticated requests have a higher but unknown limit
+    Unauthenticated requests have a 60/h limit which is unusable for the app
+    Authenticated requests have a 5000/h limit
      */
     public static final String KEY_HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset";
     public static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
     public static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
     public static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
+    
+    public static final int HTTP_NOT_FOUND_404 = 404;
 
     public static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
 
@@ -146,9 +149,35 @@ public abstract class APIHandler {
 
     //1900 network https://github.com/GleSYS/API/wiki/API-Error-codes#19xx---network
 
+    static APIError parseError(ANError error) {
+        switch(error.getErrorCode()) {
+            case HTTP_BAD_REQUEST_400: return APIError.BAD_REQUEST;
+            case HTTP_UNAUTHORIZED_401:
+                if(error.getErrorBody() != null) {
+                    if(error.getErrorBody().contains(MESSAGE_BAD_CREDENTIALS)) return APIError.BAD_CREDENTIALS;
+                    if(error.getErrorBody().contains(MESSAGE_MAX_LOGIN_ATTEMPTS)) return APIError.MAX_LOGIN_ATTEMPTS;
+                }
+                return APIError.UNAUTHORIZED;
+            case HTTP_FORBIDDEN_403:
+                if(error.getErrorBody() != null) {
+                    if(error.getErrorBody().contains(MESSAGE_RATE_LIMIT_START)) return APIError.RATE_LIMIT;
+                    if(error.getErrorBody().contains(MESSAGE_ABUSE_LIMIT)) return APIError.ABUSE_LIMIT;
+                }
+                return APIError.FORBIDDEN;
+            case HTTP_NOT_ALLOWED_405: return APIError.NOT_ALLOWED;
+            case HTTP_NOT_FOUND_404: return APIError.NOT_FOUND;
+            case HTTP_UNPROCESSABLE_422: return APIError.UNPROCESSABLE;
+        }
+
+        return APIError.UNKNOWN;
+    }
+
     public enum APIError {
 
-        UNAUTHORIZED, FORBIDDEN,  NOT_FOUND, UNKNOWN
+        UNAUTHORIZED, FORBIDDEN,  NOT_FOUND,
+        UNKNOWN, RATE_LIMIT, ABUSE_LIMIT,
+        MAX_LOGIN_ATTEMPTS, UNPROCESSABLE, BAD_CREDENTIALS,
+        NOT_ALLOWED, BAD_REQUEST
 
     }
 
