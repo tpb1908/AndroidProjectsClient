@@ -222,7 +222,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     private void resetLastUpdate() {
-        mColumn.setUpdatedAt(System.currentTimeMillis() / 1000);
+        mColumn.setUpdatedAt(System.currentTimeMillis());
         displayLastUpdate();
     }
 
