@@ -124,11 +124,11 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/user_open_user_fab"
+        android:id="@+id/user_open_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_account_search"
+        android:src="@drawable/ic_search"
         android:visibility="invisible"
         app:layout_anchor="@id/repos_refresher"
         app:layout_anchorGravity="bottom|right|end"/>

@@ -37,6 +37,7 @@
     <string name="error_issue_already_in_project">This issue already has a card in the project</string>
     <string name="error_user_not_found">User not found</string>
     <string name="error_project_not_found">Project not found</string>
+    <string name="error_repo_not_found">Repository not found</string>
 
     <string name="text_zero_value">0</string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
@@ -109,7 +110,7 @@
     <string name="hint_choose_labels">Labels</string>
     <string name="hint_from_issue">From issue</string>
     <string name="hint_shortcut_name">Name</string>
-    <string name="hint_username">Username</string>
+    <string name="hint_user_or_repo">Username or user/repo</string>
     <string name="hint_comment_new">You can add a comment</string>
 
     <string name="settings_dark_theme">Dark theme</string>
@@ -142,7 +143,7 @@
     <string name="title_save_user_shortcut">Save user</string>
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
-    <string name="title_open_user">Open user</string>
+    <string name="title_open_user_or_repo">Open user or repo</string>
     <string name="title_new_comment">New comment</string>
 
     <string name="menu_copy_card">Copy card note</string>

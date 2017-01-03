@@ -116,7 +116,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(mAdapter);
 
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_user_fab);
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
             ((NestedScrollView) findViewById(R.id.user_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -127,7 +127,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
                 }
             });
-            fab.setOnClickListener(view -> showOpenUserDialog());
+            fab.setOnClickListener(view -> showOpenDialog());
             fab.postDelayed(fab::show, 300);
 
             final String user;
@@ -203,12 +203,12 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         mAnalytics.logEvent(Analytics.TAG_OPEN_REPO, null);
     }
 
-    private void showOpenUserDialog() {
+    private void showOpenDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.title_open_user);
+        builder.setTitle(R.string.title_open_user_or_repo);
         final EditText input = new EditText(this);
         input.setSingleLine();
-        input.setHint(R.string.hint_username);
+        input.setHint(R.string.hint_user_or_repo);
         final FrameLayout container = new FrameLayout(this);
         final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.leftMargin = UI.pxFromDp(16);
@@ -218,21 +218,40 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         builder.setView(container);
 
         builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
-        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Loader(UserActivity.this).loadUser(new Loader.UserLoader() {
-            @Override
-            public void userLoaded(User user) {
-                final Intent u = new Intent(UserActivity.this, UserActivity.class);
-                u.putExtra(getString(R.string.intent_username), user.getLogin());
-                startActivity(u);
-                overridePendingTransition(R.anim.slide_up, R.anim.none);
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) ->{
+            if(input.getText().toString().contains("/")) {
+                new Loader(UserActivity.this).loadRepository(new Loader.RepositoryLoader() {
+                    @Override
+                    public void repoLoaded(Repository repo) {
+                        final Intent r = new Intent(UserActivity.this, RepoActivity.class);
+                        r.putExtra(getString(R.string.intent_repo), repo.getFullName());
+                        startActivity(r);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                    }
 
+                    @Override
+                    public void repoLoadError() {
+                        Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
+                    }
+                }, input.getText().toString());
+            } else {
+                new Loader(UserActivity.this).loadUser(new Loader.UserLoader() {
+                    @Override
+                    public void userLoaded(User user) {
+                        final Intent u = new Intent(UserActivity.this, UserActivity.class);
+                        u.putExtra(getString(R.string.intent_username), user.getLogin());
+                        startActivity(u);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                    }
+
+                    @Override
+                    public void userLoadError() {
+                        Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
+                    }
+                }, input.getText().toString());
             }
 
-            @Override
-            public void userLoadError() {
-                Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
-            }
-        }, input.getText().toString()));
+        });
 
         builder.create().show();
     }
