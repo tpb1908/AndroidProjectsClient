@@ -212,8 +212,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else if(card.hasIssue()){
 
             final StringBuilder builder = new StringBuilder();
+            builder.append("<b>");
             builder.append(card.getIssue().getTitle());
-            builder.append("<br><br>");
+            builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
                 builder.append(formatMD(card.getIssue().getBody()));
                 builder.append("<br>");
