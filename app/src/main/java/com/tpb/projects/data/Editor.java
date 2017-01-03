@@ -26,6 +26,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 
@@ -67,6 +68,7 @@ public class Editor extends APIHandler {
     private static final String SEGMENT_MOVES = "/moves";
     private static final String SEGMENT_CARDS = "/cards";
     private static final String SEGMENT_ISSUES = "/issues";
+    private static final String SEGMENT_COMMENTS = "/comments";
 
     public Editor(Context context) {
         super(context);
@@ -510,6 +512,32 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void createComment(CommentCreationListener listener, String fullRepoPath, int issueNumber, String body) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(BODY, body);
+        } catch(JSONException jse) {
+            Log.e(TAG, "createComment: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Comment created: " + response.toString());
+                        if(listener != null) listener.commentCreated(Comment.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Comment not created: " + anError.getErrorBody());
+                        if(listener != null) listener.commentCreationError();
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -620,4 +648,11 @@ public class Editor extends APIHandler {
         void issueEditError();
     }
 
+    public interface CommentCreationListener {
+
+        void commentCreated(Comment comment);
+
+        void commentCreationError();
+
+    }
 }

@@ -82,7 +82,7 @@ public class Comment extends DataModel implements Parcelable {
         return updatedAt;
     }
 
-    public Comment parse(JSONObject obj) {
+    public static Comment parse(JSONObject obj) {
         final Comment c = new Comment();
         try {
             c.id = obj.getInt(ID);

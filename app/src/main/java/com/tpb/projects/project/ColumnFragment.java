@@ -47,11 +47,13 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.dialogs.CardDialog;
 import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.FullScreenDialog;
+import com.tpb.projects.project.dialogs.NewCommentDialog;
 import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -427,33 +429,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
                     break;
                 case 1:
-                    final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
-                        @Override
-                        public void issueStateChanged(Issue issue) {
-                            card.setFromIssue(issue);
-                            mAdapter.updateCard(card);
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
-                        }
-
-                        @Override
-                        public void issueStateChangeError() {
-                            mAdapter.updateCard(card);
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                        }
-                    };
-                    if(card.getIssue().isClosed()) {
-                        Log.i(TAG, "openMenu: Closing issue");
-                        mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
-                        resetLastUpdate();
-                    } else {
-                        Log.i(TAG, "openMenu: Opening issue");
-                        mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
-                        resetLastUpdate();
-                    }
+                    toggleIssueState(card);
+                    break;
             }
 
             return true;
@@ -466,6 +443,68 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
 
         popup.show();
+    }
+
+    private void toggleIssueState(Card card) {
+        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+            @Override
+            public void issueStateChanged(Issue issue) {
+                card.setFromIssue(issue);
+                mAdapter.updateCard(card);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+            }
+
+            @Override
+            public void issueStateChangeError() {
+                mAdapter.updateCard(card);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+            }
+        };
+
+        final NewCommentDialog dialog = new NewCommentDialog();
+        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+            @Override
+            public void commentCreated(String body) {
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        if(card.getIssue().isClosed()) {
+                            Log.i(TAG, "openMenu: Closing issue");
+                            mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            resetLastUpdate();
+                        } else {
+                            Log.i(TAG, "openMenu: Opening issue");
+                            mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            resetLastUpdate();
+                        }
+                    }
+
+                    @Override
+                    public void commentCreationError() {
+
+                    }
+                }, mParent.mProject.getRepoFullName(), card.getIssue().getNumber(), body);
+
+            }
+
+            @Override
+            public void commentNotCreated() {
+                if(card.getIssue().isClosed()) {
+                    Log.i(TAG, "openMenu: Closing issue");
+                    mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    resetLastUpdate();
+                } else {
+                    Log.i(TAG, "openMenu: Opening issue");
+                    mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    resetLastUpdate();
+                }
+            }
+        });
+        dialog.show(getFragmentManager(), TAG);
     }
 
     private void editIssue(Card card) {

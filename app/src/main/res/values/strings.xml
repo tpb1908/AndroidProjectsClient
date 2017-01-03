@@ -110,6 +110,7 @@
     <string name="hint_from_issue">From issue</string>
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_username">Username</string>
+    <string name="hint_comment_new">You can add a comment</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -142,6 +143,7 @@
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
     <string name="title_open_user">Open user</string>
+    <string name="title_new_comment">New comment</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

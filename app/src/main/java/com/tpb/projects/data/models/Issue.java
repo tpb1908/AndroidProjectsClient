@@ -167,7 +167,6 @@ public class Issue extends DataModel implements Parcelable {
                 i.assignees = new User[] {User.parse(obj.getJSONObject(ASSIGNEE))};
             }
             if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
-                Log.i(TAG, "parse: Issue: " + obj.toString());
                 final JSONArray as = obj.getJSONArray(ASSIGNEES);
                 i.assignees = new User[as.length()];
                 for(int j = 0; j < as.length(); j++) {
