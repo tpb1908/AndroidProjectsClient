@@ -153,10 +153,10 @@ public class Issue extends DataModel implements Parcelable {
             if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                    i.closed = true;
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
-                i.closed = true;
             }
             try {
                 i.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();

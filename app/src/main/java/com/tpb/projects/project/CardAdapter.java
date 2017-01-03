@@ -243,7 +243,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }
 
-            if(card.getIssue().getClosedBy() != null) {
+            if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
                 builder.append("<br>");
                 builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
                         card.getIssue().getClosedBy().getLogin(),
