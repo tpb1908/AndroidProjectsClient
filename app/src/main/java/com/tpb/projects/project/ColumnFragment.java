@@ -162,7 +162,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         }
 
                         @Override
-                        public void columnNameChangeError() {
+                        public void columnNameChangeError(APIHandler.APIError error) {
                             Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
                             mName.setText(mColumn.getName());
                             final Bundle bundle = new Bundle();
@@ -291,7 +291,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
-            public void cardCreationError() {
+            public void cardCreationError(APIHandler.APIError error) {
                 mParent.mRefresher.setRefreshing(false);
             }
         }, mColumn.getId(), card.getNote());
@@ -318,7 +318,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         }
 
                         @Override
-                        public void cardCreationError() {
+                        public void cardCreationError(APIHandler.APIError error) {
                             mParent.mRefresher.setRefreshing(false);
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -338,7 +338,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         }
 
                         @Override
-                        public void cardUpdateError() {
+                        public void cardUpdateError(APIHandler.APIError error) {
                             mParent.mRefresher.setRefreshing(false);
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -460,7 +460,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
-            public void issueStateChangeError() {
+            public void issueStateChangeError(APIHandler.APIError error) {
                 mAdapter.updateCard(card);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -487,7 +487,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     }
 
                     @Override
-                    public void commentCreationError() {
+                    public void commentCreationError(APIHandler.APIError error) {
 
                     }
                 }, mParent.mProject.getRepoFullName(), card.getIssue().getNumber(), body);
@@ -529,7 +529,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     }
 
                     @Override
-                    public void issueEditError() {
+                    public void issueEditError(APIHandler.APIError error) {
                         mParent.mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -562,7 +562,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
-            public void cardDeletionError() {
+            public void cardDeletionError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_CARD_DELETION, bundle);
@@ -594,7 +594,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
-            public void cardCreationError() {
+            public void cardCreationError(APIHandler.APIError error) {
                 mParent.mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);

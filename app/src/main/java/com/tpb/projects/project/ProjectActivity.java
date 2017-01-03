@@ -323,7 +323,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
 
                     @Override
-                    public void columnAdditionError() {
+                    public void columnAdditionError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
@@ -390,7 +390,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
 
                         @Override
-                        public void columnDeletionError() {
+                        public void columnDeletionError(APIHandler.APIError error) {
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                             mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
@@ -425,7 +425,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void columnMovementError() {
+            public void columnMovementError(APIHandler.APIError error) {
 
             }
         }, tag, dropTag, to);
@@ -461,7 +461,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void cardDeletionError() {
+            public void cardDeletionError(APIHandler.APIError error) {
 
             }
         };

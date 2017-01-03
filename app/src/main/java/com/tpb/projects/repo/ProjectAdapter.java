@@ -77,7 +77,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     }
 
                     @Override
-                    public void projectDeletionError() {
+                    public void projectDeletionError(APIHandler.APIError error) {
 
                     }
                 });

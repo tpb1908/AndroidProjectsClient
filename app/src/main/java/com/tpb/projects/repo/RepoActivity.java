@@ -214,7 +214,7 @@ public class RepoActivity extends AppCompatActivity implements
                     }
 
                     @Override
-                    public void projectDeletionError() {
+                    public void projectDeletionError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
@@ -244,7 +244,7 @@ public class RepoActivity extends AppCompatActivity implements
                 }
 
                 @Override
-                public void projectEditError() {
+                public void projectEditError(APIHandler.APIError error) {
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                     mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
@@ -270,7 +270,7 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void projectCreationError() {
+    public void projectCreationError(APIHandler.APIError error) {
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);

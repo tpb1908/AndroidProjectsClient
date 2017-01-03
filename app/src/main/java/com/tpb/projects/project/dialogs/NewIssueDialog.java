@@ -164,7 +164,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
                              }
 
                              @Override
-                             public void issueCreationError() {
+                             public void issueCreationError(APIHandler.APIError error) {
 
                              }
                          },

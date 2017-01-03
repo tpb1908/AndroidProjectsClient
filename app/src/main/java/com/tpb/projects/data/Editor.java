@@ -91,7 +91,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.projectCreationError();
+                        if(listener != null) listener.projectCreationError(parseError(anError));
                     }
                 });
     }
@@ -119,7 +119,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.projectEditError();
+                        if(listener != null) listener.projectEditError(parseError(anError));
                     }
                 });
     }
@@ -135,7 +135,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
-                        listener.projectDeletionError();
+                        listener.projectDeletionError(APIError.UNKNOWN);
                     }
 
                     @Override
@@ -144,8 +144,8 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                         if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
                             listener.projectDeleted(project);
-                        } else {
-                            listener.projectDeletionError();
+                        } else if(listener != null){
+                            listener.projectDeletionError(parseError(anError));
                         }
                     }
                 });
@@ -169,11 +169,13 @@ public class Editor extends APIHandler {
                     public void onResponse(JSONObject response) {
                         //TODO Use the listener
                         Log.i(TAG, "onResponse: Column update: " + response.toString());
+                        if(listener != null) listener.columnNameChanged(Column.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Column update: " + anError.getErrorBody());
+                        if(listener != null) listener.columnNameChangeError(parseError(anError));
                     }
                 });
     }
@@ -199,7 +201,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.columnAdditionError();
+                        if(listener != null) listener.columnAdditionError(parseError(anError));
                     }
                 });
     }
@@ -229,7 +231,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Column not moved: " + anError.getErrorBody());
-                        if(listener != null) listener.columnMovementError();
+                        if(listener != null) listener.columnMovementError(parseError(anError));
                     }
                 });
     }
@@ -242,14 +244,20 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Column delete: " + response.toString());
-                        if(listener != null) listener.columnDeletionError();
+                        if(listener != null) listener.columnDeletionError(APIError.UNKNOWN);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Column delete: " + anError.getErrorBody());
                         Log.i(TAG, "onError: Column delete: " + anError.getErrorCode());
-                        if(listener != null) listener.columnDeleted();
+                        if(listener != null) {
+                            if(anError.getErrorCode() == 0) {
+                                listener.columnDeleted();
+                            } else {
+                                listener.columnDeletionError(parseError(anError));
+                            }
+                        }
                     }
                 });
     }
@@ -282,7 +290,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card: " + anError.getErrorBody());
-                        if(listener != null) listener.cardCreationError();
+                        if(listener != null) listener.cardCreationError(parseError(anError));
                     }
                 });
     }
@@ -309,7 +317,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card: " + anError.getErrorBody());
-                        if(listener != null) listener.cardCreationError();
+                        if(listener != null) listener.cardCreationError(parseError(anError));
                     }
                 });
     }
@@ -335,7 +343,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card update: " + anError.getErrorBody());
-                        if(listener != null) listener.cardUpdateError();
+                        if(listener != null) listener.cardUpdateError(parseError(anError));
                     }
                 });
     }
@@ -360,14 +368,14 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //TODO Use listener
                         Log.i(TAG, "onResponse: Card moved " + response.toString());
-
+                        if(listener != null) listener.cardMoved(cardId);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card move error " + anError.getErrorBody());
+                        if(listener != null) listener.cardMovementError(parseError(anError));
                     }
                 });
     }
@@ -380,13 +388,15 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card deleted: " + response.toString());
-                        if(listener != null) listener.cardDeletionError();
+                        if(listener != null) listener.cardDeletionError(APIError.UNKNOWN);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         if(anError.getErrorCode() == 0 && listener != null) {
                             listener.cardDeleted(card);
+                        } else if(listener != null){
+                            listener.cardDeletionError(parseError(anError));
                         }
                         Log.i(TAG, "onError: Card deleted: " + anError.getErrorBody());
                         Log.i(TAG, "onError: Card deleted: " + anError.getErrorCode());
@@ -419,7 +429,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue not created " + anError.getErrorBody());
-                        if(listener != null) listener.issueCreationError();
+                        if(listener != null) listener.issueCreationError(parseError(anError));
                     }
                 });
     }
@@ -445,7 +455,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue close error " + anError.getErrorBody());
-                        if(listener != null) listener.issueStateChangeError();
+                        if(listener != null) listener.issueStateChangeError(parseError(anError));
                     }
                 });
     }
@@ -471,7 +481,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue open error " + anError.getErrorBody());
-                        if(listener != null) listener.issueStateChangeError();
+                        if(listener != null) listener.issueStateChangeError(parseError(anError));
                     }
                 });
     }
@@ -500,7 +510,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue not edited");
-                        if(listener != null) listener.issueEditError();
+                        if(listener != null) listener.issueEditError(parseError(anError));
                     }
                 });
     }
@@ -526,7 +536,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Comment not created: " + anError.getErrorBody());
-                        if(listener != null) listener.commentCreationError();
+                        if(listener != null) listener.commentCreationError(parseError(anError));
                     }
                 });
     }
@@ -535,7 +545,7 @@ public class Editor extends APIHandler {
 
         void projectCreated(Project project);
 
-        void projectCreationError();
+        void projectCreationError(APIError error);
 
     }
 
@@ -543,7 +553,7 @@ public class Editor extends APIHandler {
 
         void projectEdited(Project project);
 
-        void projectEditError();
+        void projectEditError(APIError error);
 
     }
 
@@ -551,7 +561,7 @@ public class Editor extends APIHandler {
 
         void projectDeleted(Project project);
 
-        void projectDeletionError();
+        void projectDeletionError(APIError error);
 
     }
 
@@ -559,7 +569,7 @@ public class Editor extends APIHandler {
 
         void columnNameChanged(Column column);
 
-        void columnNameChangeError();
+        void columnNameChangeError(APIError error);
 
     }
 
@@ -567,7 +577,7 @@ public class Editor extends APIHandler {
 
         void columnAdded(Column column);
 
-        void columnAdditionError();
+        void columnAdditionError(APIError error);
 
     }
 
@@ -575,7 +585,7 @@ public class Editor extends APIHandler {
 
         void columnDeleted();
 
-        void columnDeletionError();
+        void columnDeletionError(APIError error);
 
     }
 
@@ -583,14 +593,14 @@ public class Editor extends APIHandler {
 
         void columnMoved(int columnId);
 
-        void columnMovementError();
+        void columnMovementError(APIError error);
     }
 
     public interface CardCreationListener {
 
         void cardCreated(int columnId, Card card);
 
-        void cardCreationError();
+        void cardCreationError(APIError error);
 
     }
 
@@ -598,7 +608,7 @@ public class Editor extends APIHandler {
 
         void cardUpdated(Card card);
 
-        void cardUpdateError();
+        void cardUpdateError(APIError error);
 
     }
 
@@ -606,7 +616,7 @@ public class Editor extends APIHandler {
 
         void cardMoved(int cardId);
 
-        void cardMovementError();
+        void cardMovementError(APIError error);
 
     }
 
@@ -614,7 +624,7 @@ public class Editor extends APIHandler {
 
         void cardDeleted(Card card);
 
-        void cardDeletionError();
+        void cardDeletionError(APIError error);
 
     }
 
@@ -622,7 +632,7 @@ public class Editor extends APIHandler {
 
         void issueCreated(Issue issue);
 
-        void issueCreationError();
+        void issueCreationError(APIError error);
 
     }
 
@@ -630,7 +640,7 @@ public class Editor extends APIHandler {
 
         void issueStateChanged(Issue issue);
 
-        void issueStateChangeError();
+        void issueStateChangeError(APIError error);
 
     }
 
@@ -638,14 +648,14 @@ public class Editor extends APIHandler {
 
         void issueEdited(Issue issue);
 
-        void issueEditError();
+        void issueEditError(APIError error);
     }
 
     public interface CommentCreationListener {
 
         void commentCreated(Comment comment);
 
-        void commentCreationError();
+        void commentCreationError(APIError error);
 
     }
 }
