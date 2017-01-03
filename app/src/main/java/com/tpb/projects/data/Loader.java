@@ -49,18 +49,6 @@ import java.util.Arrays;
 public class Loader extends APIHandler {
     private static final String TAG = Loader.class.getSimpleName();
 
-    private static final String SEGMENT_USER = "/user";
-    private static final String SEGMENT_USERS = "/users";
-    private static final String SEGMENT_REPOS = "/repos";
-    private static final String SEGMENT_README = "/readme";
-    private static final String SEGMENT_COLLABORATORS = "/collaborators";
-    private static final String SEGMENT_LABELS = "/labels";
-    private static final String SEGMENT_PROJECTS = "/projects";
-    private static final String SEGMENT_COLUMNS = "/columns";
-    private static final String SEGMENT_ISSUES = "/issues";
-    private static final String SEGMENT_PERMISSION = "/permission";
-    private static final String SEGMENT_CARDS = "/cards";
-
     private static final String PERMISSION = "permission";
     private static final String PERMISSION_NONE = "none";
     private static final String PERMISSION_ADMIN = "admin";

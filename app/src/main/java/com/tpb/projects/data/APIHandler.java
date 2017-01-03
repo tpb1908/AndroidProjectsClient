@@ -43,6 +43,20 @@ public abstract class APIHandler {
     static HashMap<String, String> PROJECTS_PREVIEW_API_AUTH_HEADERS = new HashMap<>();
     static HashMap<String, String> ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS = new HashMap<>();
 
+    static final String SEGMENT_USER = "/user";
+    static final String SEGMENT_USERS = "/users";
+    static final String SEGMENT_REPOS = "/repos";
+    static final String SEGMENT_README = "/readme";
+    static final String SEGMENT_COLLABORATORS = "/collaborators";
+    static final String SEGMENT_LABELS = "/labels";
+    static final String SEGMENT_PROJECTS = "/projects";
+    static final String SEGMENT_COLUMNS = "/columns";
+    static final String SEGMENT_ISSUES = "/issues";
+    static final String SEGMENT_PERMISSION = "/permission";
+    static final String SEGMENT_CARDS = "/cards";
+    static final String SEGMENT_MOVES = "/moves";
+    static final String SEGMENT_COMMENTS = "/comments";
+
 
     protected APIHandler(Context context) {
         if(mSession == null) {

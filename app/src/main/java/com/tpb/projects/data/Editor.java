@@ -62,13 +62,6 @@ public class Editor extends APIHandler {
     private static final String POSITION_TOP = "top";
     private static final String COLUMN_ID = "column_id";
 
-    private static final String SEGMENT_REPOS = "/repos";
-    private static final String SEGMENT_PROJECTS = "/projects";
-    private static final String SEGMENT_COLUMNS = "/columns";
-    private static final String SEGMENT_MOVES = "/moves";
-    private static final String SEGMENT_CARDS = "/cards";
-    private static final String SEGMENT_ISSUES = "/issues";
-    private static final String SEGMENT_COMMENTS = "/comments";
 
     public Editor(Context context) {
         super(context);
