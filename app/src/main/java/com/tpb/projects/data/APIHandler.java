@@ -122,4 +122,10 @@ public abstract class APIHandler {
 
     //1900 network https://github.com/GleSYS/API/wiki/API-Error-codes#19xx---network
 
+    public enum APIError {
+
+        UNAUTHORIZED, FORBIDDEN,  NOT_FOUND, UNKNOWN
+
+    }
+
 }

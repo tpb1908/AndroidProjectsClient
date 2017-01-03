@@ -67,7 +67,7 @@ public class Editor extends APIHandler {
         super(context);
     }
 
-    public void createProject(final ProjectCreationListener listener, Project project, String fullRepoName) {
+    public void createProject(final ProjectCreationListener listener, Project project, String repoFullName) {
         Log.i(TAG, "createProject: Project " + project.toString());
         JSONObject obj = new JSONObject();
         //Unsure why GitHub can't parse the JSON if I add these as body parameters
@@ -77,7 +77,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE +  SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PROJECTS)
+        AndroidNetworking.post(GIT_BASE +  SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -394,7 +394,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createIssue(IssueCreationListener listener, String fullRepoName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void createIssue(IssueCreationListener listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -405,7 +405,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createIssue: ", jse);
         }
         Log.i(TAG, "createIssue: " + obj.toString());
-        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
+        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()

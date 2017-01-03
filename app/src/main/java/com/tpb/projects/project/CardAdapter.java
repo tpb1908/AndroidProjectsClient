@@ -20,8 +20,6 @@ package com.tpb.projects.project;
 import android.content.ClipData;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -195,7 +193,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
-                    new Handler(Looper.getMainLooper()).post(() -> notifyItemChanged(pos));
+                    notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);

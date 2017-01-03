@@ -134,8 +134,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadRepository(RepositoryLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName)
+    public void loadRepository(RepositoryLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -202,8 +202,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadLabels(LabelsLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_LABELS)
+    public void loadLabels(LabelsLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_LABELS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -326,8 +326,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadIssue(IssueLoader loader, String fullRepoName, int issueNumber) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" +  fullRepoName + SEGMENT_ISSUES + "/" + issueNumber)
+    public void loadIssue(IssueLoader loader, String repoFullName, int issueNumber) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" +  repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -344,8 +344,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadOpenIssues(IssuesLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
+    public void loadOpenIssues(IssuesLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -546,8 +546,5 @@ public class Loader extends APIHandler {
 
     }
 
-    public enum LoadError {
-        NOT_FOUND, AUTHENTICATION_FAILED, UNKNOWN
-    }
 
 }
