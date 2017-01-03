@@ -76,15 +76,39 @@ public abstract class APIHandler {
 
     public static final int HTTP_OK_200 = 200; //OK
 
-    public static final int HTTP_BAD_REQUEST_400 = 400; //Bad request
+    public static final String HTTP_REDIRECT_NEW_LOCATION = "Location";
+    public static final int HTTP_301_REDIRECTED = 301; //Should redirect through the value in location
 
+    public static final int HTTP_302_TEMPORARY_REDIRECT = 302; //Redirect for this request only
+    public static final int HTTP_307_TEMPORARY_REDIRECT = 307; //Same as above
+
+    public static final int HTTP_BAD_REQUEST_400 = 400; //Bad request problems passing JSON
+
+    public static final String KEY_MESSAGE = "message";
+    public static final String MESSAGE_BAD_CREDENTIALS = "Bad credentials";
     public static final int HTTP_UNAUTHORIZED_401 = 401; //Login required, account locked, permission error
 
+    public static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded. Please try again later.";
+
+    /*
+    Unauthenticated requests have a 5000/h limit
+    Authenticated requests have a higher but unknown limit
+     */
+    public static final String KEY_HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset";
+    public static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
+    public static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
     public static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
 
     public static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
 
     public static final int HTTP_419 = 419; //This function can only be executed with an CL-account
+
+    public static final String ERROR_MESSAGE_UNPROCESSABLE = "Validation Failed";
+    public static final String ERROR_MESSAGE_VALIDATION_MISSING = "missing";
+    public static final String ERROR_MESSAGE_VALIDATION_MISSING_FIELD = "missing_field";
+    public static final String ERROR_MESSAGE_VALIDATION_INVALID = "invalid";
+    public static final String ERROR_MESSAGE_VALIDATION_ALREADY_EXISTS = "already_exists";
+    public static final int HTTP_UNPROCESSABLE_422 = 422; // Validation failed
 
     //600 codes are server codes https://github.com/GleSYS/API/wiki/API-Error-codes#6xx---server
 
