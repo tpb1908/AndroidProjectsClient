@@ -284,12 +284,6 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
         }, repoFullName);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-    }
-
     public void setListener(EditIssueDialogListener listener) {
         mListener = listener;
     }

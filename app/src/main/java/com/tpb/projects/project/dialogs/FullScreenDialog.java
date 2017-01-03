@@ -45,12 +45,6 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         final Dialog dialog = getDialog();

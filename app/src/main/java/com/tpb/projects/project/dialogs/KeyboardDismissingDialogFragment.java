@@ -18,8 +18,11 @@
 package com.tpb.projects.project.dialogs;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.inputmethod.InputMethodManager;
+
+import com.tpb.projects.R;
 
 /**
  * Created by theo on 31/12/16.
@@ -46,5 +49,10 @@ public abstract class KeyboardDismissingDialogFragment extends DialogFragment {
         super.dismissAllowingStateLoss();
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+    }
 
 }
