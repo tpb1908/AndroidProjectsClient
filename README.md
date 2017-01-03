@@ -50,6 +50,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Collaborators displayed as links
 * Editing of issue labels (Not available on site)
 * Opening and closing of associated issues (Not available on site)
+* Adding a comment when opening or closing issues
 * Option to close issues when their card is removed (Not available on site)
 * Fullscreen viewer for cards
 * Drag and drop to move cards between columns
