@@ -85,6 +85,4 @@ dependencies {
     compile project(':HtmlTextView')
 }
 
-
-
 apply plugin: 'com.google.gms.google-services'

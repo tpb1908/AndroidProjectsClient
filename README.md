@@ -24,6 +24,10 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [AOSP support library](https://developer.android.com/tools/support-library/features.html)
 
+* [Google Services](https://developers.google.com/android/guides/setup)
+
+* [FireBase core and crash](https://firebase.google.com/docs/android/setup)
+
 
 ### Features
 
