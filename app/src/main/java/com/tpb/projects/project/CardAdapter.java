@@ -161,8 +161,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Card card = mCards.get(pos);
-        holder.mCardView.setAlpha(1.0f);
-        holder.mSpinner.setVisibility(View.INVISIBLE);
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
@@ -180,12 +178,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }
-        if(card.hasIssue()) {
-            holder.mIssueIcon.setVisibility(View.VISIBLE);
-            holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-        } else {
-            holder.mIssueIcon.setVisibility(View.GONE);
-        }
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
@@ -193,6 +185,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
+                    holder.mSpinner.setVisibility(View.INVISIBLE);
                     notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
@@ -207,7 +200,29 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
             }, card.getIssueId());
-        } else if(card.hasIssue()){
+        } else if(card.hasIssue()) {
+            bindIssueCard(holder, card);
+        } else {
+            bindStandardCard(holder, card);
+        }
+
+
+    }
+
+    private void bindStandardCard(CardHolder holder, Card card) {
+        holder.mIssueIcon.setVisibility(View.GONE);
+        holder.mText.setHtml(
+                md.markdownToHtml(
+                        formatMD(card.getNote())
+                ),
+                new HtmlHttpImageGetter(holder.mText)
+        );
+    }
+
+    private void bindIssueCard(CardHolder holder,  Card card) {
+        holder.mIssueIcon.setVisibility(View.VISIBLE);
+        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+
 
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
@@ -259,14 +274,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
             }
             holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
-        } else {
-            holder.mText.setHtml(
-                    md.markdownToHtml(
-                            formatMD(card.getNote())
-                    ),
-                    new HtmlHttpImageGetter(holder.mText)
-            );
-        }
+
     }
 
     private String formatMD(String s) {

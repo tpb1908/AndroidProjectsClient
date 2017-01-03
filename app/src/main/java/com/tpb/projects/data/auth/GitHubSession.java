@@ -35,7 +35,7 @@ public class GitHubSession {
     private SharedPreferences prefs;
 
     private static final String SHARED = "GitHub_Preferences";
-    private static final String API_USERNAME = "username";
+    private static final String API_LOGIN = "username";
     private static final String API_ID = "id";
     private static final String API_ACCESS_TOKEN = "access_token";
 
@@ -48,17 +48,26 @@ public class GitHubSession {
         return session;
     }
 
-    void storeAccessToken(String accessToken, int id, String username) {
-        Log.i(TAG, "Storing token " + accessToken);
+    /**
+     * Stores the credentials for a newly authenticated user
+     * @param accessToken The OAuth token for the authenticated user
+     * @param id The integer id of the authenticated user
+     * @param login The login of the authenticated user
+     */
+    void storeCredentials(String accessToken, int id, String login) {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(API_ID, id);
         editor.putString(API_ACCESS_TOKEN, accessToken);
-        editor.putString(API_USERNAME, username);
+        editor.putString(API_LOGIN, login);
         editor.apply();
     }
 
-    public void updateUserInfo(String username) {
-        prefs.edit().putString(API_USERNAME, username).apply();
+    /**
+     * Updates the login of the authenticated user
+     * @param login The new login for the authenticated user
+     */
+    public void updateUserLogin(String login) {
+        prefs.edit().putString(API_LOGIN, login).apply();
     }
 
     void storeAccessToken(String accessToken) {
@@ -75,26 +84,28 @@ public class GitHubSession {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putString(API_ID, null);
         editor.putString(API_ACCESS_TOKEN, null);
-        editor.putString(API_USERNAME, null);
+        editor.putString(API_LOGIN, null);
         editor.apply();
     }
 
     /**
-     * Get user name
-     *
+     * Get the authenticated user's login
      * @return User name
      */
     public String getUserLogin() {
-        return prefs.getString(API_USERNAME, null);
+        return prefs.getString(API_LOGIN, null);
     }
 
+    /**
+     * Get the authenticated user's id
+     * @return User id
+     */
     public int getUserId() {
         return prefs.getInt(API_ID, -1);
     }
 
     /**
-     * Get access token
-     *
+     * Get the OAuth access token
      * @return Access token
      */
     public String getAccessToken() {

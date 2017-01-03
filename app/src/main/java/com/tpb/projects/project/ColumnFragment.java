@@ -615,7 +615,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void cardClick(Card card) {
-
         final SettingsActivity.Preferences.CardAction action;
         if(mAccessLevel == Repository.AccessLevel.NONE || mAccessLevel == Repository.AccessLevel.READ) {
             action = COPY;

@@ -88,8 +88,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     @BindView(R.id.user_image) ANImageView mUserImage;
     @BindView(R.id.user_name) TextView mUserName;
 
-    private UserReposAdapter mAdapter;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,8 +111,8 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
-            mAdapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
-            mRecycler.setAdapter(mAdapter);
+            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
+            mRecycler.setAdapter(adapter);
 
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
             ((NestedScrollView) findViewById(R.id.user_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -159,7 +157,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
                         mUserImage.setImageUrl(user.getAvatarUrl());
-                        GitHubSession.getSession(UserActivity.this).updateUserInfo(user.getLogin());
+                        GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
                     }
 
                     @Override
@@ -168,6 +166,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
                 });
             }
+
             mUserName.setText(user);
 
             if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
@@ -177,7 +176,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
             }
 
-            mAdapter.loadReposForUser(user);
+            adapter.loadReposForUser(user);
 
             mApp.validateKey(isValid -> {
                 if(!isValid) {
@@ -305,7 +304,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
         }
-
         return true;
     }
 

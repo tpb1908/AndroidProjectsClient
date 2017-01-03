@@ -122,7 +122,7 @@ public class OAuthHandler extends APIHandler {
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
                         final User user = User.parse(response);
-                        mSession.storeAccessToken(mAccessToken, user.getId(), user.getLogin());
+                        mSession.storeCredentials(mAccessToken, user.getId(), user.getLogin());
                         mListener.userLoaded(user);
 
                     }

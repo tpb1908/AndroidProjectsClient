@@ -59,7 +59,7 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
         final boolean isNewCard;
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);
 
-        if(getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) {
+        if(getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) { //We are editing
             card = getArguments().getParcelable(getContext().getString(R.string.parcel_card));
             builder.setTitle(R.string.title_edit_card);
             noteEdit.setText(card.getNote());
@@ -181,7 +181,5 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
         void cardEditCancelled();
 
     }
-
-
 
 }
