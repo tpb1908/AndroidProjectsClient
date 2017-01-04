@@ -188,6 +188,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             holder.mSpinner.setVisibility(View.VISIBLE);
 
             mParent.loadIssue(new Loader.IssueLoader() {
+                int loadCount = 0;
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
@@ -201,10 +202,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
                 @Override
                 public void issueLoadError(APIHandler.APIError error) {
-                    final Bundle bundle = new Bundle();
-                    bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
-                    mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
-                  //  mParent.loadIssue(this, card.getIssueId());
+                    if(error != APIHandler.APIError.NO_CONNECTION) {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
+                        mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
+                        loadCount++;
+                        if(loadCount < 5) {
+                            mParent.loadIssue(this, card.getIssueId());
+                        } //TODO make view tap to try again
+                    }
                 }
             }, card.getIssueId());
         } else if(card.hasIssue()) {
@@ -216,17 +222,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mText.setHtml(renderer.render(parser.parse(formatMD(card.getNote()))),  new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(renderer.render(parser.parse(formatMD(holder, card.getNote()))),  new HtmlHttpImageGetter(holder.mText));
 
-//        holder.mText.setHtml(
-//                md.markdownToHtml(
-//                        formatMD(card.getNote())
-//                ),
-//                new HtmlHttpImageGetter(holder.mText)
-//        );
     }
 
+
     private void bindIssueCard(CardHolder holder,  Card card) {
+
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
 
@@ -235,7 +237,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         builder.append(card.getIssue().getTitle());
         builder.append("</b><br><br>");
         if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-            builder.append(formatMD(card.getIssue().getBody()));
+            builder.append(formatMD(holder, card.getIssue().getBody()));
             builder.append("<br>");
         }
 
@@ -279,12 +281,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append("<br>");
             builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
         }
-        holder.mText.setHtml(renderer.render(parser.parse(formatMD(builder.toString()))),  new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(renderer.render(parser.parse(formatMD(holder, builder.toString()))),  new HtmlHttpImageGetter(holder.mText));
        // holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
 
     }
 
-    private String formatMD(String s) {
+    private String formatMD(CardHolder holder, String s) {
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
@@ -297,6 +299,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
+            } else if(cs[i] == '-' && p == '-' && pp == '-') {
+                //TODO Find out if there is a way of computing characters per line and filling the string
+                //I could try using the strike tag
+                builder.setLength(builder.length()-2);
+
             } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
                 i = parseIssue(builder, cs, i);
             } else {
