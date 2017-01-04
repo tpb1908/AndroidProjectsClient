@@ -182,6 +182,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
+
             mParent.loadIssue(new Loader.IssueLoader() {
                 @Override
                 public void issueLoaded(Issue issue) {
@@ -199,6 +200,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                     mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
+                  //  mParent.loadIssue(this, card.getIssueId());
                 }
             }, card.getIssueId());
         } else if(card.hasIssue()) {

@@ -18,8 +18,10 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.projects.R;
 import com.tpb.projects.data.auth.GitHubSession;
 
 import java.util.HashMap;
@@ -174,10 +176,25 @@ public abstract class APIHandler {
 
     public enum APIError {
 
-        UNAUTHORIZED, FORBIDDEN,  NOT_FOUND,
-        UNKNOWN, RATE_LIMIT, ABUSE_LIMIT,
-        MAX_LOGIN_ATTEMPTS, UNPROCESSABLE, BAD_CREDENTIALS,
-        NOT_ALLOWED, BAD_REQUEST
+        UNAUTHORIZED(R.string.error_unauthorized),
+        FORBIDDEN(R.string.error_forbidden),
+        NOT_FOUND(R.string.error_not_found),
+        UNKNOWN(R.string.error_unknown),
+        RATE_LIMIT(R.string.error_rate_limit),
+        ABUSE_LIMIT(R.string.error_abuse_limit),
+        MAX_LOGIN_ATTEMPTS(R.string.error_max_login_attempts),
+        UNPROCESSABLE(R.string.error_unprocessable),
+        BAD_CREDENTIALS(R.string.error_bad_credentials),
+        NOT_ALLOWED(R.string.error_not_allowed),
+        BAD_REQUEST(R.string.error_bad_request);
+
+        @StringRes
+        private int resId;
+
+        APIError(@StringRes int resId) {
+            this.resId = resId;
+        }
+
 
     }
 

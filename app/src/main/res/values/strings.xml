@@ -39,6 +39,18 @@
     <string name="error_project_not_found">Project not found</string>
     <string name="error_repo_not_found">Repository not found</string>
 
+    <string name="error_unauthorized">Error: Unauthorized</string>
+    <string name="error_forbidden">Error: Forbidden</string>
+    <string name="error_not_found">Error: Not found</string>
+    <string name="error_rate_limit">Error: You have reached the API rate limit. Try again later</string>
+    <string name="error_abuse_limit">Error: GitHub has flagged you for API abuse</string>
+    <string name="error_max_login_attempts">Error: Maximum number of login attempts reached. Try again later</string>
+    <string name="error_unprocessable">Error: There was an error processing your request</string>
+    <string name="error_bad_credentials">Error bad credentials</string>
+    <string name="error_not_allowed">Error: Not allowed</string>
+    <string name="error_bad_request">Error: Bad request</string>
+    <string name="error_unknown">Unknown error</string>
+
     <string name="text_zero_value">0</string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
     <string name="text_forks">Forks</string>
