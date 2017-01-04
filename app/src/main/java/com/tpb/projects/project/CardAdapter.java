@@ -31,7 +31,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -42,6 +41,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -60,7 +61,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private ArrayList<Card> mCards = new ArrayList<>();
-    private AndDown md = new AndDown();
+
+    private static final Parser parser = Parser.builder().build();
+    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+
     private ColumnFragment mParent;
     private Editor mEditor;
     private Repository.AccessLevel mAccessLevel;
@@ -212,69 +216,71 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mText.setHtml(
-                md.markdownToHtml(
-                        formatMD(card.getNote())
-                ),
-                new HtmlHttpImageGetter(holder.mText)
-        );
+        holder.mText.setHtml(renderer.render(parser.parse(formatMD(card.getNote()))),  new HtmlHttpImageGetter(holder.mText));
+
+//        holder.mText.setHtml(
+//                md.markdownToHtml(
+//                        formatMD(card.getNote())
+//                ),
+//                new HtmlHttpImageGetter(holder.mText)
+//        );
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
 
+        final StringBuilder builder = new StringBuilder();
+        builder.append("<b>");
+        builder.append(card.getIssue().getTitle());
+        builder.append("</b><br><br>");
+        if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
+            builder.append(formatMD(card.getIssue().getBody()));
+            builder.append("<br>");
+        }
 
-            final StringBuilder builder = new StringBuilder();
-            builder.append("<b>");
-            builder.append(card.getIssue().getTitle());
-            builder.append("</b><br><br>");
-            if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(formatMD(card.getIssue().getBody()));
-                builder.append("<br>");
-            }
+        builder.append(String.format(mParent.getString(R.string.text_opened_by),
+                String.format(mParent.getString(R.string.text_md_link),
+                        "#" + Integer.toString(card.getIssue().getNumber()),
+                        "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())
+                ),
+                String.format(mParent.getString(R.string.text_md_link),
+                        card.getIssue().getOpenedBy().getLogin(),
+                        card.getIssue().getOpenedBy().getHtmlUrl()
+                ),
+                DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
+        );
 
-            builder.append(String.format(mParent.getString(R.string.text_opened_by),
-                    String.format(mParent.getString(R.string.text_md_link),
-                            "#" + Integer.toString(card.getIssue().getNumber()),
-                            "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())
-                    ),
-                    String.format(mParent.getString(R.string.text_md_link),
-                            card.getIssue().getOpenedBy().getLogin(),
-                            card.getIssue().getOpenedBy().getHtmlUrl()
-                    ),
-                    DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
-            );
-
-            if(card.getIssue().getAssignees() != null) {
-                builder.append("<br>");
-                builder.append(mParent.getString(R.string.text_assigned_to));
+        if(card.getIssue().getAssignees() != null) {
+            builder.append("<br>");
+            builder.append(mParent.getString(R.string.text_assigned_to));
+            builder.append(' ');
+            for(User u : card.getIssue().getAssignees()) {
+                builder.append(String.format(mParent.getString(R.string.text_md_link),
+                        u.getLogin(),
+                        u.getHtmlUrl()));
                 builder.append(' ');
-                for(User u : card.getIssue().getAssignees()) {
-                    builder.append(String.format(mParent.getString(R.string.text_md_link),
-                            u.getLogin(),
-                            u.getHtmlUrl()));
-                    builder.append(' ');
-                }
             }
+        }
 
-            if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
-                builder.append("<br>");
-                builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
-                        card.getIssue().getClosedBy().getLogin(),
-                        card.getIssue().getClosedBy().getHtmlUrl(),
-                        DateUtils.getRelativeTimeSpanString(card.getIssue().getClosedAt())));
-            }
+        if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
+            builder.append("<br>");
+            builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
+                    card.getIssue().getClosedBy().getLogin(),
+                    card.getIssue().getClosedBy().getHtmlUrl(),
+                    DateUtils.getRelativeTimeSpanString(card.getIssue().getClosedAt())));
+        }
 
-            if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
-                builder.append("<br>");
-                Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
-            }
-            if(card.getIssue().getComments() > 0) {
-                builder.append("<br>");
-                builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
-            }
-            holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
+        if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
+            builder.append("<br>");
+            Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
+        }
+        if(card.getIssue().getComments() > 0) {
+            builder.append("<br>");
+            builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
+        }
+        holder.mText.setHtml(renderer.render(parser.parse(formatMD(builder.toString()))),  new HtmlHttpImageGetter(holder.mText));
+       // holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
 
     }
 

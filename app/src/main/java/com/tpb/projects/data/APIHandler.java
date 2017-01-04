@@ -18,6 +18,7 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.annotation.StringRes;
 
 import com.androidnetworking.error.ANError;
@@ -75,6 +76,10 @@ public abstract class APIHandler {
         PROJECTS_PREVIEW_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
         ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
         ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
     }
 
     public static final String CONNECTION_ERROR = "connectionError";

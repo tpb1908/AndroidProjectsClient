@@ -135,7 +135,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
-                new Loader(this).loadUser(new Loader.UserLoader() {
+                final Loader loader = new Loader(this);
+                loader.loadUser(new Loader.UserLoader() {
+                    int errorCount = 0;
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
@@ -144,7 +146,14 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
                     @Override
                     public void userLoadError(APIHandler.APIError error) {
-
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();;
+                        } else if(errorCount < 5){
+                            errorCount++;
+                            loader.loadUser(this, user);
+                        } else {
+                            //TODO Handle multiple rrors
+                        }
                     }
                 }, user);
 
@@ -232,7 +241,11 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
                     @Override
                     public void repoLoadError(APIHandler.APIError error) {
-                        Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
+                        if(error == APIHandler.APIError.NOT_FOUND) {
+                            Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }, input.getText().toString());
             } else {
