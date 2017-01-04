@@ -77,6 +77,8 @@ public abstract class APIHandler {
         ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
     }
 
+    public static final String CONNECTION_ERROR = "connectionError";
+
     public static final int HTTP_OK_200 = 200; //OK
 
     public static final String HTTP_REDIRECT_NEW_LOCATION = "Location";
@@ -152,6 +154,7 @@ public abstract class APIHandler {
     //1900 network https://github.com/GleSYS/API/wiki/API-Error-codes#19xx---network
 
     static APIError parseError(ANError error) {
+        if(CONNECTION_ERROR.equals(error.getErrorDetail())) return APIError.NO_CONNECTION;
         switch(error.getErrorCode()) {
             case HTTP_BAD_REQUEST_400: return APIError.BAD_REQUEST;
             case HTTP_UNAUTHORIZED_401:
@@ -176,6 +179,7 @@ public abstract class APIHandler {
 
     public enum APIError {
 
+        NO_CONNECTION(R.string.error_no_connection),
         UNAUTHORIZED(R.string.error_unauthorized),
         FORBIDDEN(R.string.error_forbidden),
         NOT_FOUND(R.string.error_not_found),
@@ -189,7 +193,7 @@ public abstract class APIHandler {
         BAD_REQUEST(R.string.error_bad_request);
 
         @StringRes
-        private int resId;
+        public int resId;
 
         APIError(@StringRes int resId) {
             this.resId = resId;

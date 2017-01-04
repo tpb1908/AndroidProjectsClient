@@ -247,7 +247,11 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
                     @Override
                     public void userLoadError(APIHandler.APIError error) {
-                        Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
+                        if(error == APIHandler.APIError.NOT_FOUND) {
+                            Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }, input.getText().toString());
             }

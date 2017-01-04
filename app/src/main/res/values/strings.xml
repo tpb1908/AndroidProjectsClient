@@ -39,6 +39,7 @@
     <string name="error_project_not_found">Project not found</string>
     <string name="error_repo_not_found">Repository not found</string>
 
+    <string name="error_no_connection">No connection</string>
     <string name="error_unauthorized">Error: Unauthorized</string>
     <string name="error_forbidden">Error: Forbidden</string>
     <string name="error_not_found">Error: Not found</string>
