@@ -80,6 +80,26 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void loadUser(UserLoader loader, String username) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + username)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: User loaded");
+                        if(loader != null) loader.userLoaded(User.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: User not loaded: " + anError.getErrorBody());
+                        if(loader != null) loader.userLoadError(parseError(anError));
+                    }
+                });
+
+    }
+
     public void loadRepositories(RepositoriesLoader loader, String user) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS)
                 .addHeaders(API_AUTH_HEADERS)
@@ -378,27 +398,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadUser(UserLoader loader, String username) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + username)
-                .addHeaders(API_AUTH_HEADERS)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: User loaded");
-                        if(loader != null) loader.userLoaded(User.parse(response));
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: User not loaded: " + anError.getErrorBody());
-                        if(loader != null) loader.userLoadError(parseError(anError));
-                    }
-                });
-
-    }
-
-    public void checkAccess(AccessCheckListener listener, String login, String repoFullname) {
+    public void checkAccessToRepository(AccessCheckListener listener, String login, String repoFullname) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullname + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
                 .build()

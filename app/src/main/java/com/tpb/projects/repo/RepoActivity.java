@@ -300,7 +300,7 @@ public class RepoActivity extends AppCompatActivity implements
             mAccessLevel = Repository.AccessLevel.ADMIN;
             findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
         } else {
-            mLoader.checkAccess(new Loader.AccessCheckListener() {
+            mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
                 @Override
                 public void accessCheckComplete(Repository.AccessLevel level) {
                     Log.i(TAG, "accessCheckComplete: Access " + level);

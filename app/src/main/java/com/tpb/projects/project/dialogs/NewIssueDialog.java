@@ -165,7 +165,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
 
                              @Override
                              public void issueCreationError(APIHandler.APIError error) {
-
+                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                              }
                          },
                     repoFullName,
@@ -227,7 +227,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
 
             @Override
             public void collaboratorsLoadError(APIHandler.APIError error) {
-
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, repoFullName);
     }
@@ -282,7 +282,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
 
             @Override
             public void labelLoadError(APIHandler.APIError error) {
-
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, repoFullName);
     }

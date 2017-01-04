@@ -35,6 +35,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
@@ -188,7 +189,6 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
             @Override
             public void collaboratorsLoaded(User[] collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
-
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
                 mcd.setArguments(b);
@@ -223,7 +223,8 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
 
             @Override
             public void collaboratorsLoadError(APIHandler.APIError error) {
-
+                pd.dismiss();
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, repoFullName);
     }
@@ -280,7 +281,7 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
 
             @Override
             public void labelLoadError(APIHandler.APIError error) {
-
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, repoFullName);
     }

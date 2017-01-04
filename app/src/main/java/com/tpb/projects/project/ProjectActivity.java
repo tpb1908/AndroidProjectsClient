@@ -185,7 +185,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccess(new Loader.AccessCheckListener() {
+        mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
             @Override
             public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                 Log.i(TAG, "accessCheckComplete: " + accessLevel);

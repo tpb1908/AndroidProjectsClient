@@ -101,23 +101,24 @@ public class CardDialog extends KeyboardDismissingDialogFragment {
                                     validIssues.get(i).getNumber(), validIssues.get(i).getTitle());
                         }
 
-                        final AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-                        builder1.setTitle(R.string.title_choose_issue);
-                        builder1.setSingleChoiceItems(texts, 0, (dialogInterface, i) -> {
+                        final AlertDialog.Builder scBuilder = new AlertDialog.Builder(getContext());
+                        scBuilder.setTitle(R.string.title_choose_issue);
+                        scBuilder.setSingleChoiceItems(texts, 0, (dialogInterface, i) -> {
                             selectedIssuePosition = i;
                         });
-                        builder1.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
+                        scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
                             if(mListener != null) mListener.issueCardCreated(validIssues.get(selectedIssuePosition));
                             dialogInterface.dismiss();
                             CardDialog.this.dismiss();
                         }));
-                        builder1.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
-                        builder1.create().show();
+                        scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+                        scBuilder.create().show();
                     }
 
                     @Override
                     public void issuesLoadError(APIHandler.APIError error) {
                         pd.dismiss();
+                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                     }
                 }, fullRepoName);
             });

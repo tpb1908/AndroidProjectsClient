@@ -50,7 +50,6 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
         final EditText body = (EditText) view.findViewById(R.id.comment_body_edit);
         final MarkedView md = (MarkedView) view.findViewById(R.id.comment_body_markdown);
 
-
         body.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
             long lastUpdated;
