@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.commonsware.cwac.anddown.AndDown;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -34,6 +33,8 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -55,7 +56,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private ProjectEditor mEditor;
     private AnimatingRecycler mRecycler;
     private boolean canAccessRepo = false;
-    private AndDown md = new AndDown();
+    private static final Parser parser = Parser.builder().build();
+    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+
 
     public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
@@ -105,8 +108,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         if(!(Constants.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
-                    md.markdownToHtml(
-                            mProjects.get(holder.getAdapterPosition()).getBody()
+                    renderer.render(
+                            parser.parse(mProjects.get(holder.getAdapterPosition()).getBody())
                     ),
                     new HtmlHttpImageGetter(holder.mBody)
             );
