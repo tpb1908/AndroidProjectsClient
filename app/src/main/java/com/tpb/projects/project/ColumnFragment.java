@@ -150,6 +150,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     mName.setText(mColumn.getName());
                 } else {
                     mEditor.updateColumnName(new Editor.ColumnNameChangeListener() {
+                        int loadCount = 0;
                         @Override
                         public void columnNameChanged(Column column) {
                             if(mViewsValid) {
@@ -163,11 +164,18 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
                         @Override
                         public void columnNameChangeError(APIHandler.APIError error) {
-                            Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
-                            mName.setText(mColumn.getName());
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
+                            if(error != APIHandler.APIError.NO_CONNECTION) {
+                                if(loadCount < 5) {
+                                    loadCount++;
+                                    mEditor.updateColumnName(this, mColumn.getId(), mName.getText().toString());
+                                } else {
+                                    Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
+                                    mName.setText(mColumn.getName());
+                                    final Bundle bundle = new Bundle();
+                                    bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_FAILURE);
+                                    mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
+                                }
+                            }
                         }
                     }, mColumn.getId(), mName.getText().toString());
 
