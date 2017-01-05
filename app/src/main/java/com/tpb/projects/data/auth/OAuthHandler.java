@@ -40,6 +40,8 @@ import org.json.JSONObject;
  * @author Lorensius W. L T <lorenz@londatiga.net>
  */
 public class OAuthHandler extends APIHandler {
+    private static final String TAG = OAuthHandler.class.getSimpleName();
+
     private GitHubSession mSession;
     private OAuthAuthenticationListener mListener;
     private String mAuthUrl;
@@ -57,7 +59,6 @@ public class OAuthHandler extends APIHandler {
     private static final String SCOPE = "user repo";
     private static final String RATE_LIMIT = "/rate_limit";
 
-    private static final String TAG = OAuthHandler.class.getSimpleName();
 
 
     public OAuthHandler(Context context, String clientId, String clientSecret,
@@ -114,7 +115,7 @@ public class OAuthHandler extends APIHandler {
     }
 
     private void fetchUserName() {
-        AndroidNetworking.get(GIT_BASE + "user")
+        AndroidNetworking.get(GIT_BASE + "/user")
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -124,12 +125,11 @@ public class OAuthHandler extends APIHandler {
                         final User user = User.parse(response);
                         mSession.storeCredentials(mAccessToken, user.getId(), user.getLogin());
                         mListener.userLoaded(user);
-
                     }
 
                     @Override
                     public void onError(ANError anError) {
-
+                        Log.i(TAG, "onError: " + anError.getErrorDetail());
                     }
                 });
 

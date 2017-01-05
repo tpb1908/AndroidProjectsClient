@@ -56,7 +56,7 @@ import butterknife.ButterKnife;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private FirebaseAnalytics mAnalytics;
-    private OAuthHandler mApp;
+    private OAuthHandler mOAuthHandler;
     private boolean mLoginShown = false;
 
     @BindView(R.id.login_webview) WebView mWebView;
@@ -82,13 +82,13 @@ public class LoginActivity extends AppCompatActivity {
 
         mAnalytics = FirebaseAnalytics.getInstance(this);
 
-        mApp = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
+        mOAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
                 BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
-        mApp.setListener(new OAuthHandler.OAuthAuthenticationListener() {
+        mOAuthHandler.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
                 Log.i(TAG, "onSuccess: ");
-                Log.i(TAG, "onSuccess: User " + mApp.getUserName());
+                Log.i(TAG, "onSuccess: User " + mOAuthHandler.getUserName());
                 mWebView.setVisibility(View.GONE);
                 mSpinner.setVisibility(View.VISIBLE);
             }
@@ -115,7 +115,10 @@ public class LoginActivity extends AppCompatActivity {
                 bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
                 mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
 
-                new Handler().postDelayed(() -> startActivity(new Intent(LoginActivity.this, UserActivity.class)), 1500);
+                new Handler().postDelayed(() -> {
+                    startActivity(new Intent(LoginActivity.this, UserActivity.class));
+                    finish();
+                }, 1500);
             }
         });
         CookieSyncManager.createInstance(this);
@@ -123,9 +126,9 @@ public class LoginActivity extends AppCompatActivity {
         cookieManager.removeAllCookie();
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-        mWebView.setWebViewClient(new OAuthWebViewClient(mApp.getListener()));
+        mWebView.setWebViewClient(new OAuthWebViewClient(mOAuthHandler.getListener()));
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.loadUrl(mApp.getAuthUrl());
+        mWebView.loadUrl(mOAuthHandler.getAuthUrl());
         mWebView.setLayoutParams(FILL);
         UI.expand(mLogin);
     }
