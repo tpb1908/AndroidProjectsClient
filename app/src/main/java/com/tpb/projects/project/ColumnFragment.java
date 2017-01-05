@@ -308,7 +308,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                    mParent.mRefresher.setRefreshing(false);
                     //TODO Show a snackbar or something
                 } else {
                     if(createAttempts < 5) {
@@ -352,7 +351,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mParent.mRefresher.setRefreshing(false);
                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                mParent.mRefresher.setRefreshing(false);
                                 //TODO Show a snackbar or something
                             } else {
                                 if(createAttempts < 5) {
@@ -386,7 +384,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mParent.mRefresher.setRefreshing(false);
                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                mParent.mRefresher.setRefreshing(false);
                                 //TODO Show a snackbar or something
                             } else {
                                 if(updateAttempts < 5) {
@@ -522,7 +519,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                    mParent.mRefresher.setRefreshing(false);
                     //TODO Show a snackbar or something
                 } else {
                     if(stateChangeAttempts < 5) {
@@ -568,7 +564,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mParent.mRefresher.setRefreshing(false);
                             Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                            mParent.mRefresher.setRefreshing(false);
                             //TODO Show a snackbar or something
                         } else {
                             if(commentCreationAttempts < 5) {
@@ -625,7 +620,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mParent.mRefresher.setRefreshing(false);
                             Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                            mParent.mRefresher.setRefreshing(false);
                             //TODO Show a snackbar or something
                         } else {
                             if(issueCreationAttempts < 5) {
@@ -673,7 +667,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                    mParent.mRefresher.setRefreshing(false);
                     //TODO Show a snackbar or something
                 } else {
                     if(cardDeletionAttempts < 5) {
@@ -721,7 +714,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                    mParent.mRefresher.setRefreshing(false);
                     //TODO Show a snackbar or something
                 } else {
                     if(issueCardCreationAttempts < 5) {

@@ -129,6 +129,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
             //We have to load all of the projects to get the id that we want
             mLoader.loadProjects(new Loader.ProjectsLoader() {
+                int projectLoadAttempts = 0;
                 @Override
                 public void projectsLoaded(Project[] projects) {
                     for(Project p : projects) {
@@ -144,7 +145,19 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
                 @Override
                 public void projectsLoadError(APIHandler.APIError error) {
-
+                    if(error == APIHandler.APIError.NO_CONNECTION) {
+                        mRefresher.setRefreshing(false);
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        //TODO Show a snackbar or something
+                    } else {
+                        if(projectLoadAttempts < 5) {
+                            projectLoadAttempts++;
+                            mLoader.loadProjects(this, repo);
+                        } else {
+                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                            mRefresher.setRefreshing(false);
+                        }
+                    }
                 }
             }, repo);
         }
@@ -186,6 +199,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private void checkAccess(Project project) {
         mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+            int accessCheckAttempts = 0;
             @Override
             public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                 Log.i(TAG, "accessCheckComplete: " + accessLevel);
@@ -202,7 +216,19 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
             @Override
             public void accessCheckError(APIHandler.APIError error) {
-
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mRefresher.setRefreshing(false);
+                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                    //TODO Show a snackbar or something
+                } else {
+                    if(accessCheckAttempts < 5) {
+                        accessCheckAttempts++;
+                        mLoader.checkAccessToRepository(this, GitHubSession.getSession(ProjectActivity.this).getUserLogin(), project.getRepoFullName());
+                    } else {
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        mRefresher.setRefreshing(false);
+                    }
+                }
             }
         }, GitHubSession.getSession(this).getUserLogin(), project.getRepoFullName());
     }
@@ -309,6 +335,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
+                    int addColumnAttempts = 0;
                     @Override
                     public void columnAdded(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
@@ -324,6 +351,19 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
                     @Override
                     public void columnAdditionError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                            //TODO Show a snackbar or something
+                        } else {
+                            if(addColumnAttempts < 5) {
+                                addColumnAttempts++;
+                               mEditor.addColumn(this, mProject.getId(), text);
+                            } else {
+                                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                mRefresher.setRefreshing(false);
+                            }
+                        }
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
@@ -353,7 +393,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             @Override
             public void issueCreated(Issue issue) {
                 mAdapter.getCurrentFragment().createIssueCard(issue);
-
             }
 
             @Override
@@ -375,6 +414,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
                     mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
+                        int deleteColumnAttempts = 0;
                         @Override
                         public void columnDeleted() {
                             mAdapter.remove(mCurrentPosition);
@@ -391,6 +431,19 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
                         @Override
                         public void columnDeletionError(APIHandler.APIError error) {
+                            if(error == APIHandler.APIError.NO_CONNECTION) {
+                                mRefresher.setRefreshing(false);
+                                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                //TODO Show a snackbar or something
+                            } else {
+                                if(deleteColumnAttempts < 5) {
+                                    deleteColumnAttempts++;
+                                    mEditor.deleteColumn(this, column.getId());
+                                } else {
+                                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                    mRefresher.setRefreshing(false);
+                                }
+                            }
                             final Bundle bundle = new Bundle();
                             bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                             mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
