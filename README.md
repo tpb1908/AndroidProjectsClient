@@ -42,7 +42,7 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * Creation of new columns
 * Deletion of columns
 * Creation of new cards
-* Creation of new issue cards from existing open issues (Not available on site)
+* Creation of new issue cards from existing open issues
 * Creation of new issue cards (Not available on site)
 * Conversion of cards to issues
 * Tagged users displayed as links on card
@@ -63,9 +63,9 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 ### Upcoming features (In order of precedence)
 
+* Comment viewer for issues, and the ability to reply to comments
 * Sharing (Of columns and cards)
 * Adding milestone when creating issue, and editing milestones when editing issues
-* Comment viewer for issues, and the ability to reply to comments
 * Nougat app shortcuts for projects/repos pinned by the user (this requires link/intent handling)
 * Creating/Editing labels for a repository
 * Extra column in project to display all issues, and allow creating cards from them
