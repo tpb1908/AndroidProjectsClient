@@ -30,6 +30,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -207,6 +208,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void commentsLoaded(Comment[] comments) {
         mCount.setText(Integer.toString(comments.length));
+        for(Comment comment : comments) {
+            Log.i(TAG, "commentsLoaded: " + comment.toString());
+        }
     }
 
     @Override

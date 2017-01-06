@@ -436,13 +436,13 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     break;
                 case R.id.menu_copy_card_url:
                     copyToClipboard(String.format(mParent.getString(R.string.text_card_url),
-                            mParent.mProject.getRepoFullName(),
+                            mParent.mProject.getRepoPath(),
                             mParent.mProject.getNumber(),
                             mCard.getId()));
                     break;
                 case R.id.menu_copy_issue_url:
                     copyToClipboard(String.format(mParent.getString(R.string.text_issue_url),
-                            mParent.mProject.getRepoFullName(),
+                            mParent.mProject.getRepoPath(),
                             card.getIssue().getNumber()));
                     break;
                 case R.id.menu_card_fullscreen:
@@ -465,7 +465,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     });
                     final Bundle c = new Bundle();
                     c.putParcelable(getString(R.string.parcel_card), card);
-                    c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
+                    c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     newDialog.setArguments(c);
                     newDialog.show(getFragmentManager(), TAG);
                     break;
@@ -477,7 +477,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     builder.setTitle(R.string.title_close_issue);
                     builder.setMessage(R.string.text_close_issue_on_delete);
                     builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-                        mEditor.closeIssue(null, mParent.mProject.getRepoFullName(), card.getIssue().getNumber());
+                        mEditor.closeIssue(null, mParent.mProject.getRepoPath(), card.getIssue().getNumber());
                         mParent.deleteCard(card, false);
                     });
                     builder.setNeutralButton(R.string.action_cancel, null);
@@ -525,9 +525,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     if(stateChangeAttempts < 5) {
                         if(card.getIssue().isClosed()) {
                             stateChangeAttempts++;
-                            mEditor.openIssue(this, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            mEditor.openIssue(this, mParent.mProject.getRepoPath(), card.getIssueId());
                         } else {
-                            mEditor.closeIssue(this, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            mEditor.closeIssue(this, mParent.mProject.getRepoPath(), card.getIssueId());
                         }
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -551,11 +551,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     public void commentCreated(Comment comment) {
                         if(card.getIssue().isClosed()) {
                             Log.i(TAG, "openMenu: Closing issue");
-                            mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
                             resetLastUpdate();
                         } else {
                             Log.i(TAG, "openMenu: Opening issue");
-                            mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                            mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
                             resetLastUpdate();
                         }
                     }
@@ -569,14 +569,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         } else {
                             if(commentCreationAttempts < 5) {
                                 commentCreationAttempts++;
-                                mEditor.createComment(this, mParent.mProject.getRepoFullName(), card.getIssue().getNumber(), body);
+                                mEditor.createComment(this, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
                             } else {
                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                                 mParent.mRefresher.setRefreshing(false);
                             }
                         }
                     }
-                }, mParent.mProject.getRepoFullName(), card.getIssue().getNumber(), body);
+                }, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
 
             }
 
@@ -584,11 +584,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             public void commentNotCreated() {
                 if(card.getIssue().isClosed()) {
                     Log.i(TAG, "openMenu: Closing issue");
-                    mEditor.openIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
                     resetLastUpdate();
                 } else {
                     Log.i(TAG, "openMenu: Opening issue");
-                    mEditor.closeIssue(listener, mParent.mProject.getRepoFullName(), card.getIssueId());
+                    mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
                     resetLastUpdate();
                 }
             }
@@ -625,7 +625,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mParent.mProject.getRepoFullName(), issue, assignees, labels);
+                                mEditor.editIssue(this, mParent.mProject.getRepoPath(), issue, assignees, labels);
                             } else {
                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                                 mParent.mRefresher.setRefreshing(false);
@@ -636,7 +636,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
-                }, mParent.mProject.getRepoFullName(), issue, assignees, labels);
+                }, mParent.mProject.getRepoPath(), issue, assignees, labels);
             }
 
             @Override
@@ -646,7 +646,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         });
         final Bundle c = new Bundle();
         c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
-        c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoFullName());
+        c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         editDialog.setArguments(c);
         editDialog.show(getFragmentManager(), TAG);
     }

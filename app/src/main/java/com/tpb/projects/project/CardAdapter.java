@@ -41,6 +41,7 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.Data;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.tpb.projects.util.Data.formatMD;
 
 /**
  * Created by theo on 20/12/16.
@@ -222,7 +225,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mText.setHtml(renderer.render(parser.parse(formatMD(holder, card.getNote()))),  new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(renderer.render(parser.parse(Data.formatMD(card.getNote(), mParent.mParent.mProject.getRepoPath()))),  new HtmlHttpImageGetter(holder.mText));
 
     }
 
@@ -236,14 +239,14 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         builder.append(card.getIssue().getTitle());
         builder.append("</b><br><br>");
         if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-            builder.append(formatMD(holder, card.getIssue().getBody()));
+            builder.append(Data.formatMD(card.getIssue().getBody(), card.getIssue().getRepoPath()));
             builder.append("<br>");
         }
 
         builder.append(String.format(mParent.getString(R.string.text_opened_by),
                 String.format(mParent.getString(R.string.text_md_link),
                         "#" + Integer.toString(card.getIssue().getNumber()),
-                        "https://github.com/" + mParent.mParent.mProject.getRepoFullName() + "/issues/" + Integer.toString(card.getIssue().getNumber())
+                        "https://github.com/" + mParent.mParent.mProject.getRepoPath() + "/issues/" + Integer.toString(card.getIssue().getNumber())
                 ),
                 String.format(mParent.getString(R.string.text_md_link),
                         card.getIssue().getOpenedBy().getLogin(),
@@ -280,113 +283,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append("<br>");
             builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
         }
-        holder.mText.setHtml(renderer.render(parser.parse(formatMD(holder, builder.toString()))),  new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(renderer.render(parser.parse(formatMD(builder.toString(), card.getIssue().getRepoPath()))),  new HtmlHttpImageGetter(holder.mText));
        // holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
 
-    }
-
-    private String formatMD(CardHolder holder, String s) {
-        final StringBuilder builder = new StringBuilder();
-        char p = ' ';
-        char pp = ' ';
-        final char[] cs = s.toCharArray();
-        for(int i = 0; i < s.length(); i++) {
-            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
-                builder.append("\n");
-            }
-            if(cs[i] == '@' && (p == ' '  || p == '\n')) {
-                //Max username length is 39 characters
-                //Usernames can be alphanumeric with single hyphens
-                i = parseUsername(builder, cs, i);
-            } else if(cs[i] == '-' && p == '-' && pp == '-') {
-                //TODO Find out if there is a way of computing characters per line and filling the string
-                //I could try using the strike tag
-                builder.setLength(builder.length()-2);
-
-            } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
-                i = parseIssue(builder, cs, i);
-            } else {
-                builder.append(cs[i]);
-            }
-            pp = p;
-            p = cs[i];
-        }
-        Log.i(TAG, "formatMD: " + builder.toString());
-        return builder.toString();
-    }
-
-    private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
-        final StringBuilder nameBuilder = new StringBuilder();
-        char p = ' ';
-        for(int i = ++pos; i < cs.length; i++) {
-            if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
-                    (cs[i] >= '0' && cs[i] <= '9') ||
-                    (cs[i] >= 'a' && cs[i] <= 'z') ||
-                    (cs[i] == '-' && p != '-')) &&
-                    i - pos < 38 &&
-                    i != cs.length - 1) {
-                nameBuilder.append(cs[i]);
-                p = cs[i];
-                //nameBuilder.length() > 0 stop us linking a single @
-            } else if((cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) && nameBuilder.length() > 0) {
-                if(i == cs.length - 1) {
-                    nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
-                }
-                builder.append("[@");
-                builder.append(nameBuilder.toString());
-                builder.append(']');
-                builder.append('(');
-                builder.append("https://github.com/");
-                builder.append(nameBuilder.toString());
-                builder.append(')');
-                if(i != cs.length - 1) {
-                    builder.append(cs[i]); // We still need to append the space or newline
-                }
-                return i;
-            } else {
-                builder.append("@");
-                return --pos;
-            }
-
-        }
-        builder.append("@");
-        return --pos;
-    }
-
-    private int parseIssue(StringBuilder builder, char[] cs, int pos) {
-        final StringBuilder numBuilder = new StringBuilder();
-        for(int i = ++pos; i < cs.length; i++) {
-            if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
-                numBuilder.append(cs[i]);
-            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
-                if(i == cs.length - 1) {
-                    if(cs[i] >= '0' && cs[i] <= '9') {
-                        numBuilder.append(cs[i]);
-                    } else {
-                        builder.append("#");
-                        return --pos;
-                    }
-                }
-                builder.append("[#");
-                builder.append(numBuilder.toString());
-                builder.append("]");
-                builder.append("(");
-                builder.append("https://github.com/");
-                builder.append(mParent.mParent.mProject.getRepoFullName());
-                builder.append("/issues/");
-                builder.append(numBuilder.toString());
-                builder.append(")");
-                if(i != cs.length - 1) {
-                    builder.append(cs[i]); // We still need to append the space or newline
-                }
-                return i;
-            } else {
-                builder.append("#");
-                return --pos;
-            }
-        }
-        builder.append("#");
-        return --pos;
     }
 
     @Override
