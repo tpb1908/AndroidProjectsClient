@@ -132,6 +132,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         } else {
             mImageState.setImageResource(R.drawable.ic_issue_open);
         }
+
+        if(mIssue.isLocked()) {
+            //TODO Check collaborators
+        } else {
+            mFab.postDelayed(() -> mFab.show(), 300);
+        }
     }
 
     @Override
