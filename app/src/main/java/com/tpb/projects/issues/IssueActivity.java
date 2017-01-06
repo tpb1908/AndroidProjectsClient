@@ -17,10 +17,14 @@
 
 package com.tpb.projects.issues;
 
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +43,8 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.User;
+import com.tpb.projects.user.UserActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,15 +96,36 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void issueLoaded(Issue issue) {
         if(issue.getAssignees() != null) {
             for(int i = 0; i < issue.getAssignees().length; i++) {
-                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, mAssignees);
+                final User u = issue.getAssignees()[i];
+                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
+                user.setId(i);
+                mAssignees.addView(user);
                 final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-                imageView.setId(i);
-                imageView.setImageUrl(issue.getAssignees()[i].getAvatarUrl());
+                imageView.setId(10 * i);
+                imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                Log.i(TAG, "issueLoaded: Setting login " + issue.getAssignees()[i].getLogin());
+                Log.i(TAG, "issueLoaded: Setting login " + u.getLogin());
                 final  TextView login = (TextView) user.findViewById(R.id.user_login);
-                login.setId(10 * i); //Max 10 assignees
+                login.setId(20 * i); //Max 10 assignees
                 login.setText(issue.getAssignees()[i].getLogin());
+                user.setOnClickListener((v) -> {
+                    Log.i(TAG, "issueLoaded: Click on view " + v.getId());
+                    final Intent us = new Intent(IssueActivity.this, UserActivity.class);
+                    us.putExtra(getString(R.string.intent_username), u.getLogin());
+
+                    if(imageView.getDrawable() != null) {
+                        Log.i(TAG, "openUser: Putting bitmap");
+                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    }
+                    startActivity(us,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    this,
+                                    new Pair<>(login, getString(R.string.transition_username)),
+                                    new Pair<>(imageView, getString(R.string.transition_user_image))
+                            ).toBundle());
+
+                });
+
             }
         }
 
