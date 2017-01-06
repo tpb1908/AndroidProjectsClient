@@ -400,7 +400,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadComments(CommentsLoader loader, String fullRepoName, int issueNumber) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + issueNumber + SEGMENT_COMMENTS)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {

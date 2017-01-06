@@ -29,7 +29,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,9 +41,13 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,21 +56,26 @@ import butterknife.ButterKnife;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader{
+public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader {
     private static final String TAG = IssueActivity.class.getSimpleName();
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
     @BindView(R.id.issue_number) TextView mNumber;
+    @BindView(R.id.issue_state) ImageView mImageState;
+    @BindView(R.id.issue_info) HtmlTextView mInfo;
+    @BindView(R.id.issue_open_info) HtmlTextView mOpenInfo;
+    @BindView(R.id.issue_comment_count) TextView mCount;
     @BindView(R.id.issue_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
-
-
+    
     private Editor mEditor;
     private Loader mLoader;
+    
+    private Issue mIssue;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,9 +89,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mLoader = new Loader(this);
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
-            final Issue issue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
-            mNumber.setText(String.format("#%1$d", issue.getNumber()));
-            issueLoaded(issue);
+            mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
+            mNumber.setText(String.format("#%1$d", mIssue.getNumber()));
+            issueLoaded(mIssue);
         } else {
             final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
             final String repoName = getIntent().getStringExtra(getString(R.string.intent_repo));
@@ -94,45 +102,82 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void issueLoaded(Issue issue) {
-        if(issue.getAssignees() != null) {
-            for(int i = 0; i < issue.getAssignees().length; i++) {
-                final User u = issue.getAssignees()[i];
-                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
-                user.setId(i);
-                mAssignees.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-                imageView.setId(10 * i);
-                imageView.setImageUrl(u.getAvatarUrl());
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                Log.i(TAG, "issueLoaded: Setting login " + u.getLogin());
-                final  TextView login = (TextView) user.findViewById(R.id.user_login);
-                login.setId(20 * i); //Max 10 assignees
-                login.setText(issue.getAssignees()[i].getLogin());
-                user.setOnClickListener((v) -> {
-                    Log.i(TAG, "issueLoaded: Click on view " + v.getId());
-                    final Intent us = new Intent(IssueActivity.this, UserActivity.class);
-                    us.putExtra(getString(R.string.intent_username), u.getLogin());
-
-                    if(imageView.getDrawable() != null) {
-                        Log.i(TAG, "openUser: Putting bitmap");
-                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-                    }
-                    startActivity(us,
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    this,
-                                    new Pair<>(login, getString(R.string.transition_username)),
-                                    new Pair<>(imageView, getString(R.string.transition_user_image))
-                            ).toBundle());
-
-                });
-
-            }
+        mIssue = issue;
+        if(issue.getAssignees() != null) displayAssignees();
+        mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
+        final StringBuilder builder = new StringBuilder();
+        builder.append("<b>");
+        builder.append(mIssue.getTitle());
+        builder.append("</b>");
+        if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
+            builder.append("<br>");
+            Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
 
+        mInfo.setHtml(builder.toString());
+        builder.setLength(0);
+        builder.append(
+                String.format(
+                        getString(R.string.text_opened_this_issue),
+                        String.format(getString(R.string.text_href),
+                                "https://github.com/" + issue.getOpenedBy().getLogin(),
+                                issue.getOpenedBy().getLogin()
+                        )
+                )
+        );
+        mOpenInfo.setShowUnderLines(false);
+        mOpenInfo.setHtml(builder.toString());
+        if(mIssue.isClosed()) {
+            mImageState.setImageResource(R.drawable.ic_issue_closed);
+        } else {
+            mImageState.setImageResource(R.drawable.ic_issue_open);
+        }
     }
 
     @Override
     public void issueLoadError(APIHandler.APIError error) {
+
+    }
+    
+    private void displayAssignees() {
+        for(int i = 0; i < mIssue.getAssignees().length; i++) {
+            final User u = mIssue.getAssignees()[i];
+            final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
+            user.setId(i);
+            mAssignees.addView(user);
+            final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+            imageView.setId(10 * i);
+            imageView.setImageUrl(u.getAvatarUrl());
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            final  TextView login = (TextView) user.findViewById(R.id.user_login);
+            login.setId(20 * i); //Max 10 assignees
+            login.setText(mIssue.getAssignees()[i].getLogin());
+            user.setOnClickListener((v) -> {
+                final Intent us = new Intent(IssueActivity.this, UserActivity.class);
+                us.putExtra(getString(R.string.intent_username), u.getLogin());
+
+                if(imageView.getDrawable() != null) {
+                    us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                }
+                startActivity(us,
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                this,
+                                new Pair<>(login, getString(R.string.transition_username)),
+                                new Pair<>(imageView, getString(R.string.transition_user_image))
+                        ).toBundle());
+
+            });
+
+        }
+    }
+
+    @Override
+    public void commentsLoaded(Comment[] comments) {
+        mCount.setText(Integer.toString(comments.length));
+    }
+
+    @Override
+    public void commentsLoadError(APIHandler.APIError error) {
 
     }
 

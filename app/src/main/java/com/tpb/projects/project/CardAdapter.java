@@ -226,7 +226,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     }
 
-
     private void bindIssueCard(CardHolder holder,  Card card) {
 
         holder.mIssueIcon.setVisibility(View.VISIBLE);
