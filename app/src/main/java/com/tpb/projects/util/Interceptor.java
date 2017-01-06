@@ -16,6 +16,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.R;
+import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.UserActivity;
@@ -62,6 +63,9 @@ public class Interceptor extends Activity {
                         pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         startActivity(pr);
                         finish();
+                    } else if("issues".equals(segments.get(0))) {
+                        //TODO Implement issues viewer
+                        fail();
                     } else {
                         fail();
                     }
@@ -72,6 +76,12 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         startActivity(p);
+                        finish();
+                    } else if("issues".equals(segments.get(2))) {
+                        final Intent i = new Intent(Interceptor.this, IssueActivity.class);
+                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        i.putExtra(getString(R.string.intent_issue_number), Integer.parseInt(segments.get(3)));
+                        startActivity(i);
                         finish();
                     } else {
                         fail();

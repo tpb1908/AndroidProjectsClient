@@ -182,6 +182,7 @@
     <string name="intent_access_level" translatable="false">access_level</string>
     <string name="intent_project_number" translatable="false">project_number</string>
     <string name="intent_title_res" translatable="false">title</string>
+    <string name="intent_issue_number" translatable="false">issue_number</string>
     <string name="intent_name" translatable="false">name</string>
     <string name="intent_drawable" translatable="false">drawable</string>
     <string name="parcel_project" translatable="false">project</string>

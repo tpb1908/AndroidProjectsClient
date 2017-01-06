@@ -27,6 +27,7 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Project;
@@ -398,6 +399,31 @@ public class Loader extends APIHandler {
 
     }
 
+    public void loadComments(CommentsLoader loader, String fullRepoName, int issueNumber) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + issueNumber + SEGMENT_COMMENTS)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Comment[] comments = new Comment[response.length()];
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                comments[i] = Comment.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: ", jse);
+                            }
+                        }
+                        if(loader != null) loader.commentsLoaded(comments);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) loader.commentsLoadError(parseError(anError));
+                    }
+                });
+    }
+
     public void checkAccessToRepository(AccessCheckListener listener, String login, String repoFullname) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullname + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
@@ -543,6 +569,14 @@ public class Loader extends APIHandler {
         void issuesLoaded(Issue[] issues);
 
         void issuesLoadError(APIError error);
+
+    }
+
+    public interface CommentsLoader {
+
+        void commentsLoaded(Comment[] comments);
+
+        void commentsLoadError(APIError error);
 
     }
 
