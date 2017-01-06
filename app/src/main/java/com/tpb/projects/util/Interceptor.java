@@ -49,12 +49,14 @@ public class Interceptor extends Activity {
                     final Intent u = new Intent(Interceptor.this, UserActivity.class);
                     u.putExtra(getString(R.string.intent_username), segments.get(0));
                     startActivity(u);
+                    overridePendingTransition(R.anim.slide_up, R.anim.none);
                     finish();
                     break;
                 case 2: //Repo
                     final Intent r = new Intent(Interceptor.this, RepoActivity.class);
                     r.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                     startActivity(r);
+                    overridePendingTransition(R.anim.slide_up, R.anim.none);
                     finish();
                     break;
                 case 3:
@@ -62,6 +64,7 @@ public class Interceptor extends Activity {
                         final Intent pr = new Intent(Interceptor.this, RepoActivity.class);
                         pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         startActivity(pr);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("issues".equals(segments.get(0))) {
                         //TODO Implement issues viewer
@@ -76,12 +79,14 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         startActivity(p);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("issues".equals(segments.get(2))) {
                         final Intent i = new Intent(Interceptor.this, IssueActivity.class);
                         i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         i.putExtra(getString(R.string.intent_issue_number), Integer.parseInt(segments.get(3)));
                         startActivity(i);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else {
                         fail();
