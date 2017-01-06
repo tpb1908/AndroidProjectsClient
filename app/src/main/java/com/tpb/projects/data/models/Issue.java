@@ -78,6 +78,9 @@ public class Issue extends DataModel implements Parcelable {
 
     private long createdAt;
 
+    private static final String REPOSITORY_URL = "repository_url";
+    private String repoPath;
+
     public int getId() {
         return id;
     }
@@ -126,6 +129,10 @@ public class Issue extends DataModel implements Parcelable {
         return createdAt;
     }
 
+    public String getRepoPath() {
+        return repoPath;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -150,6 +157,8 @@ public class Issue extends DataModel implements Parcelable {
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
             i.comments = obj.getInt(COMMENTS);
+            //https://api.github.com/repos/user/repo
+            i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
             if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
@@ -224,6 +233,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", labels=" + Arrays.toString(labels) +
                 ", comments=" + comments +
                 ", createdAt=" + createdAt +
+                ", repoPath='" + repoPath + '\'' +
                 '}';
     }
 
@@ -248,6 +258,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeTypedArray(this.labels, flags);
         dest.writeInt(this.comments);
         dest.writeLong(this.createdAt);
+        dest.writeString(this.repoPath);
     }
 
     protected Issue(Parcel in) {
@@ -264,6 +275,7 @@ public class Issue extends DataModel implements Parcelable {
         this.labels = in.createTypedArray(Label.CREATOR);
         this.comments = in.readInt();
         this.createdAt = in.readLong();
+        this.repoPath = in.readString();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {
