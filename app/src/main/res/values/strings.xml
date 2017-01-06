@@ -157,6 +157,7 @@
     <string name="title_save_user_shortcut">Save user</string>
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
+    <string name="title_save_issue_shortcut">Save issue</string>
     <string name="title_open_user_or_repo">Open user or repo</string>
     <string name="title_new_comment">New comment</string>
 
