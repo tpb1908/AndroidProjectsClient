@@ -121,7 +121,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mAccessLevel);
         mRecycler.setAdapter(mAdapter);
-        mRecycler.setAnimationType(AnimatingRecycler.AnimationType.HORIZONTAL);
+        mRecycler.disableAnimation();
         if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {

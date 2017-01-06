@@ -29,6 +29,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:fullBackupContent="true"
         android:theme="@style/AppTheme">
 
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
@@ -36,39 +37,35 @@
         <activity
             android:name=".user.UserActivity"
             android:label="@string/app_name">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-
             </intent-filter>
-
         </activity>
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login">
-
         </activity>
 
         <activity android:name=".repo.RepoActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
             </intent-filter>
         </activity>
 
         <activity android:name=".project.ProjectActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
             </intent-filter>
         </activity>
 
-        <activity android:name=".data.SettingsActivity">
-
+        <activity android:name=".issues.IssueActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
         </activity>
+
+        <activity android:name=".data.SettingsActivity"/>
 
         <activity
             android:name=".util.Interceptor"
