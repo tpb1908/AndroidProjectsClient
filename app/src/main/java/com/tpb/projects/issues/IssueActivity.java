@@ -25,9 +25,13 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -53,6 +57,8 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
+    @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
+
 
     private Editor mEditor;
     private Loader mLoader;
@@ -82,6 +88,19 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void issueLoaded(Issue issue) {
+        if(issue.getAssignees() != null) {
+            for(int i = 0; i < issue.getAssignees().length; i++) {
+                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, mAssignees);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+                imageView.setId(i);
+                imageView.setImageUrl(issue.getAssignees()[i].getAvatarUrl());
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                Log.i(TAG, "issueLoaded: Setting login " + issue.getAssignees()[i].getLogin());
+                final  TextView login = (TextView) user.findViewById(R.id.user_login);
+                login.setId(10 * i); //Max 10 assignees
+                login.setText(issue.getAssignees()[i].getLogin());
+            }
+        }
 
     }
 
