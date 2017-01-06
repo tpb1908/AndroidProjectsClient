@@ -41,6 +41,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
@@ -71,11 +72,13 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
-    
+
     private Editor mEditor;
     private Loader mLoader;
     
     private Issue mIssue;
+    private boolean mCanComment;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,8 +137,26 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         }
 
         if(mIssue.isLocked()) {
-            //TODO Check collaborators
+            mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
+                @Override
+                public void collaboratorsLoaded(User[] collaborators) {
+                    final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
+                    for(User u : collaborators) {
+                        if(u.getLogin().equals(login)) {
+                            mCanComment = true;
+                            mFab.postDelayed(() -> mFab.show(), 300);
+                            return;
+                        }
+                    }
+                }
+
+                @Override
+                public void collaboratorsLoadError(APIHandler.APIError error) {
+
+                }
+            }, mIssue.getRepoPath());
         } else {
+            mCanComment = true;
             mFab.postDelayed(() -> mFab.show(), 300);
         }
     }
