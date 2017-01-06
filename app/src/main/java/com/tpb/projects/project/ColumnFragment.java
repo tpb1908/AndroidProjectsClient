@@ -265,6 +265,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             if(mShouldAnimate) {
                 mRecycler.enableAnimation();
             }
+            mRecycler.disableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
         final Bundle bundle = new Bundle();

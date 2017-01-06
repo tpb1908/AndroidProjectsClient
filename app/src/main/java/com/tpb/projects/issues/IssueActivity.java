@@ -31,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -73,6 +74,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
+    @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
 
     private Editor mEditor;
     private Loader mLoader;
@@ -138,15 +140,20 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mImageState.setImageResource(R.drawable.ic_issue_open);
         }
 
-        if(mIssue.isLocked()) {
+        final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
+        if(issue.getOpenedBy().getLogin().equals(login)) {
+            mOverflowButton.setVisibility(View.VISIBLE);
+            mCanComment = true;
+            mFab.postDelayed(() -> mFab.show(), 300);
+        } else {
             mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
                 @Override
                 public void collaboratorsLoaded(User[] collaborators) {
-                    final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
                     for(User u : collaborators) {
                         if(u.getLogin().equals(login)) {
                             mCanComment = true;
                             mFab.postDelayed(() -> mFab.show(), 300);
+                            mOverflowButton.setVisibility(View.VISIBLE);
                             return;
                         }
                     }
@@ -157,9 +164,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
                 }
             }, mIssue.getRepoPath());
-        } else {
-            mCanComment = true;
-            mFab.postDelayed(() -> mFab.show(), 300);
         }
     }
 
