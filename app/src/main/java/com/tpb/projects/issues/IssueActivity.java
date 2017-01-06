@@ -29,6 +29,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -125,7 +126,8 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                         String.format(getString(R.string.text_href),
                                 "https://github.com/" + issue.getOpenedBy().getLogin(),
                                 issue.getOpenedBy().getLogin()
-                        )
+                        ),
+                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
                 )
         );
         mOpenInfo.setShowUnderLines(false);
