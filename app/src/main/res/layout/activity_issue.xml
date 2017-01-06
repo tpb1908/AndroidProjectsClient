@@ -113,8 +113,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/issue_info"
-                            android:layout_toEndOf="@+id/issue_open_info"
-                            android:layout_toStartOf="@+id/issue_menu_button"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
                             android:text="@string/text_placeholder"
                             android:background="@drawable/shape_badge"/>
 
