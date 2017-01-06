@@ -81,6 +81,9 @@ public class Issue extends DataModel implements Parcelable {
     private static final String REPOSITORY_URL = "repository_url";
     private String repoPath;
 
+    private static final String LOCKED = "locked";
+    private boolean isLocked;
+
     public int getId() {
         return id;
     }
@@ -133,6 +136,10 @@ public class Issue extends DataModel implements Parcelable {
         return repoPath;
     }
 
+    public boolean isLocked() {
+        return isLocked;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -157,6 +164,7 @@ public class Issue extends DataModel implements Parcelable {
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
             i.comments = obj.getInt(COMMENTS);
+            i.isLocked = obj.getBoolean(LOCKED);
             //https://api.github.com/repos/user/repo
             i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
             if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
@@ -234,6 +242,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", comments=" + comments +
                 ", createdAt=" + createdAt +
                 ", repoPath='" + repoPath + '\'' +
+                ", isLocked=" + isLocked +
                 '}';
     }
 
@@ -259,6 +268,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeInt(this.comments);
         dest.writeLong(this.createdAt);
         dest.writeString(this.repoPath);
+        dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
     }
 
     protected Issue(Parcel in) {
@@ -276,6 +286,7 @@ public class Issue extends DataModel implements Parcelable {
         this.comments = in.readInt();
         this.createdAt = in.readLong();
         this.repoPath = in.readString();
+        this.isLocked = in.readByte() != 0;
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {
