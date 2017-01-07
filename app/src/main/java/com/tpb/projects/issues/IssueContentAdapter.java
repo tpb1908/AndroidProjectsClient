@@ -19,6 +19,7 @@ package com.tpb.projects.issues;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ import butterknife.ButterKnife;
  */
 
 class IssueContentAdapter extends RecyclerView.Adapter {
+    private static final String TAG = IssueContentAdapter.class.getSimpleName();
 
     private ArrayList<DataModel> mData = new ArrayList<>();
     private Issue mIssue;
@@ -67,6 +69,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         } else {
             mData.addAll(Arrays.asList(comments));
             Collections.sort(mData, comparator);
+            notifyDataSetChanged();
         }
     }
 
@@ -77,13 +80,15 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         } else {
             mData.addAll(Arrays.asList(events));
             Collections.sort(mData, comparator);
+            notifyDataSetChanged();
         }
+
     }
 
     private Comparator<DataModel> comparator = (d1, d2) -> (d1 instanceof Comment ? ((Comment) d1).getCreatedAt() :
             ((Event) d1).getCreatedAt()) > (d2 instanceof Comment ? ((Comment) d2).getCreatedAt() :
             ((Event) d2).getCreatedAt()) ?
-            1 : 0;
+            1 : -1;
 
     @Override
     public int getItemViewType(int position) {
