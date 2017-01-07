@@ -53,6 +53,7 @@
     <string name="error_unknown">Unknown error</string>
 
     <string name="text_zero_value">0</string>
+    <string name="text_label"><![CDATA[<font color="%1$s">%2$s</font>]]></string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
     <string name="text_forks">Forks</string>
     <string name="text_issues">Issues</string>
@@ -110,6 +111,19 @@
     <string name="text_use_user_image">Use user icon for shortcut</string>
     <string name="text_comment_by">%1$s commented %2$s</string>
     <string name="text_comment_edited">Edited</string>
+    <string name="text_event_closed">Closed by %1$s</string>
+    <string name="text_event_reopened">Reopened by %1$s</string>
+    <string name="text_event_subscribed">%1$s subscribed</string>
+    <string name="text_event_merged">Merged by %1$s in %2$s</string>
+    <string name="text_event_referenced">Referenced in %1$s</string>
+    <string name="text_event_mentioned">%1$s was mentioned</string>
+    <string name="text_event_assigned">%1$s was assigned</string>
+    <string name="text_event_unassigned">%1$s was unassigned</string>
+    <string name="text_event_labeled">%1$s added label %2$s</string>
+    <string name="text_event_unlabeled">%1$s removed label %2$s</string>
+    <string name="text_event_renamed">%1$s renamed the issue from %2$s to %3$s</string>
+    <string name="text_event_locked">%1$s locked the issue</string>
+    <string name="text_event_unlocked">%1$s unlocked the issue</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
