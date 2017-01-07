@@ -29,6 +29,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.Menu;
@@ -61,10 +62,9 @@ import com.vladsch.flexmark.parser.Parser;
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
-
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 /**
  * Created by theo on 06/01/17.
@@ -82,7 +82,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comment_count) TextView mCount;
     @BindView(R.id.issue_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_comments_recycler) FastScrollRecyclerView mRecycler;
+    @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
@@ -105,7 +105,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_issue);
         ButterKnife.bind(this);
-
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 

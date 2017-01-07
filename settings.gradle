@@ -1,1 +1,1 @@
-include ':app', ':animatingrecycler', ':HtmlTextView', ':recyclerview-fastscroll'
+include ':app', ':animatingrecycler', ':HtmlTextView'
