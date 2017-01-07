@@ -177,6 +177,13 @@
     <string name="menu_copy_card_url">Copy card url</string>
     <string name="menu_copy_issue_url">Copy issue url</string>
     <string name="menu_save_to_homescreen">Add shortcut to home</string>
+    <string name="menu_reactions">Reactions</string>
+    <string name="menu_react_plus_one">+1 👍</string>
+    <string name="menu_react_minus_one">-1 👎</string>
+    <string name="menu_react_laugh">Laugh 😂</string>
+    <string name="menu_react_hooray">Hooray 🎉</string>
+    <string name="menu_react_confused">Confused 😕</string>
+    <string name="menu_react_heart">Heart ❤️</string>
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>

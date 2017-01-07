@@ -37,6 +37,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
@@ -111,6 +112,8 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, repoName, issueNumber);
         }
+
+       // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
     @Override
@@ -222,6 +225,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void commentsLoadError(APIHandler.APIError error) {
 
+    }
+
+    public void displayCommentMenu(View view, Comment comment) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(R.menu.menu_comment);
+        menu.show();
     }
 
     @Override
