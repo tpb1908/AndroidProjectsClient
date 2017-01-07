@@ -41,7 +41,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -62,6 +61,8 @@ import com.vladsch.flexmark.parser.Parser;
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -81,7 +82,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comment_count) TextView mCount;
     @BindView(R.id.issue_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.issue_comments_recycler) FastScrollRecyclerView mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;

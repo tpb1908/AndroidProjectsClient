@@ -148,7 +148,7 @@
 
                 </HorizontalScrollView>
 
-                <com.tpb.animatingrecyclerview.AnimatingRecycler
+                <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
                     android:id="@+id/issue_comments_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
