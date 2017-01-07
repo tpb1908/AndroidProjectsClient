@@ -17,10 +17,12 @@
 
 package com.tpb.projects.data.models;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONException;
@@ -52,7 +54,10 @@ public class Event extends DataModel implements Parcelable {
     private long createdAt;
 
     private static final String LABEL = "label";
-    private Label label;
+    private static final String NAME = "name";
+    private String labelName;
+    private static final String COLOR = "color";
+    private int labelColor;
 
     private static final String ASSIGNEE = "assignee";
     private User assignee;
@@ -69,6 +74,62 @@ public class Event extends DataModel implements Parcelable {
     private static final String RENAME_TO = "to";
     private String renameFrom;
     private String renameTo;
+
+    public int getId() {
+        return id;
+    }
+
+    public User getActor() {
+        return actor;
+    }
+
+    public GITEvent getEvent() {
+        return event;
+    }
+
+    public String getCommitId() {
+        return commitId;
+    }
+
+    public String getCommitUrl() {
+        return commitUrl;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getLabelName() {
+        return labelName;
+    }
+
+    public int getLabelColor() {
+        return labelColor;
+    }
+
+    public User getAssignee() {
+        return assignee;
+    }
+
+    public User getAssigner() {
+        return assigner;
+    }
+
+    public User getReviewRequester() {
+        return reviewRequester;
+    }
+
+    public User getRequestedReviewer() {
+        return requestedReviewer;
+    }
+
+    public String getRenameFrom() {
+        return renameFrom;
+    }
+
+    public String getRenameTo() {
+        return renameTo;
+    }
 
     public static Event parse(JSONObject obj) {
         final Event e = new Event();
@@ -88,8 +149,9 @@ public class Event extends DataModel implements Parcelable {
                 e.commitUrl = obj.getString(COMMIT_URL);
             }
 
-            if(obj.has(LABEL)) {
-                e.label = Label.parse(obj.getJSONObject(LABEL));
+            if(obj.has(LABEL) && !Constants.JSON_NULL.equals(obj.getString(LABEL))) {
+                e.labelName = obj.getJSONObject(LABEL).getString(NAME);
+                e.labelColor = Color.parseColor("#" + obj.getJSONObject(LABEL).getString(COLOR));
             }
             if(obj.has(ASSIGNEE)) {
                 e.assignee = User.parse(obj.getJSONObject(ASSIGNEE));
@@ -122,7 +184,8 @@ public class Event extends DataModel implements Parcelable {
                 ", commitId='" + commitId + '\'' +
                 ", commitUrl='" + commitUrl + '\'' +
                 ", createdAt=" + createdAt +
-                ", label=" + label +
+                ", labelName='" + labelName + '\'' +
+                ", labelColor=" + labelColor +
                 ", assignee=" + assignee +
                 ", assigner=" + assigner +
                 ", reviewRequester=" + reviewRequester +
@@ -131,8 +194,6 @@ public class Event extends DataModel implements Parcelable {
                 ", renameTo='" + renameTo + '\'' +
                 '}';
     }
-
-
 
     public enum GITEvent {
         CLOSED("closed"),
@@ -177,7 +238,8 @@ public class Event extends DataModel implements Parcelable {
         dest.writeString(this.commitId);
         dest.writeString(this.commitUrl);
         dest.writeLong(this.createdAt);
-        dest.writeParcelable(this.label, flags);
+        dest.writeString(this.labelName);
+        dest.writeInt(this.labelColor);
         dest.writeParcelable(this.assignee, flags);
         dest.writeParcelable(this.assigner, flags);
         dest.writeParcelable(this.reviewRequester, flags);
@@ -197,7 +259,8 @@ public class Event extends DataModel implements Parcelable {
         this.commitId = in.readString();
         this.commitUrl = in.readString();
         this.createdAt = in.readLong();
-        this.label = in.readParcelable(Label.class.getClassLoader());
+        this.labelName = in.readString();
+        this.labelColor = in.readInt();
         this.assignee = in.readParcelable(User.class.getClassLoader());
         this.assigner = in.readParcelable(User.class.getClassLoader());
         this.reviewRequester = in.readParcelable(User.class.getClassLoader());
@@ -206,7 +269,7 @@ public class Event extends DataModel implements Parcelable {
         this.renameTo = in.readString();
     }
 
-    public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel source) {
             return new Event(source);

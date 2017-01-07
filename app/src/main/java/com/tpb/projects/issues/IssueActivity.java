@@ -49,6 +49,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
+import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
@@ -186,6 +187,17 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 }
             }, mIssue.getRepoPath());
         }
+        mLoader.loadEvents(new Loader.EventsLoader() {
+            @Override
+            public void eventsLoaded(Event[] events) {
+
+            }
+
+            @Override
+            public void eventsLoadError(APIHandler.APIError error) {
+
+            }
+        }, mIssue.getRepoPath());
     }
 
     @Override
