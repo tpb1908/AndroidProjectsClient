@@ -18,6 +18,7 @@
 package com.tpb.projects.issues;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +28,12 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
+import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.util.Data;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
@@ -44,14 +48,19 @@ import butterknife.ButterKnife;
  * Created by theo on 07/01/17.
  */
 
-public class IssueContentAdapter extends RecyclerView.Adapter {
+class IssueContentAdapter extends RecyclerView.Adapter {
 
     private ArrayList<DataModel> mData = new ArrayList<>();
+    private Issue mIssue;
 
     private static final Parser parser = Parser.builder().build();
     private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-    public void loadComments(Comment[] comments) {
+    void setIssue(Issue issue) {
+        mIssue = issue;
+    }
+
+    void loadComments(Comment[] comments) {
         if(mData.size() == 0) {
             mData = new ArrayList<>(Arrays.asList(comments));
             notifyDataSetChanged();
@@ -61,7 +70,7 @@ public class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void loadEvents(Event[] events) {
+    void loadEvents(Event[] events) {
         if(mData.size() == 0) {
             mData = new ArrayList<>(Arrays.asList(events));
             notifyDataSetChanged();
@@ -100,7 +109,19 @@ public class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void bindComment(CommentHolder commentHolder, Comment comment) {
-        commentHolder.mText.setHtml(renderer.render(parser.parse(comment.getBody())));
+        final StringBuilder builder = new StringBuilder();
+        builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
+                        comment.getUser().getHtmlUrl(),
+                        comment.getUser().getLogin()),
+                DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
+        if(comment.getUpdatedAt() != comment.getCreatedAt()) {
+            builder.append(" • ");
+            builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
+        }
+        builder.append("<br><br>");
+        builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
+        commentHolder.mText.setHtml(renderer.render(parser.parse(builder.toString())), new HtmlHttpImageGetter(commentHolder.mText));
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
@@ -114,6 +135,7 @@ public class IssueContentAdapter extends RecyclerView.Adapter {
         CommentHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mText.setShowUnderLines(false);
         }
 
     }
@@ -124,6 +146,7 @@ public class IssueContentAdapter extends RecyclerView.Adapter {
         EventHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mText.setShowUnderLines(false);
         }
 
     }

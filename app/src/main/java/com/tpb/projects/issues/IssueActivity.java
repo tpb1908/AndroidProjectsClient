@@ -122,8 +122,8 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mLoader.loadIssue(this, repoName, issueNumber);
         }
 
-        mAdapter = new IssueContentAdapter();
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new IssueContentAdapter();
         mRecycler.setAdapter(mAdapter);
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
@@ -131,6 +131,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void issueLoaded(Issue issue) {
         mIssue = issue;
+        mAdapter.setIssue(mIssue);
         if(issue.getAssignees() != null) displayAssignees();
         mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
         final StringBuilder builder = new StringBuilder();
