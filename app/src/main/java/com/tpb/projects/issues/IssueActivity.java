@@ -53,8 +53,12 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
@@ -83,7 +87,11 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     private Editor mEditor;
     private Loader mLoader;
-    
+
+    private static final Parser parser = Parser.builder().build();
+    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+
+
     private Issue mIssue;
     private boolean mCanComment;
 
@@ -125,12 +133,14 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         builder.append("<b>");
         builder.append(mIssue.getTitle());
         builder.append("</b>");
+        if(mIssue.getBody() != null) {
+            builder.append("<br><br>");
+            builder.append(renderer.render(parser.parse(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()))));
+        }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
-            builder.append("<br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-
-        mInfo.setHtml(builder.toString());
+        mInfo.setHtml(builder.toString(), new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
