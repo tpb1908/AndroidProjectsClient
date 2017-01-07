@@ -21,7 +21,7 @@ package com.tpb.projects.data.models;
  * Created by theo on 15/12/16.
  */
 
-abstract class DataModel {
+public abstract class DataModel {
 
     static final String ID = "id";
     static final String NAME = "name";

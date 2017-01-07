@@ -225,8 +225,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mText.setHtml(renderer.render(parser.parse(Data.formatMD(card.getNote(), mParent.mParent.mProject.getRepoPath()))),  new HtmlHttpImageGetter(holder.mText));
-
+        holder.mText.setHtml(renderer.render(parser.parse(Data.formatMD(card.getNote(), mParent.mParent.mProject.getRepoPath()))), new HtmlHttpImageGetter(holder.mText));
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {

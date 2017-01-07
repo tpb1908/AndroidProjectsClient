@@ -28,9 +28,9 @@ import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,7 +69,7 @@ import butterknife.ButterKnife;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader {
+public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
     private static final String TAG = IssueActivity.class.getSimpleName();
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
@@ -92,10 +92,10 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     private static final Parser parser = Parser.builder().build();
     private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-
     private Issue mIssue;
     private boolean mCanComment;
 
+    private IssueContentAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +122,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mLoader.loadIssue(this, repoName, issueNumber);
         }
 
+        mAdapter = new IssueContentAdapter();
+        mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mRecycler.setAdapter(mAdapter);
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -187,17 +190,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 }
             }, mIssue.getRepoPath());
         }
-        mLoader.loadEvents(new Loader.EventsLoader() {
-            @Override
-            public void eventsLoaded(Event[] events) {
-
-            }
-
-            @Override
-            public void eventsLoadError(APIHandler.APIError error) {
-
-            }
-        }, mIssue.getRepoPath());
+        mLoader.loadEvents(this, mIssue.getRepoPath());
     }
 
     @Override
@@ -240,9 +233,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void commentsLoaded(Comment[] comments) {
         mCount.setText(Integer.toString(comments.length));
-        for(Comment comment : comments) {
-            Log.i(TAG, "commentsLoaded: " + comment.toString());
-        }
+        mAdapter.loadComments(comments);
     }
 
     @Override
@@ -254,6 +245,16 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(R.menu.menu_comment);
         menu.show();
+    }
+
+    @Override
+    public void eventsLoaded(Event[] events) {
+        mAdapter.loadEvents(events);
+    }
+
+    @Override
+    public void eventsLoadError(APIHandler.APIError error) {
+
     }
 
     @Override

@@ -441,6 +441,7 @@ public class Loader extends APIHandler {
                                 Log.e(TAG, "onResponse: Events: ", jse);
                             }
                         }
+                        Arrays.sort(events, (e1, e2) -> e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0);
                         if(loader != null) loader.eventsLoaded(events);
                     }
 
