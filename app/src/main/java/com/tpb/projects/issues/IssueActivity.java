@@ -130,17 +130,17 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         if(issue.getAssignees() != null) displayAssignees();
         mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
         final StringBuilder builder = new StringBuilder();
-        builder.append("<b>");
+        builder.append("<h1>");
         builder.append(mIssue.getTitle());
-        builder.append("</b>");
+        builder.append("</h1>");
         if(mIssue.getBody() != null) {
-            builder.append("<br><br>");
-            builder.append(renderer.render(parser.parse(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()))));
+            builder.append(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()));
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
+            builder.append("<br><br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        mInfo.setHtml(builder.toString(), new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(renderer.render(parser.parse(builder.toString())), new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -154,6 +154,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         );
         mOpenInfo.setShowUnderLines(false);
         mOpenInfo.setHtml(builder.toString());
+
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);
         } else {
