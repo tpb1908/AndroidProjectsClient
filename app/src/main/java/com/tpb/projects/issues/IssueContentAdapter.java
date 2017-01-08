@@ -20,6 +20,7 @@ package com.tpb.projects.issues;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.util.Data;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -80,19 +82,43 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void loadEvents(Event[] events) {
         if(mData.size() == 0) {
-            mData = new ArrayList<>(Arrays.asList(events));
+            mData = new ArrayList<>(mergeEvents(events));
             notifyDataSetChanged();
         } else {
-            mData.addAll(Arrays.asList(events));
+            mData.addAll(mergeEvents(events));
             Collections.sort(mData, comparator);
             notifyDataSetChanged();
         }
 
     }
 
-    private Comparator<DataModel> comparator = (d1, d2) -> (d1 instanceof Comment ? ((Comment) d1).getCreatedAt() :
-            ((Event) d1).getCreatedAt()) > (d2 instanceof Comment ? ((Comment) d2).getCreatedAt() :
-            ((Event) d2).getCreatedAt()) ?
+    private ArrayList<DataModel> mergeEvents(Event[] events) {
+        final ArrayList<DataModel> merged = new ArrayList<>();
+        ArrayList<Event> toMerge = new ArrayList<>();
+        Event last = new Event();
+        for(int i = 0; i < events.length; i++) {
+            if(events[i].getCreatedAt() == last.getCreatedAt() && events[i].getEvent() == last.getEvent()) {
+                toMerge.add(events[i - 1]);
+                int j = i;
+                while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
+                    toMerge.add(events[j++]);
+                }
+                Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
+                i = j - 1;
+                merged.add(new MergedEvent(toMerge));
+                Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
+                toMerge = new ArrayList<>();
+            } else {
+                merged.add(events[i]);
+            }
+            last = events[i];
+        }
+        return merged;
+
+    }
+
+    //TODO Eww
+    private Comparator<DataModel> comparator = (d1, d2) -> (d1 instanceof Comment ? ((Comment) d1).getCreatedAt() : (d1 instanceof Event ? ((Event) d1).getCreatedAt() : ((MergedEvent) d1).getCreatedAt())) > (d2 instanceof Comment ? ((Comment) d2).getCreatedAt() : (d2 instanceof Event ? ((Event) d2).getCreatedAt() : ((MergedEvent) d2).getCreatedAt())) ?
             1 : -1;
 
     @Override
@@ -114,7 +140,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         if(holder instanceof CommentHolder) {
             bindComment((CommentHolder) holder, (Comment) mData.get(position));
         } else {
-            bindEvent((EventHolder) holder, (Event) mData.get(position));
+            if(mData.get(position) instanceof Event) {
+                bindEvent((EventHolder) holder, (Event) mData.get(position));
+            } else {
+                bindMergedEvent((EventHolder) holder, (MergedEvent) mData.get(position));
+            }
         }
     }
 
@@ -132,6 +162,73 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         builder.append("<br><br>");
         builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
         commentHolder.mText.setHtml(renderer.render(parser.parse(builder.toString())), new HtmlHttpImageGetter(commentHolder.mText));
+    }
+
+    private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
+        String text = "";
+        final Resources res = eventHolder.itemView.getResources();
+        switch(me.getEvent()) {
+            case ASSIGNED:
+                final StringBuilder assignees = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    assignees.append(String.format(res.getString(R.string.text_href),
+                            e.getActor().getHtmlUrl(),
+                            e.getActor().getLogin()));
+                    assignees.append(", ");
+                }
+                assignees.setLength(assignees.length() - 2); //Remove final comma
+                text = String.format(res.getString(R.string.text_event_assigned_multiple), assignees.toString());
+                break;
+            case UNASSIGNED:
+                final StringBuilder unassignees = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    unassignees.append(String.format(res.getString(R.string.text_href),
+                            e.getActor().getHtmlUrl(),
+                            e.getActor().getLogin()));
+                    unassignees.append(", ");
+                }
+                unassignees.setLength(unassignees.length() - 2); //Remove final comma
+                text = String.format(res.getString(R.string.text_event_unassigned_multiple), unassignees.toString());
+                break;
+            case REVIEW_REQUESTED:
+                final StringBuilder requested = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    requested.append(String.format(res.getString(R.string.text_href),
+                            e.getRequestedReviewer().getHtmlUrl(),
+                            e.getRequestedReviewer().getLogin()));
+                    requested.append(", ");
+                }
+                requested.setLength(requested.length() - 2); //Remove final comma
+                text = String.format(res.getString(R.string.text_event_review_requested_multiple),
+                        String.format(res.getString(R.string.text_href),
+                        me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
+                                me.getEvents().get(0).getReviewRequester().getLogin()),
+                        requested.toString());
+                break;
+            case REVIEW_REQUEST_REMOVED:
+                final StringBuilder derequested = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    derequested.append(String.format(res.getString(R.string.text_href),
+                            e.getReviewRequester().getHtmlUrl(),
+                            e.getReviewRequester().getLogin()));
+                    derequested.append(", ");
+                }
+                derequested.setLength(derequested.length() - 2); //Remove final comma
+                text = String.format(res.getString(R.string.text_event_review_request_removed_multiple),
+                        String.format(res.getString(R.string.text_href),
+                                me.getEvents().get(0).getActor().getHtmlUrl(),
+                                me.getEvents().get(0).getActor().getLogin()),
+                        derequested.toString());
+                break;
+            case CLOSED:
+                //Duplicate close events seem to happen
+                bindEvent(eventHolder, me.getEvents().get(0));
+                return;
+            default:
+                Log.e(TAG, "bindMergedEvent: Should be binding merging event " + me.toString(), new Exception());
+                bindEvent(eventHolder, me.getEvents().get(0));
+        }
+        eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
@@ -274,8 +371,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 } else {
                     text = String.format(res.getString(R.string.text_event_review_request_removed),
                             String.format(res.getString(R.string.text_href),
-                                    event.getReviewRequester().getHtmlUrl(),
-                                    event.getReviewRequester().getLogin()),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()),
                             String.format(res.getString(R.string.text_href),
                                     event.getRequestedReviewer().getHtmlUrl(),
                                     event.getRequestedReviewer().getLogin()));
