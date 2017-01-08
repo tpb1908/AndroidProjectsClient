@@ -124,6 +124,12 @@
     <string name="text_event_renamed">%1$s renamed the issue from %2$s to %3$s</string>
     <string name="text_event_locked">%1$s locked the issue</string>
     <string name="text_event_unlocked">%1$s unlocked the issue</string>
+    <string name="text_event_head_ref_deleted">Head ref deleted</string>
+    <string name="text_event_head_ref_restored">Head ref restored</string>
+    <string name="text_event_review_dismissed">%1$s dismissed a review</string>
+    <string name="text_event_review_requested">%1$s requested a review from %2$s</string>
+    <string name="text_event_review_request_removed">%1$s removed the review request for %2$s</string>
+    <string name="text_commit">commit</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>

@@ -17,6 +17,7 @@
 
 package com.tpb.projects.issues;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -129,70 +130,77 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
-        String text = "";
+        String text;
+        final Resources res = eventHolder.itemView.getResources();
+        //TODO Format events where actor = referenced user
         switch(event.getEvent()) {
             case CLOSED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_closed),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_closed),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case REOPENED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_reopened),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_reopened),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case SUBSCRIBED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_subscribed),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_subscribed),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case MERGED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_merged),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_merged),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
-                        "insert commit link here");
+                        String.format(res.getString(R.string.text_href),
+                                "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                res.getString(R.string.text_commit))
+                );
                 break;
             case REFERENCED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_referenced),
-                        "Insert commit link");
+                text = String.format(res.getString(R.string.text_event_referenced),
+                        String.format(res.getString(R.string.text_href),
+                                "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                res.getString(R.string.text_commit)));
                 break;
             case MENTIONED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_mentioned),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_mentioned),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case ASSIGNED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_assigned),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_assigned),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case UNASSIGNED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_unassigned),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_unassigned),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case LABELED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_labeled),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_labeled),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_label),
+                        String.format(res.getString(R.string.text_label),
                                 String.format("#%06X", (0xFFFFFF & event.getLabelColor())),
                                 event.getLabelName()));
                 break;
             case UNLABELED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_unlabeled),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_unlabeled),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_label),
+                        String.format(res.getString(R.string.text_label),
                                 String.format("#%06X", (0xFFFFFF & event.getLabelColor())),
                                 event.getLabelName()));
                 break;
@@ -203,24 +211,54 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text = "De-milestoned"; //TODO
                 break;
             case RENAMED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_renamed),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_renamed),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
                         event.getRenameFrom(),
                         event.getRenameTo());
                 break;
             case LOCKED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_locked),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_locked),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
                 break;
             case UNLOCKED:
-                text = String.format(eventHolder.itemView.getResources().getString(R.string.text_event_unlocked),
-                        String.format(eventHolder.itemView.getResources().getString(R.string.text_href),
+                text = String.format(res.getString(R.string.text_event_unlocked),
+                        String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
+                break;
+            case HEAD_REF_DELETED:
+                text = res.getString(R.string.text_event_head_ref_deleted);
+                break;
+            case HEAD_REF_RESTORED:
+                text = res.getString(R.string.text_event_head_ref_restored);
+                break;
+            case REVIEW_DISMISSED:
+                text = String.format(res.getString(R.string.text_event_review_dismissed),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()));
+                break;
+            case REVIEW_REQUESTED:
+                text = String.format(res.getString(R.string.text_event_review_requested),
+                        String.format(res.getString(R.string.text_href),
+                                event.getReviewRequester().getHtmlUrl(),
+                                event.getReviewRequester().getLogin()),
+                        String.format(res.getString(R.string.text_href),
+                                event.getRequestedReviewer().getHtmlUrl(),
+                                event.getRequestedReviewer().getLogin()));
+                break;
+            case REVIEW_REQUEST_REMOVED:
+                text = String.format(res.getString(R.string.text_event_review_request_removed),
+                        String.format(res.getString(R.string.text_href),
+                                event.getReviewRequester().getHtmlUrl(),
+                                event.getReviewRequester().getLogin()),
+                        String.format(res.getString(R.string.text_href),
+                                event.getRequestedReviewer().getHtmlUrl(),
+                                event.getRequestedReviewer().getLogin()));
                 break;
             default:
                 text = "Something that I haven't bothered to implement " + event.getEvent();
