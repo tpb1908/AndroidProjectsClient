@@ -54,6 +54,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     private ArrayList<DataModel> mData = new ArrayList<>();
     private Issue mIssue;
+    private IssueActivity mParent;
+
+    IssueContentAdapter(IssueActivity parent) {
+        mParent = parent;
+    }
 
     private static final Parser parser = Parser.builder().build();
     private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
@@ -282,6 +287,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
     }
 
+    private void displayMenu(View view, int pos) {
+        mParent.displayCommentMenu(view, (Comment) mData.get(pos));
+    }
+
     class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
@@ -290,6 +299,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             super(view);
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
+            mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
         }
 
     }

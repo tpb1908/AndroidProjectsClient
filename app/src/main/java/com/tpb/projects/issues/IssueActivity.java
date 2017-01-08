@@ -123,7 +123,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         }
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new IssueContentAdapter();
+        mAdapter = new IssueContentAdapter(this);
         mRecycler.setAdapter(mAdapter);
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
