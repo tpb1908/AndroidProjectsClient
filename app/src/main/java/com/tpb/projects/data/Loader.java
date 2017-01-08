@@ -425,8 +425,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadEvents(EventsLoader loader, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + SEGMENT_EVENTS)
+    public void loadEvents(EventsLoader loader, String repoFullName, int issueNumber) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber  + SEGMENT_EVENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
