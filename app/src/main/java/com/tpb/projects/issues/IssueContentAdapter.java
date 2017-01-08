@@ -132,7 +132,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private void bindEvent(EventHolder eventHolder, Event event) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
-        //TODO Format events where actor = referenced user
+        //TODO Merge events, for example multiple assignees to a single event
         switch(event.getEvent()) {
             case CLOSED:
                 text = String.format(res.getString(R.string.text_event_closed),
@@ -243,22 +243,38 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                 event.getActor().getLogin()));
                 break;
             case REVIEW_REQUESTED:
-                text = String.format(res.getString(R.string.text_event_review_requested),
-                        String.format(res.getString(R.string.text_href),
-                                event.getReviewRequester().getHtmlUrl(),
-                                event.getReviewRequester().getLogin()),
-                        String.format(res.getString(R.string.text_href),
-                                event.getRequestedReviewer().getHtmlUrl(),
-                                event.getRequestedReviewer().getLogin()));
+                if(event.getReviewRequester().getId() == event.getRequestedReviewer().getId()) {
+                    text = String.format(res.getString(R.string.text_event_own_review_request),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getReviewRequester().getHtmlUrl(),
+                                    event.getReviewRequester().getLogin())
+                    );
+                } else {
+                    text = String.format(res.getString(R.string.text_event_review_requested),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getReviewRequester().getHtmlUrl(),
+                                    event.getReviewRequester().getLogin()),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getRequestedReviewer().getHtmlUrl(),
+                                    event.getRequestedReviewer().getLogin()));
+                }
                 break;
             case REVIEW_REQUEST_REMOVED:
-                text = String.format(res.getString(R.string.text_event_review_request_removed),
-                        String.format(res.getString(R.string.text_href),
-                                event.getReviewRequester().getHtmlUrl(),
-                                event.getReviewRequester().getLogin()),
-                        String.format(res.getString(R.string.text_href),
-                                event.getRequestedReviewer().getHtmlUrl(),
-                                event.getRequestedReviewer().getLogin()));
+                if(event.getReviewRequester().getId() == event.getRequestedReviewer().getId()) {
+                    text = String.format(res.getString(R.string.text_event_removed_own_review_request),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getReviewRequester().getHtmlUrl(),
+                                    event.getReviewRequester().getLogin())
+                    );
+                } else {
+                    text = String.format(res.getString(R.string.text_event_review_request_removed),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getReviewRequester().getHtmlUrl(),
+                                    event.getReviewRequester().getLogin()),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getRequestedReviewer().getHtmlUrl(),
+                                    event.getRequestedReviewer().getLogin()));
+                }
                 break;
             default:
                 text = "Something that I haven't bothered to implement " + event.getEvent();
