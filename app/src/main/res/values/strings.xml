@@ -117,7 +117,7 @@
     <string name="text_event_merged">Merged by %1$s in %2$s</string>
     <string name="text_event_referenced">Referenced in %1$s</string>
     <string name="text_event_mentioned">%1$s was mentioned</string>
-    <string name="text_event_assigned">%1$s was assigned by</string>
+    <string name="text_event_assigned">%1$s was assigned </string>
     <string name="text_event_unassigned">%1$s was unassigned</string>
     <string name="text_event_labeled">%1$s added label %2$s</string>
     <string name="text_event_unlabeled">%1$s removed label %2$s</string>

@@ -284,6 +284,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             default:
                 text = "Something that I haven't bothered to implement " + event.getEvent();
         }
+        text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
     }
 
