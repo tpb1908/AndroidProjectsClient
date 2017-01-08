@@ -129,8 +129,11 @@
     <string name="text_event_review_dismissed">%1$s dismissed a review</string>
     <string name="text_event_review_requested">%1$s requested a review from %2$s</string>
     <string name="text_event_own_review_request">%1$s requested their own review</string>
-    <string name="text_event_removed_own_review_request">%1$s remove their review request</string>
+    <string name="text_event_removed_own_review_request">%1$s removed their review request</string>
     <string name="text_event_review_request_removed">%1$s removed the review request for %2$s</string>
+    <string name="text_event_assigned_multiple">Assigned to %1$s</string>
+    <string name="text_event_review_requested_multiple">%1$s requested reviews form %2$s</string>
+    <string name="text_event_review_request_removed_multiple">%1$s removed review requests for %2$s</string>
     <string name="text_commit">commit</string>
 
     <plurals name="text_issue_comment_count">
