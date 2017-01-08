@@ -22,7 +22,6 @@ import android.util.Log;
 
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
-import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 
@@ -206,11 +205,6 @@ public class Data {
         return obj;
     }
 
-    public static String formatIssue(Issue issue) {
-
-
-        return "";
-    }
 
     public static String formatMD(String s, String fullRepoPath) {
         final StringBuilder builder = new StringBuilder();
@@ -289,7 +283,7 @@ public class Data {
                 if(i == cs.length - 1) {
                     if(cs[i] >= '0' && cs[i] <= '9') {
                         numBuilder.append(cs[i]);
-                    } else {
+                    } else if(numBuilder.length() == 0) {
                         builder.append("#");
                         return --pos;
                     }
