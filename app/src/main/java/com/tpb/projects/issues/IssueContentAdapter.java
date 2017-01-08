@@ -167,7 +167,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
         String text = "";
         final Resources res = eventHolder.itemView.getResources();
-        eventHolder.mText.setText(me.toString());
         switch(me.getEvent()) {
             case ASSIGNED:
                 final StringBuilder assignees = new StringBuilder();
@@ -179,6 +178,17 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 }
                 assignees.setLength(assignees.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_assigned_multiple), assignees.toString());
+                break;
+            case UNASSIGNED:
+                final StringBuilder unassignees = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    unassignees.append(String.format(res.getString(R.string.text_href),
+                            e.getActor().getHtmlUrl(),
+                            e.getActor().getLogin()));
+                    unassignees.append(", ");
+                }
+                unassignees.setLength(unassignees.length() - 2); //Remove final comma
+                text = String.format(res.getString(R.string.text_event_unassigned_multiple), unassignees.toString());
                 break;
             case REVIEW_REQUESTED:
                 final StringBuilder requested = new StringBuilder();
