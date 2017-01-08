@@ -121,7 +121,7 @@
     <string name="text_event_unassigned">%1$s was unassigned</string>
     <string name="text_event_labeled">%1$s added label %2$s</string>
     <string name="text_event_unlabeled">%1$s removed label %2$s</string>
-    <string name="text_event_renamed">%1$s renamed the issue from %2$s to %3$s</string>
+    <string name="text_event_renamed"><![CDATA[%1$s renamed the issue from <b>\"%2$s\"</b> to <b>\"%3$s\"</b>]]></string>
     <string name="text_event_locked">%1$s locked the issue</string>
     <string name="text_event_unlocked">%1$s unlocked the issue</string>
     <string name="text_event_head_ref_deleted">Head ref deleted</string>
