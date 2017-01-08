@@ -223,14 +223,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 } else {
                     if(accessCheckAttempts < 5) {
                         accessCheckAttempts++;
-                        mLoader.checkAccessToRepository(this, GitHubSession.getSession(ProjectActivity.this).getUserLogin(), project.getRepoFullName());
+                        mLoader.checkAccessToRepository(this, GitHubSession.getSession(ProjectActivity.this).getUserLogin(), project.getRepoPath());
                     } else {
                         Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                         mRefresher.setRefreshing(false);
                     }
                 }
             }
-        }, GitHubSession.getSession(this).getUserLogin(), project.getRepoFullName());
+        }, GitHubSession.getSession(this).getUserLogin(), project.getRepoPath());
     }
 
     void showFab() {
@@ -245,7 +245,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     public void projectLoaded(Project project) {
         Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
         mProject = project;
-        mLoader.loadLabels(null, mProject.getRepoFullName());
+        mLoader.loadLabels(null, mProject.getRepoPath());
         mName.setText(project.getName());
 
         final Bundle bundle = new Bundle();
@@ -310,7 +310,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
-        mLoader.loadIssue(loader, mProject.getRepoFullName(), issueId);
+        mLoader.loadIssue(loader, mProject.getRepoPath(), issueId);
     }
 
     @OnClick(R.id.project_add_column)
@@ -401,7 +401,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
         });
         final Bundle c = new Bundle();
-        c.putString(getString(R.string.intent_repo), mProject.getRepoFullName());
+        c.putString(getString(R.string.intent_repo), mProject.getRepoPath());
         newDialog.setArguments(c);
         newDialog.show(getSupportFragmentManager(), TAG);
     }
@@ -495,7 +495,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
         }
         final Bundle bundle = new Bundle();
-        bundle.putString(getString(R.string.intent_repo), mProject.getRepoFullName());
+        bundle.putString(getString(R.string.intent_repo), mProject.getRepoPath());
         bundle.putIntegerArrayList(getString(R.string.intent_int_arraylist), ids);
         dialog.setArguments(bundle);
         mAdapter.getCurrentFragment().showCardDialog(dialog);
@@ -589,7 +589,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 final Intent share = new Intent();
                 share.setAction(Intent.ACTION_SEND);
                 share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" +
-                        mProject.getRepoFullName() +
+                        mProject.getRepoPath() +
                         "/projects/" +
                         Integer.toString(mProject.getNumber()));
                 share.setType("text/plain");
@@ -604,7 +604,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 dialog.setArguments(args);
                 dialog.setListener((name, iconFlag) -> {
                     final Intent i = new Intent(getApplicationContext(), ProjectActivity.class);
-                    i.putExtra(getString(R.string.intent_repo), mProject.getRepoFullName());
+                    i.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
                     i.putExtra(getString(R.string.intent_project_number), mProject.getNumber());
 
                     final Intent add = new Intent();

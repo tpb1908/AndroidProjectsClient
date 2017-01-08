@@ -53,6 +53,7 @@
     <string name="error_unknown">Unknown error</string>
 
     <string name="text_zero_value">0</string>
+    <string name="text_label"><![CDATA[<font color="%1$s">%2$s</font>]]></string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
     <string name="text_forks">Forks</string>
     <string name="text_issues">Issues</string>
@@ -101,12 +102,36 @@
     <string name="text_md_link">[%1$s](%2$s)</string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s) %3$s</string>
     <string name="text_opened_by">%1$s opened by %2$s %3$s</string>
+    <string name="text_opened_this_issue">%1$s opened this issue %2$s</string>
     <string name="text_href"><![CDATA[<a href=\"%1$s\">%2$s</a>]]></string>
     <string name="text_card_url"><![CDATA[https://github.com/%1$s/projects/%2$d#-%3$d]]></string>
     <string name="text_issue_url"><![CDATA[https://github.com/%1$s/issues/%2$d]]></string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
     <string name="text_use_user_image">Use user icon for shortcut</string>
+    <string name="text_comment_by">%1$s commented %2$s</string>
+    <string name="text_comment_edited">Edited</string>
+    <string name="text_event_closed">Closed by %1$s</string>
+    <string name="text_event_reopened">Reopened by %1$s</string>
+    <string name="text_event_subscribed">%1$s subscribed</string>
+    <string name="text_event_merged">Merged by %1$s in %2$s</string>
+    <string name="text_event_referenced">Referenced in %1$s</string>
+    <string name="text_event_mentioned">%1$s was mentioned</string>
+    <string name="text_event_assigned">%1$s was assigned </string>
+    <string name="text_event_unassigned">%1$s was unassigned</string>
+    <string name="text_event_labeled">%1$s added label %2$s</string>
+    <string name="text_event_unlabeled">%1$s removed label %2$s</string>
+    <string name="text_event_renamed">%1$s renamed the issue from %2$s to %3$s</string>
+    <string name="text_event_locked">%1$s locked the issue</string>
+    <string name="text_event_unlocked">%1$s unlocked the issue</string>
+    <string name="text_event_head_ref_deleted">Head ref deleted</string>
+    <string name="text_event_head_ref_restored">Head ref restored</string>
+    <string name="text_event_review_dismissed">%1$s dismissed a review</string>
+    <string name="text_event_review_requested">%1$s requested a review from %2$s</string>
+    <string name="text_event_own_review_request">%1$s requested their own review</string>
+    <string name="text_event_removed_own_review_request">%1$s remove their review request</string>
+    <string name="text_event_review_request_removed">%1$s removed the review request for %2$s</string>
+    <string name="text_commit">commit</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
@@ -156,6 +181,7 @@
     <string name="title_save_user_shortcut">Save user</string>
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
+    <string name="title_save_issue_shortcut">Save issue</string>
     <string name="title_open_user_or_repo">Open user or repo</string>
     <string name="title_new_comment">New comment</string>
 
@@ -175,6 +201,13 @@
     <string name="menu_copy_card_url">Copy card url</string>
     <string name="menu_copy_issue_url">Copy issue url</string>
     <string name="menu_save_to_homescreen">Add shortcut to home</string>
+    <string name="menu_reactions">Reactions</string>
+    <string name="menu_react_plus_one">+1 👍</string>
+    <string name="menu_react_minus_one">-1 👎</string>
+    <string name="menu_react_laugh">Laugh 😂</string>
+    <string name="menu_react_hooray">Hooray 🎉</string>
+    <string name="menu_react_confused">Confused 😕</string>
+    <string name="menu_react_heart">Heart ❤️</string>
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
@@ -182,6 +215,7 @@
     <string name="intent_access_level" translatable="false">access_level</string>
     <string name="intent_project_number" translatable="false">project_number</string>
     <string name="intent_title_res" translatable="false">title</string>
+    <string name="intent_issue_number" translatable="false">issue_number</string>
     <string name="intent_name" translatable="false">name</string>
     <string name="intent_drawable" translatable="false">drawable</string>
     <string name="parcel_project" translatable="false">project</string>

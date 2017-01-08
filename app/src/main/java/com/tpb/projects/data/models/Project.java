@@ -104,7 +104,7 @@ public class Project extends DataModel implements Parcelable {
         this.body = body;
     }
 
-    public String getRepoFullName() {
+    public String getRepoPath() {
         return ownerUrl.substring(ownerUrl.indexOf("s/") + 2);
     }
 

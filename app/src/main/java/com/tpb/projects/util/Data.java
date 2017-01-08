@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 
@@ -203,6 +204,115 @@ public class Data {
             Log.e(TAG, "save: ", jse);
         }
         return obj;
+    }
+
+    public static String formatIssue(Issue issue) {
+
+
+        return "";
+    }
+
+    public static String formatMD(String s, String fullRepoPath) {
+        final StringBuilder builder = new StringBuilder();
+        char p = ' ';
+        char pp = ' ';
+        final char[] cs = s.toCharArray();
+        for(int i = 0; i < s.length(); i++) {
+            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
+                builder.append("\n");
+            }
+            if(cs[i] == '@' && (p == ' '  || p == '\n')) {
+                //Max username length is 39 characters
+                //Usernames can be alphanumeric with single hyphens
+                i = parseUsername(builder, cs, i);
+            } else if(cs[i] == '-' && p == '-' && pp == '-') {
+                //TODO Find out if there is a way of computing characters per line and filling the string
+                //I could try using the strike tag
+                builder.setLength(builder.length() - 2);
+
+            } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
+                i = parseIssue(builder, cs, i, fullRepoPath);
+            } else {
+                builder.append(cs[i]);
+            }
+            pp = p;
+            p = cs[i];
+        }
+        return builder.toString();
+    }
+
+    private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
+        final StringBuilder nameBuilder = new StringBuilder();
+        char p = ' ';
+        for(int i = ++pos; i < cs.length; i++) {
+            if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
+                    (cs[i] >= '0' && cs[i] <= '9') ||
+                    (cs[i] >= 'a' && cs[i] <= 'z') ||
+                    (cs[i] == '-' && p != '-')) &&
+                    i - pos < 38 &&
+                    i != cs.length - 1) {
+                nameBuilder.append(cs[i]);
+                p = cs[i];
+                //nameBuilder.length() > 0 stop us linking a single @
+            } else if((cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) && nameBuilder.length() > 0) {
+                if(i == cs.length - 1) {
+                    nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
+                }
+                builder.append("[@");
+                builder.append(nameBuilder.toString());
+                builder.append(']');
+                builder.append('(');
+                builder.append("https://github.com/");
+                builder.append(nameBuilder.toString());
+                builder.append(')');
+                if(i != cs.length - 1) {
+                    builder.append(cs[i]); // We still need to append the space or newline
+                }
+                return i;
+            } else {
+                builder.append("@");
+                return --pos;
+            }
+
+        }
+        builder.append("@");
+        return --pos;
+    }
+
+    private static int parseIssue(StringBuilder builder, char[] cs, int pos, String fullRepoPath) {
+        final StringBuilder numBuilder = new StringBuilder();
+        for(int i = ++pos; i < cs.length; i++) {
+            if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
+                numBuilder.append(cs[i]);
+            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
+                if(i == cs.length - 1) {
+                    if(cs[i] >= '0' && cs[i] <= '9') {
+                        numBuilder.append(cs[i]);
+                    } else {
+                        builder.append("#");
+                        return --pos;
+                    }
+                }
+                builder.append("[#");
+                builder.append(numBuilder.toString());
+                builder.append("]");
+                builder.append("(");
+                builder.append("https://github.com/");
+                builder.append(fullRepoPath);
+                builder.append("/issues/");
+                builder.append(numBuilder.toString());
+                builder.append(")");
+                if(i != cs.length - 1) {
+                    builder.append(cs[i]); // We still need to append the space or newline
+                }
+                return i;
+            } else {
+                builder.append("#");
+                return --pos;
+            }
+        }
+        builder.append("#");
+        return --pos;
     }
 
 

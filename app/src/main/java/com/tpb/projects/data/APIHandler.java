@@ -60,6 +60,7 @@ public abstract class APIHandler {
     static final String SEGMENT_CARDS = "/cards";
     static final String SEGMENT_MOVES = "/moves";
     static final String SEGMENT_COMMENTS = "/comments";
+    static final String SEGMENT_EVENTS = "/events";
 
 
     protected APIHandler(Context context) {
