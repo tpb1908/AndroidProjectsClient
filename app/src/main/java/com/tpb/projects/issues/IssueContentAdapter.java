@@ -194,8 +194,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 final StringBuilder requested = new StringBuilder();
                 for(Event e : me.getEvents()) {
                     requested.append(String.format(res.getString(R.string.text_href),
-                            e.getReviewRequester().getHtmlUrl(),
-                            e.getReviewRequester().getLogin()));
+                            e.getRequestedReviewer().getHtmlUrl(),
+                            e.getRequestedReviewer().getLogin()));
                     requested.append(", ");
                 }
                 requested.setLength(requested.length() - 2); //Remove final comma
