@@ -56,7 +56,6 @@ public class Card extends DataModel implements Parcelable {
 
     private boolean requiresLoadingFromIssue;
 
-    private long createdAt;
 
     private long updatedAt;
 
@@ -92,6 +91,7 @@ public class Card extends DataModel implements Parcelable {
         this.note = note;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -190,10 +190,10 @@ public class Card extends DataModel implements Parcelable {
                 "columnUrl='" + columnUrl + '\'' +
                 ", contentUrl='" + contentUrl + '\'' +
                 ", issueId=" + issueId +
+                ", issue=" + issue +
                 ", id=" + id +
                 ", note='" + note + '\'' +
                 ", requiresLoadingFromIssue=" + requiresLoadingFromIssue +
-                ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
@@ -212,8 +212,8 @@ public class Card extends DataModel implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.note);
         dest.writeByte(this.requiresLoadingFromIssue ? (byte) 1 : (byte) 0);
-        dest.writeLong(this.createdAt);
         dest.writeLong(this.updatedAt);
+        dest.writeLong(this.createdAt);
     }
 
     protected Card(Parcel in) {
@@ -224,8 +224,8 @@ public class Card extends DataModel implements Parcelable {
         this.id = in.readInt();
         this.note = in.readString();
         this.requiresLoadingFromIssue = in.readByte() != 0;
-        this.createdAt = in.readLong();
         this.updatedAt = in.readLong();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Card> CREATOR = new Creator<Card>() {

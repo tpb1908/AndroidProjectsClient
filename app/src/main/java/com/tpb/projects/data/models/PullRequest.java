@@ -25,7 +25,6 @@ public class PullRequest extends DataModel {
 
     private int id;
 
-    //TODO Add htmlURL to all models
     private String htmlURl;
 
     private String pathUrl;
@@ -58,4 +57,8 @@ public class PullRequest extends DataModel {
 
     private User creator;
 
+    @Override
+    public long getCreatedAt() {
+        return 0;
+    }
 }

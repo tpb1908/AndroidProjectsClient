@@ -51,8 +51,6 @@ public class Event extends DataModel implements Parcelable {
     private static final String COMMIT_URL = "commit_url";
     private String commitUrl;
 
-    private long createdAt;
-
     private static final String LABEL = "label";
     private static final String NAME = "name";
     private String labelName;
@@ -95,6 +93,7 @@ public class Event extends DataModel implements Parcelable {
         return commitUrl;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -183,7 +182,6 @@ public class Event extends DataModel implements Parcelable {
                 ", event=" + event +
                 ", commitId='" + commitId + '\'' +
                 ", commitUrl='" + commitUrl + '\'' +
-                ", createdAt=" + createdAt +
                 ", labelName='" + labelName + '\'' +
                 ", labelColor=" + labelColor +
                 ", assignee=" + assignee +
@@ -225,6 +223,7 @@ public class Event extends DataModel implements Parcelable {
 
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -237,7 +236,6 @@ public class Event extends DataModel implements Parcelable {
         dest.writeInt(this.event == null ? -1 : this.event.ordinal());
         dest.writeString(this.commitId);
         dest.writeString(this.commitUrl);
-        dest.writeLong(this.createdAt);
         dest.writeString(this.labelName);
         dest.writeInt(this.labelColor);
         dest.writeParcelable(this.assignee, flags);
@@ -246,6 +244,7 @@ public class Event extends DataModel implements Parcelable {
         dest.writeParcelable(this.requestedReviewer, flags);
         dest.writeString(this.renameFrom);
         dest.writeString(this.renameTo);
+        dest.writeLong(this.createdAt);
     }
 
     public Event() {
@@ -258,7 +257,6 @@ public class Event extends DataModel implements Parcelable {
         this.event = tmpEvent == -1 ? null : GITEvent.values()[tmpEvent];
         this.commitId = in.readString();
         this.commitUrl = in.readString();
-        this.createdAt = in.readLong();
         this.labelName = in.readString();
         this.labelColor = in.readInt();
         this.assignee = in.readParcelable(User.class.getClassLoader());
@@ -267,6 +265,7 @@ public class Event extends DataModel implements Parcelable {
         this.requestedReviewer = in.readParcelable(User.class.getClassLoader());
         this.renameFrom = in.readString();
         this.renameTo = in.readString();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Event> CREATOR = new Creator<Event>() {

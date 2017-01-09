@@ -22,8 +22,12 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.tpb.projects.util.Data;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
  * Created by theo on 18/12/16.
@@ -121,6 +125,11 @@ public class User extends DataModel implements Parcelable {
         return htmlUrl;
     }
 
+    @Override
+    public long getCreatedAt() {
+        return 0;
+    }
+
     public static User parse(JSONObject obj) {
         final User u = new User();
         try {
@@ -130,6 +139,12 @@ public class User extends DataModel implements Parcelable {
             u.htmlUrl = obj.getString(HTML_URL);
             u.url = obj.getString(URL);
             u.reposUrl = obj.getString(REPOS_URL);
+            try {
+                u.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+
             if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
             if(obj.has(FOLLOWERS)) u.followers = obj.getInt(FOLLOWERS);
             if(obj.has(BIO)) u.bio = obj.getString(BIO);
@@ -201,6 +216,7 @@ public class User extends DataModel implements Parcelable {
         dest.writeInt(this.repos);
         dest.writeInt(this.followers);
         dest.writeString(this.bio);
+        dest.writeLong(this.createdAt);
     }
 
     protected User(Parcel in) {
@@ -216,6 +232,7 @@ public class User extends DataModel implements Parcelable {
         this.repos = in.readInt();
         this.followers = in.readInt();
         this.bio = in.readString();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {

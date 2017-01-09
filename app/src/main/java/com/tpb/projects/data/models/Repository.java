@@ -21,8 +21,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.tpb.projects.util.Data;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
  * Created by theo on 15/12/16.
@@ -37,6 +41,8 @@ public class Repository extends DataModel implements Parcelable {
     private int id;
 
     private String name;
+
+    private long updatedAt;
 
     private static final String OWNER = "owner";
     private static final String USER_LOGIN = "login";
@@ -155,27 +161,42 @@ public class Repository extends DataModel implements Parcelable {
         return size;
     }
 
-    public static Repository parse(JSONObject object) {
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    @Override
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public static Repository parse(JSONObject obj) {
         final Repository r = new Repository();
         try {
-            r.id = object.getInt(ID);
-            r.userLogin = object.getJSONObject(OWNER).getString(USER_LOGIN);
-            r.userId = object.getJSONObject(OWNER).getInt(ID);
-            r.userAvatarUrl = object.getJSONObject(OWNER).getString(USER_AVATAR);
-            r.name = object.getString(NAME);
-            r.fullName = object.getString(FULL_NAME);
-            r.description = object.getString(DESCRIPTION);
-            r.isPrivate = object.getBoolean(PRIVATE);
-            r.isFork = object.getBoolean(FORK);
-            r.url = object.getString(URL);
-            r.htmlUrl = object.getString(HTML_URL);
-            r.language = object.getString(LANGUAGE);
-            r.hasIssues = object.getBoolean(HAS_ISSUES);
-            r.starGazers = object.getInt(STAR_GAZERS);
-            r.forks = object.getInt(FORKS);
-            r.watchers = object.getInt(WATCHERS);
-            r.issues = object.getInt(ISSUES);
-            r.size = object.getInt(SIZE);
+            r.id = obj.getInt(ID);
+            r.userLogin = obj.getJSONObject(OWNER).getString(USER_LOGIN);
+            r.userId = obj.getJSONObject(OWNER).getInt(ID);
+            r.userAvatarUrl = obj.getJSONObject(OWNER).getString(USER_AVATAR);
+            r.name = obj.getString(NAME);
+            r.fullName = obj.getString(FULL_NAME);
+            r.description = obj.getString(DESCRIPTION);
+            r.isPrivate = obj.getBoolean(PRIVATE);
+            r.isFork = obj.getBoolean(FORK);
+            r.url = obj.getString(URL);
+            r.htmlUrl = obj.getString(HTML_URL);
+            r.language = obj.getString(LANGUAGE);
+            r.hasIssues = obj.getBoolean(HAS_ISSUES);
+            r.starGazers = obj.getInt(STAR_GAZERS);
+            r.forks = obj.getInt(FORKS);
+            r.watchers = obj.getInt(WATCHERS);
+            r.issues = obj.getInt(ISSUES);
+            r.size = obj.getInt(SIZE);
+            try {
+                r.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                r.updatedAt = Data.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
 
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -218,6 +239,7 @@ public class Repository extends DataModel implements Parcelable {
         return "Repository{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", updatedAt=" + updatedAt +
                 ", userLogin='" + userLogin + '\'' +
                 ", userAvatarUrl='" + userAvatarUrl + '\'' +
                 ", userId=" + userId +
@@ -237,6 +259,14 @@ public class Repository extends DataModel implements Parcelable {
                 '}';
     }
 
+
+
+    public enum AccessLevel {
+
+        ADMIN, WRITE, READ, NONE
+
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -246,6 +276,7 @@ public class Repository extends DataModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeString(this.name);
+        dest.writeLong(this.updatedAt);
         dest.writeString(this.userLogin);
         dest.writeString(this.userAvatarUrl);
         dest.writeInt(this.userId);
@@ -262,11 +293,13 @@ public class Repository extends DataModel implements Parcelable {
         dest.writeInt(this.watchers);
         dest.writeInt(this.issues);
         dest.writeInt(this.size);
+        dest.writeLong(this.createdAt);
     }
 
-    private Repository(Parcel in) {
+    protected Repository(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
+        this.updatedAt = in.readLong();
         this.userLogin = in.readString();
         this.userAvatarUrl = in.readString();
         this.userId = in.readInt();
@@ -283,6 +316,7 @@ public class Repository extends DataModel implements Parcelable {
         this.watchers = in.readInt();
         this.issues = in.readInt();
         this.size = in.readInt();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Repository> CREATOR = new Creator<Repository>() {
@@ -296,10 +330,4 @@ public class Repository extends DataModel implements Parcelable {
             return new Repository[size];
         }
     };
-
-    public enum AccessLevel {
-
-        ADMIN, WRITE, READ, NONE
-
-    }
 }

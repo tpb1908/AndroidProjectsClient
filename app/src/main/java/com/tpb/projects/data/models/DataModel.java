@@ -29,4 +29,8 @@ public abstract class DataModel {
     static final String UPDATED_AT = "updated_at";
     static final String URL = "url";
 
+    long createdAt;
+
+    public abstract long getCreatedAt();
+
 }

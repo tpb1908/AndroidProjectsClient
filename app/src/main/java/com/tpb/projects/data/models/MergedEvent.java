@@ -43,6 +43,7 @@ public class MergedEvent extends DataModel implements Parcelable {
         return events;
     }
 
+    @Override
     public long getCreatedAt() {
         return events.get(0).getCreatedAt();
     }
@@ -58,6 +59,7 @@ public class MergedEvent extends DataModel implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -72,7 +74,7 @@ public class MergedEvent extends DataModel implements Parcelable {
         this.events = in.createTypedArrayList(Event.CREATOR);
     }
 
-    public static final Parcelable.Creator<MergedEvent> CREATOR = new Parcelable.Creator<MergedEvent>() {
+    public static final Creator<MergedEvent> CREATOR = new Creator<MergedEvent>() {
         @Override
         public MergedEvent createFromParcel(Parcel source) {
             return new MergedEvent(source);

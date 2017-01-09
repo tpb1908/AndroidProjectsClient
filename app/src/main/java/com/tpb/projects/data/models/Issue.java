@@ -76,8 +76,6 @@ public class Issue extends DataModel implements Parcelable {
     private static final String COMMENTS = "comments";
     private int comments;
 
-    private long createdAt;
-
     private static final String REPOSITORY_URL = "repository_url";
     private String repoPath;
 
@@ -128,6 +126,7 @@ public class Issue extends DataModel implements Parcelable {
         return comments;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -240,7 +239,6 @@ public class Issue extends DataModel implements Parcelable {
                 ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
                 ", comments=" + comments +
-                ", createdAt=" + createdAt +
                 ", repoPath='" + repoPath + '\'' +
                 ", isLocked=" + isLocked +
                 '}';
@@ -266,9 +264,9 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
         dest.writeInt(this.comments);
-        dest.writeLong(this.createdAt);
         dest.writeString(this.repoPath);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.createdAt);
     }
 
     protected Issue(Parcel in) {
@@ -284,9 +282,9 @@ public class Issue extends DataModel implements Parcelable {
         this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);
         this.comments = in.readInt();
-        this.createdAt = in.readLong();
         this.repoPath = in.readString();
         this.isLocked = in.readByte() != 0;
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

@@ -45,8 +45,6 @@ public class Column extends DataModel implements Parcelable {
     private static final String PROJECT_URL = "project_url";
     private String projectUrl;
 
-    private long createdAt;
-
     private long updatedAt;
 
     public int getId() {
@@ -61,6 +59,7 @@ public class Column extends DataModel implements Parcelable {
         return projectUrl;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -114,14 +113,12 @@ public class Column extends DataModel implements Parcelable {
         return obj instanceof Column && ((Column) obj).id == id;
     }
 
-
     @Override
     public String toString() {
         return "Column{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", projectUrl='" + projectUrl + '\'' +
-                ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
@@ -137,16 +134,16 @@ public class Column extends DataModel implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.name);
         dest.writeString(this.projectUrl);
-        dest.writeLong(this.createdAt);
         dest.writeLong(this.updatedAt);
+        dest.writeLong(this.createdAt);
     }
 
     protected Column(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
         this.projectUrl = in.readString();
-        this.createdAt = in.readLong();
         this.updatedAt = in.readLong();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Column> CREATOR = new Creator<Column>() {

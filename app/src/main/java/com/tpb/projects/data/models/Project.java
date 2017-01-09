@@ -55,10 +55,7 @@ public class Project extends DataModel implements Parcelable {
     private static final String LOGIN = "login";
     private String creatorUserName;
 
-    private long createdAt;
-
     private long updatedAt;
-
 
     public String getOwnerUrl() {
         return ownerUrl;
@@ -84,6 +81,7 @@ public class Project extends DataModel implements Parcelable {
         return creatorUserName;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -164,10 +162,10 @@ public class Project extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", number=" + number +
                 ", creatorUserName='" + creatorUserName + '\'' +
-                ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -183,11 +181,11 @@ public class Project extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeInt(this.number);
         dest.writeString(this.creatorUserName);
-        dest.writeLong(this.createdAt);
         dest.writeLong(this.updatedAt);
+        dest.writeLong(this.createdAt);
     }
 
-    private Project(Parcel in) {
+    protected Project(Parcel in) {
         this.id = in.readInt();
         this.ownerUrl = in.readString();
         this.url = in.readString();
@@ -195,8 +193,8 @@ public class Project extends DataModel implements Parcelable {
         this.body = in.readString();
         this.number = in.readInt();
         this.creatorUserName = in.readString();
-        this.createdAt = in.readLong();
         this.updatedAt = in.readLong();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Project> CREATOR = new Creator<Project>() {

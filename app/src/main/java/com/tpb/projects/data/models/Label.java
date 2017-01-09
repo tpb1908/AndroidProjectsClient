@@ -82,6 +82,11 @@ public class Label extends DataModel implements Parcelable {
         return l;
     }
 
+    @Override
+    public long getCreatedAt() {
+        return 0;
+    }
+
     public static JSONObject parse(Label label) {
         final JSONObject obj = new JSONObject();
         try {

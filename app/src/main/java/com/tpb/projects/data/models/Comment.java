@@ -50,8 +50,6 @@ public class Comment extends DataModel implements Parcelable {
     private static final String USER = "user";
     private User user;
 
-    private long createdAt;
-
     private long updatedAt;
 
     public int getId() {
@@ -74,6 +72,7 @@ public class Comment extends DataModel implements Parcelable {
         return user;
     }
 
+    @Override
     public long getCreatedAt() {
         return createdAt;
     }
@@ -110,11 +109,9 @@ public class Comment extends DataModel implements Parcelable {
                 ", htmlUrl='" + htmlUrl + '\'' +
                 ", body='" + body + '\'' +
                 ", user=" + user +
-                ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
@@ -128,8 +125,8 @@ public class Comment extends DataModel implements Parcelable {
         dest.writeString(this.htmlUrl);
         dest.writeString(this.body);
         dest.writeParcelable(this.user, flags);
-        dest.writeLong(this.createdAt);
         dest.writeLong(this.updatedAt);
+        dest.writeLong(this.createdAt);
     }
 
     protected Comment(Parcel in) {
@@ -138,11 +135,11 @@ public class Comment extends DataModel implements Parcelable {
         this.htmlUrl = in.readString();
         this.body = in.readString();
         this.user = in.readParcelable(User.class.getClassLoader());
-        this.createdAt = in.readLong();
         this.updatedAt = in.readLong();
+        this.createdAt = in.readLong();
     }
 
-    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
+    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
         @Override
         public Comment createFromParcel(Parcel source) {
             return new Comment(source);
