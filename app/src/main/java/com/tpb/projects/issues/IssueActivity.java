@@ -135,7 +135,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void issueLoaded(Issue issue) {
         mIssue = issue;
         mAdapter.setIssue(mIssue);
-        if(issue.getAssignees() != null) displayAssignees();
+        displayAssignees();
         mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
@@ -203,34 +203,39 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
     
     private void displayAssignees() {
-        for(int i = 0; i < mIssue.getAssignees().length; i++) {
-            final User u = mIssue.getAssignees()[i];
-            final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
-            user.setId(i);
-            mAssignees.addView(user);
-            final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-            imageView.setId(10 * i);
-            imageView.setImageUrl(u.getAvatarUrl());
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            final  TextView login = (TextView) user.findViewById(R.id.user_login);
-            login.setId(20 * i); //Max 10 assignees
-            login.setText(mIssue.getAssignees()[i].getLogin());
-            user.setOnClickListener((v) -> {
-                final Intent us = new Intent(IssueActivity.this, UserActivity.class);
-                us.putExtra(getString(R.string.intent_username), u.getLogin());
+        if(mIssue.getAssignees() != null) {
+            mAssignees.setVisibility(View.VISIBLE);
+            for(int i = 0; i < mIssue.getAssignees().length; i++) {
+                final User u = mIssue.getAssignees()[i];
+                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
+                user.setId(i);
+                mAssignees.addView(user);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+                imageView.setId(10 * i);
+                imageView.setImageUrl(u.getAvatarUrl());
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                final TextView login = (TextView) user.findViewById(R.id.user_login);
+                login.setId(20 * i); //Max 10 assignees
+                login.setText(mIssue.getAssignees()[i].getLogin());
+                user.setOnClickListener((v) -> {
+                    final Intent us = new Intent(IssueActivity.this, UserActivity.class);
+                    us.putExtra(getString(R.string.intent_username), u.getLogin());
 
-                if(imageView.getDrawable() != null) {
-                    us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-                }
-                startActivity(us,
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                this,
-                                new Pair<>(login, getString(R.string.transition_username)),
-                                new Pair<>(imageView, getString(R.string.transition_user_image))
-                        ).toBundle());
+                    if(imageView.getDrawable() != null) {
+                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    }
+                    startActivity(us,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    this,
+                                    new Pair<>(login, getString(R.string.transition_username)),
+                                    new Pair<>(imageView, getString(R.string.transition_user_image))
+                            ).toBundle());
 
-            });
+                });
 
+            }
+        } else {
+            mAssignees.setVisibility(View.GONE);
         }
     }
 
