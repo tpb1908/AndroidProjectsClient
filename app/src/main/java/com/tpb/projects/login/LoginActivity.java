@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -177,6 +178,17 @@ public class LoginActivity extends AppCompatActivity {
 
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(description);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if(request.getUrl().toString().startsWith("https://github.com/login/oauth/authorize?") ||
+                    request.getUrl().toString().startsWith("https://github.com/session") ||
+                    request.getUrl().toString().startsWith("https://github.com/sessions/two-factor") ||
+                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+            return false;
         }
 
         @Override
