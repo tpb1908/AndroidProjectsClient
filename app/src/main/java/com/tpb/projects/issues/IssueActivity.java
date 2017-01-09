@@ -19,6 +19,7 @@ package com.tpb.projects.issues;
 
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -72,6 +73,8 @@ import butterknife.ButterKnife;
 
 public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
     private static final String TAG = IssueActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
+
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
@@ -191,7 +194,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 }
             }, mIssue.getRepoPath());
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath());
+        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
     }
 
     @Override
@@ -264,6 +267,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
@@ -271,7 +275,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 startActivity(new Intent(IssueActivity.this, SettingsActivity.class));
                 break;
             case R.id.menu_source:
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
                 break;
             case R.id.menu_share:
                 if(mIssue != null) {

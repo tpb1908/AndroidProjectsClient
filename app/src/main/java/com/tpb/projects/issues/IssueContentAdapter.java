@@ -67,6 +67,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void setIssue(Issue issue) {
         mIssue = issue;
+        //TODO Add pull request model and link to pull requests
     }
 
     void loadComments(Comment[] comments) {
@@ -165,7 +166,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
-        String text = "";
+        String text;
         final Resources res = eventHolder.itemView.getResources();
         switch(me.getEvent()) {
             case ASSIGNED:
@@ -220,6 +221,38 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                 me.getEvents().get(0).getActor().getLogin()),
                         derequested.toString());
                 break;
+            case LABELED:
+                final StringBuilder labels = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    labels.append(String.format(res.getString(R.string.text_label),
+                            String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
+                            e.getLabelName()));
+                    labels.append(", ");
+                }
+                labels.setLength(labels.length() - 2);
+                text = String.format(
+                        res.getString(R.string.text_event_labels_added),
+                        String.format(res.getString(R.string.text_href),
+                            me.getEvents().get(0).getActor().getHtmlUrl(),
+                            me.getEvents().get(0).getActor().getLogin()),
+                        labels.toString());
+                break;
+            case UNLABELED:
+                final StringBuilder unlabels = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    unlabels.append(
+                            String.format(res.getString(R.string.text_label),
+                            String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
+                            e.getLabelName()));
+                    unlabels.append(", ");
+                }
+                unlabels.setLength(unlabels.length() - 2);
+                text = String.format(res.getString(R.string.text_event_labels_removed),
+                        String.format(res.getString(R.string.text_href),
+                                me.getEvents().get(0).getActor().getHtmlUrl(),
+                                me.getEvents().get(0).getActor().getLogin()),
+                         unlabels.toString());
+                break;
             case CLOSED:
                 //Duplicate close events seem to happen
                 bindEvent(eventHolder, me.getEvents().get(0));
@@ -227,14 +260,15 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             default:
                 Log.e(TAG, "bindMergedEvent: Should be binding merging event " + me.toString(), new Exception());
                 bindEvent(eventHolder, me.getEvents().get(0));
+                return;
         }
+        text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
         eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
-        //TODO Merge events, for example multiple assignees to a single event
         switch(event.getEvent()) {
             case CLOSED:
                 text = String.format(res.getString(R.string.text_event_closed),
