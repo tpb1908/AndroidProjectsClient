@@ -166,7 +166,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
-        String text = "";
+        String text;
         final Resources res = eventHolder.itemView.getResources();
         switch(me.getEvent()) {
             case ASSIGNED:
@@ -262,6 +262,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 bindEvent(eventHolder, me.getEvents().get(0));
                 return;
         }
+        text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
         eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
     }
 
