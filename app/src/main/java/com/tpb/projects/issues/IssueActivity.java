@@ -191,7 +191,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 }
             }, mIssue.getRepoPath());
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath());
+        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
     }
 
     @Override

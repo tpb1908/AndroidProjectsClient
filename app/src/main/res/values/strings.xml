@@ -135,6 +135,8 @@
     <string name="text_event_unassigned_multiple">Unassigned from %1$s</string>
     <string name="text_event_review_requested_multiple">%1$s requested reviews form %2$s</string>
     <string name="text_event_review_request_removed_multiple">%1$s removed review requests for %2$s</string>
+    <string name="text_event_labels_added">%1$s added labels %2$s</string>
+    <string name="text_event_labels_removed">%1$s removed labels %2$s</string>
     <string name="text_commit">commit</string>
 
     <plurals name="text_issue_comment_count">
