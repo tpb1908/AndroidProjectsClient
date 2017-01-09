@@ -269,7 +269,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private void bindEvent(EventHolder eventHolder, Event event) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
-        //TODO Merge events, for example multiple assignees to a single event
         switch(event.getEvent()) {
             case CLOSED:
                 text = String.format(res.getString(R.string.text_event_closed),
