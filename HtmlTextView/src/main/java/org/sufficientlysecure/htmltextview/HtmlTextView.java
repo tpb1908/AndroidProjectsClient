@@ -25,10 +25,12 @@ import android.support.annotation.RawRes;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -49,6 +51,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private boolean showUnderLines = true;
 
+    private LinkClickHandler mLinkHandler;
+
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -59,6 +63,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public HtmlTextView(Context context) {
         super(context);
+    }
+
+    public void setLinkHandler(LinkClickHandler handler) {
+        mLinkHandler = handler;
     }
 
     /**
@@ -115,6 +123,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         }
         // make links work
         setMovementMethod(LocalLinkMovementMethod.getInstance());
+
     }
 
     private void stripUnderLines() {
@@ -124,16 +133,35 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             final int start = s.getSpanStart(span);
             final int end = s.getSpanEnd(span);
             s.removeSpan(span);
-            span = new URLSpanWithoutUnderline(span.getURL());
+            if(mLinkHandler == null) {
+                span = new URLSpanWithoutUnderline(span.getURL());
+            } else {
+                span = new URLSpanWithoutUnderline(span.getURL(), mLinkHandler);
+            }
             s.setSpan(span, start, end, 0);
         }
         setText(s);
     }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
+        private LinkClickHandler mHandler;
 
-        public URLSpanWithoutUnderline(String url) {
+        URLSpanWithoutUnderline(String url) {
             super(url);
+        }
+
+        URLSpanWithoutUnderline(String url, LinkClickHandler handler) {
+            super(url);
+            mHandler = handler;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            if(mHandler == null) {
+                super.onClick(widget);
+            } else {
+                mHandler.onClick(getURL());
+            }
         }
 
         @Override
@@ -142,7 +170,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             ds.setUnderlineText(false);
             ds.setTypeface(Typeface.DEFAULT_BOLD);
         }
-
 
         @Override
         public int describeContents() {
@@ -169,6 +196,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }
         };
     }
+
+    public interface LinkClickHandler {
+
+        void onClick(String url);
+
+    }
+
     /**
      * Note that this must be called before setting text for it to work
      */
@@ -203,13 +237,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * See https://github.com/SufficientlySecure/html-textview/issues/19
      */
     @Nullable
-    static private CharSequence removeHtmlBottomPadding(@Nullable CharSequence text) {
+    static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
         if (text == null) {
             return null;
         }
 
         while (text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
-            text = text.subSequence(0, text.length() - 1);
+            text = (Spanned) text.subSequence(0, text.length() - 1);
         }
         return text;
     }

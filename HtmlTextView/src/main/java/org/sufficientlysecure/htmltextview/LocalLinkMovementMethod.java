@@ -34,7 +34,6 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
     public static LocalLinkMovementMethod getInstance() {
         if (sInstance == null)
             sInstance = new LocalLinkMovementMethod();
-
         return sInstance;
     }
 
@@ -53,11 +52,11 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
             x += widget.getScrollX();
             y += widget.getScrollY();
 
-            Layout layout = widget.getLayout();
+            final Layout layout = widget.getLayout();
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
 
-            ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+            final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
             if (link.length != 0) {
                 if (action == MotionEvent.ACTION_UP) {
@@ -80,4 +79,6 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
         }
         return Touch.onTouchEvent(widget, buffer, event);
     }
+
+
 }
