@@ -25,10 +25,13 @@ import android.support.annotation.RawRes;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -49,6 +52,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private boolean showUnderLines = true;
 
+    private LinkClickHandler mLinkHandler;
+
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -59,6 +64,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public HtmlTextView(Context context) {
         super(context);
+    }
+
+    public void setLinkHandler(LinkClickHandler handler) {
+        mLinkHandler = handler;
     }
 
     /**
@@ -98,6 +107,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
+    //http://stackoverflow.com/a/17201376/4191572
     public void setHtml(@NonNull String html, @Nullable Html.ImageGetter imageGetter) {
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
         htmlTagHandler.setClickableTableSpan(clickableTableSpan);
@@ -105,16 +115,34 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         html = htmlTagHandler.overrideTags(html);
 
+        final Spanned text;
         if (removeFromHtmlSpace) {
-            setText(removeHtmlBottomPadding(Html.fromHtml(html, imageGetter, htmlTagHandler)));
+            text = removeHtmlBottomPadding(Html.fromHtml(html, imageGetter, htmlTagHandler));
         } else {
-            setText(Html.fromHtml(html, imageGetter, htmlTagHandler));
+            text = Html.fromHtml(html, imageGetter, htmlTagHandler);
         }
+
+        final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
+
+        SpannableString buffer = new SpannableString(text);
+        Linkify.addLinks(buffer, Linkify.WEB_URLS);
+
+        for(URLSpan us : spans) {
+            final int end = text.getSpanEnd(us);
+            final int start = text.getSpanStart(us);
+            buffer.setSpan(
+                    showUnderLines ? us : mLinkHandler == null ? new URLSpanWithoutUnderline(us.getURL()) : new URLSpanWithoutUnderline(us.getURL(), mLinkHandler),
+                    start, end, 0);
+        }
+
         if(!showUnderLines) {
             stripUnderLines();
         }
+
+        setText(buffer);
         // make links work
         setMovementMethod(LocalLinkMovementMethod.getInstance());
+
     }
 
     private void stripUnderLines() {
@@ -124,16 +152,36 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             final int start = s.getSpanStart(span);
             final int end = s.getSpanEnd(span);
             s.removeSpan(span);
-            span = new URLSpanWithoutUnderline(span.getURL());
+            if(mLinkHandler == null) {
+                span = new URLSpanWithoutUnderline(span.getURL());
+            } else {
+                span = new URLSpanWithoutUnderline(span.getURL(), mLinkHandler);
+            }
             s.setSpan(span, start, end, 0);
         }
         setText(s);
     }
 
-    private static class URLSpanWithoutUnderline extends URLSpan {
 
-        public URLSpanWithoutUnderline(String url) {
+    private static class URLSpanWithoutUnderline extends URLSpan {
+        private LinkClickHandler mHandler;
+
+        URLSpanWithoutUnderline(String url) {
             super(url);
+        }
+
+        URLSpanWithoutUnderline(String url, LinkClickHandler handler) {
+            super(url);
+            mHandler = handler;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            if(mHandler == null) {
+                super.onClick(widget);
+            } else {
+                mHandler.onClick(getURL());
+            }
         }
 
         @Override
@@ -142,7 +190,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             ds.setUnderlineText(false);
             ds.setTypeface(Typeface.DEFAULT_BOLD);
         }
-
 
         @Override
         public int describeContents() {
@@ -169,6 +216,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }
         };
     }
+
+    public interface LinkClickHandler {
+
+        void onClick(String url);
+
+    }
+
     /**
      * Note that this must be called before setting text for it to work
      */
@@ -203,13 +257,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * See https://github.com/SufficientlySecure/html-textview/issues/19
      */
     @Nullable
-    static private CharSequence removeHtmlBottomPadding(@Nullable CharSequence text) {
+    static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
         if (text == null) {
             return null;
         }
 
         while (text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
-            text = text.subSequence(0, text.length() - 1);
+            text = (Spanned) text.subSequence(0, text.length() - 1);
         }
         return text;
     }

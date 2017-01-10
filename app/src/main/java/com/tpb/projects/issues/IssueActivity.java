@@ -33,6 +33,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,7 +149,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             builder.append("<br><br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        mInfo.setHtml(renderer.render(parser.parse(builder.toString())), new HtmlHttpImageGetter(mInfo));
+        final String test = renderer.render(parser.parse(builder.toString()));
+        Log.i(TAG, "setHtml: Issue Loaded:  " + test);
+        mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
