@@ -28,6 +28,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -106,6 +107,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
+    //http://stackoverflow.com/a/17201376/4191572
     public void setHtml(@NonNull String html, @Nullable Html.ImageGetter imageGetter) {
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
         htmlTagHandler.setClickableTableSpan(clickableTableSpan);
@@ -113,14 +115,31 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         html = htmlTagHandler.overrideTags(html);
 
+        final Spanned text;
         if (removeFromHtmlSpace) {
-            setText(removeHtmlBottomPadding(Html.fromHtml(html, imageGetter, htmlTagHandler)));
+            text = removeHtmlBottomPadding(Html.fromHtml(html, imageGetter, htmlTagHandler));
         } else {
-            setText(Html.fromHtml(html, imageGetter, htmlTagHandler));
+            text = Html.fromHtml(html, imageGetter, htmlTagHandler);
         }
+
+        final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
+
+        SpannableString buffer = new SpannableString(text);
+        Linkify.addLinks(buffer, Linkify.WEB_URLS);
+
+        for(URLSpan us : spans) {
+            final int end = text.getSpanEnd(us);
+            final int start = text.getSpanStart(us);
+            buffer.setSpan(
+                    showUnderLines ? us : mLinkHandler == null ? new URLSpanWithoutUnderline(us.getURL()) : new URLSpanWithoutUnderline(us.getURL(), mLinkHandler),
+                    start, end, 0);
+        }
+
         if(!showUnderLines) {
             stripUnderLines();
         }
+
+        setText(buffer);
         // make links work
         setMovementMethod(LocalLinkMovementMethod.getInstance());
 
@@ -142,6 +161,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         }
         setText(s);
     }
+
 
     private static class URLSpanWithoutUnderline extends URLSpan {
         private LinkClickHandler mHandler;
