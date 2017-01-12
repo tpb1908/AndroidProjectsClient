@@ -136,15 +136,21 @@ public class User extends DataModel implements Parcelable {
             u.id = obj.getInt(ID);
             u.login = obj.getString(LOGIN);
             u.avatarUrl = obj.getString(AVATAR_URL);
-            u.htmlUrl = obj.getString(HTML_URL);
             u.url = obj.getString(URL);
-            u.reposUrl = obj.getString(REPOS_URL);
-            try {
-                u.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
 
+            if(obj.has(CREATED_AT)) {
+                try {
+                    u.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                } catch(ParseException pe) {
+                    Log.e(TAG, "parse: ", pe);
+                }
+            }
+            if(obj.has(HTML_URL)) {
+                u.htmlUrl = obj.getString(HTML_URL);
+            } else {
+                u.htmlUrl = "https://github.com/" + u.getLogin();
+            }
+            if(obj.has(REPOS_URL)) u.reposUrl = obj.getString(REPOS_URL);
             if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
             if(obj.has(FOLLOWERS)) u.followers = obj.getInt(FOLLOWERS);
             if(obj.has(BIO)) u.bio = obj.getString(BIO);

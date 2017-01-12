@@ -47,6 +47,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -54,6 +55,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
+import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.login.LoginActivity;
@@ -131,11 +133,11 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             fab.postDelayed(fab::show, 300);
 
             final String user;
+            final Loader loader = new Loader(this);
             if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
-                final Loader loader = new Loader(this);
                 loader.loadUser(new Loader.UserLoader() {
                     int errorCount = 0;
                     @Override
@@ -163,7 +165,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 if(isTaskRoot()) {
                     findViewById(R.id.back_button).setVisibility(View.GONE);
                 }
-                new Loader(this).loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
+                loader.loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
@@ -177,8 +179,20 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
                 });
             }
+            loader.loadEvents(new Loader.EventsLoader() {
+                @Override
+                public void eventsLoaded(Event[] events) {
 
+                }
+
+                @Override
+                public void eventsLoadError(APIHandler.APIError error) {
+
+                }
+            }, user);
             mUserName.setText(user);
+
+            new ContributionsLoader().beginRequest(this, user);
 
             if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
                 Log.i(TAG, "onCreate: Getting bitmap");
