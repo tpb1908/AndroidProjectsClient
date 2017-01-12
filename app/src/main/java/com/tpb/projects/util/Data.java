@@ -236,17 +236,6 @@ public class Data {
         return builder.toString();
     }
 
-    //TODO
-    //Parse urls
-    //Search for www
-    //CHeck if valid url by moving forward
-    //If so, move backward.
-    //Check if previous character
-    // - Doesn't exist
-    // - is http:// or https://
-    // - is space
-    // If so, wrap in href
-
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
         char p = ' ';

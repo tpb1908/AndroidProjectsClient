@@ -125,7 +125,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
 
         SpannableString buffer = new SpannableString(text);
-        Linkify.addLinks(buffer, Linkify.WEB_URLS);
+        Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
         for(URLSpan us : spans) {
             final int end = text.getSpanEnd(us);

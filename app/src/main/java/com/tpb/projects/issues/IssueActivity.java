@@ -233,9 +233,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                                     new Pair<>(login, getString(R.string.transition_username)),
                                     new Pair<>(imageView, getString(R.string.transition_user_image))
                             ).toBundle());
-
                 });
-
             }
         } else {
             mAssignees.setVisibility(View.GONE);
@@ -274,7 +272,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         getMenuInflater().inflate(R.menu.menu_activity, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
