@@ -23,6 +23,7 @@
         <attr name="showMonths" format="boolean" />
         <attr name="weekCount" format="integer" />
         <attr name="textColor" format="color" />
+        <attr name="textSize" format="dimension" />
         <attr name="backgroundColor" format="color" />
         <attr name="username" format="string" />
 

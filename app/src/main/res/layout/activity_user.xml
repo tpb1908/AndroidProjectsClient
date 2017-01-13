@@ -115,8 +115,9 @@
                 <com.tpb.contributionsview.ContributionsView
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_margin="10dp"
+                    android:layout_margin="12dp"
                     app:username="tpb1908"
+                    app:textSize="12sp"
                     app:textColor="@color/colorPrimaryTextInverse"/>
 
                 <com.tpb.animatingrecyclerview.AnimatingRecycler

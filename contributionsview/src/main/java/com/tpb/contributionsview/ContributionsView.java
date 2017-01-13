@@ -47,6 +47,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private boolean shouldDisplayMonths;
     private boolean shouldDisplayDays;
     private int textColor;
+    private int textSize;
     private int backGroundColor;
     private int weekCount;
 
@@ -97,7 +98,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         shouldDisplayDays = ta.getBoolean(R.styleable.ContributionsView_showDays, true);
         backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor, 0xD6E685); //GitHub default color
         textColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
-
+        textSize = ta.getDimensionPixelSize(R.styleable.ContributionsView_textSize, 7);
         if(ta.getString(R.styleable.ContributionsView_username) != null && !isInEditMode()) {
             loadUser(ta.getString(R.styleable.ContributionsView_username));
         }
@@ -125,8 +126,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
 
-        final float tm = shouldDisplayMonths ? 7.0f : 0; //Top margin if we are displaying months
-        final float mth = shouldDisplayMonths ? bd * 1.5f : 0; //Height of month text
+        final float tm = shouldDisplayMonths ? textSize : 0; //Top margin if we are displaying months
+        final float mth = shouldDisplayMonths ? textSize : 0; //Height of month text
 
         //Draw the background
         dayPainter.setColor(backGroundColor);
