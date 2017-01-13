@@ -26,14 +26,18 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,7 +46,7 @@ import java.util.List;
 
 //https://github.com/javierugarte/GithubContributionsView/blob/master/githubcontributionsview/src/main/java/com/github/javierugarte/GitHubContributionsView.java
 public class ContributionsView extends View implements ContributionsLoader.ContributionsRequestListener {
-
+    private static final String TAG = ContributionsView.class.getSimpleName();
 
     private boolean shouldDisplayMonths;
     private boolean shouldDisplayDays;
@@ -58,6 +62,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     private Rect rect;
     private final Rect textBounds = new Rect();
+    private float gridY;
 
     public ContributionsView(Context context) {
         super(context);
@@ -141,6 +146,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
             float x = 0;
             int dow = getDayOfWeek(contribs.get(0).date) - 1;
             float y = (dow * (bd + m)) + tm + mth;
+            gridY = y;
 
             for(ContributionsLoader.GitDay d : contribs) {
                 dayPainter.setColor(d.color);
@@ -177,6 +183,28 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final ViewGroup.LayoutParams lp =  getLayoutParams();
         lp.height = h;
         setLayoutParams(lp);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.i(TAG, "onTouchEvent: " + event.getAction());
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            final int cols = contribs.size() / 7;
+            final float pcr = event.getX() / rect.width();
+            final int col = Math.round(pcr * (float) cols);
+            if(event.getY() > textSize) {
+                final float pcc = (event.getY() - gridY) / (rect.height() - gridY);
+                final int row = Math.round(pcc * 7f);
+                final int pos = (7 * col) + row;
+                Log.i(TAG, "onTouchEvent: (" + row + ", " + col + ")");
+                Log.i(TAG, "onTouchEvent: " + pos);
+                if(pos < contribs.size() && pos >= 0) {
+                    final String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date(contribs.get(pos).date));
+                    Toast.makeText(getContext(), String.format("%1$d contributions on %2$s", contribs.get(pos).contributions, date), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        return super.onTouchEvent(event);
     }
 
     private static final Calendar cal = Calendar.getInstance();
