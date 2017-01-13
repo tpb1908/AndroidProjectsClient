@@ -48,6 +48,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private boolean shouldDisplayDays;
     private int textColor;
     private int backGroundColor;
+    private int weekCount;
 
     private List<ContributionsLoader.GitDay> contribs = new ArrayList<>();
 
@@ -55,6 +56,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private Paint textPainter;
 
     private Rect rect;
+    private final Rect textBounds = new Rect();
 
     public ContributionsView(Context context) {
         super(context);
@@ -134,6 +136,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         textPainter.setTextSize(mth);
 
         if(contribs.size() > 0) {
+
             float x = 0;
             int dow = getDayOfWeek(contribs.get(0).date) - 1;
             float y = (dow * (bd + m)) + tm + mth;
@@ -146,7 +149,14 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 if(dow == 6) { //We just drew the last day of the week
                     x += bd + m;
                     y = tm + mth;
-                    if(shouldDisplayMonths && isFirstDayOfMonth(d.date)) {
+                } else {
+                    y += bd + m;
+                }
+
+                if(shouldDisplayMonths && isFirstDayOfMonth(d.date)) {
+                    final String month = getMonthName(d.date);
+                    textPainter.getTextBounds(month, 0, month.length(), textBounds);
+                    if(w > x + textBounds.width()) {
                         canvas.drawText(
                                 getMonthName(d.date),
                                 x,
@@ -154,8 +164,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                                 textPainter
                         );
                     }
-                } else {
-                    y += bd + m;
                 }
             }
         }

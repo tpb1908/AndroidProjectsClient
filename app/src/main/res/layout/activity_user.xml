@@ -116,7 +116,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_margin="10dp"
-                    app:username="tpb1908"/>
+                    app:username="tpb1908"
+                    app:textColor="@color/colorPrimaryTextInverse"/>
 
                 <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/repos_recycler"
