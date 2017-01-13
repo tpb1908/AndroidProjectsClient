@@ -119,17 +119,14 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                                 textPainter
                         );
                     }
-
                 } else {
                     y += bd + m;
                 }
-
             }
         }
         final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) getLayoutParams();
         lp.height = h;
         setLayoutParams(lp);
-
     }
 
     private static final Calendar cal = Calendar.getInstance();
