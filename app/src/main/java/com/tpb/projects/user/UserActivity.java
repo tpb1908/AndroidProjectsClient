@@ -47,7 +47,6 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
-import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -191,8 +190,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 }
             }, user);
             mUserName.setText(user);
-
-            new ContributionsLoader().beginRequest(this, user);
 
             if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
                 Log.i(TAG, "onCreate: Getting bitmap");

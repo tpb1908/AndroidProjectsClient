@@ -17,13 +17,17 @@
 
 package com.tpb.contributionsview;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
+import android.util.AttributeSet;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 
 import com.android.volley.VolleyError;
 
@@ -42,7 +46,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     private boolean shouldDisplayMonths;
     private boolean shouldDisplayDays;
-    private int[] colors;
     private int textColor;
     private int backGroundColor;
 
@@ -55,15 +58,47 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     public ContributionsView(Context context) {
         super(context);
-        init();
+        initView(context, null, 0, 0);
     }
 
-    private void init() {
+    public ContributionsView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView(context, attrs, 0, 0);
+    }
+
+    public ContributionsView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView(context, attrs, defStyleAttr, 0);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public ContributionsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initView(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    //TODO Calculate a minimum height when wrap content is used
+
+    private void initView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         rect = new Rect();
+
+        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ContributionsView, defStyleAttr, defStyleRes);
+        useAttributes(attributes);
+
+        textPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dayPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dayPainter.setStyle(Paint.Style.FILL);
     }
 
-    private void getAttributes(TypedArray ta) {
+    private void useAttributes(TypedArray ta) {
+        shouldDisplayMonths = ta.getBoolean(R.styleable.ContributionsView_showMonths, true);
+        shouldDisplayDays = ta.getBoolean(R.styleable.ContributionsView_showDays, true);
+        backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor, 0xD6E685); //GitHub default color
+        textColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
 
+        if(ta.getString(R.styleable.ContributionsView_username) != null && !isInEditMode()) {
+            loadUser(ta.getString(R.styleable.ContributionsView_username));
+        }
     }
 
     public void loadUser(String user) {
@@ -85,10 +120,10 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
         final int hnum = contribs == null ? 53 : contribs.size() / 7; //The number of days to show horizontally
 
-        final float bd = (w / (float) hnum) * 0.98f; //The dimension of a single block
+        final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
 
-        final float tm = shouldDisplayMonths ? 7.0f : 0; //Top margin if we are displaying days
+        final float tm = shouldDisplayMonths ? 7.0f : 0; //Top margin if we are displaying months
         final float mth = shouldDisplayMonths ? bd * 1.5f : 0; //Height of month text
 
         //Draw the background
@@ -124,7 +159,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 }
             }
         }
-        final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) getLayoutParams();
+        final ViewGroup.LayoutParams lp =  getLayoutParams();
         lp.height = h;
         setLayoutParams(lp);
     }
@@ -156,10 +191,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
-    }
-
-    public void setColors(int[] colors) {
-        this.colors = colors;
     }
 
     public void setBackGroundColor(int backGroundColor) {

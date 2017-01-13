@@ -82,13 +82,14 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_margin="8dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_gravity="top">
 
                         <com.androidnetworking.widget.ANImageView
                             android:id="@+id/user_image"
@@ -111,10 +112,17 @@
 
                 </android.support.v7.widget.CardView>
 
+                <com.tpb.contributionsview.ContributionsView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    app:username="tpb1908"/>
+
                 <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/repos_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="8dp"
                     android:nestedScrollingEnabled="false"/>
 
             </LinearLayout>
