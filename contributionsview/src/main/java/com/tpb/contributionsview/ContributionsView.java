@@ -154,17 +154,24 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                     y += bd + m;
                 }
 
-                if(shouldDisplayMonths && isFirstDayOfMonth(d.date)) {
-                    final String month = getMonthName(d.date);
+            }
+            if(shouldDisplayMonths) {
+                final Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(contribs.get(0).date);
+                x = 0;
+                for(int i = 0; i < 12; i++) {
+                    final String month = getMonthName(c.getTimeInMillis());
                     textPainter.getTextBounds(month, 0, month.length(), textBounds);
                     if(w > x + textBounds.width()) {
                         canvas.drawText(
-                                getMonthName(d.date),
+                                month,
                                 x,
                                 mth,
                                 textPainter
                         );
                     }
+                    c.add(Calendar.MONTH, 1);
+                    x += w / 12;
                 }
             }
         }
