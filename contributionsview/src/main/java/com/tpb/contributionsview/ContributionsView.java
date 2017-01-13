@@ -156,11 +156,10 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
             }
             if(shouldDisplayMonths) {
-                final Calendar c = Calendar.getInstance();
-                c.setTimeInMillis(contribs.get(0).date);
+                cal.setTimeInMillis(contribs.get(0).date);
                 x = 0;
                 for(int i = 0; i < 12; i++) {
-                    final String month = getMonthName(c.getTimeInMillis());
+                    final String month = getMonthName(cal.getTimeInMillis());
                     textPainter.getTextBounds(month, 0, month.length(), textBounds);
                     if(w > x + textBounds.width()) {
                         canvas.drawText(
@@ -170,7 +169,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                                 textPainter
                         );
                     }
-                    c.add(Calendar.MONTH, 1);
+                    cal.add(Calendar.MONTH, 1);
                     x += w / 12;
                 }
             }
