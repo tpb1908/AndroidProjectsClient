@@ -55,6 +55,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private int backGroundColor;
     private int weekCount;
 
+
     private List<ContributionsLoader.GitDay> contribs = new ArrayList<>();
 
     private Paint dayPainter;
@@ -126,7 +127,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final int w = rect.width();
         final int h = rect.height();
 
-        final int hnum = contribs == null ? 53 : contribs.size() / 7; //The number of days to show horizontally
+        final int hnum = contribs.size() == 0 ? 52 : contribs.size() / 7; //The number of days to show horizontally
 
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
@@ -140,10 +141,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
         textPainter.setColor(textColor);
         textPainter.setTextSize(mth);
-
+        float x = 0;
         if(contribs.size() > 0) {
-
-            float x = 0;
             int dow = getDayOfWeek(contribs.get(0).date) - 1;
             float y = (dow * (bd + m)) + tm + mth;
             gridY = y;
@@ -161,23 +160,44 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 }
 
             }
-            if(shouldDisplayMonths) {
-                cal.setTimeInMillis(contribs.get(0).date);
-                x = 0;
-                for(int i = 0; i < 12; i++) {
-                    final String month = getMonthName(cal.getTimeInMillis());
-                    textPainter.getTextBounds(month, 0, month.length(), textBounds);
-                    if(w > x + textBounds.width()) {
-                        canvas.drawText(
-                                month,
-                                x,
-                                mth,
-                                textPainter
-                        );
-                    }
-                    cal.add(Calendar.MONTH, 1);
-                    x += w / 12;
+        } else {
+            int dow = 0;
+            float y = tm + mth;
+            gridY = y;
+            dayPainter.setColor(Color.parseColor("#EEEEEE"));
+            for(int i = 0; i < 364; i++) {
+                canvas.drawRect(x, y, x + bd, y + bd, dayPainter);
+                if(dow == 6) { //We just drew the last day of the week
+                    x += bd + m;
+                    y = tm + mth;
+                    dow = 0;
+                } else {
+                    y += bd + m;
+                    dow++;
                 }
+            }
+        }
+        if(shouldDisplayMonths) {
+            if(contribs.size() > 0) {
+                cal.setTimeInMillis(contribs.get(0).date);
+            } else {
+                cal.setTimeInMillis(System.currentTimeMillis());
+                cal.add(Calendar.MONTH, -12);
+            }
+            x = 0;
+            for(int i = 0; i < 12; i++) {
+                final String month = getMonthName(cal.getTimeInMillis());
+                textPainter.getTextBounds(month, 0, month.length(), textBounds);
+                if(w > x + textBounds.width()) {
+                    canvas.drawText(
+                            month,
+                            x,
+                            mth,
+                            textPainter
+                    );
+                }
+                cal.add(Calendar.MONTH, 1);
+                x += w / 12;
             }
         }
         final ViewGroup.LayoutParams lp =  getLayoutParams();
@@ -189,12 +209,12 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     public boolean onTouchEvent(MotionEvent event) {
         Log.i(TAG, "onTouchEvent: " + event.getAction());
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            final int cols = contribs.size() / 7;
+            final float cols = contribs.size() / 7f;
             final float pcr = event.getX() / rect.width();
-            final int col = Math.round(pcr * (float) cols);
+            final int col = (int) (pcr * cols);
             if(event.getY() > textSize) {
                 final float pcc = (event.getY() - gridY) / (rect.height() - gridY);
-                final int row = Math.round(pcc * 7f);
+                final int row = (int) (pcc * 7);
                 final int pos = (7 * col) + row;
                 Log.i(TAG, "onTouchEvent: (" + row + ", " + col + ")");
                 Log.i(TAG, "onTouchEvent: " + pos);

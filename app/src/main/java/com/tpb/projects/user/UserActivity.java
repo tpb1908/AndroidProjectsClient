@@ -47,6 +47,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.contributionsview.ContributionsView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -90,6 +91,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
     @BindView(R.id.user_image) ANImageView mUserImage;
     @BindView(R.id.user_name) TextView mUserName;
+    @BindView(R.id.user_contributions) ContributionsView mContributions;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -189,7 +191,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
 
                 }
             }, user);
+
             mUserName.setText(user);
+            mContributions.loadUser(user);
 
             if(getIntent().hasExtra(getString(R.string.intent_drawable))) {
                 Log.i(TAG, "onCreate: Getting bitmap");
