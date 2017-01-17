@@ -22,8 +22,9 @@
         android:id="@+id/menu_copy_card_note"
         android:title="@string/menu_copy_card"/>
 
-    <item android:id="@+id/menu_copy_card_url"
-          android:title="@string/menu_copy_card_url"/>
+    <item
+        android:id="@+id/menu_copy_card_url"
+        android:title="@string/menu_copy_card_url"/>
 
     <item
         android:id="@+id/menu_card_fullscreen"

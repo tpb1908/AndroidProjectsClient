@@ -22,11 +22,13 @@
         android:id="@+id/menu_copy_card_note"
         android:title="@string/menu_copy_issue"/>
 
-    <item android:id="@+id/menu_copy_card_url"
-          android:title="@string/menu_copy_card_url"/>
+    <item
+        android:id="@+id/menu_copy_card_url"
+        android:title="@string/menu_copy_card_url"/>
 
-    <item android:id="@+id/menu_copy_issue_url"
-          android:title="@string/menu_copy_issue_url" />
+    <item
+        android:id="@+id/menu_copy_issue_url"
+        android:title="@string/menu_copy_issue_url"/>
 
     <item
         android:id="@+id/menu_edit_issue"

@@ -150,7 +150,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     @Override
                     public void userLoadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
-                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                         } else if(errorCount < 5){
                             errorCount++;
                             loader.loadUser(this, user);
