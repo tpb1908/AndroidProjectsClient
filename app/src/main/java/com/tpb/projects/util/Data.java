@@ -18,16 +18,8 @@
 package com.tpb.projects.util;
 
 import android.util.Base64;
-import android.util.Log;
 
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Column;
-import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -111,22 +103,6 @@ public class Data {
     //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    /**
-     * Transform Calendar to ISO 8601 string.
-     */
-    private static String fromCalendar(final Calendar calendar) {
-        Date date = calendar.getTime();
-        String formatted = ISO8601.format(date);
-        return formatted.substring(0, 22) + ":" + formatted.substring(22);
-    }
-
-    /**
-     * Get current date and time formatted as ISO 8601 string.
-     */
-    public static String now() {
-        return fromCalendar(GregorianCalendar.getInstance());
-    }
-
     public static String toISO8061(long t) {
         return ISO8601.format(new Date(t * 1000));
     }
@@ -146,63 +122,6 @@ public class Data {
         final Date date = ISO8601.parse(s);
         calendar.setTime(date);
         return calendar;
-    }
-
-    public static JSONObject save(Card[] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            final JSONArray arr = new JSONArray();
-            for(Card c : cards) {
-                arr.put(Card.parse(c));
-            }
-            obj.put(Constants.JSON_KEY_CARDS, arr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
-    }
-
-    public static JSONObject save(Project project, Column[] columns, Card[][] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            obj.put(Constants.JSON_KEY_PROJECT, Project.parse(project));
-            final JSONArray carr = new JSONArray();
-            for(int i = 0; i < columns.length; i++) {
-                final JSONArray arr = new JSONArray();
-                for(Card c : cards[i]) arr.put(Card.parse(c));
-                carr.put(arr);
-            }
-
-            obj.put(Constants.JSON_KEY_COLUMNS, carr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
-    }
-
-    public static JSONObject save(Repository repo, Project[] projects, Column[][] columns, Card[][][] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            obj.put(Constants.JSON_KEY_REPOSITORY, Repository.parse(repo));
-
-            final JSONArray parr = new JSONArray();
-            for(int i = 0; i < projects.length; i++) {
-                final JSONArray arr = new JSONArray();
-                for(int j = 0; j < columns[i].length; j++) {
-                    final JSONArray carr = new JSONArray();
-                    for(Card c : cards[i][j]) carr.put(Card.parse(c));
-                    arr.put(carr);
-                }
-                parr.put(arr);
-            }
-            obj.put(Constants.JSON_KEY_PROJECTS, parr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
     }
 
 
