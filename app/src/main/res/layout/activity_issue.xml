@@ -149,7 +149,7 @@
 
                 </HorizontalScrollView>
 
-                <android.support.v7.widget.RecyclerView
+                <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/issue_comments_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

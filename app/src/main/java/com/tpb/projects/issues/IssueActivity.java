@@ -30,7 +30,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -44,6 +43,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.androidnetworking.widget.ANImageView;
+import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -86,7 +86,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comment_count) TextView mCount;
     @BindView(R.id.issue_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
+    @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
@@ -262,6 +262,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void eventsLoaded(Event[] events) {
+        mRecycler.enableAnimation();
         mAdapter.loadEvents(events);
     }
 
