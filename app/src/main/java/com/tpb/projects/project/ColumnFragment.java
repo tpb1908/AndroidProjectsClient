@@ -255,7 +255,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void loadIssue(Loader.IssueLoader loader, int issueId) {
-        mParent.loadIssue(loader, issueId);
+        mParent.loadIssue(loader, issueId, mColumn);
     }
 
     @Override
@@ -268,6 +268,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             mRecycler.disableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
+        mParent.notifyFragmentLoaded();
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);

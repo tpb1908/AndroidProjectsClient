@@ -354,9 +354,10 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadIssue(IssueLoader loader, String repoFullName, int issueNumber) {
+    public void loadIssue(IssueLoader loader, String repoFullName, int issueNumber, boolean highPriority) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" +  repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
+                .setPriority(highPriority ? Priority.HIGH : Priority.MEDIUM)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override

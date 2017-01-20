@@ -196,7 +196,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
                     holder.mSpinner.setVisibility(View.INVISIBLE);
-                    notifyItemChanged(pos);
+                    bindIssueCard(holder, card);
+                   // notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);

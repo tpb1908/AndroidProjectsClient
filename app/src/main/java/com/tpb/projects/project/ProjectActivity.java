@@ -100,6 +100,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private Editor mEditor;
     private NavigationDragListener mNavListener;
     private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE; //TODO Load this on project load
+    private int mLoadCount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -251,11 +252,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
-
+        mLoadCount = 0;
         mLoader.loadColumns(new Loader.ColumnsLoader() {
             @Override
             public void columnsLoaded(Column[] columns) {
-                mRefresher.setRefreshing(false);
                 if(columns.length > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
@@ -309,8 +309,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.IssueLoader loader, int issueId) {
-        mLoader.loadIssue(loader, mProject.getRepoPath(), issueId);
+    void loadIssue(Loader.IssueLoader loader, int issueId, Column column) {
+        mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 
     @OnClick(R.id.project_add_column)
@@ -553,6 +553,13 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     public void onToolbarBackPressed(View view) {
         onBackPressed();
+    }
+
+    void notifyFragmentLoaded() {
+        mLoadCount++;
+        if(mLoadCount == mAdapter.getCount()) {
+            mRefresher.setRefreshing(false);
+        }
     }
 
     @Override
