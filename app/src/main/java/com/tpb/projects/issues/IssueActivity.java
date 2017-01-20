@@ -129,6 +129,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new IssueContentAdapter(this);
         mRecycler.setAdapter(mAdapter);
+
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -176,16 +177,15 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         if(issue.getOpenedBy().getLogin().equals(login)) {
             mOverflowButton.setVisibility(View.VISIBLE);
             mCanComment = true;
-            mFab.postDelayed(() -> mFab.show(), 300);
+            enableAccess();
+            mFab.postDelayed(mFab::show, 300);
         } else {
             mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
                 @Override
                 public void collaboratorsLoaded(User[] collaborators) {
                     for(User u : collaborators) {
                         if(u.getLogin().equals(login)) {
-                            mCanComment = true;
-                            mFab.postDelayed(() -> mFab.show(), 300);
-                            mOverflowButton.setVisibility(View.VISIBLE);
+                            enableAccess();
                             return;
                         }
                     }
@@ -198,6 +198,22 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             }, mIssue.getRepoPath());
         }
         mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+    }
+
+    private void enableAccess() {
+        mCanComment = true;
+        mFab.postDelayed(() -> mFab.show(), 300);
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY - oldScrollY > 10) {
+                    mFab.hide();
+                } else if(scrollY - oldScrollY < -10) {
+                    mFab.show();
+                }
+            }
+        });
+        mOverflowButton.setVisibility(View.VISIBLE);
     }
 
     @Override
