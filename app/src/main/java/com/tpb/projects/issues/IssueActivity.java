@@ -121,15 +121,19 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             issueLoaded(mIssue);
         } else {
             final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
-            final String repoName = getIntent().getStringExtra(getString(R.string.intent_repo));
+            final String fullRepoName = getIntent().getStringExtra(getString(R.string.intent_repo));
             mNumber.setText(String.format("#%1$d", issueNumber));
-            mLoader.loadIssue(this, repoName, issueNumber, true);
+            mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-
+        mRefresher.setRefreshing(true);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new IssueContentAdapter(this);
         mRecycler.setAdapter(mAdapter);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
 
+            mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
+        });
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -280,6 +284,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void eventsLoaded(Event[] events) {
         mRecycler.enableAnimation();
         mAdapter.loadEvents(events);
+        mRefresher.setRefreshing(false);
     }
 
     @Override

@@ -64,6 +64,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private static final Parser parser = Parser.builder().build();
     private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
+    void clear() {
+        mData.clear();
+        notifyDataSetChanged();
+    }
+
     void setIssue(Issue issue) {
         mIssue = issue;
         //TODO Add pull request model and link to pull requests
