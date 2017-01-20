@@ -123,7 +123,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
             final String repoName = getIntent().getStringExtra(getString(R.string.intent_repo));
             mNumber.setText(String.format("#%1$d", issueNumber));
-            mLoader.loadIssue(this, repoName, issueNumber);
+            mLoader.loadIssue(this, repoName, issueNumber, true);
         }
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
