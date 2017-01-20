@@ -18,5 +18,5 @@
 
 <resources>
     <attr name="drawableColor" format="reference"/>
-    <attr name="drawableColorSecondary" format="reference" />
+    <attr name="drawableColorSecondary" format="reference"/>
 </resources>

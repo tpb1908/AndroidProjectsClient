@@ -170,6 +170,7 @@ public class Event extends DataModel implements Parcelable {
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
+            Log.i(TAG, "parse: " + obj.toString());
         }
         return e;
     }
