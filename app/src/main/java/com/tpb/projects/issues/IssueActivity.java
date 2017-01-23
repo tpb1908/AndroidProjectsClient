@@ -58,8 +58,6 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -93,9 +91,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     private Editor mEditor;
     private Loader mLoader;
-
-    private static final Parser parser = Parser.builder().build();
-    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
     private Issue mIssue;
     private boolean mCanComment;
@@ -149,7 +144,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             builder.append("<br><br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String test = renderer.render(parser.parse(builder.toString()));
+        final String test = Data.parseMD(builder.toString());
         Log.i(TAG, "setHtml: Issue Loaded:  " + test);
         mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);

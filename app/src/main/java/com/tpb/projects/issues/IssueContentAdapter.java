@@ -33,8 +33,6 @@ import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.util.Data;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -62,8 +60,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         mParent = parent;
     }
 
-    private static final Parser parser = Parser.builder().build();
-    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+    void clear() {
+        mData.clear();
+        notifyDataSetChanged();
+    }
 
     void setIssue(Issue issue) {
         mIssue = issue;
@@ -162,7 +162,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
         builder.append("<br><br>");
         builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
-        commentHolder.mText.setHtml(renderer.render(parser.parse(builder.toString())), new HtmlHttpImageGetter(commentHolder.mText));
+        commentHolder.mText.setHtml(Data.parseMD(builder.toString()), new HtmlHttpImageGetter(commentHolder.mText));
     }
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
@@ -263,7 +263,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
-        eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
+        eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
@@ -416,7 +416,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text = "Something that I haven't bothered to implement " + event.getEvent();
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
-        eventHolder.mText.setHtml(renderer.render(parser.parse(text)));
+        eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
     }
 
     private void displayMenu(View view, int pos) {
