@@ -404,6 +404,32 @@ public class Loader extends APIHandler {
 
     }
 
+    public void loadIssues(IssuesLoader loader, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Issue[] issues = new Issue[response.length()];
+                        for(int i = 0; i < response.length() ; i++) {
+                            try {
+                                issues[i] = Issue.parse(response.getJSONObject(i));
+                            } catch(JSONException jse) {
+                                Log.e(TAG, "onResponse: Parsing open issues", jse);
+                            }
+                        }
+                        if(loader != null) loader.issuesLoaded(issues);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Issue load: " + anError.getErrorBody());
+                        if(loader != null) loader.issuesLoadError(parseError(anError));
+                    }
+                });
+    }
+
     public void loadComments(CommentsLoader loader, String fullRepoName, int issueNumber) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)

@@ -22,13 +22,18 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Editor;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Issue;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +42,7 @@ import butterknife.ButterKnife;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesActivity extends AppCompatActivity {
+public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLoader {
     private static final String TAG = IssuesActivity.class.getSimpleName();
 
     private FirebaseAnalytics mAnalytics;
@@ -46,6 +51,11 @@ public class IssuesActivity extends AppCompatActivity {
     @BindView(R.id.issues_toolbar) Toolbar mToolbar;
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
+
+    private Loader mLoader;
+    private Editor mEditor;
+
+    private IssuesAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,9 +68,26 @@ public class IssuesActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        mLoader = new Loader(this);
+        mEditor = new Editor(this);
+
+        mAdapter = new IssuesAdapter();
+
+        mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mRecycler.setAdapter(mAdapter);
+
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
-            //TODO Load issue
+            mLoader.loadIssues(this, getIntent().getExtras().getString(getString(R.string.intent_repo)));
         }
+
+    }
+    @Override
+    public void issuesLoaded(Issue[] issues) {
+        mAdapter.loadIssues(issues);
+    }
+
+    @Override
+    public void issuesLoadError(APIHandler.APIError error) {
 
     }
 
