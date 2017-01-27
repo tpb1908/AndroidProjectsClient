@@ -104,8 +104,8 @@ public class Data {
     }
 
 
-    public static String parseMD(String s, String fullReopName) {
-        return renderer.render(parser.parse(formatMD(s, fullReopName)));
+    public static String parseMD(String s, String fullRepoName) {
+        return renderer.render(parser.parse(formatMD(s, fullRepoName)));
     }
 
     public static String parseMD(String s) {
@@ -134,6 +134,27 @@ public class Data {
 
             } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
+            } else if (pp == '[' && p == 'x' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 4);
+                } else {
+                    builder.setLength(builder.length() - 2);
+                }
+                builder.append("\u2610");
+            } else if(p == '[' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 3);
+                } else {
+                    builder.setLength(builder.length() - 2);
+                }
+                builder.append("\u2610");
+            } else if (pp == '[' && p == ' ' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 4);
+                } else {
+                    builder.setLength(builder.length() - 3);
+                }
+                builder.append("\u2611");
             } else {
                 builder.append(cs[i]);
             }
