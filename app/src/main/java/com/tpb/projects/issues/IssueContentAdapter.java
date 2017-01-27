@@ -75,6 +75,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mData = new ArrayList<>(Arrays.asList(comments));
             notifyDataSetChanged();
         } else {
+            mParent.mRefresher.setRefreshing(false);
             mData.addAll(Arrays.asList(comments));
             Collections.sort(mData, comparator);
             notifyDataSetChanged();
@@ -86,6 +87,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mData = new ArrayList<>(mergeEvents(events));
             notifyDataSetChanged();
         } else {
+            mParent.mRefresher.setRefreshing(false);
             mData.addAll(mergeEvents(events));
             Collections.sort(mData, comparator);
             notifyDataSetChanged();
@@ -119,8 +121,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     //TODO Eww
-    private Comparator<DataModel> comparator = (d1, d2) -> (d1 instanceof Comment ? ((Comment) d1).getCreatedAt() : (d1 instanceof Event ? ((Event) d1).getCreatedAt() : ((MergedEvent) d1).getCreatedAt())) > (d2 instanceof Comment ? ((Comment) d2).getCreatedAt() : (d2 instanceof Event ? ((Event) d2).getCreatedAt() : ((MergedEvent) d2).getCreatedAt())) ?
-            1 : -1;
+    private Comparator<DataModel> comparator = (d1, d2) -> d1.getCreatedAt() > d2.getCreatedAt() ? 1 : -1;
 
     @Override
     public int getItemViewType(int position) {

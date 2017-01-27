@@ -42,6 +42,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
@@ -54,6 +55,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Data;
@@ -64,6 +66,7 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -89,11 +92,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
 
+
     private Editor mEditor;
     private Loader mLoader;
 
     private Issue mIssue;
-    private boolean mCanComment;
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
 
     private IssueContentAdapter mAdapter;
 
@@ -124,6 +128,10 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new IssueContentAdapter(this);
         mRecycler.setAdapter(mAdapter);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
+        });
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -131,7 +139,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void issueLoaded(Issue issue) {
         mIssue = issue;
         mAdapter.setIssue(mIssue);
-        if(issue.getAssignees() != null) displayAssignees();
+        displayAssignees();
         mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
@@ -169,30 +177,39 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
         if(issue.getOpenedBy().getLogin().equals(login)) {
-            mOverflowButton.setVisibility(View.VISIBLE);
-            mCanComment = true;
-            mFab.postDelayed(() -> mFab.show(), 300);
+           mAccessLevel = Repository.AccessLevel.ADMIN;
+            enableAccess();
         } else {
-            mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
+            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
                 @Override
-                public void collaboratorsLoaded(User[] collaborators) {
-                    for(User u : collaborators) {
-                        if(u.getLogin().equals(login)) {
-                            mCanComment = true;
-                            mFab.postDelayed(() -> mFab.show(), 300);
-                            mOverflowButton.setVisibility(View.VISIBLE);
-                            return;
-                        }
+                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
+                    mAccessLevel = accessLevel;
+                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                        enableAccess();
                     }
                 }
 
                 @Override
-                public void collaboratorsLoadError(APIHandler.APIError error) {
+                public void accessCheckError(APIHandler.APIError error) {
 
                 }
-            }, mIssue.getRepoPath());
+            }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
         }
         mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+    }
+
+    private void enableAccess() {
+        mFab.postDelayed(() -> mFab.show(), 300);
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY - oldScrollY > 10) {
+                    mFab.hide();
+                } else if(scrollY - oldScrollY < -10) {
+                    mFab.show();
+                }
+            }
+        });
     }
 
     @Override
@@ -201,34 +218,38 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
     
     private void displayAssignees() {
-        for(int i = 0; i < mIssue.getAssignees().length; i++) {
-            final User u = mIssue.getAssignees()[i];
-            final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
-            user.setId(i);
-            mAssignees.addView(user);
-            final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-            imageView.setId(10 * i);
-            imageView.setImageUrl(u.getAvatarUrl());
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            final  TextView login = (TextView) user.findViewById(R.id.user_login);
-            login.setId(20 * i); //Max 10 assignees
-            login.setText(mIssue.getAssignees()[i].getLogin());
-            user.setOnClickListener((v) -> {
-                final Intent us = new Intent(IssueActivity.this, UserActivity.class);
-                us.putExtra(getString(R.string.intent_username), u.getLogin());
+        if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
+            mAssignees.setVisibility(View.VISIBLE);
+            for(int i = 0; i < mIssue.getAssignees().length; i++) {
+                final User u = mIssue.getAssignees()[i];
+                final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
+                user.setId(i);
+                mAssignees.addView(user);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+                imageView.setId(10 * i);
+                imageView.setImageUrl(u.getAvatarUrl());
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                final TextView login = (TextView) user.findViewById(R.id.user_login);
+                login.setId(20 * i); //Max 10 assignees
+                login.setText(mIssue.getAssignees()[i].getLogin());
+                user.setOnClickListener((v) -> {
+                    final Intent us = new Intent(IssueActivity.this, UserActivity.class);
+                    us.putExtra(getString(R.string.intent_username), u.getLogin());
 
-                if(imageView.getDrawable() != null) {
-                    us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-                }
-                startActivity(us,
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                this,
-                                new Pair<>(login, getString(R.string.transition_username)),
-                                new Pair<>(imageView, getString(R.string.transition_user_image))
-                        ).toBundle());
+                    if(imageView.getDrawable() != null) {
+                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    }
+                    startActivity(us,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    this,
+                                    new Pair<>(login, getString(R.string.transition_username)),
+                                    new Pair<>(imageView, getString(R.string.transition_user_image))
+                            ).toBundle());
 
-            });
-
+                });
+            }
+        } else {
+            mAssignees.setVisibility(View.GONE);
         }
     }
 
@@ -241,6 +262,29 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void commentsLoadError(APIHandler.APIError error) {
 
+    }
+
+    @OnClick(R.id.issue_menu_button)
+    public void displayIssueMenu(View view) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(R.menu.menu_issue);
+        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
+            menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
+            menu.getMenu().add(0, 3, Menu.NONE, R.string.menu_edit_labels);
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case 1:
+                    Toast.makeText(getApplicationContext(), "TODO: Toggle state", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2:
+                    Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return false;
+        });
+        menu.show();
     }
 
     public void displayCommentMenu(View view, Comment comment) {

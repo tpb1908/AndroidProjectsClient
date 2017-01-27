@@ -224,8 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-                        view.getContext().startActivity(
-                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                         return true;
                     } else {
                         return false;

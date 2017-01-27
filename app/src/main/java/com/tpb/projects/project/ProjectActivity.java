@@ -99,7 +99,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
-    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE; //TODO Load this on project load
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
     private int mLoadCount;
 
     @Override

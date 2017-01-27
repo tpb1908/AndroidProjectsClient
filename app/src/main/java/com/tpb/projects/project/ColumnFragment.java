@@ -495,7 +495,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             return true;
         });
         if(card.hasIssue()) {
-            popup.inflate(R.menu.menu_issue_card);
+            popup.inflate(R.menu.menu_card_issue);
             popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
         } else {
             popup.inflate(R.menu.menu_card);
