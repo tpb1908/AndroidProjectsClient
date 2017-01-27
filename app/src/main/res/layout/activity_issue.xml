@@ -127,8 +127,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentTop="true"
                             android:background="@android:color/transparent"
-                            android:src="@drawable/ic_chevron_down"
-                            android:visibility="gone"/>
+                            android:src="@drawable/ic_chevron_down"/>
 
                     </RelativeLayout>
 

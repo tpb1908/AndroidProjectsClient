@@ -25,6 +25,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
@@ -42,6 +43,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import okhttp3.Response;
 
 /**
  * Created by theo on 14/12/16.
@@ -522,6 +525,30 @@ public class Loader extends APIHandler {
                             } else {
                                 listener.accessCheckError(parseError(anError));
                             }
+                        }
+                    }
+                });
+    }
+
+    public void checkIfCollaborator(AccessCheckListener listener, String login, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COLLABORATORS + "/"  + login)
+                .addHeaders(API_AUTH_HEADERS)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
+                        } else if(response.code() == 404) {
+                            if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.NONE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) {
+                            listener.accessCheckError(parseError(anError));
                         }
                     }
                 });

@@ -42,8 +42,6 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -54,8 +52,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.tpb.projects.util.Data.formatMD;
-
 /**
  * Created by theo on 20/12/16.
  */
@@ -64,9 +60,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private ArrayList<Card> mCards = new ArrayList<>();
-
-    private static final Parser parser = Parser.builder().build();
-    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
     private ColumnFragment mParent;
     private Editor mEditor;
@@ -226,7 +219,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mText.setHtml(renderer.render(parser.parse(Data.formatMD(card.getNote(), mParent.mParent.mProject.getRepoPath()))), new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()), new HtmlHttpImageGetter(holder.mText));
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {
@@ -283,7 +276,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append("<br>");
             builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
         }
-        holder.mText.setHtml(renderer.render(parser.parse(formatMD(builder.toString(), card.getIssue().getRepoPath()))),  new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(Data.parseMD(builder.toString(), card.getIssue().getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
        // holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
 
     }

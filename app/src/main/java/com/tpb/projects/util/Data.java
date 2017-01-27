@@ -20,6 +20,8 @@ package com.tpb.projects.util;
 import android.util.Base64;
 
 import com.tpb.projects.data.models.Repository;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,33 +38,10 @@ import java.util.List;
 public class Data {
     private static final String TAG = Data.class.getSimpleName();
 
+    private static final Parser parser = Parser.builder().build();
+    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+
     public static Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
-
-    public static int countOccurrences(String s, char c) {
-        int o = 0;
-        for(char ci : s.toCharArray()) if(c == ci) o++;
-        return o;
-    }
-
-    public static String stringArrayForPrefs(String[] values) {
-        final StringBuilder builder = new StringBuilder();
-        for(String s : values) {
-            builder.append(s).append(",");
-        }
-        return builder.toString();
-    }
-
-    public static String[] stringArrayFromPrefs(String value) {
-        return value.split(",");
-    }
-
-    public static String intArrayForPrefs(int[] values) {
-        final StringBuilder builder = new StringBuilder();
-        for(int i : values) {
-            builder.append(i).append(",");
-        }
-        return builder.toString();
-    }
 
     public static String intArrayForPrefs(List<Integer> values) {
         final StringBuilder builder = new StringBuilder();
@@ -125,7 +104,16 @@ public class Data {
     }
 
 
+    public static String parseMD(String s, String fullReopName) {
+        return renderer.render(parser.parse(formatMD(s, fullReopName)));
+    }
+
+    public static String parseMD(String s) {
+        return renderer.render(parser.parse(s));
+    }
+
     public static String formatMD(String s, String fullRepoPath) {
+
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';

@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
@@ -54,18 +55,18 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -91,14 +92,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
 
+
     private Editor mEditor;
     private Loader mLoader;
 
-    private static final Parser parser = Parser.builder().build();
-    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
-
     private Issue mIssue;
-    private boolean mCanComment;
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
 
     private IssueContentAdapter mAdapter;
 
@@ -154,7 +153,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             builder.append("<br><br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String test = renderer.render(parser.parse(builder.toString()));
+        final String test = Data.parseMD(builder.toString());
         Log.i(TAG, "setHtml: Issue Loaded:  " + test);
         mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
@@ -179,33 +178,30 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
         if(issue.getOpenedBy().getLogin().equals(login)) {
-            mOverflowButton.setVisibility(View.VISIBLE);
-            mCanComment = true;
+            mAccessLevel = Repository.AccessLevel.ADMIN;
             enableAccess();
             mFab.postDelayed(mFab::show, 300);
+           mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
-            mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
-                @Override
-                public void collaboratorsLoaded(User[] collaborators) {
-                    for(User u : collaborators) {
-                        if(u.getLogin().equals(login)) {
-                            enableAccess();
-                            return;
-                        }
+            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
+
+                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
+                    mAccessLevel = accessLevel;
+                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                        enableAccess();
                     }
                 }
 
                 @Override
-                public void collaboratorsLoadError(APIHandler.APIError error) {
+                public void accessCheckError(APIHandler.APIError error) {
 
                 }
-            }, mIssue.getRepoPath());
+            }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
         }
         mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
     }
 
     private void enableAccess() {
-        mCanComment = true;
         mFab.postDelayed(() -> mFab.show(), 300);
         mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -217,7 +213,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 }
             }
         });
-        mOverflowButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -226,7 +221,8 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
     
     private void displayAssignees() {
-        if(mIssue.getAssignees() != null) {
+
+        if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
             mAssignees.setVisibility(View.VISIBLE);
             for(int i = 0; i < mIssue.getAssignees().length; i++) {
                 final User u = mIssue.getAssignees()[i];
@@ -269,6 +265,29 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     public void commentsLoadError(APIHandler.APIError error) {
 
+    }
+
+    @OnClick(R.id.issue_menu_button)
+    public void displayIssueMenu(View view) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(R.menu.menu_issue);
+        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
+            menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
+            menu.getMenu().add(0, 3, Menu.NONE, R.string.menu_edit_labels);
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case 1:
+                    Toast.makeText(getApplicationContext(), "TODO: Toggle state", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2:
+                    Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return false;
+        });
+        menu.show();
     }
 
     public void displayCommentMenu(View view, Comment comment) {
