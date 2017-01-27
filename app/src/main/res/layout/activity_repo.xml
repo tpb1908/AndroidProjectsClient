@@ -155,6 +155,7 @@
                                     android:src="@drawable/ic_database"/>
 
                                 <ImageView
+                                    android:id="@+id/repo_issues_drawable"
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
                                     android:src="@drawable/ic_issue"/>
@@ -188,6 +189,7 @@
                                     android:textAlignment="center"/>
 
                                 <TextView
+                                    android:id="@+id/repo_issues_text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/text_issues"

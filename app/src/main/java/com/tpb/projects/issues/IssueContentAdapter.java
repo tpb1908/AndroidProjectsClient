@@ -81,6 +81,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
+
     void loadEvents(Event[] events) {
         if(mData.size() == 0) {
             mData = new ArrayList<>(mergeEvents(events));

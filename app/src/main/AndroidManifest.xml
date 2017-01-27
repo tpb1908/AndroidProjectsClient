@@ -67,6 +67,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".issues.IssuesActivity" />
+
         <activity android:name=".data.SettingsActivity"/>
 
         <activity
