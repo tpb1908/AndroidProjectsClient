@@ -217,5 +217,17 @@ public class Data {
         return --pos;
     }
 
+    public static int instancesOf(String s, String i) {
+        int last = 0;
+        int count = 0;
+        while(last != -1) {
+            last = s.indexOf(i, last);
+            if(last != -1) {
+                count++;
+                last += i.length();
+            }
+        }
+        return count;
+    }
 
 }

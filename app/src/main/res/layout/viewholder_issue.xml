@@ -47,11 +47,13 @@
             android:id="@+id/issue_content_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
             android:layout_toEndOf="@+id/issue_drawable"
             android:layout_toStartOf="@+id/issue_menu_button"
             android:layout_alignParentTop="true"
-            android:ellipsize="end"
+            android:ellipsize="marquee"
             android:maxLines="15">
         </org.sufficientlysecure.htmltextview.HtmlTextView>
 
@@ -59,7 +61,9 @@
             android:id="@+id/issue_info_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_toEndOf="@+id/issue_drawable"
             android:layout_toStartOf="@+id/issue_menu_button"
             android:layout_below="@+id/issue_content_markdown">

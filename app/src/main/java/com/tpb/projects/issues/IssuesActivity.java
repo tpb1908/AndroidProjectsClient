@@ -78,12 +78,14 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mLoader.loadIssues(this, getIntent().getExtras().getString(getString(R.string.intent_repo)));
+            mRefresher.setRefreshing(true);
         }
 
     }
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
+        mRefresher.setRefreshing(false);
     }
 
     @Override
