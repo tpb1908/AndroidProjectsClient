@@ -79,15 +79,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
             builder.append(Data.formatMD(issue.getBody(), issue.getRepoPath()));
             builder.append("<br>");
         }
-        String html = Data.parseMD(builder.toString(), issue.getRepoPath());
+        final String html = Data.parseMD(builder.toString(), issue.getRepoPath());
 
         holder.mContent.setHtml(html,  new HtmlHttpImageGetter(holder.mContent));
         builder.setLength(0);
 
         if(Data.instancesOf(html, "<br>") + Data.instancesOf(html, "<p>") + 4 >= 15) {
-            builder.append("...");
+            builder.append("...<br>");
         }
-        builder.append("<br><br>");
+        builder.append("<br>");
 
         builder.append(String.format(context.getString(R.string.text_opened_by),
                 String.format(context.getString(R.string.text_md_link),
