@@ -304,6 +304,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         menu.show();
     }
 
+    // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
             @Override
@@ -337,8 +338,10 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 mEditor.createComment(new Editor.CommentCreationListener() {
                     @Override
                     public void commentCreated(Comment comment) {
+                        mRefresher.setRefreshing(true);
                         if(mIssue.isClosed()) {
                             mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                            mAdapter.clear();
                             mAdapter.addComment(comment);
                         } else {
                             mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
@@ -360,6 +363,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             @Override
             public void commentNotCreated() {
                 mRefresher.setRefreshing(true);
+                mAdapter.clear();
                 if(mIssue.isClosed()) {
                     mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
                 } else {
