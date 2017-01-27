@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -57,7 +58,9 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.project.dialogs.NewCommentDialog;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
 
@@ -77,6 +80,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
+    private FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
@@ -108,6 +112,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_issue);
         ButterKnife.bind(this);
+        mAnalytics = FirebaseAnalytics.getInstance(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -279,7 +284,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case 1:
-                    Toast.makeText(getApplicationContext(), "TODO: Toggle state", Toast.LENGTH_SHORT).show();
+                    toggleIssueState();
                     break;
                 case 2:
                     Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
@@ -297,6 +302,72 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             menu.getMenu().add(0, 1, 0, "Edit");
         }
         menu.show();
+    }
+
+    private void toggleIssueState() {
+        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+            @Override
+            public void issueStateChanged(Issue issue) {
+                mLoader.loadEvents(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                mIssue = issue;
+                mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+            }
+
+            @Override
+            public void issueStateChangeError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mRefresher.setRefreshing(false);
+                    Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                }
+
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+            }
+        };
+
+        final NewCommentDialog dialog = new NewCommentDialog();
+        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+            @Override
+            public void commentCreated(String body) {
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        if(mIssue.isClosed()) {
+                            mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                            mAdapter.addComment(comment);
+                        } else {
+                            mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                        }
+                        mLoader.loadComments(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, mIssue.getRepoPath(), mIssue.getNumber(), body);
+
+            }
+
+            @Override
+            public void commentNotCreated() {
+                mRefresher.setRefreshing(true);
+                if(mIssue.isClosed()) {
+                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                } else {
+                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG);
     }
 
     @Override

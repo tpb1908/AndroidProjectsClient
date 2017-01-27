@@ -94,6 +94,12 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     }
 
+    void addComment(Comment comment) {
+        mData.add(comment);
+
+        notifyItemInserted(mData.size());
+    }
+
     private ArrayList<DataModel> mergeEvents(Event[] events) {
         final ArrayList<DataModel> merged = new ArrayList<>();
         ArrayList<Event> toMerge = new ArrayList<>();
