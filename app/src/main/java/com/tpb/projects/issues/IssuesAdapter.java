@@ -61,7 +61,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
 
     @Override
     public IssueHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_card, parent, false));
+        return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
     }
 
     @Override
@@ -79,6 +79,10 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
             builder.append(Data.formatMD(issue.getBody(), issue.getRepoPath()));
             builder.append("<br>");
         }
+
+        holder.mContent.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()),  new HtmlHttpImageGetter(holder.mContent));
+
+        builder.setLength(0);
 
         builder.append(String.format(context.getString(R.string.text_opened_by),
                 String.format(context.getString(R.string.text_md_link),
@@ -120,7 +124,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
             builder.append("<br>");
             builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
         }
-        holder.mText.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
+        holder.mInfo.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()));
     }
 
     @Override
@@ -130,13 +134,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
 
     public class IssueHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.card_markdown) HtmlTextView mText;
-        @BindView(R.id.card_menu_button) ImageButton mMenuButton;
-        @BindView(R.id.card_issue_drawable) ImageView mIssueIcon;
+        @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
+        @BindView(R.id.issue_info_markdown) HtmlTextView mInfo;
+        @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
+        @BindView(R.id.issue_drawable) ImageView mIssueIcon;
 
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mContent.setShowUnderLines(false);
         }
 
 
