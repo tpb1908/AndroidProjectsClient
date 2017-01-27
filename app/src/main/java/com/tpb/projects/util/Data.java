@@ -18,18 +18,10 @@
 package com.tpb.projects.util;
 
 import android.util.Base64;
-import android.util.Log;
 
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Column;
-import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,22 +82,6 @@ public class Data {
     //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    /**
-     * Transform Calendar to ISO 8601 string.
-     */
-    private static String fromCalendar(final Calendar calendar) {
-        Date date = calendar.getTime();
-        String formatted = ISO8601.format(date);
-        return formatted.substring(0, 22) + ":" + formatted.substring(22);
-    }
-
-    /**
-     * Get current date and time formatted as ISO 8601 string.
-     */
-    public static String now() {
-        return fromCalendar(GregorianCalendar.getInstance());
-    }
-
     public static String toISO8061(long t) {
         return ISO8601.format(new Date(t * 1000));
     }
@@ -127,66 +103,9 @@ public class Data {
         return calendar;
     }
 
-    public static JSONObject save(Card[] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            final JSONArray arr = new JSONArray();
-            for(Card c : cards) {
-                arr.put(Card.parse(c));
-            }
-            obj.put(Constants.JSON_KEY_CARDS, arr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
-    }
 
-    public static JSONObject save(Project project, Column[] columns, Card[][] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            obj.put(Constants.JSON_KEY_PROJECT, Project.parse(project));
-            final JSONArray carr = new JSONArray();
-            for(int i = 0; i < columns.length; i++) {
-                final JSONArray arr = new JSONArray();
-                for(Card c : cards[i]) arr.put(Card.parse(c));
-                carr.put(arr);
-            }
-
-            obj.put(Constants.JSON_KEY_COLUMNS, carr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
-    }
-
-    public static JSONObject save(Repository repo, Project[] projects, Column[][] columns, Card[][][] cards) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(Constants.JSON_KEY_TIME, System.nanoTime() / 1000);
-            obj.put(Constants.JSON_KEY_REPOSITORY, Repository.parse(repo));
-
-            final JSONArray parr = new JSONArray();
-            for(int i = 0; i < projects.length; i++) {
-                final JSONArray arr = new JSONArray();
-                for(int j = 0; j < columns[i].length; j++) {
-                    final JSONArray carr = new JSONArray();
-                    for(Card c : cards[i][j]) carr.put(Card.parse(c));
-                    arr.put(carr);
-                }
-                parr.put(arr);
-            }
-            obj.put(Constants.JSON_KEY_PROJECTS, parr);
-        } catch(JSONException jse) {
-            Log.e(TAG, "save: ", jse);
-        }
-        return obj;
-    }
-
-
-    public static String parseMD(String s, String fullReopName) {
-        return renderer.render(parser.parse(formatMD(s, fullReopName)));
+    public static String parseMD(String s, String fullRepoName) {
+        return renderer.render(parser.parse(formatMD(s, fullRepoName)));
     }
 
     public static String parseMD(String s) {
@@ -215,6 +134,27 @@ public class Data {
 
             } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
+            } else if (pp == '[' && p == 'x' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 4);
+                } else {
+                    builder.setLength(builder.length() - 2);
+                }
+                builder.append("\u2610");
+            } else if(p == '[' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 3);
+                } else {
+                    builder.setLength(builder.length() - 2);
+                }
+                builder.append("\u2610");
+            } else if (pp == '[' && p == ' ' && cs[i] == ']') {
+                if(builder.length() - 4 > 0 && cs[i - 4] == '-') {
+                    builder.setLength(builder.length() - 4);
+                } else {
+                    builder.setLength(builder.length() - 3);
+                }
+                builder.append("\u2611");
             } else {
                 builder.append(cs[i]);
             }
@@ -223,17 +163,6 @@ public class Data {
         }
         return builder.toString();
     }
-
-    //TODO
-    //Parse urls
-    //Search for www
-    //CHeck if valid url by moving forward
-    //If so, move backward.
-    //Check if previous character
-    // - Doesn't exist
-    // - is http:// or https://
-    // - is space
-    // If so, wrap in href
 
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
@@ -309,5 +238,17 @@ public class Data {
         return --pos;
     }
 
+    public static int instancesOf(String s, String i) {
+        int last = 0;
+        int count = 0;
+        while(last != -1) {
+            last = s.indexOf(i, last);
+            if(last != -1) {
+                count++;
+                last += i.length();
+            }
+        }
+        return count;
+    }
 
 }
