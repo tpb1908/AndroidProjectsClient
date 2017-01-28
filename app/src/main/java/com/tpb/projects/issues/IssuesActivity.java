@@ -21,9 +21,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
@@ -43,10 +45,12 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.NewCommentDialog;
+import com.tpb.projects.project.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by theo on 27/01/17.
@@ -61,6 +65,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     @BindView(R.id.issues_toolbar) Toolbar mToolbar;
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.issues_fab) FloatingActionButton mFab;
 
     private Loader mLoader;
     private Editor mEditor;
@@ -104,6 +109,21 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 @Override
                 public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                     mAccessLevel = accessLevel;
+                    if(mAccessLevel != Repository.AccessLevel.NONE) {
+                        mFab.postDelayed(mFab::show, 300);
+
+                        mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+                                if(dy > 10) {
+                                    mFab.hide();
+                                } else if(dy < -10) {
+                                    mFab.show();
+                                }
+                            }
+                        });
+                    }
                 }
 
                 @Override
@@ -269,6 +289,28 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         });
         dialog.show(getSupportFragmentManager(), TAG);
+    }
+
+    @OnClick(R.id.issues_fab)
+    public void createNewIssue() {
+        final NewIssueDialog newDialog = new NewIssueDialog();
+        newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
+            @Override
+            public void issueCreated(Issue issue) {
+                mAdapter.addIssue(issue);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+            }
+
+            @Override
+            public void issueCreationCancelled() {
+            }
+        });
+        final Bundle c = new Bundle();
+        c.putString(getString(R.string.intent_repo), mRepoPath);
+        newDialog.setArguments(c);
+        newDialog.show(getSupportFragmentManager(), TAG);
     }
 
     public void onToolbarBackPressed(View view) {

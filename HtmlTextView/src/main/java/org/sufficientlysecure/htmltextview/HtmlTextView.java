@@ -159,7 +159,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     }
                 });
 
-
             }
         };
         if(mParseHandler != null) {

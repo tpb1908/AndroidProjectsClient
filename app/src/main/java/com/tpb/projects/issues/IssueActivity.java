@@ -125,7 +125,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mRecycler.setAdapter(mAdapter);
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
-
             mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
         });
 

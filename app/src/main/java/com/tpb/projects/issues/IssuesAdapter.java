@@ -60,6 +60,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         notifyDataSetChanged();
     }
 
+    void addIssue(Issue issue) {
+        mIssues.add(0, issue);
+        notifyItemInserted(0);
+    }
+
     void clear() {
         mIssues.clear();
         notifyDataSetChanged();
