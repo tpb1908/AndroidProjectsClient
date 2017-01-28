@@ -138,6 +138,7 @@
     <string name="text_event_labels_added">%1$s added labels %2$s</string>
     <string name="text_event_labels_removed">%1$s removed labels %2$s</string>
     <string name="text_commit">commit</string>
+    <string name="text_creating_issue">Creating Issue</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>

@@ -18,6 +18,7 @@
 package com.tpb.projects.project.dialogs;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -153,10 +154,15 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            final ProgressDialog pd = new ProgressDialog(getContext());
+            pd.setTitle(R.string.text_creating_issue);
+            pd.setCancelable(false);
+            pd.show();
             new Editor(getContext()).createIssue(
                     new Editor.IssueCreationListener() {
                              @Override
                              public void issueCreated(Issue issue) {
+                                 pd.dismiss();
                                  Toast.makeText(getContext(), R.string.text_issue_created, Toast.LENGTH_SHORT).show();
                                  if(mListener != null) mListener.issueCreated(issue);
                                  Log.i(TAG, "issueCreated: " + issue.toString());
@@ -166,6 +172,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
                              @Override
                              public void issueCreationError(APIHandler.APIError error) {
                                  Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                                 pd.dismiss();
                              }
                          },
                     repoFullName,
@@ -183,7 +190,10 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
     }
 
     private void showAssigneesDialog() {
-        Toast.makeText(getContext(), R.string.text_loading_collaborators, Toast.LENGTH_SHORT).show();
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setTitle(R.string.text_loading_collaborators);
+        pd.setCancelable(false);
+        pd.show();
         new Loader(getContext()).loadCollaborators(new Loader.CollaboratorsLoader() {
             @Override
             public void collaboratorsLoaded(User[] collaborators) {
@@ -222,6 +232,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
 
                     }
                 });
+                pd.dismiss();
                 mcd.show(getFragmentManager(), TAG);
             }
 
@@ -233,7 +244,10 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
     }
 
     private void showLabelsDialog() {
-        Toast.makeText(getContext(), R.string.text_loading_labels, Toast.LENGTH_SHORT).show();
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setTitle(R.string.text_loading_labels);
+        pd.setCancelable(false);
+        pd.show();
         new Loader(getContext()).loadLabels(new Loader.LabelsLoader() {
             @Override
             public void labelsLoaded(Label[] labels) {
@@ -277,6 +291,7 @@ public class NewIssueDialog extends KeyboardDismissingDialogFragment {
 
                     }
                 });
+                pd.dismiss();
                 mcd.show(getFragmentManager(), TAG);
             }
 
