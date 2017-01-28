@@ -161,7 +161,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
 
                 if(!showUnderLines) {
-                    stripUnderLines();
+                    stripUnderLines(buffer);
                 }
 
                 HtmlTextView.this.post(new Runnable() {
@@ -169,7 +169,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     public void run() {
                         setText(buffer);
                         if(mImageClickHandler != null) {
-                            enableImageClicks();
+                            enableImageClicks(buffer);
                         }
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
@@ -187,8 +187,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     }
 
-    private void stripUnderLines() {
-        final Spannable s = new SpannableString(getText());
+    private void stripUnderLines(Spannable s) {
         URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
         for(URLSpan span : spans) {
             final int start = s.getSpanStart(span);
@@ -201,20 +200,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }
             s.setSpan(span, start, end, 0);
         }
-        HtmlTextView.this.post(new Runnable() {
-            @Override
-            public void run() {
-                setText(s);
-            }
-        });
     }
 
-    private void enableImageClicks() {
-        final Spannable s = new SpannableString(getText());
+    private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-            int flags = s.getSpanFlags(span);
-            int start = s.getSpanStart(span);
-            int end = s.getSpanEnd(span);
 
             s.setSpan(new URLSpan(span.getSource()) {
 
@@ -232,7 +221,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     super.updateDrawState(ds);
                     ds.setUnderlineText(false);
                 }
-            }, start, end, flags);
+            }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
         HtmlTextView.this.post(new Runnable() {
             @Override
@@ -335,7 +324,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             //iv.setBackground(drawable);
 
             builder.show();
-
         }
     }
 

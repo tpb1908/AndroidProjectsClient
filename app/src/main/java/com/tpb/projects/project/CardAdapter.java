@@ -226,12 +226,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
         final long start = System.nanoTime();
-        holder.mText.setHtml(Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()), new HtmlHttpImageGetter(holder.mText));
-        Log.i(TAG, "bindIssueCard: Card bind time: " + (System.nanoTime()-start)/1E9);
+        final String thing = Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath());
+        Log.i(TAG, "bindStandardCard: " + thing);
+        holder.mText.setHtml(thing, new HtmlHttpImageGetter(holder.mText));
+        Log.i(TAG, "bindStandardCard: Card bind time: " + (System.nanoTime()-start)/1E9);
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {
-
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
         final long start = System.nanoTime();
@@ -313,7 +314,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
-            mText.setParseHandler(parseHandler);
+         //   mText.setParseHandler(parseHandler);
         }
 
     }
