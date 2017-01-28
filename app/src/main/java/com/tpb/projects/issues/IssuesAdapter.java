@@ -45,13 +45,15 @@ import butterknife.ButterKnife;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
+class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private static final String TAG = IssuesAdapter.class.getSimpleName();
 
+    private IssuesActivity mParent;
     private ArrayList<Issue> mIssues = new ArrayList<>();
 
-    public IssuesAdapter() {
 
+    IssuesAdapter(IssuesActivity parent) {
+        mParent = parent;
     }
 
     void loadIssues(Issue[] issues) {
@@ -137,6 +139,14 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
         return mIssues.size();
     }
 
+    private void openIssue(int pos) {
+        mParent.openIssue(mIssues.get(pos));
+    }
+
+    private void openMenu(View view, int pos) {
+        mParent.openMenu(view, mIssues.get(pos));
+    }
+
     public class IssueHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
@@ -149,6 +159,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolde
             ButterKnife.bind(this, view);
             mContent.setShowUnderLines(false);
             mInfo.setShowUnderLines(false);
+            mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
+            view.setOnClickListener((v) -> openIssue(getAdapterPosition()));
         }
 
 

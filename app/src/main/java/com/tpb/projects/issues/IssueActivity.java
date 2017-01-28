@@ -119,6 +119,16 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mEditor = new Editor(this);
         mLoader = new Loader(this);
 
+        mRefresher.setRefreshing(true);
+        mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new IssueContentAdapter(this);
+        mRecycler.setAdapter(mAdapter);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+
+            mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
+        });
+
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
             mNumber.setText(String.format("#%1$d", mIssue.getNumber()));
@@ -129,15 +139,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-        mRefresher.setRefreshing(true);
-        mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new IssueContentAdapter(this);
-        mRecycler.setAdapter(mAdapter);
-        mRefresher.setOnRefreshListener(() -> {
-            mAdapter.clear();
 
-            mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
-        });
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 

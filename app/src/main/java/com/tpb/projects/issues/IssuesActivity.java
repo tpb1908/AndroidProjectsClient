@@ -17,6 +17,7 @@
 
 package com.tpb.projects.issues;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -71,7 +72,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         mLoader = new Loader(this);
         mEditor = new Editor(this);
 
-        mAdapter = new IssuesAdapter();
+        mAdapter = new IssuesAdapter(this);
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
@@ -82,6 +83,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
 
     }
+
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
@@ -90,6 +92,17 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     @Override
     public void issuesLoadError(APIHandler.APIError error) {
+
+    }
+
+    void openIssue(Issue issue) {
+        final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
+        i.putExtra(getString(R.string.parcel_issue), issue);
+        startActivity(i);
+        overridePendingTransition(R.anim.slide_up, R.anim.none);
+    }
+
+    void openMenu(View view, Issue issue) {
 
     }
 
