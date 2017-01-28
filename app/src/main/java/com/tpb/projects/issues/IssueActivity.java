@@ -58,6 +58,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.project.dialogs.EditIssueDialog;
 import com.tpb.projects.project.dialogs.NewCommentDialog;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
@@ -148,46 +149,15 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mAdapter.setIssue(mIssue);
         displayAssignees();
         mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<h1>");
-        builder.append(mIssue.getTitle());
-        builder.append("</h1>");
-        if(mIssue.getBody() != null) {
-            builder.append(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()));
-        }
-        if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
-            builder.append("<br><br>");
-            Label.appendLabels(builder, mIssue.getLabels(), "   ");
-        }
-        final String test = Data.parseMD(builder.toString());
-        Log.i(TAG, "setHtml: Issue Loaded:  " + test);
-        mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
-        builder.setLength(0);
-        builder.append(
-                String.format(
-                        getString(R.string.text_opened_this_issue),
-                        String.format(getString(R.string.text_href),
-                                "https://github.com/" + issue.getOpenedBy().getLogin(),
-                                issue.getOpenedBy().getLogin()
-                        ),
-                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
-                )
-        );
-        mOpenInfo.setShowUnderLines(false);
-        mOpenInfo.setHtml(builder.toString());
 
-        if(mIssue.isClosed()) {
-            mImageState.setImageResource(R.drawable.ic_issue_closed);
-        } else {
-            mImageState.setImageResource(R.drawable.ic_issue_open);
-        }
+        bindIssue();
 
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
         if(issue.getOpenedBy().getLogin().equals(login)) {
             mAccessLevel = Repository.AccessLevel.ADMIN;
             enableAccess();
             mFab.postDelayed(mFab::show, 300);
-           mAccessLevel = Repository.AccessLevel.ADMIN;
+            mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
 
@@ -202,9 +172,48 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 public void accessCheckError(APIHandler.APIError error) {
 
                 }
+
             }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
         }
         mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+    }
+
+    private void bindIssue() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("<h1>");
+        builder.append(mIssue.getTitle());
+        builder.append("</h1>");
+        if(mIssue.getBody() != null) {
+            builder.append(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()));
+            builder.append("<br>");
+        }
+        if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
+            builder.append("<br>");
+            Label.appendLabels(builder, mIssue.getLabels(), "   ");
+        }
+        final String test = Data.parseMD(builder.toString());
+        Log.i(TAG, "setHtml: Issue Loaded:  " + test);
+        mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
+        builder.setLength(0);
+        builder.append(
+                String.format(
+                        getString(R.string.text_opened_this_issue),
+                        String.format(getString(R.string.text_href),
+                                "https://github.com/" + mIssue.getOpenedBy().getLogin(),
+                                mIssue.getOpenedBy().getLogin()
+                        ),
+                        DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
+                )
+        );
+        mOpenInfo.setShowUnderLines(false);
+        mOpenInfo.setHtml(builder.toString());
+
+
+        if(mIssue.isClosed()) {
+            mImageState.setImageResource(R.drawable.ic_issue_closed);
+        } else {
+            mImageState.setImageResource(R.drawable.ic_issue_open);
+        }
     }
 
     private void enableAccess() {
@@ -280,7 +289,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         if(mAccessLevel == Repository.AccessLevel.ADMIN) {
             menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
             menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
-            menu.getMenu().add(0, 3, Menu.NONE, R.string.menu_edit_labels);
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
@@ -288,7 +296,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                     toggleIssueState();
                     break;
                 case 2:
-                    Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
+                    editIssue();
                     break;
             }
             return false;
@@ -305,6 +313,58 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         menu.show();
     }
 
+    private void editIssue() {
+        final EditIssueDialog editDialog = new EditIssueDialog();
+        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
+            @Override
+            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+                mRefresher.setRefreshing(true);
+                mEditor.editIssue(new Editor.IssueEditListener() {
+                    int issueCreationAttempts = 0;
+
+                    @Override
+                    public void issueEdited(Issue issue) {
+                        mIssue = issue;
+                        bindIssue();
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                    }
+
+                    @Override
+                    public void issueEditError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        } else {
+                            if(issueCreationAttempts < 5) {
+                                issueCreationAttempts++;
+                                mEditor.editIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
+                            } else {
+                                Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                mRefresher.setRefreshing(false);
+                            }
+                        }
+
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                    }
+                }, mIssue.getRepoPath(), issue, assignees, labels);
+            }
+
+            @Override
+            public void issueEditCancelled() {
+
+            }
+        });
+        final Bundle c = new Bundle();
+        c.putParcelable(getString(R.string.parcel_issue), mIssue);
+        c.putString(getString(R.string.intent_repo), mIssue.getRepoPath());
+        editDialog.setArguments(c);
+        editDialog.show(getSupportFragmentManager(), TAG);
+    }
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {

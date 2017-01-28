@@ -285,7 +285,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
                 } else {
                     mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
-                }
+                }Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
             }
         });
         dialog.show(getSupportFragmentManager(), TAG);
