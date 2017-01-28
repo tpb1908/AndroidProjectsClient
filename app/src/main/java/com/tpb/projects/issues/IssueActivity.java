@@ -139,7 +139,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-
+        mOpenInfo.setShowUnderLines(false);
+        mInfo.setShowUnderLines(false);
+        mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -205,7 +207,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                         DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
                 )
         );
-        mOpenInfo.setShowUnderLines(false);
+
         mOpenInfo.setHtml(builder.toString());
 
 

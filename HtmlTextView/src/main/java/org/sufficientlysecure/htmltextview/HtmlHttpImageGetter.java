@@ -137,7 +137,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         public Drawable fetchDrawable(Resources res, String urlString) {
             try {
                 InputStream is = fetch(urlString);
-                Drawable drawable = new BitmapDrawable(res, is);
+                final Drawable drawable = new BitmapDrawable(res, is);
                 scale = getScale(drawable);
                 drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
                 return drawable;
@@ -147,7 +147,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         }
 
         private float getScale(Drawable drawable) {
-            View container = containerReference.get();
+            final View container = containerReference.get();
             if (!matchParentWidth || container == null) {
                 return 1f;
             }
@@ -183,5 +183,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 drawable.draw(canvas);
             }
         }
+
+
     }
 } 

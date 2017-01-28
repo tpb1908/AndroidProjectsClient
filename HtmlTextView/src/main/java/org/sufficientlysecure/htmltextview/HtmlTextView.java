@@ -16,8 +16,12 @@
 
 package org.sufficientlysecure.htmltextview;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -28,12 +32,16 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -56,6 +64,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private LinkClickHandler mLinkHandler;
 
+    private ImageClickHandler mImageHandler;
+
     private Handler mParseHandler;
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
@@ -76,6 +86,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public void setParseHandler(Handler parseHandler) {
         mParseHandler = parseHandler;
+    }
+
+    public void setImageHandler(ImageClickHandler imageHandler) {
+        mImageHandler = imageHandler;
     }
 
     /**
@@ -154,6 +168,9 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     @Override
                     public void run() {
                         setText(buffer);
+                        if(mImageHandler != null) {
+                            enableImageClicks();
+                        }
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
@@ -169,7 +186,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         }
 
     }
-
 
     private void stripUnderLines() {
         final Spannable s = new SpannableString(getText());
@@ -193,6 +209,32 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         });
     }
 
+    private void enableImageClicks() {
+        final Spannable s = new SpannableString(getText());
+        for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
+            int flags = s.getSpanFlags(span);
+            int start = s.getSpanStart(span);
+            int end = s.getSpanEnd(span);
+
+            s.setSpan(new URLSpan(span.getSource()) {
+
+                @Override
+                public void onClick(View widget) {
+                    if(mImageHandler == null) {
+                        super.onClick(widget); //Opens image link
+                    } else {
+                        mImageHandler.imageClicked(span.getDrawable());
+                    }
+                }
+            }, start, end, flags);
+        }
+        HtmlTextView.this.post(new Runnable() {
+            @Override
+            public void run() {
+                setText(s);
+            }
+        });
+    }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
         private LinkClickHandler mHandler;
@@ -252,6 +294,43 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         void onClick(String url);
 
+    }
+
+    public interface ImageClickHandler {
+
+        void imageClicked(Drawable drawable);
+
+    }
+
+    public static class ImageDialog implements ImageClickHandler {
+
+        private Context mContext;
+
+        public ImageDialog(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public void imageClicked(Drawable drawable) {
+            final Dialog builder = new Dialog(mContext);
+            builder.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            builder.setOnDismissListener(null);
+
+            final ImageView iv = new ImageView(mContext);
+            iv.setAdjustViewBounds(true);
+            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iv.setImageDrawable(drawable.getConstantState().newDrawable());
+
+            builder.addContentView(iv, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            Log.i(TAG, "imageClicked: Drawable " + drawable.getIntrinsicWidth() + ", " + drawable.getIntrinsicHeight());
+            Log.i(TAG, "imageClicked: Is drawable null? " + drawable + " " + (drawable == null));
+            //iv.setBackground(drawable);
+
+            builder.show();
+
+        }
     }
 
     /**
