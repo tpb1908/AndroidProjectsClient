@@ -20,6 +20,8 @@ package com.tpb.projects.project;
 import android.content.ClipData;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -63,6 +65,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private ColumnFragment mParent;
     private Editor mEditor;
+    private static final HandlerThread parseThread = new HandlerThread("card_parser");
+    static {
+        parseThread.start();
+    }
+    private static final Handler parseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
 
     CardAdapter(ColumnFragment parent, Repository.AccessLevel accessLevel) {
@@ -219,21 +226,23 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
+        final long start = System.nanoTime();
         holder.mText.setHtml(Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()), new HtmlHttpImageGetter(holder.mText));
+        Log.i(TAG, "bindIssueCard: Card bind time: " + (System.nanoTime()-start)/1E9);
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {
 
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-
+        final long start = System.nanoTime();
         final StringBuilder builder = new StringBuilder();
         builder.append("<b>");
         builder.append(card.getIssue().getTitle());
         builder.append("</b><br><br>");
         if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
             builder.append(Data.formatMD(card.getIssue().getBody(), card.getIssue().getRepoPath()));
-            builder.append("<br>");
+            builder.append("<br><br>");
         }
 
         builder.append(String.format(mParent.getString(R.string.text_opened_by),
@@ -277,7 +286,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
         }
         holder.mText.setHtml(Data.parseMD(builder.toString(), card.getIssue().getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
-       // holder.mText.setHtml(md.markdownToHtml(builder.toString()), new HtmlHttpImageGetter(holder.mText));
+        Log.i(TAG, "bindIssueCard: Issue bind time: " + (System.nanoTime()-start)/1E9);
 
     }
 
@@ -287,6 +296,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
+
+
+
         @BindView(R.id.card_markdown) HtmlTextView mText;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
@@ -303,6 +315,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
+            mText.setParseHandler(parseHandler);
         }
 
     }

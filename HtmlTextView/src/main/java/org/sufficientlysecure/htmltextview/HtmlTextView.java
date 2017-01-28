@@ -18,6 +18,7 @@ package org.sufficientlysecure.htmltextview;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,6 +31,7 @@ import android.text.TextPaint;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -54,6 +56,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private LinkClickHandler mLinkHandler;
 
+    private Handler mParseHandler;
+
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -68,6 +72,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public void setLinkHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
+    }
+
+    public void setParseHandler(Handler parseHandler) {
+        mParseHandler = parseHandler;
     }
 
     /**
@@ -108,42 +116,61 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
     //http://stackoverflow.com/a/17201376/4191572
-    public void setHtml(@NonNull String html, @Nullable Html.ImageGetter imageGetter) {
-        final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
-        htmlTagHandler.setClickableTableSpan(clickableTableSpan);
-        htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
+    public void setHtml(@NonNull final String html, @Nullable final Html.ImageGetter imageGetter) {
+        final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
+                htmlTagHandler.setClickableTableSpan(clickableTableSpan);
+                htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
-        html = htmlTagHandler.overrideTags(html);
+                final String overridden = htmlTagHandler.overrideTags(html);
 
-        final Spanned text;
-        if (removeFromHtmlSpace) {
-            text = removeHtmlBottomPadding(Html.fromHtml(html, imageGetter, htmlTagHandler));
+                final Spanned text;
+                if(removeFromHtmlSpace) {
+                    text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+                } else {
+                    text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
+                }
+
+                final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
+
+                final SpannableString buffer = new SpannableString(text);
+                Linkify.addLinks(buffer, Linkify.WEB_URLS);
+
+                for(URLSpan us : spans) {
+                    final int end = text.getSpanEnd(us);
+                    final int start = text.getSpanStart(us);
+                    buffer.setSpan(
+                            showUnderLines ? us : mLinkHandler == null ? new URLSpanWithoutUnderline(us.getURL()) : new URLSpanWithoutUnderline(us.getURL(), mLinkHandler),
+                            start, end, 0);
+                }
+
+                if(!showUnderLines) {
+                    stripUnderLines();
+                }
+
+                HtmlTextView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setText(buffer);
+                        // make links work
+                        setMovementMethod(LocalLinkMovementMethod.getInstance());
+                    }
+                });
+
+
+            }
+        };
+        if(mParseHandler != null) {
+            Log.i(TAG, "setHtml: Posting to handler");
+            mParseHandler.post(r);
         } else {
-            text = Html.fromHtml(html, imageGetter, htmlTagHandler);
+            r.run();
         }
-
-        final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
-
-        SpannableString buffer = new SpannableString(text);
-        Linkify.addLinks(buffer, Linkify.WEB_URLS);
-
-        for(URLSpan us : spans) {
-            final int end = text.getSpanEnd(us);
-            final int start = text.getSpanStart(us);
-            buffer.setSpan(
-                    showUnderLines ? us : mLinkHandler == null ? new URLSpanWithoutUnderline(us.getURL()) : new URLSpanWithoutUnderline(us.getURL(), mLinkHandler),
-                    start, end, 0);
-        }
-
-        if(!showUnderLines) {
-            stripUnderLines();
-        }
-
-        setText(buffer);
-        // make links work
-        setMovementMethod(LocalLinkMovementMethod.getInstance());
 
     }
+
 
     private void stripUnderLines() {
         final Spannable s = new SpannableString(getText());
@@ -159,7 +186,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }
             s.setSpan(span, start, end, 0);
         }
-        setText(s);
+        HtmlTextView.this.post(new Runnable() {
+            @Override
+            public void run() {
+                setText(s);
+            }
+        });
     }
 
 
