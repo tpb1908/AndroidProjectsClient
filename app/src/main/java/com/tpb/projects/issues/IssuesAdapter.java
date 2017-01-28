@@ -32,7 +32,6 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
@@ -90,19 +89,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         builder.append("<b>");
         builder.append(issue.getTitle());
         builder.append("</b><br><br>");
-        if(issue.getBody() != null && !issue.getBody().isEmpty()) {
-            builder.append(Data.formatMD(issue.getBody(), issue.getRepoPath()));
-            builder.append("<br>");
-        }
-        final String html = Data.parseMD(builder.toString(), issue.getRepoPath());
-
-        holder.mContent.setHtml(html,  new HtmlHttpImageGetter(holder.mContent));
-        builder.setLength(0);
-
-        if(Data.instancesOf(html, "<br>") + Data.instancesOf(html, "<p>") + 4 >= 15) {
-            builder.append("...<br>");
-        }
-        builder.append("<br>");
 
         builder.append(String.format(context.getString(R.string.text_opened_by),
                 String.format(context.getString(R.string.text_md_link),
@@ -144,7 +130,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             builder.append("<br>");
             builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
         }
-        holder.mInfo.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()));
+        holder.mContent.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()));
     }
 
     @Override
@@ -163,7 +149,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     public class IssueHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
-        @BindView(R.id.issue_info_markdown) HtmlTextView mInfo;
         @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
         @BindView(R.id.issue_drawable) ImageView mIssueIcon;
 
@@ -171,7 +156,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             super(view);
             ButterKnife.bind(this, view);
             mContent.setShowUnderLines(false);
-            mInfo.setShowUnderLines(false);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
             view.setOnClickListener((v) -> openIssue(getAdapterPosition()));
         }
