@@ -195,7 +195,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
-                    holder.mSpinner.setVisibility(View.INVISIBLE);
                     bindIssueCard(holder, card);
                    // notifyItemChanged(pos);
 
@@ -286,6 +285,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
         }
         holder.mText.setHtml(Data.parseMD(builder.toString(), card.getIssue().getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
+        holder.mSpinner.setVisibility(View.INVISIBLE);
         Log.i(TAG, "bindIssueCard: Issue bind time: " + (System.nanoTime()-start)/1E9);
 
     }
@@ -296,8 +296,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     class CardHolder extends RecyclerView.ViewHolder {
-
-
 
         @BindView(R.id.card_markdown) HtmlTextView mText;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
