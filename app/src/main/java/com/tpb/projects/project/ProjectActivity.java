@@ -60,8 +60,8 @@ import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.project.dialogs.CardDialog;
-import com.tpb.projects.project.dialogs.NewIssueDialog;
+import com.tpb.projects.dialogs.CardDialog;
+import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 
@@ -149,7 +149,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     if(error == APIHandler.APIError.NO_CONNECTION) {
                         mRefresher.setRefreshing(false);
                         Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        //TODO Show a snackbar or something
+    
                     } else {
                         if(projectLoadAttempts < 5) {
                             projectLoadAttempts++;
@@ -220,7 +220,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                    //TODO Show a snackbar or something
+
                 } else {
                     if(accessCheckAttempts < 5) {
                         accessCheckAttempts++;
@@ -354,7 +354,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                            //TODO Show a snackbar or something
+        
                         } else {
                             if(addColumnAttempts < 5) {
                                 addColumnAttempts++;
@@ -434,7 +434,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                                //TODO Show a snackbar or something
+            
                             } else {
                                 if(deleteColumnAttempts < 5) {
                                     deleteColumnAttempts++;

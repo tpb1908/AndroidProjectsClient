@@ -43,9 +43,9 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.project.dialogs.EditIssueDialog;
-import com.tpb.projects.project.dialogs.NewCommentDialog;
-import com.tpb.projects.project.dialogs.NewIssueDialog;
+import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.NewCommentDialog;
+import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
 import butterknife.BindView;

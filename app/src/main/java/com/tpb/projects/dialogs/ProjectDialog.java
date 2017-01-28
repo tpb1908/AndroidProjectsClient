@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.repo;
+package com.tpb.projects.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;

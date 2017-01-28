@@ -58,8 +58,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.project.dialogs.EditIssueDialog;
-import com.tpb.projects.project.dialogs.NewCommentDialog;
+import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.NewCommentDialog;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -129,6 +129,10 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mLoader.loadIssue(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber(), true);
         });
 
+        mOpenInfo.setShowUnderLines(false);
+        mInfo.setShowUnderLines(false);
+        mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
+
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
             mNumber.setText(String.format("#%1$d", mIssue.getNumber()));
@@ -139,9 +143,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-        mOpenInfo.setShowUnderLines(false);
-        mInfo.setShowUnderLines(false);
-        mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
+
        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
@@ -209,7 +211,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         );
 
         mOpenInfo.setHtml(builder.toString());
-
 
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);

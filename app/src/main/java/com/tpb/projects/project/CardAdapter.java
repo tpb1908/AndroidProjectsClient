@@ -69,7 +69,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     static {
         parseThread.start();
     }
-    private static final Handler parseHandler = new Handler(parseThread.getLooper());
+    private static final Handler mParseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
 
     CardAdapter(ColumnFragment parent, Repository.AccessLevel accessLevel) {
@@ -226,10 +226,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private void bindStandardCard(CardHolder holder, Card card) {
         holder.mIssueIcon.setVisibility(View.GONE);
         final long start = System.nanoTime();
-        final String thing = Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath());
-        Log.i(TAG, "bindStandardCard: " + thing);
-        holder.mText.setHtml(thing, new HtmlHttpImageGetter(holder.mText));
-        Log.i(TAG, "bindStandardCard: Card bind time: " + (System.nanoTime()-start)/1E9);
+        //Log.i(TAG, "bindStandardCard: " + Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()));
+        holder.mText.setHtml(Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()), new HtmlHttpImageGetter(holder.mText));
+      //  Log.i(TAG, "bindStandardCard: Card bind time: " + (System.nanoTime()-start)/1E9);
     }
 
     private void bindIssueCard(CardHolder holder,  Card card) {
@@ -287,7 +286,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         }
         holder.mText.setHtml(Data.parseMD(builder.toString(), card.getIssue().getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
         holder.mSpinner.setVisibility(View.INVISIBLE);
-        Log.i(TAG, "bindIssueCard: Issue bind time: " + (System.nanoTime()-start)/1E9);
+    //    Log.i(TAG, "bindIssueCard: Issue bind time: " + (System.nanoTime()-start)/1E9);
 
     }
 
@@ -314,7 +313,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
-            mText.setParseHandler(parseHandler);
+            mText.setParseHandler(mParseHandler);
         }
 
     }

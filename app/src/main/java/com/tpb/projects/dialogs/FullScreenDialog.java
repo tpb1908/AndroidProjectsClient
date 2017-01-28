@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.project.dialogs;
+package com.tpb.projects.dialogs;
 
 import android.app.Dialog;
 import android.os.Bundle;

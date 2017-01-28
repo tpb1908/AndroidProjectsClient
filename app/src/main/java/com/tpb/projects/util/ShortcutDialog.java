@@ -28,7 +28,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.tpb.projects.R;
-import com.tpb.projects.project.dialogs.KeyboardDismissingDialogFragment;
+import com.tpb.projects.dialogs.KeyboardDismissingDialogFragment;
 
 /**
  * Created by theo on 01/01/17.

@@ -18,6 +18,8 @@
 package com.tpb.projects.issues;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -50,6 +52,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private IssuesActivity mParent;
     private ArrayList<Issue> mIssues = new ArrayList<>();
 
+    private static final HandlerThread parseThread = new HandlerThread("card_parser");
+    static {
+        parseThread.start();
+    }
+    private static final Handler mParseHandler = new Handler(parseThread.getLooper());
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
@@ -161,6 +168,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             super(view);
             ButterKnife.bind(this, view);
             mContent.setShowUnderLines(false);
+            mContent.setParseHandler(mParseHandler);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
             view.setOnClickListener((v) -> openIssue(getAdapterPosition()));
         }

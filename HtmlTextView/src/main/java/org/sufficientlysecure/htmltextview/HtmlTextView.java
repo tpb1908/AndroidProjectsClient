@@ -175,12 +175,11 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
                 });
-
             }
         };
         if(mParseHandler != null) {
             Log.i(TAG, "setHtml: Posting to handler");
-            mParseHandler.post(r);
+            mParseHandler.postDelayed(r, 20);
         } else {
             r.run();
         }
@@ -204,9 +203,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-
             s.setSpan(new URLSpan(span.getSource()) {
-
                 @Override
                 public void onClick(View widget) {
                     if(mImageClickHandler == null) {
@@ -224,7 +221,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
         setText(s);
-
     }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
