@@ -64,7 +64,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private LinkClickHandler mLinkHandler;
 
-    private ImageClickHandler mImageHandler;
+    private ImageClickHandler mImageClickHandler;
 
     private Handler mParseHandler;
 
@@ -89,7 +89,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     }
 
     public void setImageHandler(ImageClickHandler imageHandler) {
-        mImageHandler = imageHandler;
+        mImageClickHandler = imageHandler;
     }
 
     /**
@@ -168,7 +168,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     @Override
                     public void run() {
                         setText(buffer);
-                        if(mImageHandler != null) {
+                        if(mImageClickHandler != null) {
                             enableImageClicks();
                         }
                         // make links work
@@ -220,11 +220,17 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
                 @Override
                 public void onClick(View widget) {
-                    if(mImageHandler == null) {
+                    if(mImageClickHandler == null) {
                         super.onClick(widget); //Opens image link
                     } else {
-                        mImageHandler.imageClicked(span.getDrawable());
+                        mImageClickHandler.imageClicked(span.getDrawable());
                     }
+                }
+
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
                 }
             }, start, end, flags);
         }
