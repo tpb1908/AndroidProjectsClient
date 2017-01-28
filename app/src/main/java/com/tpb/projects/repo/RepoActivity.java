@@ -51,6 +51,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
@@ -171,6 +172,15 @@ public class RepoActivity extends AppCompatActivity implements
                     new Pair<>(mUserName, getString(R.string.transition_username)),
                     new Pair<>(mUserImage, getString(R.string.transition_user_image))
             ).toBundle());
+        }
+    }
+
+    @OnClick({R.id.repo_issues, R.id.repo_issues_text, R.id.repo_issues_drawable})
+    void openIssues() {
+        if(mRepo != null) {
+            final Intent i = new Intent(RepoActivity.this, IssuesActivity.class);
+            i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+            startActivity(i);
         }
     }
 

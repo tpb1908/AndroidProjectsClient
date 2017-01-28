@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.tpb.projects.R;
 import com.tpb.projects.issues.IssueActivity;
+import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.UserActivity;
@@ -66,9 +67,12 @@ public class Interceptor extends Activity {
                         startActivity(pr);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
-                    } else if("issues".equals(segments.get(0))) {
-                        //TODO Implement issues viewer
-                        fail();
+                    } else if("issues".equals(segments.get(2))) {
+                        final Intent pr = new Intent(Interceptor.this, IssuesActivity.class);
+                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        startActivity(pr);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                        finish();
                     } else {
                         fail();
                     }

@@ -40,7 +40,6 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,22 +74,31 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mData = new ArrayList<>(Arrays.asList(comments));
             notifyDataSetChanged();
         } else {
+            mParent.mRefresher.setRefreshing(false);
             mData.addAll(Arrays.asList(comments));
-            Collections.sort(mData, comparator);
+            Collections.sort(mData, (d1, d2) -> d1.getCreatedAt() > d2.getCreatedAt() ? 1 : -1);
             notifyDataSetChanged();
         }
     }
+
 
     void loadEvents(Event[] events) {
         if(mData.size() == 0) {
             mData = new ArrayList<>(mergeEvents(events));
             notifyDataSetChanged();
         } else {
+            mParent.mRefresher.setRefreshing(false);
             mData.addAll(mergeEvents(events));
-            Collections.sort(mData, comparator);
+            Collections.sort(mData, (d1, d2) -> d1.getCreatedAt() > d2.getCreatedAt() ? 1 : -1);
             notifyDataSetChanged();
         }
 
+    }
+
+    void addComment(Comment comment) {
+        mData.add(comment);
+
+        notifyItemInserted(mData.size());
     }
 
     private ArrayList<DataModel> mergeEvents(Event[] events) {
@@ -104,10 +112,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
                     toMerge.add(events[j++]);
                 }
-                Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
+               // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
                 i = j - 1;
                 merged.add(new MergedEvent(toMerge));
-                Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
+             //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
                 toMerge = new ArrayList<>();
             } else {
                 merged.add(events[i]);
@@ -117,10 +125,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         return merged;
 
     }
-
-    //TODO Eww
-    private Comparator<DataModel> comparator = (d1, d2) -> (d1 instanceof Comment ? ((Comment) d1).getCreatedAt() : (d1 instanceof Event ? ((Event) d1).getCreatedAt() : ((MergedEvent) d1).getCreatedAt())) > (d2 instanceof Comment ? ((Comment) d2).getCreatedAt() : (d2 instanceof Event ? ((Event) d2).getCreatedAt() : ((MergedEvent) d2).getCreatedAt())) ?
-            1 : -1;
 
     @Override
     public int getItemViewType(int position) {
@@ -446,6 +450,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
 
     }
+
     public int getItemCount() {
         return mData.size();
     }

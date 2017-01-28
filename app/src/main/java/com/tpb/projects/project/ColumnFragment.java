@@ -495,7 +495,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             return true;
         });
         if(card.hasIssue()) {
-            popup.inflate(R.menu.menu_issue_card);
+            popup.inflate(R.menu.menu_card_issue);
             popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
         } else {
             popup.inflate(R.menu.menu_card);
@@ -626,7 +626,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mParent.mProject.getRepoPath(), issue, assignees, labels);
+                                mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
                             } else {
                                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                                 mParent.mRefresher.setRefreshing(false);
@@ -637,7 +637,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
-                }, mParent.mProject.getRepoPath(), issue, assignees, labels);
+                }, card.getIssue().getRepoPath(), issue, assignees, labels);
             }
 
             @Override

@@ -244,6 +244,10 @@ public class Issue extends DataModel implements Parcelable {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Issue && ((Issue) obj).id == id;
+    }
 
     @Override
     public int describeContents() {

@@ -113,9 +113,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/issue_menu_button"
-                            android:layout_marginTop="4dp"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="3dp"
                             android:text="@string/text_placeholder"
                             android:background="@drawable/shape_badge"/>
 
@@ -125,10 +125,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
+                            android:layout_alignParentTop="true"
                             android:background="@android:color/transparent"
-                            android:src="@drawable/ic_chevron_down"
-                            android:visibility="gone"/>
+                            android:src="@drawable/ic_chevron_down"/>
 
                     </RelativeLayout>
 
@@ -136,20 +135,20 @@
 
                 <HorizontalScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:id="@+id/issue_assignees"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_margin="8dp">
 
                     </LinearLayout>
 
                 </HorizontalScrollView>
 
-                <android.support.v7.widget.RecyclerView
+                <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/issue_comments_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

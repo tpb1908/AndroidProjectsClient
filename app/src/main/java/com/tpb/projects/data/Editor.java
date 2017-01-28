@@ -167,7 +167,6 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //TODO Use the listener
                         Log.i(TAG, "onResponse: Column update: " + response.toString());
                         if(listener != null) listener.columnNameChanged(Column.parse(response));
                     }
