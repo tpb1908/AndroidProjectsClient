@@ -28,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
@@ -37,8 +38,11 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.project.dialogs.NewCommentDialog;
+import com.tpb.projects.util.Analytics;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -131,15 +135,87 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
-    void openMenu(View view, Issue issue) {
+    void openMenu(View view, final Issue issue) {
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(R.menu.menu_issue);
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             menu.getMenu().add(0, 1, Menu.NONE, issue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
             menu.getMenu().add(0, 2, Menu.NONE, getString(R.string.menu_edit_issue));
-
         }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case 1:
+                    toggleIssueState(issue);
+                    break;
+                case 2:
+
+                    break;
+            }
+            return false;
+        });
         menu.show();
+    }
+
+    private void toggleIssueState(Issue issue) {
+        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+            @Override
+            public void issueStateChanged(Issue issue) {
+                mAdapter.updateIssue(issue);
+                mRefresher.setRefreshing(false);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+            }
+
+            @Override
+            public void issueStateChangeError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                }
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+            }
+        };
+
+        final NewCommentDialog dialog = new NewCommentDialog();
+        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+            @Override
+            public void commentCreated(String body) {
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        mRefresher.setRefreshing(true);
+                        if(issue.isClosed()) {
+                            mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+                        } else {
+                            mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+                        }
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, issue.getRepoPath(), issue.getNumber(), body);
+
+            }
+
+            @Override
+            public void commentNotCreated() {
+                mRefresher.setRefreshing(true);
+                if(issue.isClosed()) {
+                    mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+                } else {
+                    mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG);
     }
 
     public void onToolbarBackPressed(View view) {

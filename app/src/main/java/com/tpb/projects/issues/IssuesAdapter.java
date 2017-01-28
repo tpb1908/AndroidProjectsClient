@@ -66,6 +66,14 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         notifyDataSetChanged();
     }
 
+    void updateIssue(Issue issue) {
+        final int index = mIssues.indexOf(issue);
+        if(index != -1) {
+            mIssues.set(index, issue);
+            notifyItemChanged(index);
+        }
+    }
+
     @Override
     public IssueHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
