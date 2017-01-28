@@ -314,7 +314,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
-         //   mText.setParseHandler(parseHandler);
+            mText.setParseHandler(parseHandler);
         }
 
     }

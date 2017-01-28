@@ -223,12 +223,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
-        HtmlTextView.this.post(new Runnable() {
-            @Override
-            public void run() {
-                setText(s);
-            }
-        });
+        setText(s);
+
     }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
