@@ -25,7 +25,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
@@ -34,7 +36,9 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Repository;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,6 +62,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     private IssuesAdapter mAdapter;
 
+    private Repository.AccessLevel mAccessLevel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +86,19 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mLoader.loadIssues(this, getIntent().getExtras().getString(getString(R.string.intent_repo)));
             mRefresher.setRefreshing(true);
+
+            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
+
+                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
+                    mAccessLevel = accessLevel;
+                }
+
+                @Override
+                public void accessCheckError(APIHandler.APIError error) {
+
+                }
+            }, GitHubSession.getSession(this).getUserLogin(), getIntent().getExtras().getString(getString(R.string.intent_repo)));
+
         }
 
     }
@@ -103,7 +122,14 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     void openMenu(View view, Issue issue) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(R.menu.menu_issue);
+        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+            menu.getMenu().add(0, 1, Menu.NONE, issue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            menu.getMenu().add(0, 2, Menu.NONE, getString(R.string.menu_edit_issue));
 
+        }
+        menu.show();
     }
 
     public void onToolbarBackPressed(View view) {
