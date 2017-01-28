@@ -63,6 +63,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private IssuesAdapter mAdapter;
 
     private Repository.AccessLevel mAccessLevel;
+    private String mRepoPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,13 +83,20 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
+        
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath);
+        });
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
-            mLoader.loadIssues(this, getIntent().getExtras().getString(getString(R.string.intent_repo)));
+            mRepoPath = getIntent().getExtras().getString(getString(R.string.intent_repo));
+            mLoader.loadIssues(this, mRepoPath);
             mRefresher.setRefreshing(true);
 
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
 
+                @Override
                 public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                     mAccessLevel = accessLevel;
                 }
@@ -97,8 +105,10 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 public void accessCheckError(APIHandler.APIError error) {
 
                 }
-            }, GitHubSession.getSession(this).getUserLogin(), getIntent().getExtras().getString(getString(R.string.intent_repo)));
+            }, GitHubSession.getSession(this).getUserLogin(), mRepoPath);
 
+        } else {
+            finish();
         }
 
     }

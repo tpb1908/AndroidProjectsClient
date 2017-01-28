@@ -61,6 +61,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         notifyDataSetChanged();
     }
 
+    void clear() {
+        mIssues.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public IssueHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
