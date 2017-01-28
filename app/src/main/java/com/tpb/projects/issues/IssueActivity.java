@@ -188,16 +188,18 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         builder.append(mIssue.getTitle());
         builder.append("</h1>");
         if(mIssue.getBody() != null) {
-            builder.append(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()));
+            builder.append("\n");
+            builder.append(mIssue.getBody());
             builder.append("<br>");
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             builder.append("<br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String test = Data.parseMD(builder.toString());
-        Log.i(TAG, "setHtml: Issue Loaded:  " + test);
-        mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
+        Log.i(TAG, "bindIssue: " + Data.formatMD(builder.toString(), mIssue.getRepoPath()));
+        Log.i(TAG, "bindIssue: " + Data.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()), new HtmlHttpImageGetter(mInfo));
+
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -210,7 +212,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 )
         );
 
-        mOpenInfo.setHtml(builder.toString());
+        mOpenInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);
