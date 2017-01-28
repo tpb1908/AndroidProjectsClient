@@ -97,7 +97,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void addComment(Comment comment) {
         mData.add(comment);
-
         notifyItemInserted(mData.size());
     }
 

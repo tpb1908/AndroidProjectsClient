@@ -156,7 +156,8 @@
     <string name="hint_from_issue">From issue</string>
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_user_or_repo">Username or user/repo</string>
-    <string name="hint_comment_new">You can add a comment</string>
+    <string name="hint_comment_new">Comment</string>
+    <string name="hint_comment_state_change">Reason for changing state</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>

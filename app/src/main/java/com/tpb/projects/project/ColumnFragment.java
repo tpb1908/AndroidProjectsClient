@@ -543,6 +543,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         };
 
         final NewCommentDialog dialog = new NewCommentDialog();
+        dialog.enableNeutralButton();
         dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
             @Override
             public void commentCreated(String body) {

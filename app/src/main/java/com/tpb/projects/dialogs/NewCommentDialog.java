@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -39,6 +40,7 @@ import com.tpb.projects.R;
 public class NewCommentDialog extends KeyboardDismissingDialogFragment {
 
     private NewCommentDialogListener mListener;
+    private boolean mShouldDisplayNeutralButton;
 
     @NonNull
     @Override
@@ -48,6 +50,7 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
         builder.setTitle(R.string.title_new_comment);
 
         final EditText body = (EditText) view.findViewById(R.id.comment_body_edit);
+        final TextInputLayout wrapper = (TextInputLayout) view.findViewById(R.id.comment_body_wrapper);
         final MarkedView md = (MarkedView) view.findViewById(R.id.comment_body_markdown);
 
         body.addTextChangedListener(new TextWatcher() {
@@ -80,9 +83,14 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
             if(mListener != null) mListener.commentCreated(body.getText().toString());
         });
 
-        builder.setNeutralButton(R.string.action_no, (dialogInterface, i) -> {
-            if(mListener != null) mListener.commentNotCreated();
-        });
+        if(mShouldDisplayNeutralButton) {
+            builder.setNeutralButton(R.string.action_no, (dialogInterface, i) -> {
+                if(mListener != null) mListener.commentNotCreated();
+            });
+            wrapper.setHint(getString(R.string.hint_comment_state_change));
+        } else {
+            wrapper.setHint(getString(R.string.hint_comment_new));
+        }
 
         builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
 
@@ -93,6 +101,10 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
         });
 
         return dialog;
+    }
+
+    public void enableNeutralButton() {
+        mShouldDisplayNeutralButton = true;
     }
 
     public void setListener(NewCommentDialogListener listener) {

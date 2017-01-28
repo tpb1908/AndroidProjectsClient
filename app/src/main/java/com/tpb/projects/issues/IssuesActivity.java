@@ -253,6 +253,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         };
 
         final NewCommentDialog dialog = new NewCommentDialog();
+        dialog.enableNeutralButton();
         dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
             @Override
             public void commentCreated(String body) {

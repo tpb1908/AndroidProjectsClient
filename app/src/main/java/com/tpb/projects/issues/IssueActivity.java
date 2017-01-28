@@ -97,7 +97,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
 
-
     private Editor mEditor;
     private Loader mLoader;
 
@@ -286,6 +285,39 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void commentsLoadError(APIHandler.APIError error) {
 
     }
+
+
+    @OnClick(R.id.issue_comment_fab)
+    void newComment() {
+        final NewCommentDialog ncd = new NewCommentDialog();
+        ncd.setListener(new NewCommentDialog.NewCommentDialogListener() {
+            @Override
+            public void commentCreated(String body) {
+                mRefresher.setRefreshing(true);
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.addComment(comment);
+                        mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
+                       // mRecycler.scrollToPosition(mAdapter.getItemCount());
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mIssue.getRepoPath(), mIssue.getNumber(), body);
+            }
+
+            @Override
+            public void commentNotCreated() {
+
+            }
+        });
+        ncd.show(getSupportFragmentManager(), TAG);
+    }
+
 
     @OnClick(R.id.issue_menu_button)
     public void displayIssueMenu(View view) {
