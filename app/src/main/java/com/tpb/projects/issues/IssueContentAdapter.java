@@ -72,45 +72,31 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     void loadComments(Comment[] comments) {
-        if(mData.size() == 0) {
-            for(Comment c : comments) {
-                mData.add(new Pair<>(c, null));
-            }
-            if(mHasOtherContentLoaded) {
-                mParent.mRefresher.setRefreshing(false);
-            } else {
-                mHasOtherContentLoaded = true;
-            }
-            notifyDataSetChanged();
-        } else {
+        if(mHasOtherContentLoaded) {
             mParent.mRefresher.setRefreshing(false);
-            for(Comment c : comments) {
-                mData.add(new Pair<>(c, null));
-            }
-            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-            notifyDataSetChanged();
+        } else {
+            mHasOtherContentLoaded = true;
         }
+        for(Comment c : comments) {
+            mData.add(new Pair<>(c, null));
+        }
+        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
+        notifyDataSetChanged();
+
     }
 
     void loadEvents(Event[] events) {
-        if(mData.size() == 0) {
-            for(DataModel e : mergeEvents(events)) {
-                mData.add(new Pair<>(e, null));
-            }
-            if(mHasOtherContentLoaded) {
-                mParent.mRefresher.setRefreshing(false);
-            } else {
-                mHasOtherContentLoaded = true;
-            }
-            notifyDataSetChanged();
-        } else {
+        if(mHasOtherContentLoaded) {
             mParent.mRefresher.setRefreshing(false);
-            for(DataModel e : mergeEvents(events)) {
-                mData.add(new Pair<>(e, null));
-            }
-            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-            notifyDataSetChanged();
+        } else {
+            mHasOtherContentLoaded = true;
         }
+        for(DataModel e : mergeEvents(events)) {
+            mData.add(new Pair<>(e, null));
+        }
+        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
+        notifyDataSetChanged();
+
     }
 
     void addComment(Comment comment) {
