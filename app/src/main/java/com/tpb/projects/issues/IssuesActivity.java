@@ -108,10 +108,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
         
-        mRefresher.setOnRefreshListener(() -> {
-            mAdapter.clear();
-            loadIssues();
-        });
+        mRefresher.setOnRefreshListener(this::refresh);
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mRepoPath = getIntent().getExtras().getString(getString(R.string.intent_repo));
@@ -161,6 +158,12 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
     }
 
+    private void refresh() {
+        mAdapter.clear();
+        loadIssues();
+        mRefresher.setRefreshing(true);
+    }
+
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
@@ -190,6 +193,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
+
+                case R.id.menu_filter_assignees:
+                    showAssigneesDialog();
+                    break;
+                case R.id.menu_filter_labels:
+                    showLabelsDialog();
+                    break;
                 case R.id.menu_filter_all:
                     mFilter = Issue.IssueState.ALL;
                     break;
@@ -198,17 +208,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     break;
                 case R.id.menu_filter_open:
                     mFilter = Issue.IssueState.OPEN;
-                    break;
-                case R.id.menu_filter_assignees:
-                    showAssigneesDialog();
-                    break;
-                case R.id.menu_filter_labels:
-                    showLabelsDialog();
+;
                     break;
             }
-            mAdapter.clear();
-            loadIssues();
-            mRefresher.setRefreshing(true);
             return false;
         });
         menu.show();
@@ -249,9 +251,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                                 mLabelsFilter.add(choices[i]);
                             }
                         }
-                        mAdapter.clear();
-                        loadIssues();
-                        mRefresher.setRefreshing(true);
+                        refresh();
                     }
 
                     @Override
@@ -296,9 +296,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     mAssigneeFilter = collabNames[i];
                 });
                 builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-                    mAdapter.clear();
-                    loadIssues();
-                    mRefresher.setRefreshing(true);
+                    refresh();
                 });
                 builder.setNegativeButton(R.string.action_cancel, null);
                 builder.create().show();
