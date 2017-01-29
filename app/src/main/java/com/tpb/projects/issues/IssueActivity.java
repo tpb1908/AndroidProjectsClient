@@ -238,7 +238,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
     
     private void displayAssignees() {
-
+        mAssignees.removeAllViews();
         if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
             mAssignees.setVisibility(View.VISIBLE);
             for(int i = 0; i < mIssue.getAssignees().length; i++) {
