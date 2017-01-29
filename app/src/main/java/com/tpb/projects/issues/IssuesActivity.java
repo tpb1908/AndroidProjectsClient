@@ -44,7 +44,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.EditIssueDialog;
-import com.tpb.projects.dialogs.NewCommentDialog;
+import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -252,11 +252,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         };
 
-        final NewCommentDialog dialog = new NewCommentDialog();
+        final CommentDialog dialog = new CommentDialog();
         dialog.enableNeutralButton();
-        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+        dialog.setListener(new CommentDialog.CommentDialogListener() {
             @Override
-            public void commentCreated(String body) {
+            public void onPositive(String body) {
                 mEditor.createComment(new Editor.CommentCreationListener() {
                     @Override
                     public void commentCreated(Comment comment) {
@@ -280,7 +280,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
 
             @Override
-            public void commentNotCreated() {
+            public void onCancelled() {
                 mRefresher.setRefreshing(true);
                 if(issue.isClosed()) {
                     mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());

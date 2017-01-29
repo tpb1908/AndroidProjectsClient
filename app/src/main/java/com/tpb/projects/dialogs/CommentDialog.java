@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,26 +33,36 @@ import android.widget.EditText;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.models.Comment;
 
 /**
  * Created by theo on 03/01/17.
  */
 
-public class NewCommentDialog extends KeyboardDismissingDialogFragment {
+public class CommentDialog extends KeyboardDismissingDialogFragment {
 
-    private NewCommentDialogListener mListener;
+    private CommentDialogListener mListener;
     private boolean mShouldDisplayNeutralButton;
+    private int titleRes = R.string.title_new_comment;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_comment, null);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext()).setView(view);
-        builder.setTitle(R.string.title_new_comment);
+        builder.setTitle(titleRes);
 
         final EditText body = (EditText) view.findViewById(R.id.comment_body_edit);
         final TextInputLayout wrapper = (TextInputLayout) view.findViewById(R.id.comment_body_wrapper);
         final MarkedView md = (MarkedView) view.findViewById(R.id.comment_body_markdown);
+
+        if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_comment))) {
+            final Comment c = getArguments().getParcelable(getString(R.string.intent_comment));
+            if(c != null) {
+                body.setText(c.getBody());
+                md.setMDText(c.getBody());
+            }
+        }
 
         body.addTextChangedListener(new TextWatcher() {
             final Handler updateHandler = new Handler();
@@ -80,12 +91,12 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
         });
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-            if(mListener != null) mListener.commentCreated(body.getText().toString());
+            if(mListener != null) mListener.onPositive(body.getText().toString());
         });
 
         if(mShouldDisplayNeutralButton) {
             builder.setNeutralButton(R.string.action_no, (dialogInterface, i) -> {
-                if(mListener != null) mListener.commentNotCreated();
+                if(mListener != null) mListener.onCancelled();
             });
             wrapper.setHint(getString(R.string.hint_comment_state_change));
         } else {
@@ -103,19 +114,23 @@ public class NewCommentDialog extends KeyboardDismissingDialogFragment {
         return dialog;
     }
 
+    public void setTitleResource(@StringRes int resId) {
+        titleRes = resId;
+    }
+
     public void enableNeutralButton() {
         mShouldDisplayNeutralButton = true;
     }
 
-    public void setListener(NewCommentDialogListener listener) {
+    public void setListener(CommentDialogListener listener) {
         mListener = listener;
     }
 
-    public interface NewCommentDialogListener {
+    public interface CommentDialogListener {
 
-        void commentCreated(String body);
+        void onPositive(String body);
 
-        void commentNotCreated();
+        void onCancelled();
 
     }
 
