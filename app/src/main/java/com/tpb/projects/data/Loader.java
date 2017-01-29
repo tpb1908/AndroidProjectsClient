@@ -405,8 +405,13 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName) {
+        loadIssues(loader, repoFullName, Issue.IssueState.OPEN);
+    }
+
+    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
+                .addQueryParameter("state", state.toString().toLowerCase())
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
