@@ -218,6 +218,9 @@
     <string name="menu_react_hooray">Hooray 🎉</string>
     <string name="menu_react_confused">Confused 😕</string>
     <string name="menu_react_heart">Heart ❤️</string>
+    <string name="menu_filter_all">All</string>
+    <string name="menu_filter_open">Open</string>
+    <string name="menu_filter_closed">Closed</string>
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>

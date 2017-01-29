@@ -224,6 +224,12 @@ public class Issue extends DataModel implements Parcelable {
         return obj;
     }
 
+    public enum IssueState {
+
+        OPEN, CLOSED, ALL
+
+    }
+
     @Override
     public String toString() {
         return "Issue{" +
