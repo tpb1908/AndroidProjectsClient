@@ -17,12 +17,14 @@
 
 package com.tpb.projects.issues;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,11 +45,16 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.MultiChoiceDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,6 +81,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     private IssuesAdapter mAdapter;
     private Issue.IssueState mFilter = Issue.IssueState.OPEN;
+    private String mAssigneeFilter;
+    private ArrayList<String> mLabelsFilter = new ArrayList<>();
 
     private Repository.AccessLevel mAccessLevel;
     private String mRepoPath;
@@ -94,17 +103,16 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         mAdapter = new IssuesAdapter(this);
 
+        mAssigneeFilter = getString(R.string.text_assignee_all);
+
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
         
-        mRefresher.setOnRefreshListener(() -> {
-            mAdapter.clear();
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter);
-        });
+        mRefresher.setOnRefreshListener(this::refresh);
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mRepoPath = getIntent().getExtras().getString(getString(R.string.intent_repo));
-            mLoader.loadIssues(this, mRepoPath, mFilter);
+            loadIssues();
             mRefresher.setRefreshing(true);
 
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
@@ -140,6 +148,22 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
     }
 
+    private void loadIssues() {
+        if(mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "*", mLabelsFilter);
+        } else if(mAssigneeFilter.equals(getString(R.string.text_assignee_none))) {
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "none", mLabelsFilter);
+        } else {
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, mAssigneeFilter, mLabelsFilter);
+        }
+    }
+
+    private void refresh() {
+        mAdapter.clear();
+        loadIssues();
+        mRefresher.setRefreshing(true);
+    }
+
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
@@ -168,6 +192,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
+
+                case R.id.menu_filter_assignees:
+                    showAssigneesDialog();
+                    break;
+                case R.id.menu_filter_labels:
+                    showLabelsDialog();
+                    break;
                 case R.id.menu_filter_all:
                     mFilter = Issue.IssueState.ALL;
                     break;
@@ -176,14 +207,106 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     break;
                 case R.id.menu_filter_open:
                     mFilter = Issue.IssueState.OPEN;
+;
                     break;
             }
-            mAdapter.clear();
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter);
-            mRefresher.setRefreshing(true);
             return false;
         });
         menu.show();
+    }
+
+    private void showLabelsDialog() {
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setTitle(R.string.text_loading_labels);
+        pd.setCancelable(false);
+        pd.show();
+        mLoader.loadLabels(new Loader.LabelsLoader() {
+            @Override
+            public void labelsLoaded(Label[] labels) {
+                final MultiChoiceDialog mcd = new MultiChoiceDialog();
+
+                final Bundle b = new Bundle();
+                b.putInt(getString(R.string.intent_title_res), R.string.title_choose_labels);
+                mcd.setArguments(b);
+
+                final String[] labelTexts = new String[labels.length];
+                final int[] colors = new int[labels.length];
+                final boolean[] choices = new boolean[labels.length];
+                for(int i = 0; i < labels.length; i++) {
+                    labelTexts[i] = labels[i].getName();
+                    colors[i] = labels[i].getColor();
+                    choices[i] = mLabelsFilter.indexOf(labels[i].getName()) != -1;
+                }
+
+
+                mcd.setChoices(labelTexts, choices);
+                mcd.setTextColors(colors);
+                mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
+                    @Override
+                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                        mLabelsFilter.clear();
+                        for(int i = 0; i < choices.length; i++) {
+                            if(checked[i]) {
+                                mLabelsFilter.add(choices[i]);
+                            }
+                        }
+                        refresh();
+                    }
+
+                    @Override
+                    public void ChoicesCancelled() {
+
+                    }
+                });
+                pd.dismiss();
+                mcd.show(getSupportFragmentManager(), TAG);
+            }
+
+            @Override
+            public void labelLoadError(APIHandler.APIError error) {
+                Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+            }
+        }, mRepoPath);
+    }
+
+    private void showAssigneesDialog() {
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setTitle(R.string.text_loading_collaborators);
+        pd.setCancelable(false);
+        pd.show();
+        mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
+            @Override
+            public void collaboratorsLoaded(User[] collaborators) {
+
+                final String[] collabNames = new String[collaborators.length + 2];
+                collabNames[0] = getString(R.string.text_assignee_all);
+                collabNames[1] = getString(R.string.text_assignee_none);
+                int pos = 0;
+                for(int i = 2; i < collabNames.length; i++) {
+                    collabNames[i] = collaborators[i - 2].getLogin();
+                    if(mAssigneeFilter.equals(collabNames[i])) {
+                        pos = i;
+                    }
+                }
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(IssuesActivity.this);
+                builder.setTitle(R.string.title_choose_assignee);
+                builder.setSingleChoiceItems(collabNames, pos, (dialogInterface, i) -> {
+                    mAssigneeFilter = collabNames[i];
+                });
+                builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+                    refresh();
+                });
+                builder.setNegativeButton(R.string.action_cancel, null);
+                builder.create().show();
+                pd.dismiss();
+            }
+
+            @Override
+            public void collaboratorsLoadError(APIHandler.APIError error) {
+                Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+            }
+        }, mRepoPath);
     }
 
     void openIssue(Issue issue) {

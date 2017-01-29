@@ -29,4 +29,10 @@
               android:title="@string/menu_filter_all"/>
     </group>
 
+    <item android:id="@+id/menu_filter_labels"
+        android:title="@string/menu_filter_labels"/>
+
+    <item android:id="@+id/menu_filter_assignees"
+          android:title="@string/menu_filter_assignee" />
+
 </menu>
