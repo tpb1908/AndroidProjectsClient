@@ -18,6 +18,7 @@
 package com.tpb.projects.issues;
 
 import android.content.res.Resources;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -38,7 +39,6 @@ import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import butterknife.BindView;
@@ -51,7 +51,7 @@ import butterknife.ButterKnife;
 class IssueContentAdapter extends RecyclerView.Adapter {
     private static final String TAG = IssueContentAdapter.class.getSimpleName();
 
-    private ArrayList<DataModel> mData = new ArrayList<>();
+    private ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
     private Issue mIssue;
     private IssueActivity mParent;
 
@@ -71,39 +71,53 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void loadComments(Comment[] comments) {
         if(mData.size() == 0) {
-            mData = new ArrayList<>(Arrays.asList(comments));
+            for(Comment c : comments) {
+                mData.add(new Pair<>(c, null));
+            }
             notifyDataSetChanged();
         } else {
             mParent.mRefresher.setRefreshing(false);
-            mData.addAll(Arrays.asList(comments));
-            Collections.sort(mData, (d1, d2) -> d1.getCreatedAt() > d2.getCreatedAt() ? 1 : -1);
+            for(Comment c : comments) {
+                mData.add(new Pair<>(c, null));
+            }
+            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
             notifyDataSetChanged();
         }
     }
 
     void loadEvents(Event[] events) {
         if(mData.size() == 0) {
-            mData = new ArrayList<>(mergeEvents(events));
+            for(DataModel e : mergeEvents(events)) {
+                mData.add(new Pair<>(e, null));
+            }
             notifyDataSetChanged();
         } else {
             mParent.mRefresher.setRefreshing(false);
-            mData.addAll(mergeEvents(events));
-            Collections.sort(mData, (d1, d2) -> d1.getCreatedAt() > d2.getCreatedAt() ? 1 : -1);
+            for(DataModel e : mergeEvents(events)) {
+                mData.add(new Pair<>(e, null));
+            }
+            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
             notifyDataSetChanged();
         }
 
     }
 
     void addComment(Comment comment) {
-        mData.add(comment);
+        mData.add(new Pair<>(comment, null));
         notifyItemInserted(mData.size());
     }
 
     void updateComment(Comment comment) {
-        final int index = mData.indexOf(comment);
+        int index = -1;
+        for(int i = 0; i < mData.size(); i++) {
+            if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
+                index = i;
+                break;
+            }
+        }
         Log.i(TAG, "updateComment: Index: " + index);
         if(index != -1) {
-            mData.set(index, comment);
+            mData.set(index, new Pair<>(comment, null));
             notifyItemChanged(index);
         }
     }
@@ -135,7 +149,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        return mData.get(position) instanceof Comment ? 1 : 0;
+        return mData.get(position).first instanceof Comment ? 1 : 0;
     }
 
     @Override
@@ -150,30 +164,38 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof CommentHolder) {
-            bindComment((CommentHolder) holder, (Comment) mData.get(position));
+            bindComment((CommentHolder) holder, position);
         } else {
-            if(mData.get(position) instanceof Event) {
-                bindEvent((EventHolder) holder, (Event) mData.get(position));
+            if(mData.get(position).first instanceof Event) {
+                bindEvent((EventHolder) holder, (Event) mData.get(position).first);
             } else {
-                bindMergedEvent((EventHolder) holder, (MergedEvent) mData.get(position));
+                bindMergedEvent((EventHolder) holder, (MergedEvent) mData.get(position).first);
             }
         }
     }
 
-    private void bindComment(CommentHolder commentHolder, Comment comment) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
-                String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
-                        comment.getUser().getHtmlUrl(),
-                        comment.getUser().getLogin()),
-                DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
-        if(comment.getUpdatedAt() != comment.getCreatedAt()) {
-            builder.append(" • ");
-            builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
+    private void bindComment(CommentHolder commentHolder, int pos) {
+
+        if(mData.get(pos).second == null) {
+            final Comment comment = (Comment) mData.get(pos).first;
+            final StringBuilder builder = new StringBuilder();
+            builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                    String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
+                            comment.getUser().getHtmlUrl(),
+                            comment.getUser().getLogin()),
+                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
+            if(comment.getUpdatedAt() != comment.getCreatedAt()) {
+                builder.append(" • ");
+                builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
+            }
+            builder.append("<br><br>");
+            builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
+            final String parsed = Data.parseMD(builder.toString());
+            mData.set(pos, new Pair<>(comment, parsed));
+            commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText));
+        } else {
+            commentHolder.mText.setHtml(mData.get(pos).second);
         }
-        builder.append("<br><br>");
-        builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
-        commentHolder.mText.setHtml(Data.parseMD(builder.toString()), new HtmlHttpImageGetter(commentHolder.mText));
     }
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
@@ -431,7 +453,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void displayMenu(View view, int pos) {
-        mParent.displayCommentMenu(view, (Comment) mData.get(pos));
+        mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {
