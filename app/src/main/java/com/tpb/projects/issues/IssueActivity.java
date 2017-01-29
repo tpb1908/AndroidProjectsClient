@@ -32,7 +32,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,8 +57,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
-import com.tpb.projects.dialogs.NewCommentDialog;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -96,7 +95,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
     @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
-
 
     private Editor mEditor;
     private Loader mLoader;
@@ -185,19 +183,19 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(mIssue.getTitle());
+        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won;t do multiple lines
         builder.append("</h1>");
         if(mIssue.getBody() != null) {
-            builder.append(Data.formatMD(mIssue.getBody(), mIssue.getRepoPath()));
+            builder.append("\n");
+            builder.append(mIssue.getBody());
             builder.append("<br>");
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             builder.append("<br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String test = Data.parseMD(builder.toString());
-        Log.i(TAG, "setHtml: Issue Loaded:  " + test);
-        mInfo.setHtml(test, new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()), new HtmlHttpImageGetter(mInfo));
+
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -210,7 +208,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                 )
         );
 
-        mOpenInfo.setHtml(builder.toString());
+        mOpenInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);
@@ -285,6 +283,86 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     }
 
+    @OnClick(R.id.issue_comment_fab)
+    void newComment() {
+        final CommentDialog cd = new CommentDialog();
+        cd.setListener(new CommentDialog.CommentDialogListener() {
+            @Override
+            public void onPositive(String body) {
+                mRefresher.setRefreshing(true);
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.addComment(comment);
+                        mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
+                       // mRecycler.scrollToPosition(mAdapter.getItemCount());
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mIssue.getRepoPath(), mIssue.getNumber(), body);
+            }
+
+            @Override
+            public void onCancelled() {
+
+            }
+        });
+        cd.show(getSupportFragmentManager(), TAG);
+    }
+
+    private void editComment(Comment comment) {
+        final  CommentDialog cd = new CommentDialog();
+        cd.setTitleResource(R.string.title_edit_comment);
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.intent_comment), comment);
+        cd.setArguments(bundle);
+        cd.setListener(new CommentDialog.CommentDialogListener() {
+            @Override
+            public void onPositive(String body) {
+                mRefresher.setRefreshing(true);
+                mEditor.editComment(new Editor.CommentEditListener() {
+                    @Override
+                    public void commentEdited(Comment comment) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.updateComment(comment);
+                    }
+
+                    @Override
+                    public void commentEditError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mIssue.getRepoPath(), comment.getId(), body);
+            }
+
+            @Override
+            public void onCancelled() {
+
+            }
+        });
+        cd.show(getSupportFragmentManager(), TAG);
+    }
+
+    public void displayCommentMenu(View view, Comment comment) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(R.menu.menu_comment);
+        if(comment.getUser().getLogin().equals(GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
+            menu.getMenu().add(0, 1, 0, "Edit");
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case 1:
+                    editComment(comment);
+                    break;
+            }
+            return false;
+        });
+        menu.show();
+    }
+
     @OnClick(R.id.issue_menu_button)
     public void displayIssueMenu(View view) {
         final PopupMenu menu = new PopupMenu(this, view);
@@ -304,15 +382,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             }
             return false;
         });
-        menu.show();
-    }
-
-    public void displayCommentMenu(View view, Comment comment) {
-        final PopupMenu menu = new PopupMenu(this, view);
-        menu.inflate(R.menu.menu_comment);
-        if(comment.getUser().getLogin().equals(GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
-            menu.getMenu().add(0, 1, 0, "Edit");
-        }
         menu.show();
     }
 
@@ -395,10 +464,10 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             }
         };
 
-        final NewCommentDialog dialog = new NewCommentDialog();
-        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+        final CommentDialog dialog = new CommentDialog();
+        dialog.setListener(new CommentDialog.CommentDialogListener() {
             @Override
-            public void commentCreated(String body) {
+            public void onPositive(String body) {
                 mEditor.createComment(new Editor.CommentCreationListener() {
                     @Override
                     public void commentCreated(Comment comment) {
@@ -425,7 +494,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             }
 
             @Override
-            public void commentNotCreated() {
+            public void onCancelled() {
                 mRefresher.setRefreshing(true);
                 mAdapter.clear();
                 if(mIssue.isClosed()) {

@@ -102,6 +102,11 @@ public class Comment extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Comment && ((Comment) obj).id == id;
+    }
+
+    @Override
     public String toString() {
         return "Comment{" +
                 "id=" + id +

@@ -156,7 +156,8 @@
     <string name="hint_from_issue">From issue</string>
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_user_or_repo">Username or user/repo</string>
-    <string name="hint_comment_new">You can add a comment</string>
+    <string name="hint_comment_new">Comment</string>
+    <string name="hint_comment_state_change">Reason for changing state</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -191,6 +192,7 @@
     <string name="title_save_issue_shortcut">Save issue</string>
     <string name="title_open_user_or_repo">Open user or repo</string>
     <string name="title_new_comment">New comment</string>
+    <string name="title_edit_comment">Edit comment</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
@@ -225,6 +227,7 @@
     <string name="intent_title_res" translatable="false">title</string>
     <string name="intent_issue_number" translatable="false">issue_number</string>
     <string name="intent_name" translatable="false">name</string>
+    <string name="intent_comment" translatable="false">comment</string>
     <string name="intent_drawable" translatable="false">drawable</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>

@@ -540,6 +540,31 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void editComment(CommentEditListener listener, String fullRepoPath, int commentId, String body) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(BODY, body);
+        } catch(JSONException jse) {
+            Log.e(TAG, "createComment: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath +  SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.commentEdited(Comment.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Comment not edited " + anError.getErrorBody());
+                        if(listener != null) listener.commentEditError(parseError(anError));
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -657,4 +682,13 @@ public class Editor extends APIHandler {
         void commentCreationError(APIError error);
 
     }
+
+    public interface CommentEditListener {
+
+        void commentEdited(Comment comment);
+
+        void commentEditError(APIError error);
+
+    }
+
 }

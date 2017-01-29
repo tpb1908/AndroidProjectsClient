@@ -81,7 +81,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
-
     void loadEvents(Event[] events) {
         if(mData.size() == 0) {
             mData = new ArrayList<>(mergeEvents(events));
@@ -97,8 +96,16 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void addComment(Comment comment) {
         mData.add(comment);
-
         notifyItemInserted(mData.size());
+    }
+
+    void updateComment(Comment comment) {
+        final int index = mData.indexOf(comment);
+        Log.i(TAG, "updateComment: Index: " + index);
+        if(index != -1) {
+            mData.set(index, comment);
+            notifyItemChanged(index);
+        }
     }
 
     private ArrayList<DataModel> mergeEvents(Event[] events) {

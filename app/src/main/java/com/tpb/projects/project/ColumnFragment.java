@@ -55,7 +55,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
-import com.tpb.projects.dialogs.NewCommentDialog;
+import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -542,10 +542,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
         };
 
-        final NewCommentDialog dialog = new NewCommentDialog();
-        dialog.setListener(new NewCommentDialog.NewCommentDialogListener() {
+        final CommentDialog dialog = new CommentDialog();
+        dialog.enableNeutralButton();
+        dialog.setListener(new CommentDialog.CommentDialogListener() {
             @Override
-            public void commentCreated(String body) {
+            public void onPositive(String body) {
                 mEditor.createComment(new Editor.CommentCreationListener() {
                     int commentCreationAttempts = 0;
                     @Override
@@ -582,7 +583,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
 
             @Override
-            public void commentNotCreated() {
+            public void onCancelled() {
                 if(card.getIssue().isClosed()) {
                     Log.i(TAG, "openMenu: Closing issue");
                     mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
