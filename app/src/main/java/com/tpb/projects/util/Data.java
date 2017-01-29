@@ -207,7 +207,7 @@ public class Data {
         for(int i = ++pos; i < cs.length; i++) {
             if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
                 numBuilder.append(cs[i]);
-            } else if(cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) {
+            } else if(builder.length() > 0 && (cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1)) {
                 if(i == cs.length - 1) {
                     if(cs[i] >= '0' && cs[i] <= '9') {
                         numBuilder.append(cs[i]);
