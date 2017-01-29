@@ -352,7 +352,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void displayCommentMenu(View view, Comment comment) {
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(R.menu.menu_comment);
-        if(comment.getUser().getLogin().equals(GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
+        if(comment.getUser().getLogin().equals(
+                GitHubSession.getSession(IssueActivity.this).getUserLogin()) ||
+                mAccessLevel == Repository.AccessLevel.ADMIN) {
             menu.getMenu().add(0, 1, 0, "Edit");
         }
         menu.setOnMenuItemClickListener(menuItem -> {
