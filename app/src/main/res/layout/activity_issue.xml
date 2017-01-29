@@ -76,7 +76,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    android:minHeight="56dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
