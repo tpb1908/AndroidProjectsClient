@@ -51,6 +51,8 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     private IssuesActivity mParent;
     private ArrayList<Issue> mIssues = new ArrayList<>();
+    private String[] mParseCache;
+
 
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
     static {
@@ -64,16 +66,19 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     void loadIssues(Issue[] issues) {
         mIssues = new ArrayList<>(Arrays.asList(issues));
+        mParseCache = new String[issues.length];
         notifyDataSetChanged();
     }
 
     void addIssue(Issue issue) {
         mIssues.add(0, issue);
+        mParseCache[0] = null;
         notifyItemInserted(0);
     }
 
     void clear() {
         mIssues.clear();
+        Arrays.fill(mParseCache, null);
         notifyDataSetChanged();
     }
 
@@ -92,57 +97,66 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        final Issue issue = mIssues.get(position);
-        final Context context = holder.itemView.getContext();
-        holder.mIssueIcon.setVisibility(View.VISIBLE);
-        holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        if(mParseCache[position] == null) {
+            final Issue issue = mIssues.get(position);
+            final Context context = holder.itemView.getContext();
+            holder.mIssueIcon.setVisibility(View.VISIBLE);
+            holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
 
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<b>");
-        builder.append(issue.getTitle());
-        builder.append("</b><br><br>");
+            final StringBuilder builder = new StringBuilder();
+            builder.append("<b>");
+            builder.append(issue.getTitle());
+            builder.append("</b><br><br>");
 
-        builder.append(String.format(context.getString(R.string.text_opened_by),
-                String.format(context.getString(R.string.text_md_link),
-                        "#" + Integer.toString(issue.getNumber()),
-                        "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
-                ),
-                String.format(context.getString(R.string.text_md_link),
-                        issue.getOpenedBy().getLogin(),
-                        issue.getOpenedBy().getHtmlUrl()
-                ),
-                DateUtils.getRelativeTimeSpanString(issue.getCreatedAt()))
-        );
+            builder.append(String.format(context.getString(R.string.text_opened_by),
+                    String.format(context.getString(R.string.text_md_link),
+                            "#" + Integer.toString(issue.getNumber()),
+                            "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
+                    ),
+                    String.format(context.getString(R.string.text_md_link),
+                            issue.getOpenedBy().getLogin(),
+                            issue.getOpenedBy().getHtmlUrl()
+                    ),
+                    DateUtils.getRelativeTimeSpanString(issue.getCreatedAt()))
+            );
 
-        if(issue.getAssignees() != null) {
-            builder.append("<br>");
-            builder.append(context.getString(R.string.text_assigned_to));
-            builder.append(' ');
-            for(User u : issue.getAssignees()) {
-                builder.append(String.format(context.getString(R.string.text_md_link),
-                        u.getLogin(),
-                        u.getHtmlUrl()));
+            if(issue.getAssignees() != null) {
+                builder.append("<br>");
+                builder.append(context.getString(R.string.text_assigned_to));
                 builder.append(' ');
+                for(User u : issue.getAssignees()) {
+                    builder.append(String.format(context.getString(R.string.text_md_link),
+                            u.getLogin(),
+                            u.getHtmlUrl()));
+                    builder.append(' ');
+                }
             }
-        }
 
-        if(issue.isClosed() && issue.getClosedBy() != null) {
-            builder.append("<br>");
-            builder.append(String.format(context.getString(R.string.text_closed_by_link),
-                    issue.getClosedBy().getLogin(),
-                    issue.getClosedBy().getHtmlUrl(),
-                    DateUtils.getRelativeTimeSpanString(issue.getClosedAt())));
-        }
+            if(issue.isClosed() && issue.getClosedBy() != null) {
+                builder.append("<br>");
+                builder.append(String.format(context.getString(R.string.text_closed_by_link),
+                        issue.getClosedBy().getLogin(),
+                        issue.getClosedBy().getHtmlUrl(),
+                        DateUtils.getRelativeTimeSpanString(issue.getClosedAt())));
+            }
 
-        if(issue.getLabels() != null && issue.getLabels().length > 0) {
-            builder.append("<br>");
-            Label.appendLabels(builder, issue.getLabels(), "   ");
+            if(issue.getLabels() != null && issue.getLabels().length > 0) {
+                builder.append("<br>");
+                Label.appendLabels(builder, issue.getLabels(), "   ");
+            }
+            if(issue.getComments() > 0) {
+                builder.append("<br>");
+                builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
+            }
+            mParseHandler.post(() -> {
+                final String parsed = Data.parseMD(builder.toString());
+                mParseCache[position] = parsed;
+                holder.mContent.setHtml(parsed);
+            });
+
+        } else {
+            holder.mContent.setHtml(mParseCache[position]);
         }
-        if(issue.getComments() > 0) {
-            builder.append("<br>");
-            builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
-        }
-        holder.mContent.setHtml(Data.parseMD(builder.toString(), issue.getRepoPath()));
     }
 
     @Override

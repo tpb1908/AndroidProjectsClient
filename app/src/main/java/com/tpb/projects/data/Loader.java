@@ -404,14 +404,15 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadIssues(IssuesLoader loader, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES)
+    public void loadIssues(IssuesLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
                         final Issue[] issues = new Issue[response.length()];
+                        Log.i(TAG, "onResponse: Returned " + response.length() + " issues");
                         for(int i = 0; i < response.length() ; i++) {
                             try {
                                 issues[i] = Issue.parse(response.getJSONObject(i));
@@ -510,8 +511,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkAccessToRepository(AccessCheckListener listener, String login, String repoFullname) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullname + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
+    public void checkAccessToRepository(AccessCheckListener listener, String login, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -556,8 +557,8 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfCollaborator(AccessCheckListener listener, String login, String fullRepoName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COLLABORATORS + "/"  + login)
+    public void checkIfCollaborator(AccessCheckListener listener, String login, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/"  + login)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
