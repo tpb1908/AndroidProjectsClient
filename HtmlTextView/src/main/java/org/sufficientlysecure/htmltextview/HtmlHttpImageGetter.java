@@ -36,11 +36,10 @@ import java.net.URL;
 public class HtmlHttpImageGetter implements ImageGetter {
     TextView container;
     URI baseUri;
-    boolean matchParentWidth;
+    boolean matchParentWidth = true;
 
     public HtmlHttpImageGetter(TextView textView) {
         this.container = textView;
-        this.matchParentWidth = false;
     }
 
     public HtmlHttpImageGetter(TextView textView, String baseUrl) {
