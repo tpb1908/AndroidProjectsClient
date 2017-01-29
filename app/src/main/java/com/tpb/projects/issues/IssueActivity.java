@@ -183,7 +183,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(mIssue.getTitle());
+        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won;t do multiple lines
         builder.append("</h1>");
         if(mIssue.getBody() != null) {
             builder.append("\n");
