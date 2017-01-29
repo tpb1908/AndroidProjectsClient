@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -61,7 +62,7 @@ import butterknife.OnClick;
 class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
-    private ArrayList<Card> mCards = new ArrayList<>();
+    private ArrayList<Pair<Card, String>> mCards = new ArrayList<>();
 
     private ColumnFragment mParent;
     private Editor mEditor;
@@ -84,33 +85,36 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     void setCards(ArrayList<Card> cards) {
-        mCards = cards;
+        mCards.clear();
+        for(Card c : cards) {
+            mCards.add(new Pair<>(c, null));
+        }
         notifyDataSetChanged();
     }
 
     void addCard(Card card) {
-        mCards.add(0, card);
+        mCards.add(0, new Pair<>(card, null));
         notifyItemInserted(0);
     }
 
     void addCardFromDrag(Card card) {
-        mCards.add(card);
+        mCards.add(new Pair<>(card, null));
         notifyItemInserted(mCards.size());
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), -1);
     }
 
     void addCardFromDrag(int pos, Card card) {
         Log.i(TAG, "createCard: Card being added to " + pos);
-        mCards.add(pos, card);
+        mCards.add(pos, new Pair<>(card, null));
         notifyItemInserted(pos);
-        final int id = pos == 0 ? -1 : mCards.get(pos - 1).getId();
+        final int id = pos == 0 ? -1 : mCards.get(pos - 1).first.getId();
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
     }
 
     void updateCard(Card card) {
         final int index = indexOf(card.getId());
         if(index != -1) {
-            mCards.set(index, card);
+            mCards.set(index, new Pair<>(card, null));
             notifyItemChanged(index);
         }
     }
@@ -118,18 +122,18 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     void updateCard(Card card, int oldId) {
         final int index = indexOf(oldId);
         if(index != -1) {
-            mCards.set(index, card);
+            mCards.set(index, new Pair<>(card, null));
             notifyItemChanged(index);
         }
     }
 
     void moveCardFromDrag(int oldPos, int newPos) {
-        final Card card = mCards.get(oldPos);
+        final Pair<Card, String> card = mCards.get(oldPos);
         mCards.remove(oldPos);
         mCards.add(newPos, card);
         notifyItemMoved(oldPos, newPos);
-        final int id = newPos == 0 ? -1 : mCards.get(newPos - 1).getId();
-        mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
+        final int id = newPos == 0 ? -1 : mCards.get(newPos - 1).first.getId();
+        mEditor.moveCard(null, mParent.mColumn.getId(), card.first.getId(), id);
     }
 
     void removeCard(Card card) {
@@ -143,21 +147,23 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     int indexOf(int cardId) {
         for(int i = 0; i < mCards.size(); i++) {
-            if(mCards.get(i).getId() == cardId) return i;
+            if(mCards.get(i).first.getId() == cardId) return i;
         }
         return -1;
     }
 
     ArrayList<Card> getCards() {
-        return mCards;
+        final ArrayList<Card> cards = new ArrayList<>();
+        for(Pair<Card, String> p : mCards) cards.add(p.first);
+        return cards;
     }
 
     private void openMenu(View view, int position) {
-        mParent.openMenu(view, mCards.get(position));
+        mParent.openMenu(view, mCards.get(position).first);
     }
 
     private void cardClick(int position) {
-        mParent.cardClick(mCards.get(position));
+        mParent.cardClick(mCards.get(position).first);
     }
 
     @Override
@@ -168,7 +174,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     @Override
     public void onBindViewHolder(CardHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
-        final Card card = mCards.get(pos);
+        final Card card = mCards.get(pos).first;
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             holder.mCardView.setTag(card.getId());
             holder.mCardView.setOnLongClickListener(view -> {
@@ -192,11 +198,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
             mParent.loadIssue(new Loader.IssueLoader() {
                 int loadCount = 0;
+
                 @Override
                 public void issueLoaded(Issue issue) {
                     card.setFromIssue(issue);
-                    bindIssueCard(holder, card);
-                   // notifyItemChanged(pos);
+                    bindIssueCard(holder, pos);
+                    // notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
@@ -217,77 +224,83 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
             }, card.getIssueId());
         } else if(card.hasIssue()) {
-            bindIssueCard(holder, card);
+            bindIssueCard(holder, pos);
         } else {
-            bindStandardCard(holder, card);
+            bindStandardCard(holder, pos);
         }
+
     }
 
-    private void bindStandardCard(CardHolder holder, Card card) {
+    private void bindStandardCard(CardHolder holder, int pos) {
         holder.mIssueIcon.setVisibility(View.GONE);
-        final long start = System.nanoTime();
-        //Log.i(TAG, "bindStandardCard: " + Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()));
-        holder.mText.setHtml(Data.parseMD(card.getNote(), mParent.mParent.mProject.getRepoPath()), new HtmlHttpImageGetter(holder.mText));
-      //  Log.i(TAG, "bindStandardCard: Card bind time: " + (System.nanoTime()-start)/1E9);
+        if(mCards.get(pos).second == null) {
+            mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
+        }
+        holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
     }
 
-    private void bindIssueCard(CardHolder holder,  Card card) {
+    private void bindIssueCard(CardHolder holder,  int pos) {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
-        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-        final long start = System.nanoTime();
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<b>");
-        builder.append(card.getIssue().getTitle());
-        builder.append("</b><br><br>");
-        if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-            builder.append(Data.formatMD(card.getIssue().getBody(), card.getIssue().getRepoPath()));
-            builder.append("<br><br>");
-        }
-
-        builder.append(String.format(mParent.getString(R.string.text_opened_by),
-                String.format(mParent.getString(R.string.text_md_link),
-                        "#" + Integer.toString(card.getIssue().getNumber()),
-                        "https://github.com/" + mParent.mParent.mProject.getRepoPath() + "/issues/" + Integer.toString(card.getIssue().getNumber())
-                ),
-                String.format(mParent.getString(R.string.text_md_link),
-                        card.getIssue().getOpenedBy().getLogin(),
-                        card.getIssue().getOpenedBy().getHtmlUrl()
-                ),
-                DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
-        );
-
-        if(card.getIssue().getAssignees() != null) {
-            builder.append("<br>");
-            builder.append(mParent.getString(R.string.text_assigned_to));
-            builder.append(' ');
-            for(User u : card.getIssue().getAssignees()) {
-                builder.append(String.format(mParent.getString(R.string.text_md_link),
-                        u.getLogin(),
-                        u.getHtmlUrl()));
-                builder.append(' ');
+        holder.mIssueIcon.setImageResource(mCards.get(pos).first.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        if(mCards.get(pos).second == null) {
+            final Card card = mCards.get(pos).first;
+            final StringBuilder builder = new StringBuilder();
+            builder.append("<b>");
+            builder.append(card.getIssue().getTitle());
+            builder.append("</b><br><br>");
+            if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
+                builder.append(Data.formatMD(card.getIssue().getBody(), card.getIssue().getRepoPath()));
+                builder.append("<br><br>");
             }
-        }
 
-        if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
-            builder.append("<br>");
-            builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
-                    card.getIssue().getClosedBy().getLogin(),
-                    card.getIssue().getClosedBy().getHtmlUrl(),
-                    DateUtils.getRelativeTimeSpanString(card.getIssue().getClosedAt())));
-        }
+            builder.append(String.format(mParent.getString(R.string.text_opened_by),
+                    String.format(mParent.getString(R.string.text_md_link),
+                            "#" + Integer.toString(card.getIssue().getNumber()),
+                            "https://github.com/" + mParent.mParent.mProject.getRepoPath() + "/issues/" + Integer.toString(card.getIssue().getNumber())
+                    ),
+                    String.format(mParent.getString(R.string.text_md_link),
+                            card.getIssue().getOpenedBy().getLogin(),
+                            card.getIssue().getOpenedBy().getHtmlUrl()
+                    ),
+                    DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
+            );
 
-        if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
-            builder.append("<br>");
-            Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
+            if(card.getIssue().getAssignees() != null) {
+                builder.append("<br>");
+                builder.append(mParent.getString(R.string.text_assigned_to));
+                builder.append(' ');
+                for(User u : card.getIssue().getAssignees()) {
+                    builder.append(String.format(mParent.getString(R.string.text_md_link),
+                            u.getLogin(),
+                            u.getHtmlUrl()));
+                    builder.append(' ');
+                }
+            }
+
+            if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
+                builder.append("<br>");
+                builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
+                        card.getIssue().getClosedBy().getLogin(),
+                        card.getIssue().getClosedBy().getHtmlUrl(),
+                        DateUtils.getRelativeTimeSpanString(card.getIssue().getClosedAt())));
+            }
+
+            if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
+                builder.append("<br>");
+                Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
+            }
+            if(card.getIssue().getComments() > 0) {
+                builder.append("<br>");
+                builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
+            }
+
+            final String parsed = Data.parseMD(builder.toString(), card.getIssue().getRepoPath());
+            mCards.set(pos, new Pair<>(card, parsed));
+            holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));
+        } else {
+            holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
         }
-        if(card.getIssue().getComments() > 0) {
-            builder.append("<br>");
-            builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
-        }
-        holder.mText.setHtml(Data.parseMD(builder.toString(), card.getIssue().getRepoPath()),  new HtmlHttpImageGetter(holder.mText));
         holder.mSpinner.setVisibility(View.INVISIBLE);
-    //    Log.i(TAG, "bindIssueCard: Issue bind time: " + (System.nanoTime()-start)/1E9);
-
     }
 
     @Override
@@ -313,7 +326,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
-           // mText.setParseHandler(mParseHandler);
+            mText.setParseHandler(mParseHandler);
         }
 
     }
