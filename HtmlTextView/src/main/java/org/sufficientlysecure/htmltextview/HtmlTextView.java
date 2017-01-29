@@ -178,7 +178,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             }
         };
         if(mParseHandler != null) {
-            Log.i(TAG, "setHtml: Posting to handler");
             mParseHandler.postDelayed(r, 20);
         } else {
             r.run();

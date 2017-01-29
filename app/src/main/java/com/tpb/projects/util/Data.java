@@ -18,6 +18,7 @@
 package com.tpb.projects.util;
 
 import android.util.Base64;
+import android.util.Log;
 
 import com.tpb.projects.data.models.Repository;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -25,6 +26,7 @@ import com.vladsch.flexmark.parser.Parser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -155,6 +157,9 @@ public class Data {
                     builder.setLength(builder.length() - 3);
                 }
                 builder.append("\u2610");
+            } else if(cs[i] == '(') {
+                builder.append("(");
+                i = parseImageLink(builder, cs, i);
             } else {
                 builder.append(cs[i]);
             }
@@ -235,6 +240,35 @@ public class Data {
             }
         }
         builder.append("#");
+        return --pos;
+    }
+
+    /*
+    This function fixes positioning of text after images
+    The TextView fucks up line spacing if there is text on the same line
+    as an image, so if we find an image url we add a newline
+     */
+    private static int parseImageLink(StringBuilder builder, char[] cs, int pos) {
+        for(int i = ++pos; i < cs.length; i++) {
+            if(cs[i] == ')') {
+                final String link = new String(Arrays.copyOfRange(cs, pos, i));
+                final String extension = link.substring(link.lastIndexOf('.') + 1);
+                if("png".equals(extension) ||
+                        "jpg".equals(extension) ||
+                        "gif".equals(extension) ||
+                        "bmp".equals(extension) ||
+                        "webp".equals(extension)) {
+                    builder.append(link);
+                    builder.append(")<br>");
+                } else {
+                    builder.append(link);
+                    builder.append(")");
+                }
+                return i;
+
+            }
+        }
+
         return --pos;
     }
 

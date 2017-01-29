@@ -34,9 +34,9 @@ import java.net.URI;
 import java.net.URL;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    TextView container;
-    URI baseUri;
-    boolean matchParentWidth = true;
+    private TextView container;
+    private URI baseUri;
+    private boolean matchParentWidth = true;
 
     public HtmlHttpImageGetter(TextView textView) {
         this.container = textView;
