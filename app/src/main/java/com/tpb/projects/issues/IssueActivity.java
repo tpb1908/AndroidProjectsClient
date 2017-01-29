@@ -17,6 +17,7 @@
 
 package com.tpb.projects.issues;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -272,10 +273,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void commentsLoaded(Comment[] comments) {
-        mCount.setText(Integer.toString(comments.length));
+        mRecycler.enableAnimation();
         mAdapter.loadComments(comments);
+        mCount.setText(Integer.toString(mAdapter.getItemCount()));
     }
 
     @Override
@@ -507,11 +510,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         dialog.show(getSupportFragmentManager(), TAG);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void eventsLoaded(Event[] events) {
         mRecycler.enableAnimation();
         mAdapter.loadEvents(events);
-        mRefresher.setRefreshing(false);
+        mCount.setText(Integer.toString(mAdapter.getItemCount()));
     }
 
     @Override
