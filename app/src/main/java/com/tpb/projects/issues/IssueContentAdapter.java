@@ -194,7 +194,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mData.set(pos, new Pair<>(comment, parsed));
             commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText));
         } else {
-            commentHolder.mText.setHtml(mData.get(pos).second);
+            commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText));
         }
     }
 
