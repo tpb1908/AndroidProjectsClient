@@ -54,6 +54,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
     private Issue mIssue;
     private IssueActivity mParent;
+    private boolean mHasOtherContentLoaded = false;
 
     IssueContentAdapter(IssueActivity parent) {
         mParent = parent;
@@ -61,6 +62,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void clear() {
         mData.clear();
+        mHasOtherContentLoaded = false;
         notifyDataSetChanged();
     }
 
@@ -73,6 +75,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         if(mData.size() == 0) {
             for(Comment c : comments) {
                 mData.add(new Pair<>(c, null));
+            }
+            if(mHasOtherContentLoaded) {
+                mParent.mRefresher.setRefreshing(false);
+            } else {
+                mHasOtherContentLoaded = true;
             }
             notifyDataSetChanged();
         } else {
@@ -90,6 +97,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             for(DataModel e : mergeEvents(events)) {
                 mData.add(new Pair<>(e, null));
             }
+            if(mHasOtherContentLoaded) {
+                mParent.mRefresher.setRefreshing(false);
+            } else {
+                mHasOtherContentLoaded = true;
+            }
             notifyDataSetChanged();
         } else {
             mParent.mRefresher.setRefreshing(false);
@@ -99,7 +111,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
             notifyDataSetChanged();
         }
-
     }
 
     void addComment(Comment comment) {

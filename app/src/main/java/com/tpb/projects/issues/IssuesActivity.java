@@ -143,7 +143,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
-        mRecycler.enableAnimation();
         mRefresher.setRefreshing(false);
     }
 

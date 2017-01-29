@@ -33,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -151,7 +152,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mIssue = issue;
         mAdapter.setIssue(mIssue);
         displayAssignees();
-        mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
 
         bindIssue();
 
@@ -276,6 +277,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void commentsLoaded(Comment[] comments) {
+        Log.i(TAG, "commentsLoaded: "+ comments.length);
         mRecycler.enableAnimation();
         mAdapter.loadComments(comments);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -283,7 +285,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void commentsLoadError(APIHandler.APIError error) {
-
+        Log.i(TAG, "commentsLoadError: " + error);
     }
 
     @OnClick(R.id.issue_comment_fab)
@@ -442,6 +444,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         editDialog.setArguments(c);
         editDialog.show(getSupportFragmentManager(), TAG);
     }
+
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
@@ -515,6 +518,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void eventsLoaded(Event[] events) {
+        Log.i(TAG, "eventsLoaded: " + events.length);
         mRecycler.enableAnimation();
         mAdapter.loadEvents(events);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -522,7 +526,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void eventsLoadError(APIHandler.APIError error) {
-
+        Log.i(TAG, "eventsLoadError: " + error);
     }
 
     @Override
