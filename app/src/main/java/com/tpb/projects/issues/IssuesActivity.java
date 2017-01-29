@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -43,8 +44,8 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.CommentDialog;
+import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -66,11 +67,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issues_fab) FloatingActionButton mFab;
+    @BindView(R.id.issues_filter_button) ImageButton mFilterButton;
 
     private Loader mLoader;
     private Editor mEditor;
 
     private IssuesAdapter mAdapter;
+    private Issue.IssueState mFilter = Issue.IssueState.OPEN;
 
     private Repository.AccessLevel mAccessLevel;
     private String mRepoPath;
@@ -96,12 +99,12 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath);
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter);
         });
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mRepoPath = getIntent().getExtras().getString(getString(R.string.intent_repo));
-            mLoader.loadIssues(this, mRepoPath);
+            mLoader.loadIssues(this, mRepoPath, mFilter);
             mRefresher.setRefreshing(true);
 
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
@@ -135,18 +138,53 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         } else {
             finish();
         }
-
     }
 
     @Override
     public void issuesLoaded(Issue[] issues) {
         mAdapter.loadIssues(issues);
+        mRecycler.enableAnimation();
         mRefresher.setRefreshing(false);
     }
 
     @Override
     public void issuesLoadError(APIHandler.APIError error) {
 
+    }
+
+    @OnClick(R.id.issues_filter_button)
+    void filter() {
+        final PopupMenu menu = new PopupMenu(this, mFilterButton);
+        menu.inflate(R.menu.menu_issues_filter);
+        switch(mFilter) {
+            case ALL:
+                menu.getMenu().getItem(2).setChecked(true);
+                break;
+            case OPEN:
+                menu.getMenu().getItem(0).setChecked(true);
+                break;
+            case CLOSED:
+                menu.getMenu().getItem(1).setChecked(true);
+                break;
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case R.id.menu_filter_all:
+                    mFilter = Issue.IssueState.ALL;
+                    break;
+                case R.id.menu_filter_closed:
+                    mFilter = Issue.IssueState.CLOSED;
+                    break;
+                case R.id.menu_filter_open:
+                    mFilter = Issue.IssueState.OPEN;
+                    break;
+            }
+            mAdapter.clear();
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter);
+            mRefresher.setRefreshing(true);
+            return false;
+        });
+        menu.show();
     }
 
     void openIssue(Issue issue) {

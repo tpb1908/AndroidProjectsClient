@@ -259,13 +259,13 @@ public class Data {
                         "bmp".equals(extension) ||
                         "webp".equals(extension)) {
                     builder.append(link);
-                    builder.append(")<br>");
+                    builder.append(") <br>");
+                    Log.i(TAG, "parseImageLink: Builder after finding image " + builder.toString());
                 } else {
                     builder.append(link);
                     builder.append(")");
                 }
                 return i;
-
             }
         }
 
