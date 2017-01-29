@@ -18,6 +18,7 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
@@ -43,6 +44,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.Response;
 
@@ -405,13 +408,32 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName) {
-        loadIssues(loader, repoFullName, Issue.IssueState.OPEN);
+        loadIssues(loader, repoFullName, Issue.IssueState.OPEN, null, null);
     }
 
-    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state) {
+    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels) {
+        final HashMap<String, String> params = new HashMap<>();
+        params.put("state", state.toString().toLowerCase());
+        if(assignee == null) {
+            params.put("assignee", "none");
+        } else {
+            params.put("assignee", assignee);
+        }
+        if(labels != null) {
+            Log.i(TAG, "loadIssues: Labels: "+ labels.toString());
+            if(labels.size() != 0) {
+                final StringBuilder builder = new StringBuilder();
+                for(String s : labels) {
+                    builder.append(s);
+                    builder.append(",");
+                }
+                builder.setLength(builder.length() - 1);
+                params.put("labels", builder.toString());
+            }
+        }
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
-                .addQueryParameter("state", state.toString().toLowerCase())
+                .addQueryParameter(params)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
