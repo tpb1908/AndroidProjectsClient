@@ -201,8 +201,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
                 @Override
                 public void issueLoaded(Issue issue) {
-                    card.setFromIssue(issue);
-                    bindIssueCard(holder, pos);
+                    if(mParent.isAdded() && !mParent.isRemoving()) {
+                        card.setFromIssue(issue);
+                        bindIssueCard(holder, pos);
+                    }
                     // notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
