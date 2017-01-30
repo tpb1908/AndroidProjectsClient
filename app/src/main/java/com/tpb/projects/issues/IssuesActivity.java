@@ -103,8 +103,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         mAdapter = new IssuesAdapter(this);
 
-        mAssigneeFilter = getString(R.string.text_assignee_all);
-
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
         
@@ -149,8 +147,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     private void loadIssues() {
-        if(mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "*", mLabelsFilter);
+        //TODO Add an option for all, and anything
+        if(mAssigneeFilter == null || mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, null, mLabelsFilter);
         } else if(mAssigneeFilter.equals(getString(R.string.text_assignee_none))) {
             mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "none", mLabelsFilter);
         } else {
@@ -201,13 +200,15 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     break;
                 case R.id.menu_filter_all:
                     mFilter = Issue.IssueState.ALL;
+                    refresh();
                     break;
                 case R.id.menu_filter_closed:
                     mFilter = Issue.IssueState.CLOSED;
+                    refresh();
                     break;
                 case R.id.menu_filter_open:
                     mFilter = Issue.IssueState.OPEN;
-;
+                    refresh();
                     break;
             }
             return false;
@@ -284,7 +285,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 int pos = 0;
                 for(int i = 2; i < collabNames.length; i++) {
                     collabNames[i] = collaborators[i - 2].getLogin();
-                    if(mAssigneeFilter.equals(collabNames[i])) {
+                    if(collabNames[i].equals(mAssigneeFilter)) {
                         pos = i;
                     }
                 }

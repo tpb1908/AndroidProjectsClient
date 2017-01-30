@@ -61,6 +61,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.FullScreenDialog;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -368,6 +369,14 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             return false;
         });
         menu.show();
+    }
+
+    void showCardInFullscreen(String markdown) {
+        final FullScreenDialog fsd = new FullScreenDialog();
+        final Bundle b = new Bundle();
+        b.putString(getString(R.string.intent_markdown), markdown);
+        fsd.setArguments(b);
+        fsd.show(getSupportFragmentManager(), TAG);
     }
 
     @OnClick(R.id.issue_menu_button)

@@ -237,6 +237,7 @@
     <string name="intent_name" translatable="false">name</string>
     <string name="intent_comment" translatable="false">comment</string>
     <string name="intent_drawable" translatable="false">drawable</string>
+    <string name="intent_markdown" translatable="false">markdown</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>
     <string name="parcel_card" translatable="false">card</string>

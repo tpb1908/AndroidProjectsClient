@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Card;
 
 /**
  * Created by theo on 24/12/16.
@@ -38,8 +37,8 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MarkedView view = new MarkedView(getContext());
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        if(getArguments() != null &&  getArguments().getParcelable(getContext().getString(R.string.parcel_card)) != null) {
-            view.setMDText( ((Card)getArguments().getParcelable(getContext().getString(R.string.parcel_card))).getNote());
+        if(getArguments() != null &&  getArguments().containsKey(getString(R.string.intent_markdown))) {
+            view.setMDText(getArguments().getString(getString(R.string.intent_markdown)));
         }
         return new AlertDialog.Builder(getActivity()).setView(view).create();
     }

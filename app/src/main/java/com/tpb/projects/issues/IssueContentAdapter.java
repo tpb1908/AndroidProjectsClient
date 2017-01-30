@@ -453,6 +453,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }
 
+    private void displayInFullScreen(int pos) {
+        mParent.showCardInFullscreen(((Comment)mData.get(pos).first).getBody());
+    }
+
     class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
@@ -462,6 +466,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
+            view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }

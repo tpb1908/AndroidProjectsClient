@@ -743,7 +743,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     void showFullscreen(Card card) {
         final FullScreenDialog dialog = new FullScreenDialog();
         final Bundle b = new Bundle();
-        b.putParcelable(getString(R.string.parcel_card), card);
+        b.putString(getString(R.string.intent_markdown), card.getNote());
         dialog.setArguments(b);
         dialog.show(getFragmentManager(), TAG);
     }
