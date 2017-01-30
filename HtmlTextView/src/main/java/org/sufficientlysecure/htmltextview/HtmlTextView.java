@@ -202,6 +202,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
+
             s.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
