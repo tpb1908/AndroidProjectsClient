@@ -18,6 +18,9 @@
 package com.tpb.projects.issues;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -29,10 +32,12 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +65,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.FullScreenDialog;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -151,7 +157,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mIssue = issue;
         mAdapter.setIssue(mIssue);
         displayAssignees();
-        mLoader.loadComments(this,  mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
 
         bindIssue();
 
@@ -184,19 +190,17 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won;t do multiple lines
+        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
-        if(mIssue.getBody() != null) {
-            builder.append("\n");
+        builder.append("\n");
+        if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
             builder.append(mIssue.getBody());
-            builder.append("<br>");
+            builder.append("\n");
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
-            builder.append("<br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
         mInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()), new HtmlHttpImageGetter(mInfo));
-
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -276,6 +280,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void commentsLoaded(Comment[] comments) {
+        Log.i(TAG, "commentsLoaded: "+ comments.length);
         mRecycler.enableAnimation();
         mAdapter.loadComments(comments);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -283,7 +288,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void commentsLoadError(APIHandler.APIError error) {
-
+        Log.i(TAG, "commentsLoadError: " + error);
     }
 
     @OnClick(R.id.issue_comment_fab)
@@ -349,21 +354,62 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         cd.show(getSupportFragmentManager(), TAG);
     }
 
+    private void deleteComment(Comment comment) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_delete_comment);
+        builder.setMessage(R.string.text_delete_comment_warning);
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+            mRefresher.setRefreshing(true);
+            mEditor.deleteComment(new Editor.CommentDeletionListener() {
+                @Override
+                public void commentDeleted() {
+                    mRefresher.setRefreshing(false);
+                    mAdapter.removeComment(comment);
+                }
+
+                @Override
+                public void commentDeletionError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, mIssue.getRepoPath(), comment.getId());
+        });
+        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.create().show();
+    }
+
     public void displayCommentMenu(View view, Comment comment) {
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(R.menu.menu_comment);
-        if(comment.getUser().getLogin().equals(GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
-            menu.getMenu().add(0, 1, 0, "Edit");
+        if(comment.getUser().getLogin().equals(
+                GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
+            menu.getMenu().add(0, 1, Menu.NONE, getString(R.string.menu_edit_comment));
+            menu.getMenu().add(0, 2, Menu.NONE, getString(R.string.menu_delete_comment));
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case 1:
                     editComment(comment);
                     break;
+                case 2:
+                    deleteComment(comment);
+                    break;
+                case R.id.menu_copy_comment_text:
+                    final ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    cm.setPrimaryClip(ClipData.newPlainText("Comment", comment.getBody()));
+                    Toast.makeText(this, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+                    break;
             }
             return false;
         });
         menu.show();
+    }
+
+    void showCardInFullscreen(String markdown) {
+        final FullScreenDialog fsd = new FullScreenDialog();
+        final Bundle b = new Bundle();
+        b.putString(getString(R.string.intent_markdown), markdown);
+        fsd.setArguments(b);
+        fsd.show(getSupportFragmentManager(), TAG);
     }
 
     @OnClick(R.id.issue_menu_button)
@@ -440,6 +486,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         editDialog.setArguments(c);
         editDialog.show(getSupportFragmentManager(), TAG);
     }
+
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
@@ -513,6 +560,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void eventsLoaded(Event[] events) {
+        Log.i(TAG, "eventsLoaded: " + events.length);
         mRecycler.enableAnimation();
         mAdapter.loadEvents(events);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -520,7 +568,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
     @Override
     public void eventsLoadError(APIHandler.APIError error) {
-
+        Log.i(TAG, "eventsLoadError: " + error);
     }
 
     @Override

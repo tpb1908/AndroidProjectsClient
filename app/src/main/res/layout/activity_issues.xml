@@ -58,7 +58,8 @@
                     android:text="@string/text_issues"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+                    android:textAppearance="@android:style/TextAppearance.Material.Title"
+                    android:transitionName="@string/transition_title"/>
 
                 <ImageButton
                     android:id="@+id/issues_filter_button"

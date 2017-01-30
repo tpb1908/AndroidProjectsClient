@@ -54,6 +54,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     private ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
     private Issue mIssue;
     private IssueActivity mParent;
+    private boolean mHasOtherContentLoaded = false;
 
     IssueContentAdapter(IssueActivity parent) {
         mParent = parent;
@@ -61,6 +62,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     void clear() {
         mData.clear();
+        mHasOtherContentLoaded = false;
         notifyDataSetChanged();
     }
 
@@ -70,41 +72,50 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     void loadComments(Comment[] comments) {
-        if(mData.size() == 0) {
-            for(Comment c : comments) {
-                mData.add(new Pair<>(c, null));
-            }
-            notifyDataSetChanged();
-        } else {
+        if(mHasOtherContentLoaded) {
             mParent.mRefresher.setRefreshing(false);
-            for(Comment c : comments) {
-                mData.add(new Pair<>(c, null));
-            }
-            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-            notifyDataSetChanged();
+        } else {
+            mHasOtherContentLoaded = true;
         }
+        for(Comment c : comments) {
+            mData.add(new Pair<>(c, null));
+        }
+        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
+        notifyDataSetChanged();
+
     }
 
     void loadEvents(Event[] events) {
-        if(mData.size() == 0) {
-            for(DataModel e : mergeEvents(events)) {
-                mData.add(new Pair<>(e, null));
-            }
-            notifyDataSetChanged();
-        } else {
+        if(mHasOtherContentLoaded) {
             mParent.mRefresher.setRefreshing(false);
-            for(DataModel e : mergeEvents(events)) {
-                mData.add(new Pair<>(e, null));
-            }
-            Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-            notifyDataSetChanged();
+        } else {
+            mHasOtherContentLoaded = true;
         }
+        for(DataModel e : mergeEvents(events)) {
+            mData.add(new Pair<>(e, null));
+        }
+        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
+        notifyDataSetChanged();
 
     }
 
     void addComment(Comment comment) {
         mData.add(new Pair<>(comment, null));
         notifyItemInserted(mData.size());
+    }
+
+    void removeComment(Comment comment) {
+        int index = -1;
+        for(int i = 0; i < mData.size(); i++) {
+            if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
+                index = i;
+                break;
+            }
+        }
+        if(index != -1) {
+            mData.remove(index);
+            notifyItemRemoved(index);
+        }
     }
 
     void updateComment(Comment comment) {
@@ -456,6 +467,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }
 
+    private void displayInFullScreen(int pos) {
+        mParent.showCardInFullscreen(((Comment)mData.get(pos).first).getBody());
+    }
+
     class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
@@ -465,6 +480,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
+            view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }
