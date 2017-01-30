@@ -192,19 +192,15 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         builder.append("<h1>");
         builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
-        boolean hasTitleBeenAdded = false;
+        builder.append("\n");
         if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
-            builder.append("\n");
             builder.append(mIssue.getBody());
-            builder.append("<br>");
-            hasTitleBeenAdded  = true;
+            builder.append("\n");
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
-            if(hasTitleBeenAdded) builder.append("<br>");
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
         mInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()), new HtmlHttpImageGetter(mInfo));
-
         builder.setLength(0);
         builder.append(
                 String.format(
