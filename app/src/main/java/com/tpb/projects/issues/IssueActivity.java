@@ -18,6 +18,9 @@
 package com.tpb.projects.issues;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -29,6 +32,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -352,18 +356,49 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         cd.show(getSupportFragmentManager(), TAG);
     }
 
+    private void deleteComment(Comment comment) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_delete_comment);
+        builder.setMessage(R.string.text_delete_comment_warning);
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+            mRefresher.setRefreshing(true);
+            mEditor.deleteComment(new Editor.CommentDeletionListener() {
+                @Override
+                public void commentDeleted() {
+                    mRefresher.setRefreshing(false);
+                    mAdapter.removeComment(comment);
+                }
+
+                @Override
+                public void commentDeletionError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, mIssue.getRepoPath(), comment.getId());
+        });
+        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.create().show();
+    }
+
     public void displayCommentMenu(View view, Comment comment) {
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(R.menu.menu_comment);
         if(comment.getUser().getLogin().equals(
-                GitHubSession.getSession(IssueActivity.this).getUserLogin()) ||
-                mAccessLevel == Repository.AccessLevel.ADMIN) {
-            menu.getMenu().add(0, 1, 0, "Edit");
+                GitHubSession.getSession(IssueActivity.this).getUserLogin())) {
+            menu.getMenu().add(0, 1, Menu.NONE, getString(R.string.menu_edit_comment));
+            menu.getMenu().add(0, 2, Menu.NONE, getString(R.string.menu_delete_comment));
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case 1:
                     editComment(comment);
+                    break;
+                case 2:
+                    deleteComment(comment);
+                    break;
+                case R.id.menu_copy_comment_text:
+                    final ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    cm.setPrimaryClip(ClipData.newPlainText("Comment", comment.getBody()));
+                    Toast.makeText(this, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
                     break;
             }
             return false;

@@ -565,6 +565,29 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void deleteComment(CommentDeletionListener listener, String fullRepoPath, int commentId) {
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.commentDeletionError(APIError.UNKNOWN);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(anError.getErrorCode() == 0 && listener != null) {
+                            listener.commentDeleted();
+                        } else if(listener != null){
+                            listener.commentDeletionError(parseError(anError));
+                        }
+                        Log.i(TAG, "onError: Comment deletion error: " + anError.getErrorBody());
+                    }
+                });
+
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -688,6 +711,14 @@ public class Editor extends APIHandler {
         void commentEdited(Comment comment);
 
         void commentEditError(APIError error);
+
+    }
+
+    public interface CommentDeletionListener {
+
+        void commentDeleted();
+
+        void commentDeletionError(APIError error);
 
     }
 

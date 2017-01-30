@@ -104,6 +104,20 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         notifyItemInserted(mData.size());
     }
 
+    void removeComment(Comment comment) {
+        int index = -1;
+        for(int i = 0; i < mData.size(); i++) {
+            if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
+                index = i;
+                break;
+            }
+        }
+        if(index != -1) {
+            mData.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
     void updateComment(Comment comment) {
         int index = -1;
         for(int i = 0; i < mData.size(); i++) {
