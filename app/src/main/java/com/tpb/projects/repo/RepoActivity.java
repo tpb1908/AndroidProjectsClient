@@ -169,10 +169,11 @@ public class RepoActivity extends AppCompatActivity implements
             }
             startActivity(i,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this,
-                    new Pair<>(mUserName, getString(R.string.transition_username)),
-                    new Pair<>(mUserImage, getString(R.string.transition_user_image))
-            ).toBundle());
+                        this,
+                        new Pair<>(mUserName, getString(R.string.transition_username)),
+                        new Pair<>(mUserImage, getString(R.string.transition_user_image))
+                    ).toBundle()
+            );
         }
     }
 
@@ -181,7 +182,20 @@ public class RepoActivity extends AppCompatActivity implements
         if(mRepo != null) {
             final Intent i = new Intent(RepoActivity.this, IssuesActivity.class);
             i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
-            startActivity(i);
+            startActivity(i,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            this,
+                            findViewById(R.id.repo_issues_text),
+                            getString(R.string.transition_title)
+                    ).toBundle()
+            );
+//            startActivity(i,
+//                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                            this,
+//                            new Pair<>(findViewById(R.id.repo_issues_text), getString(R.string.transition_title))
+//                    ).toBundle()
+//            );
+//            startActivity(i);
         }
     }
 
