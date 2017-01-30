@@ -194,7 +194,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         builder.append("</h1>");
         builder.append("\n");
         if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
-            builder.append(mIssue.getBody());
+            builder.append(mIssue.getBody().replaceFirst("\\s++$", ""));
             builder.append("\n");
         }
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {

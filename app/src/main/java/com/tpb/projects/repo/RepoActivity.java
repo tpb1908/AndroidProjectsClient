@@ -189,13 +189,6 @@ public class RepoActivity extends AppCompatActivity implements
                             getString(R.string.transition_title)
                     ).toBundle()
             );
-//            startActivity(i,
-//                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                            this,
-//                            new Pair<>(findViewById(R.id.repo_issues_text), getString(R.string.transition_title))
-//                    ).toBundle()
-//            );
-//            startActivity(i);
         }
     }
 
