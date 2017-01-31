@@ -479,6 +479,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             super(view);
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
+            mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
