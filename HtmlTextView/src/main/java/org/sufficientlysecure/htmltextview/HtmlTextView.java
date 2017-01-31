@@ -16,11 +16,9 @@
 
 package org.sufficientlysecure.htmltextview;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Parcel;
@@ -36,12 +34,10 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -202,7 +198,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-
             s.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
@@ -299,23 +294,33 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         @Override
         public void imageClicked(Drawable drawable) {
-            final Dialog builder = new Dialog(mContext);
-            builder.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            builder.setOnDismissListener(null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            final LayoutInflater inflater = LayoutInflater.from(mContext);
+            final View view = inflater.inflate(R.layout.dialog_image, null);
 
-            final ImageView iv = new ImageView(mContext);
-            iv.setAdjustViewBounds(true);
-            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            iv.setImageDrawable(drawable.getConstantState().newDrawable());
+            builder.setView(view);
 
-            builder.addContentView(iv, new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
-            Log.i(TAG, "imageClicked: Drawable " + drawable.getIntrinsicWidth() + ", " + drawable.getIntrinsicHeight());
-            Log.i(TAG, "imageClicked: Is drawable null? " + drawable + " " + (drawable == null));
-            //iv.setBackground(drawable);
+            ((ImageView)view.findViewById(R.id.dialog_imageview)).setImageDrawable(drawable);
+            builder.create().show();
 
-            builder.show();
+
+//            final Dialog builder = new Dialog(mContext);
+//            builder.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            builder.setOnDismissListener(null);
+//
+//            final ImageView iv = new ImageView(mContext);
+//            iv.setAdjustViewBounds(true);
+//            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//            iv.setImageDrawable(drawable.getConstantState().newDrawable());
+//
+//            builder.addContentView(iv, new RelativeLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT));
+//            Log.i(TAG, "imageClicked: Drawable " + drawable.getIntrinsicWidth() + ", " + drawable.getIntrinsicHeight());
+//            Log.i(TAG, "imageClicked: Is drawable null? " + drawable + " " + (drawable == null));
+//            //iv.setBackground(drawable);
+//
+//            builder.show();
         }
     }
 
