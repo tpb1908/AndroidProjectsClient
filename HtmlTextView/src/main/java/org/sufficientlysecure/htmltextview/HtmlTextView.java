@@ -195,13 +195,15 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private void stripUnderLines(Spannable s) {
         final URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
         for(URLSpan span : spans) {
+            final int start = s.getSpanStart(span);
+            final int end = s.getSpanEnd(span);
             s.removeSpan(span);
             if(mLinkHandler == null) {
                 span = new URLSpanWithoutUnderline(span.getURL());
             } else {
                 span = new URLSpanWithoutUnderline(span.getURL(), mLinkHandler);
             }
-            s.setSpan(span, s.getSpanStart(span), s.getSpanEnd(span), 0);
+            s.setSpan(span, start, end, 0);
         }
     }
 
