@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:orientation="vertical"
             android:layout_margin="8dp"
             android:duplicateParentState="true">
