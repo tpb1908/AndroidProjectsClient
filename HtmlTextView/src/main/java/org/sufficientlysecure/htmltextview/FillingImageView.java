@@ -57,8 +57,8 @@ public class FillingImageView extends ImageView {
             if(drawable == null) {
                 setMeasuredDimension(0, 0);
             } else {
-                float imageSideRatio = (float) drawable.getIntrinsicWidth() / (float) drawable.getIntrinsicHeight();
-                float viewSideRatio = (float) MeasureSpec.getSize(widthMeasureSpec) / (float) MeasureSpec.getSize(heightMeasureSpec);
+                float imageSideRatio = (float) drawable.getIntrinsicWidth() / (float) drawable.getIntrinsicHeight(); //Image aspect ratio
+                float viewSideRatio = (float) MeasureSpec.getSize(widthMeasureSpec) / (float) MeasureSpec.getSize(heightMeasureSpec); //Aspect ratio of parent
                 if(imageSideRatio >= viewSideRatio) {
                     // Image is wider than the display (ratio)
                     int width = MeasureSpec.getSize(widthMeasureSpec);

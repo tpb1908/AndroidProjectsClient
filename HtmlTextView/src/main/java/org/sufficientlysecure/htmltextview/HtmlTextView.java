@@ -16,6 +16,7 @@
 
 package org.sufficientlysecure.htmltextview;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -39,12 +40,10 @@ import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,7 +68,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private LinkClickHandler mLinkHandler;
 
     private ImageClickHandler mImageClickHandler;
-    private boolean isImageClickEnablingComplete = false;
     private ArrayList<Pair<Drawable, String>> mDrawables = new ArrayList<>();
 
     private Handler mParseHandler;
@@ -175,6 +173,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     @Override
                     public void run() {
                         setText(buffer);
+                        if(mImageClickHandler != null) enableImageClicks(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
@@ -193,27 +192,16 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         mDrawables.add(new Pair<>(drawable, source));
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        super.setText(text, type);
-        if(text instanceof SpannableString && mImageClickHandler != null && !isImageClickEnablingComplete) {
-            enableImageClicks((Spannable) text);
-        }
-        isImageClickEnablingComplete = false;
-    }
-
     private void stripUnderLines(Spannable s) {
-        URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
+        final URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
         for(URLSpan span : spans) {
-            final int start = s.getSpanStart(span);
-            final int end = s.getSpanEnd(span);
             s.removeSpan(span);
             if(mLinkHandler == null) {
                 span = new URLSpanWithoutUnderline(span.getURL());
             } else {
                 span = new URLSpanWithoutUnderline(span.getURL(), mLinkHandler);
             }
-            s.setSpan(span, start, end, 0);
+            s.setSpan(span, s.getSpanStart(span), s.getSpanEnd(span), 0);
         }
     }
 
@@ -225,7 +213,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 public void onClick(View widget) {
 
                     if(mImageClickHandler == null) {
-                       // super.onClick(widget); //Opens image link
+                       super.onClick(widget); //Opens image link
                     } else {
                         Log.i(TAG, "onClick: Source is " + span.getSource());
                         for(Pair<Drawable, String> drawable : mDrawables) {
@@ -243,7 +231,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
-        isImageClickEnablingComplete = true;
         setText(s);
     }
 
@@ -323,23 +310,21 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         @Override
         public void imageClicked(Drawable drawable) {
-            final Dialog dialog = new Dialog(mContext);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setAttributes(lp);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            final LayoutInflater inflater = LayoutInflater.from(mContext);
+            final View view = inflater.inflate(R.layout.dialog_image, null);
 
-            final FillingImageView iv = new FillingImageView(mContext);
-            iv.setAdjustViewBounds(true);
-            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            iv.setImageDrawable(drawable);
+            builder.setView(view);
 
-            dialog.addContentView(iv, new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
-            dialog.show();
+            ((FillingImageView)view.findViewById(R.id.dialog_imageview)).setImageDrawable(drawable);
+            final Dialog d = builder.create();
+            d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            d.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            d.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
+
+            builder.show();
+
         }
     }
 

@@ -57,12 +57,10 @@ public class HtmlHttpImageGetter implements ImageGetter {
     }
 
     public Drawable getDrawable(String source) {
-        UrlDrawable urlDrawable = new UrlDrawable();
+        final UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
-        ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth);
-
-        asyncTask.execute(source);
+         new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth).execute(source);
 
         // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
@@ -84,7 +82,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         private boolean matchParentWidth;
         private float scale;
 
-        public ImageGetterAsyncTask(UrlDrawable d, HtmlHttpImageGetter imageGetter, View container, boolean matchParentWidth) {
+        ImageGetterAsyncTask(UrlDrawable d, HtmlHttpImageGetter imageGetter, View container, boolean matchParentWidth) {
             this.drawableReference = new WeakReference<>(d);
             this.imageGetterReference = new WeakReference<>(imageGetter);
             this.containerReference = new WeakReference<>(container);
@@ -123,9 +121,12 @@ public class HtmlHttpImageGetter implements ImageGetter {
             if (imageGetter == null) {
                 return;
             }
+
+            //We add the drawable to the image view so that it can get it on click
+            imageGetter.container.addDrawable(urlDrawable.drawable.getConstantState().newDrawable(), source);
+
             // redraw the image by invalidating the container
             imageGetter.container.invalidate();
-            imageGetter.container.addDrawable(urlDrawable.drawable, source);
             // re-set text to fix images overlapping text
             imageGetter.container.setText(imageGetter.container.getText());
         }
@@ -133,7 +134,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         /**
          * Get the Drawable from URL
          */
-        public Drawable fetchDrawable(Resources res, String urlString) {
+        Drawable fetchDrawable(Resources res, String urlString) {
             try {
                 InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
@@ -172,7 +173,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
     }
 
     @SuppressWarnings("deprecation")
-    public class UrlDrawable extends BitmapDrawable {
+    private class UrlDrawable extends BitmapDrawable {
         protected Drawable drawable;
 
         @Override
