@@ -437,16 +437,18 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final Issue[] issues = new Issue[response.length()];
+                        final ArrayList<Issue> issues = new ArrayList<>();
                         Log.i(TAG, "onResponse: Returned " + response.length() + " issues");
                         for(int i = 0; i < response.length() ; i++) {
                             try {
-                                issues[i] = Issue.parse(response.getJSONObject(i));
+                                if(!response.getJSONObject(i).has("pull_request")) {
+                                    issues.add(Issue.parse(response.getJSONObject(i)));
+                                }
                             } catch(JSONException jse) {
                                 Log.e(TAG, "onResponse: Parsing open issues", jse);
                             }
                         }
-                        if(loader != null) loader.issuesLoaded(issues);
+                        if(loader != null) loader.issuesLoaded(issues.toArray(new Issue[issues.size()]));
                     }
 
                     @Override
