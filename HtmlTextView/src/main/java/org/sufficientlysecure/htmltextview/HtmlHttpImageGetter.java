@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,22 +33,22 @@ import java.net.URI;
 import java.net.URL;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    private TextView container;
+    private HtmlTextView container;
     private URI baseUri;
     private boolean matchParentWidth = true;
 
-    public HtmlHttpImageGetter(TextView textView) {
+    public HtmlHttpImageGetter(HtmlTextView textView) {
         this.container = textView;
     }
 
-    public HtmlHttpImageGetter(TextView textView, String baseUrl) {
+    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl) {
         this.container = textView;
         if (baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
     }
 
-    public HtmlHttpImageGetter(TextView textView, String baseUrl, boolean matchParentWidth) {
+    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl, boolean matchParentWidth) {
         this.container = textView;
         this.matchParentWidth = matchParentWidth;
         if (baseUrl != null) {
@@ -126,6 +125,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
             }
             // redraw the image by invalidating the container
             imageGetter.container.invalidate();
+            imageGetter.container.addDrawable(urlDrawable.drawable, source);
             // re-set text to fix images overlapping text
             imageGetter.container.setText(imageGetter.container.getText());
         }

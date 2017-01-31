@@ -16,9 +16,12 @@
 
 package org.sufficientlysecure.htmltextview;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Parcel;
@@ -34,12 +37,16 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
+import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HtmlTextView extends JellyBeanSpanFixTextView {
@@ -61,6 +68,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private LinkClickHandler mLinkHandler;
 
     private ImageClickHandler mImageClickHandler;
+    private boolean isImageClickEnablingComplete = false;
+    private ArrayList<Pair<Drawable, String>> mDrawables = new ArrayList<>();
 
     private Handler mParseHandler;
 
@@ -130,6 +139,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
+                mDrawables.clear();
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
@@ -164,9 +174,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     @Override
                     public void run() {
                         setText(buffer);
-                        if(mImageClickHandler != null) {
-                            enableImageClicks(buffer);
-                        }
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
@@ -179,6 +186,19 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             r.run();
         }
 
+    }
+
+    void addDrawable(Drawable drawable, String source) {
+        mDrawables.add(new Pair<>(drawable, source));
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        super.setText(text, type);
+        if(text instanceof SpannableString && mImageClickHandler != null && !isImageClickEnablingComplete) {
+            enableImageClicks((Spannable) text);
+        }
+        isImageClickEnablingComplete = false;
     }
 
     private void stripUnderLines(Spannable s) {
@@ -198,13 +218,20 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
+            Log.i(TAG, "enableImageClicks: Enabling click on span with drawable " + (((BitmapDrawable) span.getDrawable()).getBitmap() == null) );
             s.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
+
                     if(mImageClickHandler == null) {
-                        super.onClick(widget); //Opens image link
+                       // super.onClick(widget); //Opens image link
                     } else {
-                        mImageClickHandler.imageClicked(span.getDrawable());
+                        Log.i(TAG, "onClick: Source is " + span.getSource());
+                        for(Pair<Drawable, String> drawable : mDrawables) {
+                            if(span.getSource() != null && span.getSource().equals(drawable.second)) {
+                                mImageClickHandler.imageClicked(drawable.first);
+                            }
+                        }
                     }
                 }
 
@@ -215,6 +242,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
+        isImageClickEnablingComplete = true;
         setText(s);
     }
 
@@ -294,33 +322,18 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         @Override
         public void imageClicked(Drawable drawable) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            final LayoutInflater inflater = LayoutInflater.from(mContext);
-            final View view = inflater.inflate(R.layout.dialog_image, null);
+            final Dialog dialog = new Dialog(mContext);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-            builder.setView(view);
+            final ImageView iv = new ImageView(mContext);
+            iv.setAdjustViewBounds(true);
+            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iv.setImageDrawable(drawable);
 
-            ((ImageView)view.findViewById(R.id.dialog_imageview)).setImageDrawable(drawable);
-            builder.create().show();
-
-
-//            final Dialog builder = new Dialog(mContext);
-//            builder.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//            builder.setOnDismissListener(null);
-//
-//            final ImageView iv = new ImageView(mContext);
-//            iv.setAdjustViewBounds(true);
-//            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//            iv.setImageDrawable(drawable.getConstantState().newDrawable());
-//
-//            builder.addContentView(iv, new RelativeLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT));
-//            Log.i(TAG, "imageClicked: Drawable " + drawable.getIntrinsicWidth() + ", " + drawable.getIntrinsicHeight());
-//            Log.i(TAG, "imageClicked: Is drawable null? " + drawable + " " + (drawable == null));
-//            //iv.setBackground(drawable);
-//
-//            builder.show();
+            dialog.addContentView(iv, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            dialog.show();
         }
     }
 
