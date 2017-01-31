@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
+import com.tpb.projects.util.Data;
 
 /**
  * Created by theo on 24/12/16.
@@ -38,7 +39,15 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         final MarkedView view = new MarkedView(getContext());
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(getArguments() != null &&  getArguments().containsKey(getString(R.string.intent_markdown))) {
-            view.setMDText(getArguments().getString(getString(R.string.intent_markdown)));
+            String markdown = getArguments().getString(getString(R.string.intent_markdown));
+            /*
+            WebView does not respect minimum height, so we have to pad the markdown
+             */
+            if(Data.instancesOf(markdown, "\n") + Data.instancesOf(markdown, "<br>") < 4) {
+                markdown = "<br>" + markdown + "<br><br>";
+            }
+
+            view.setMDText(markdown);
         }
         return new AlertDialog.Builder(getActivity()).setView(view).create();
     }
