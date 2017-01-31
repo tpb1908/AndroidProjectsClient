@@ -42,6 +42,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -324,8 +325,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         public void imageClicked(Drawable drawable) {
             final Dialog dialog = new Dialog(mContext);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setAttributes(lp);
 
-            final ImageView iv = new ImageView(mContext);
+            final FillingImageView iv = new FillingImageView(mContext);
             iv.setAdjustViewBounds(true);
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
             iv.setImageDrawable(drawable);
