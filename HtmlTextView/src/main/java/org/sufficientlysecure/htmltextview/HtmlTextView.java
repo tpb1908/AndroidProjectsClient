@@ -318,14 +318,24 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
             builder.setView(view);
 
-            ((FillingImageView)view.findViewById(R.id.dialog_imageview)).setImageDrawable(drawable);
-            final Dialog d = builder.create();
-            d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            d.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            d.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            final FillingImageView fiv = (FillingImageView) view.findViewById(R.id.dialog_imageview);
+            fiv.setImageDrawable(drawable);
+
+            final Dialog dialog = builder.create();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
 
-            builder.show();
+            fiv.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+
+                }
+            });
+
+            dialog.show();
 
         }
     }
