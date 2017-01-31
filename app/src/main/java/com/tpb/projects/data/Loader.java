@@ -27,6 +27,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
@@ -63,6 +64,7 @@ public class Loader extends APIHandler {
     private static final String PERMISSION_WRITE = "write";
     private static final String PERMISSION_READ = "read";
     private static final String CONTENT = "content";
+    private static final String SEGMENT_MARKDOWN = "/markdown";
 
     public Loader(Context context) {
         super(context);
@@ -608,6 +610,54 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void renderMarkDown(MarkDownRenderLoader loader, String markdown) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("text", markdown);
+        } catch(JSONException ignored) {}
+        AndroidNetworking.post(GIT_BASE + SEGMENT_MARKDOWN)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: Markdown: " + response);
+                        loader.rendered(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+    }
+
+    public void renderMarkDown(MarkDownRenderLoader loader, String markdown, String context) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("text", markdown);
+            obj.put("mode", "gfm");
+            obj.put("context", context);
+        } catch(JSONException ignored) {}
+        AndroidNetworking.post(GIT_BASE + SEGMENT_MARKDOWN)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: Markdown: " + response);
+                        loader.rendered(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+    }
+
     public interface UserLoader {
 
         void userLoaded(User user);
@@ -723,6 +773,14 @@ public class Loader extends APIHandler {
         void eventsLoaded(Event[] events);
 
         void eventsLoadError(APIError error);
+
+    }
+
+    public interface MarkDownRenderLoader {
+
+        void rendered(String html);
+
+        void renderError(APIError error);
 
     }
 

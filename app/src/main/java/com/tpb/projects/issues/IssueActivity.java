@@ -408,6 +408,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         final FullScreenDialog fsd = new FullScreenDialog();
         final Bundle b = new Bundle();
         b.putString(getString(R.string.intent_markdown), markdown);
+        b.putString(getString(R.string.intent_repo), mIssue.getRepoPath());
         fsd.setArguments(b);
         fsd.show(getSupportFragmentManager(), TAG);
     }
