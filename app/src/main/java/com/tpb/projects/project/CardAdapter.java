@@ -329,6 +329,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             view.setOnClickListener(v -> cardClick(getAdapterPosition()));
             mText.setShowUnderLines(false);
             mText.setParseHandler(mParseHandler);
+            mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
         }
 
     }
