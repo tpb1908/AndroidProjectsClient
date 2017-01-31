@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,22 +33,22 @@ import java.net.URI;
 import java.net.URL;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    private TextView container;
+    private HtmlTextView container;
     private URI baseUri;
     private boolean matchParentWidth = true;
 
-    public HtmlHttpImageGetter(TextView textView) {
+    public HtmlHttpImageGetter(HtmlTextView textView) {
         this.container = textView;
     }
 
-    public HtmlHttpImageGetter(TextView textView, String baseUrl) {
+    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl) {
         this.container = textView;
         if (baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
     }
 
-    public HtmlHttpImageGetter(TextView textView, String baseUrl, boolean matchParentWidth) {
+    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl, boolean matchParentWidth) {
         this.container = textView;
         this.matchParentWidth = matchParentWidth;
         if (baseUrl != null) {
@@ -58,12 +57,10 @@ public class HtmlHttpImageGetter implements ImageGetter {
     }
 
     public Drawable getDrawable(String source) {
-        UrlDrawable urlDrawable = new UrlDrawable();
+        final UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
-        ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth);
-
-        asyncTask.execute(source);
+         new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth).execute(source);
 
         // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
@@ -85,7 +82,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         private boolean matchParentWidth;
         private float scale;
 
-        public ImageGetterAsyncTask(UrlDrawable d, HtmlHttpImageGetter imageGetter, View container, boolean matchParentWidth) {
+        ImageGetterAsyncTask(UrlDrawable d, HtmlHttpImageGetter imageGetter, View container, boolean matchParentWidth) {
             this.drawableReference = new WeakReference<>(d);
             this.imageGetterReference = new WeakReference<>(imageGetter);
             this.containerReference = new WeakReference<>(container);
@@ -124,6 +121,10 @@ public class HtmlHttpImageGetter implements ImageGetter {
             if (imageGetter == null) {
                 return;
             }
+
+            //We add the drawable to the image view so that it can get it on click
+            imageGetter.container.addDrawable(urlDrawable.drawable.getConstantState().newDrawable(), source);
+
             // redraw the image by invalidating the container
             imageGetter.container.invalidate();
             // re-set text to fix images overlapping text
@@ -133,7 +134,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         /**
          * Get the Drawable from URL
          */
-        public Drawable fetchDrawable(Resources res, String urlString) {
+        Drawable fetchDrawable(Resources res, String urlString) {
             try {
                 InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
@@ -172,7 +173,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
     }
 
     @SuppressWarnings("deprecation")
-    public class UrlDrawable extends BitmapDrawable {
+    private class UrlDrawable extends BitmapDrawable {
         protected Drawable drawable;
 
         @Override

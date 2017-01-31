@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright  2016 Theo Pearson-Bray
   ~
@@ -15,16 +16,16 @@
   ~
   -->
 
-<manifest package="com.tpb.contributionsview"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application
-        android:allowBackup="true"
-        android:label="@string/app_name"
-        android:supportsRtl="true">
+    <org.sufficientlysecure.htmltextview.FillingImageView
+        android:id="@+id/dialog_imageview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
 
-    </application>
-
-</manifest>
+</LinearLayout>
