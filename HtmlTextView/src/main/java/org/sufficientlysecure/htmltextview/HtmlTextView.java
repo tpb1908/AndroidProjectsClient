@@ -168,11 +168,14 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     stripUnderLines(buffer);
                 }
 
+                if(mImageClickHandler != null) {
+                    enableImageClicks(buffer);
+                }
+
                 HtmlTextView.this.post(new Runnable() {
                     @Override
                     public void run() {
                         setText(buffer);
-                        if(mImageClickHandler != null) enableImageClicks(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
@@ -230,7 +233,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
-        setText(s);
     }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
