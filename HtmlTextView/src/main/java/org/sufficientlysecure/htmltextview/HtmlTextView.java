@@ -39,14 +39,13 @@ import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class HtmlTextView extends JellyBeanSpanFixTextView {
@@ -68,7 +67,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private LinkClickHandler mLinkHandler;
 
     private ImageClickHandler mImageClickHandler;
-    private ArrayList<Pair<Drawable, String>> mDrawables = new ArrayList<>();
+    private HashMap<String, Drawable> mDrawables = new HashMap<>();
 
     private Handler mParseHandler;
 
@@ -169,11 +168,14 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     stripUnderLines(buffer);
                 }
 
+                if(mImageClickHandler != null) {
+                    enableImageClicks(buffer);
+                }
+
                 HtmlTextView.this.post(new Runnable() {
                     @Override
                     public void run() {
                         setText(buffer);
-                        if(mImageClickHandler != null) enableImageClicks(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
                     }
@@ -189,7 +191,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     }
 
     void addDrawable(Drawable drawable, String source) {
-        mDrawables.add(new Pair<>(drawable, source));
+        mDrawables.put(source, drawable);
     }
 
     private void stripUnderLines(Spannable s) {
@@ -218,10 +220,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                        super.onClick(widget); //Opens image link
                     } else {
                         Log.i(TAG, "onClick: Source is " + span.getSource());
-                        for(Pair<Drawable, String> drawable : mDrawables) {
-                            if(span.getSource() != null && span.getSource().equals(drawable.second)) {
-                                mImageClickHandler.imageClicked(drawable.first);
-                            }
+                        if(mDrawables.containsKey(span.getSource())) {
+                            mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
                         }
                     }
                 }
@@ -233,7 +233,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
-        setText(s);
     }
 
     private static class URLSpanWithoutUnderline extends URLSpan {
