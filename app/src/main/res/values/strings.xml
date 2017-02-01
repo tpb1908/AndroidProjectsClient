@@ -142,6 +142,10 @@
     <string name="text_creating_issue">Creating Issue</string>
     <string name="text_assignee_all">All</string>
     <string name="text_assignee_none">None</string>
+    <string name="text_star">Star</string>
+    <string name="text_unstar">Unstar</string>
+    <string name="text_watch">Watch</string>
+    <string name="text_unwatch">Unwatch</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>

@@ -107,6 +107,8 @@ public class RepoActivity extends AppCompatActivity implements
     private Loader mLoader;
     private Repository mRepo;
     private Repository.AccessLevel mAccessLevel;
+    private boolean mHasStarredRepo = false;
+    private boolean mIsWatchingRepo = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -190,6 +192,86 @@ public class RepoActivity extends AppCompatActivity implements
                     ).toBundle()
             );
         }
+    }
+
+    @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
+    void toggleStar() {
+
+    }
+
+    @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
+    void toggleWatch() {
+
+    }
+
+
+    @Override
+    public void repoLoaded(Repository repo) {
+        mRepo = repo;
+        mName.setText(repo.getName());
+        if(Constants.JSON_NULL.equals(repo.getDescription())) {
+            mDescription.setVisibility(GONE);
+        } else {
+            mDescription.setText(repo.getDescription());
+        }
+        mUserName.setText(repo.getUserLogin());
+        mUserImage.setImageUrl(repo.getUserAvatarUrl());
+        mSize.setText(Data.formatKB(repo.getSize()));
+        mIssues.setText(Integer.toString(repo.getIssues()));
+        mForks.setText(Integer.toString(repo.getForks()));
+        mWatchers.setText(Integer.toString(repo.getWatchers()));
+        mStars.setText(Integer.toString(repo.getStarGazers()));
+        mRefresher.setRefreshing(true);
+        mLoader.loadProjects(this, mRepo.getFullName());
+        mLoader.loadReadMe(this, mRepo.getFullName());
+        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUserLogin())) {
+            mAdapter.enableEditAccess();
+            mAccessLevel = Repository.AccessLevel.ADMIN;
+            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+        } else {
+            mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+                @Override
+                public void accessCheckComplete(Repository.AccessLevel level) {
+                    Log.i(TAG, "accessCheckComplete: Access " + level);
+                    mAccessLevel = level;
+                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                        mAdapter.enableEditAccess();
+                        findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+                    }
+//                    if(canAccess) mAdapter.enableEditAccess();
+//                    Toast.makeText(RepoActivity.this,
+//                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
+//                            Toast.LENGTH_SHORT)
+//                            .show();
+                }
+
+                @Override
+                public void accessCheckError(APIHandler.APIError error) {
+                    mAccessLevel = Repository.AccessLevel.NONE;
+                }
+            }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
+        }
+        mLoader.checkIfStarred(isStarred -> {
+            mHasStarredRepo = isStarred;
+            if(isStarred) {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+            }
+        }, mRepo.getFullName());
+        mLoader.checkIfWatched(isWatching -> {
+            mIsWatchingRepo = isWatching;
+            if(isWatching) {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+            } else {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+            }
+        }, mRepo.getFullName());
+    }
+
+    @Override
+    public void repoLoadError(APIHandler.APIError error) {
+
     }
 
     @Override
@@ -292,59 +374,6 @@ public class RepoActivity extends AppCompatActivity implements
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-    }
-
-    @Override
-    public void repoLoaded(Repository repo) {
-        mRepo = repo;
-        mName.setText(repo.getName());
-        if(Constants.JSON_NULL.equals(repo.getDescription())) {
-            mDescription.setVisibility(GONE);
-        } else {
-            mDescription.setText(repo.getDescription());
-        }
-        mUserName.setText(repo.getUserLogin());
-        mUserImage.setImageUrl(repo.getUserAvatarUrl());
-        mSize.setText(Data.formatKB(repo.getSize()));
-        mIssues.setText(Integer.toString(repo.getIssues()));
-        mForks.setText(Integer.toString(repo.getForks()));
-        mWatchers.setText(Integer.toString(repo.getWatchers()));
-        mStars.setText(Integer.toString(repo.getStarGazers()));
-        mRefresher.setRefreshing(true);
-        mLoader.loadProjects(this, mRepo.getFullName());
-        mLoader.loadReadMe(this, mRepo.getFullName());
-        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUserLogin())) {
-            mAdapter.enableEditAccess();
-            mAccessLevel = Repository.AccessLevel.ADMIN;
-            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
-        } else {
-            mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
-                @Override
-                public void accessCheckComplete(Repository.AccessLevel level) {
-                    Log.i(TAG, "accessCheckComplete: Access " + level);
-                    mAccessLevel = level;
-                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                        mAdapter.enableEditAccess();
-                        findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
-                    }
-//                    if(canAccess) mAdapter.enableEditAccess();
-//                    Toast.makeText(RepoActivity.this,
-//                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
-//                            Toast.LENGTH_SHORT)
-//                            .show();
-                }
-
-                @Override
-                public void accessCheckError(APIHandler.APIError error) {
-                    mAccessLevel = Repository.AccessLevel.NONE;
-                }
-            }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
-        }
-    }
-
-    @Override
-    public void repoLoadError(APIHandler.APIError error) {
-
     }
 
     @Override

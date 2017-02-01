@@ -24,6 +24,7 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
@@ -33,6 +34,8 @@ import com.tpb.projects.data.models.Project;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import okhttp3.Response;
 
 /**
  * Created by theo on 18/12/16.
@@ -588,6 +591,49 @@ public class Editor extends APIHandler {
 
     }
 
+    public void starRepo(StarChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .addHeaders("Content-Length", "0")
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            if(listener != null) listener.starStatusChanged(true);
+                        } else {
+                            if(listener != null) listener.starStatusChanged(false);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.starStatusChanged(false);
+                    }
+                });
+    }
+
+    public void unstarRepo(StarChangeListener listener, String fullRepoName) {
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            if(listener != null) listener.starStatusChanged(false);
+                        } else {
+                            if(listener != null) listener.starStatusChanged(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.starStatusChanged(true);
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -719,6 +765,12 @@ public class Editor extends APIHandler {
         void commentDeleted();
 
         void commentDeletionError(APIError error);
+
+    }
+
+    public interface StarChangeListener {
+
+        void starStatusChanged(boolean isStarred);
 
     }
 
