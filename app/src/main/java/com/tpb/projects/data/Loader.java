@@ -610,6 +610,54 @@ public class Loader extends APIHandler {
                 });
     }
 
+    public void checkIfStarred(StarCheckListener listener, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.i(TAG, "onResponse: Check if starred: "+ response.toString());
+                        if(response.code() == 204) {
+                            if(listener != null) listener.starCheckComplete(true);
+                        } else if(response.code() == 404) {
+                            if(listener != null) listener.starCheckComplete(false);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.starCheckComplete(false);
+                    }
+                });
+    }
+
+    public void checkIfWatched(WatchCheckListener listener, String fullRepoName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
+                .addHeaders(API_AUTH_HEADERS)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Subscription check " + response.toString());
+                        try {
+                            if(response.has("subscribed")) {
+                                if(listener != null) listener.watchCheckComplete(response.getBoolean("subscribed"));
+                            } else {
+                                if(listener != null) listener.watchCheckComplete(false);
+                            }
+                        } catch(JSONException jse) {}
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.watchCheckComplete(false);
+                    }
+                });
+    }
+
     public void renderMarkDown(MarkDownRenderLoader loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
@@ -623,12 +671,12 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(String response) {
                         Log.i(TAG, "onResponse: Markdown: " + response);
-                        loader.rendered(response);
+                        if(loader != null) loader.rendered(response);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-
+                        if(loader != null) loader.renderError(parseError(anError));
                     }
                 });
     }
@@ -648,12 +696,12 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(String response) {
                         Log.i(TAG, "onResponse: Markdown: " + response);
-                        loader.rendered(response);
+                        if(loader != null) loader.rendered(response);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-
+                        if(loader != null) loader.renderError(parseError(anError));
                     }
                 });
     }
@@ -781,6 +829,18 @@ public class Loader extends APIHandler {
         void rendered(String html);
 
         void renderError(APIError error);
+
+    }
+
+    public interface StarCheckListener {
+
+        void starCheckComplete(boolean isStarred);
+
+    }
+
+    public interface WatchCheckListener {
+
+        void watchCheckComplete(boolean isWatching);
 
     }
 

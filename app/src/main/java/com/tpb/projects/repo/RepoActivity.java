@@ -105,8 +105,11 @@ public class RepoActivity extends AppCompatActivity implements
 
     private ProjectAdapter mAdapter;
     private Loader mLoader;
+    private Editor mEditor;
     private Repository mRepo;
     private Repository.AccessLevel mAccessLevel;
+    private boolean mHasStarredRepo = false;
+    private boolean mIsWatchingRepo = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,6 +141,7 @@ public class RepoActivity extends AppCompatActivity implements
             dialog.show(getSupportFragmentManager(), TAG);
         });
         mLoader = new Loader(this);
+        mEditor = new Editor(this);
         mRefresher.setOnRefreshListener(() -> {
             if(mRepo != null) {
                 mAdapter.clearProjects();
@@ -192,107 +196,45 @@ public class RepoActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void openProject(Project project, View name) {
-        final Intent i = new Intent(RepoActivity.this, ProjectActivity.class);
-        i.putExtra(getString(R.string.parcel_project), project);
-        i.putExtra(getString(R.string.intent_access_level), mAccessLevel);
-        startActivity(i,
-                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        this,
-                        name,
-                        getString(R.string.transition_title)
-                ).toBundle()
-        );
-    }
+    @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
+    void toggleStar() {
+        final Editor.StarChangeListener listener = isStarred -> {
+            mHasStarredRepo = isStarred;
+            if(isStarred) {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+            }
+        };
 
-    @Override
-    public void editProject(Project project) {
-        final ProjectDialog dialog = new ProjectDialog();
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(getString(R.string.parcel_project), project);
-        dialog.setArguments(bundle);
-        dialog.setListener(this);
-        dialog.show(getSupportFragmentManager(), TAG);
-    }
-
-    @Override
-    public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
-        Log.i(TAG, "deleteProject: Deleting project");
-        final Dialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.text_delete_project)
-                .setMessage(R.string.text_delete_project_warning)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Editor(RepoActivity.this).deleteProject(new Editor.ProjectDeletionListener() {
-                    @Override
-                    public void projectDeleted(Project project1) {
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-                        listener.projectDeleted(project1);
-                    }
-
-                    @Override
-                    public void projectDeletionError(APIHandler.APIError error) {
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-                    }
-                }, project))
-                .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
-
-                }).create();
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.show();
-    }
-
-    @Override
-    public void projectEditDone(Project project, boolean isNewProject) {
-        if(isNewProject) {
-            new Editor(this).createProject(this, project, mRepo.getFullName());
+        if(mHasStarredRepo) {
+            mEditor.unstarRepo(listener, mRepo.getFullName());
         } else {
-            new Editor(this).editProject(new Editor.ProjectEditListener() {
-                @Override
-                public void projectEdited(Project project) {
-                    Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
-                    mAdapter.updateProject(project);
-
-                    final Bundle bundle = new Bundle();
-                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
-                }
-
-                @Override
-                public void projectEditError(APIHandler.APIError error) {
-                    final Bundle bundle = new Bundle();
-                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
-                }
-            }, project);
+            mEditor.starRepo(listener, mRepo.getFullName());
         }
     }
 
-    @Override
-    public void projectEditCancelled() {
-
+    @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
+    void toggleWatch() {
+        final Editor.WatchChangeListener listener = isWatched -> {
+            mIsWatchingRepo = isWatched;
+            if(isWatched) {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
+                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+            }
+        };
+        if(mIsWatchingRepo) {
+            mEditor.unwatchRepo(listener, mRepo.getFullName());
+        } else {
+            mEditor.watchRepo(listener, mRepo.getFullName());
+        }
     }
 
-    @Override
-    public void projectCreated(Project project) {
-        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
-        mAdapter.addProject(project);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-
-    }
-
-    @Override
-    public void projectCreationError(APIHandler.APIError error) {
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-    }
 
     @Override
     public void repoLoaded(Repository repo) {
@@ -340,11 +282,129 @@ public class RepoActivity extends AppCompatActivity implements
                 }
             }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
         }
+        mLoader.checkIfStarred(isStarred -> {
+            mHasStarredRepo = isStarred;
+            if(isStarred) {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+            }
+        }, mRepo.getFullName());
+        mLoader.checkIfWatched(isWatching -> {
+            mIsWatchingRepo = isWatching;
+            if(isWatching) {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+            } else {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+            }
+        }, mRepo.getFullName());
     }
 
     @Override
     public void repoLoadError(APIHandler.APIError error) {
 
+    }
+
+    @Override
+    public void openProject(Project project, View name) {
+        final Intent i = new Intent(RepoActivity.this, ProjectActivity.class);
+        i.putExtra(getString(R.string.parcel_project), project);
+        i.putExtra(getString(R.string.intent_access_level), mAccessLevel);
+        startActivity(i,
+                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        this,
+                        name,
+                        getString(R.string.transition_title)
+                ).toBundle()
+        );
+    }
+
+    @Override
+    public void editProject(Project project) {
+        final ProjectDialog dialog = new ProjectDialog();
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.parcel_project), project);
+        dialog.setArguments(bundle);
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), TAG);
+    }
+
+    @Override
+    public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
+        Log.i(TAG, "deleteProject: Deleting project");
+        final Dialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.text_delete_project)
+                .setMessage(R.string.text_delete_project_warning)
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.ProjectDeletionListener() {
+                    @Override
+                    public void projectDeleted(Project project1) {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
+                        listener.projectDeleted(project1);
+                    }
+
+                    @Override
+                    public void projectDeletionError(APIHandler.APIError error) {
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
+                    }
+                }, project))
+                .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
+
+                }).create();
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
+    }
+
+    @Override
+    public void projectEditDone(Project project, boolean isNewProject) {
+        if(isNewProject) {
+            mEditor.createProject(this, project, mRepo.getFullName());
+        } else {
+            mEditor.editProject(new Editor.ProjectEditListener() {
+                @Override
+                public void projectEdited(Project project) {
+                    Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
+                    mAdapter.updateProject(project);
+
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
+                }
+
+                @Override
+                public void projectEditError(APIHandler.APIError error) {
+                    final Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                    mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
+                }
+            }, project);
+        }
+    }
+
+    @Override
+    public void projectEditCancelled() {
+
+    }
+
+    @Override
+    public void projectCreated(Project project) {
+        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
+        mAdapter.addProject(project);
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+
+    }
+
+    @Override
+    public void projectCreationError(APIHandler.APIError error) {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
     }
 
     @Override

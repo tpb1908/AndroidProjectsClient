@@ -24,6 +24,7 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
@@ -33,6 +34,8 @@ import com.tpb.projects.data.models.Project;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import okhttp3.Response;
 
 /**
  * Created by theo on 18/12/16.
@@ -588,6 +591,99 @@ public class Editor extends APIHandler {
 
     }
 
+    public void starRepo(StarChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .addHeaders("Content-Length", "0")
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            if(listener != null) listener.starStatusChanged(true);
+                        } else {
+                            if(listener != null) listener.starStatusChanged(false);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.starStatusChanged(false);
+                    }
+                });
+    }
+
+    public void unstarRepo(StarChangeListener listener, String fullRepoName) {
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            if(listener != null) listener.starStatusChanged(false);
+                        } else {
+                            if(listener != null) listener.starStatusChanged(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.starStatusChanged(true);
+                    }
+                });
+    }
+
+    public void watchRepo(WatchChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
+                .addHeaders(API_AUTH_HEADERS)
+                .addPathParameter("subscribed", "true")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Subscription change " + response.toString());
+                        try {
+                            if(response.has("subscribed")) {
+                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                            } else {
+                                if(listener != null) listener.watchStatusChanged(false);
+                            }
+                        } catch(JSONException jse) {}
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.watchStatusChanged(false);
+                    }
+                });
+    }
+
+    public void unwatchRepo(WatchChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
+                .addHeaders(API_AUTH_HEADERS)
+                .addPathParameter("subscribed", "false")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Subscription change " + response.toString());
+                        try {
+                            if(response.has("subscribed")) {
+                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                            } else {
+                                if(listener != null) listener.watchStatusChanged(true);
+                            }
+                        } catch(JSONException jse) {}
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.watchStatusChanged(true);
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -719,6 +815,18 @@ public class Editor extends APIHandler {
         void commentDeleted();
 
         void commentDeletionError(APIError error);
+
+    }
+
+    public interface StarChangeListener {
+
+        void starStatusChanged(boolean isStarred);
+
+    }
+
+    public interface WatchChangeListener {
+
+        void watchStatusChanged(boolean isWatched);
 
     }
 
