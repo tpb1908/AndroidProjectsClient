@@ -105,6 +105,7 @@ public class RepoActivity extends AppCompatActivity implements
 
     private ProjectAdapter mAdapter;
     private Loader mLoader;
+    private Editor mEditor;
     private Repository mRepo;
     private Repository.AccessLevel mAccessLevel;
     private boolean mHasStarredRepo = false;
@@ -140,6 +141,7 @@ public class RepoActivity extends AppCompatActivity implements
             dialog.show(getSupportFragmentManager(), TAG);
         });
         mLoader = new Loader(this);
+        mEditor = new Editor(this);
         mRefresher.setOnRefreshListener(() -> {
             if(mRepo != null) {
                 mAdapter.clearProjects();
@@ -196,12 +198,41 @@ public class RepoActivity extends AppCompatActivity implements
 
     @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
     void toggleStar() {
+        final Editor.StarChangeListener listener = isStarred -> {
+            mHasStarredRepo = isStarred;
+            if(isStarred) {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+            }
+        };
 
+        if(mHasStarredRepo) {
+            mEditor.unstarRepo(listener, mRepo.getFullName());
+        } else {
+            mEditor.starRepo(listener, mRepo.getFullName());
+        }
     }
 
     @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
     void toggleWatch() {
-
+        final Editor.WatchChangeListener listener = isWatched -> {
+            mIsWatchingRepo = isWatched;
+            if(isWatched) {
+                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
+            } else {
+                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
+                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+            }
+        };
+        if(mIsWatchingRepo) {
+            mEditor.unwatchRepo(listener, mRepo.getFullName());
+        } else {
+            mEditor.watchRepo(listener, mRepo.getFullName());
+        }
     }
 
 
@@ -304,7 +335,7 @@ public class RepoActivity extends AppCompatActivity implements
         final Dialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.text_delete_project)
                 .setMessage(R.string.text_delete_project_warning)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> new Editor(RepoActivity.this).deleteProject(new Editor.ProjectDeletionListener() {
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.ProjectDeletionListener() {
                     @Override
                     public void projectDeleted(Project project1) {
                         final Bundle bundle = new Bundle();
@@ -330,9 +361,9 @@ public class RepoActivity extends AppCompatActivity implements
     @Override
     public void projectEditDone(Project project, boolean isNewProject) {
         if(isNewProject) {
-            new Editor(this).createProject(this, project, mRepo.getFullName());
+            mEditor.createProject(this, project, mRepo.getFullName());
         } else {
-            new Editor(this).editProject(new Editor.ProjectEditListener() {
+            mEditor.editProject(new Editor.ProjectEditListener() {
                 @Override
                 public void projectEdited(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();

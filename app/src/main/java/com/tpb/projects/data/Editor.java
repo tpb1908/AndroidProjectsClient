@@ -634,6 +634,56 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void watchRepo(WatchChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
+                .addHeaders(API_AUTH_HEADERS)
+                .addPathParameter("subscribed", "true")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Subscription change " + response.toString());
+                        try {
+                            if(response.has("subscribed")) {
+                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                            } else {
+                                if(listener != null) listener.watchStatusChanged(false);
+                            }
+                        } catch(JSONException jse) {}
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.watchStatusChanged(false);
+                    }
+                });
+    }
+
+    public void unwatchRepo(WatchChangeListener listener, String fullRepoName) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
+                .addHeaders(API_AUTH_HEADERS)
+                .addPathParameter("subscribed", "false")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Subscription change " + response.toString());
+                        try {
+                            if(response.has("subscribed")) {
+                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                            } else {
+                                if(listener != null) listener.watchStatusChanged(true);
+                            }
+                        } catch(JSONException jse) {}
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.watchStatusChanged(true);
+                    }
+                });
+    }
+
     public interface ProjectCreationListener {
 
         void projectCreated(Project project);
@@ -771,6 +821,12 @@ public class Editor extends APIHandler {
     public interface StarChangeListener {
 
         void starStatusChanged(boolean isStarred);
+
+    }
+
+    public interface WatchChangeListener {
+
+        void watchStatusChanged(boolean isWatched);
 
     }
 
