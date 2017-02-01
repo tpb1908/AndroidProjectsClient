@@ -259,8 +259,6 @@ public class Repository extends DataModel implements Parcelable {
                 '}';
     }
 
-
-
     public enum AccessLevel {
 
         ADMIN, WRITE, READ, NONE

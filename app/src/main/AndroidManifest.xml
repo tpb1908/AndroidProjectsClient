@@ -67,7 +67,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".issues.IssuesActivity" />
+        <activity android:name=".issues.IssuesActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
 
         <activity android:name=".data.SettingsActivity"/>
 
