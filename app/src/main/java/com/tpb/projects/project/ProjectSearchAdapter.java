@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
@@ -87,17 +86,16 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         final int dataPos = data.indexOf(data.get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(Data.parseMD(data.get(dataPos).getIssue().getTitle()));
+                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " "  +  Data.parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
-                final String line = data.get(dataPos).getNote().substring(0, Math.min(data.get(dataPos).getNote().indexOf("\n"), data.get(dataPos).getNote().length()));
-                parseCache[dataPos] = Html.fromHtml(Data.parseMD(line));
+                parseCache[dataPos] = Html.fromHtml(Data.parseMD(data.get(dataPos).getNote()));
             }
         }
         if(data.get(pos).hasIssue()) {
-            ((ImageView) view.findViewById(R.id.suggestion_image)).setImageResource(data.get(pos).getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(pos).getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
-            ((ImageView) view.findViewById(R.id.suggestion_image)).setImageDrawable(null);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         }
     }

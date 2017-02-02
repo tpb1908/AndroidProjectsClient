@@ -17,19 +17,11 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:layout_margin="8dp"
               android:padding="8dp">
-
-    <ImageView
-        android:id="@+id/suggestion_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_gravity="center_vertical"/>
 
     <TextView
         android:id="@+id/suggestion_text"
@@ -39,6 +31,7 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:layout_gravity="center_vertical"
+        android:drawablePadding="4dp"
         android:textAppearance="@android:style/TextAppearance.Material.Widget.TextView.SpinnerItem"/>
 
 </LinearLayout>
