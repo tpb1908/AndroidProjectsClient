@@ -18,7 +18,6 @@
 package com.tpb.projects.project;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -28,8 +27,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.util.Data;
 
@@ -45,13 +46,11 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private Spanned[] parseCache;
     private ArrayList<Card> filtered;
     private ArrayFilter mFilter;
-    private int mRes;
 
-    public ProjectSearchAdapter(Context context, @LayoutRes int res, @NonNull ArrayList<Card> data) {
-        super(context, res, data);
+    public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
+        super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
         parseCache = new Spanned[data.size()];
-        mRes = res;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(mRes, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_search_suggestion, parent, false);
         }
         bindView(position, convertView);
         return convertView;
@@ -95,9 +94,11 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
             }
         }
         if(data.get(pos).hasIssue()) {
-            ((TextView) view.findViewById(android.R.id.text1)).setText(parseCache[dataPos]);
+            ((ImageView) view.findViewById(R.id.suggestion_image)).setImageResource(data.get(pos).getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
-            ((TextView) view.findViewById(android.R.id.text1)).setText(parseCache[dataPos]);
+            ((ImageView) view.findViewById(R.id.suggestion_image)).setImageDrawable(null);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         }
     }
 

@@ -654,7 +654,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             case R.id.menu_action_search:
                 final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
                 searchSrc.setThreshold(1);
-                searchSrc.setAdapter(new ProjectSearchAdapter(this, android.R.layout.simple_spinner_dropdown_item, mAdapter.getCurrentFragment().getCards()));
+                searchSrc.setAdapter(new ProjectSearchAdapter(this, mAdapter.getCurrentFragment().getCards()));
                 searchSrc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
