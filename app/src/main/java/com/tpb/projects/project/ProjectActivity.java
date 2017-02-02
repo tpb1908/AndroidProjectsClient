@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -590,7 +591,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             mSearchView = (SearchView) searchItem.getActionView();
         }
         if(mSearchView != null) {
-            mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
             mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
@@ -651,6 +651,16 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 });
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
+            case R.id.menu_action_search:
+                final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+                searchSrc.setThreshold(1);
+                searchSrc.setAdapter(new ProjectSearchAdapter(this, android.R.layout.simple_spinner_dropdown_item, mAdapter.getCurrentFragment().getCards()));
+                searchSrc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    }
+                });
         }
 
 
