@@ -214,7 +214,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mMenu.hideMenuButton(false);
                 }
                 for(int i = 0; i < mAdapter.getCount(); i++) {
-                    mAdapter.getExistingFragment(i).setAccessLevel(mAccessLevel);
+                    if(mAdapter.getExistingFragment(i) != null) {
+                        mAdapter.getExistingFragment(i).setAccessLevel(mAccessLevel);
+                    }
                 }
             }
 
