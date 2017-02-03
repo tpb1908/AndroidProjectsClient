@@ -30,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -106,8 +107,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         mEditor = new Editor(this);
 
         mAdapter = new IssuesAdapter(this);
-
-        mRecycler.setLayoutManager(new LinearLayoutManager(this));
+        
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecycler.setLayoutManager(layoutManager);
         mRecycler.setAdapter(mAdapter);
         
         mRefresher.setOnRefreshListener(this::refresh);
@@ -133,6 +135,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                                     mFab.hide();
                                 } else if(dy < -10) {
                                     mFab.show();
+                                }
+                                if((layoutManager.getChildCount() + layoutManager.findFirstVisibleItemPosition()) >= layoutManager.getItemCount()) {
+                                    Log.i(TAG, "onScrolled: Scrolled to bottom");
                                 }
                             }
                         });

@@ -410,10 +410,14 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName) {
-        loadIssues(loader, repoFullName, Issue.IssueState.OPEN, null, null);
+        loadIssues(loader, repoFullName, Issue.IssueState.OPEN, null, null, 1);
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels) {
+        loadIssues(loader, repoFullName, state, assignee, labels, 1);
+    }
+
+    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {
@@ -432,7 +436,7 @@ public class Loader extends APIHandler {
             }
         }
         Log.i(TAG, "loadIssues: Params: " + params.toString());
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .addQueryParameter(params)
                 .build()
