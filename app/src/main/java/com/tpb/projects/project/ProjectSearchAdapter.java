@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.util.FuzzyStringSearcher;
 
 import java.util.ArrayList;
 
@@ -45,22 +46,33 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private Spanned[] parseCache;
     private ArrayList<Card> filtered;
     private ArrayFilter mFilter;
+    private FuzzyStringSearcher mSearcher;
 
     public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
         super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
+        filtered = new ArrayList<>();
         parseCache = new Spanned[data.size()];
+        final ArrayList<String> strings = new ArrayList<>();
+        for(Card c : data) {
+            if(c.hasIssue()) {
+                strings.add(c.getIssue().getTitle() + "\n" + c.getIssue().getBody());
+            } else {
+                strings.add(c.getNote());
+            }
+        }
+        mSearcher = new FuzzyStringSearcher(strings);
     }
 
     @Override
     public long getItemId(int position) {
-        return data.get(position).getId();
+        return filtered.get(position).getId();
     }
 
     @Nullable
     @Override
     public Card getItem(int position) {
-        return data.get(position);
+        return filtered.get(position);
     }
 
     @NonNull
@@ -83,7 +95,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
     }
 
     private void bindView(int pos, View view) {
-        final int dataPos = data.indexOf(data.get(pos));
+        final int dataPos = data.indexOf(filtered.get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
                 parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " "  +  Data.parseMD(data.get(dataPos).getIssue().getTitle()));
@@ -102,7 +114,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
 
     @Override
     public int getCount() {
-        return data.size();
+        return filtered.size();
     }
 
     private class ArrayFilter extends Filter {
@@ -119,9 +131,13 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             final FilterResults results = new FilterResults();
-            results.values = data;
-            results.count = data.size();
-
+            final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
+            filtered.clear();
+            for(int i : positions) {
+                filtered.add(data.get(i));
+            }
+            results.values = filtered;
+            results.count = filtered.size();
 
             return results;
         }
