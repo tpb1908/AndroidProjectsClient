@@ -134,7 +134,7 @@ public class Data {
                 builder.setLength(builder.length() - 2);
                 builder.append("──────────\n");
 
-            } else if(cs[i] == '#'  && (p == ' '  || p == '\n')) {
+            } else if(cs[i] == '#'  && (p == ' '  || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
             } else if (pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
                 if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {

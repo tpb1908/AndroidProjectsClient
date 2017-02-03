@@ -18,6 +18,7 @@
 package com.tpb.projects.project;
 
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,6 +32,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -92,6 +94,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_add_card) FloatingActionButton mAddCard;
     @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
     @BindView(R.id.project_add_issue) FloatingActionButton mAddIssue;
+    private SearchView mSearchView;
 
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
@@ -579,7 +582,30 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_search, menu);
+        final MenuItem searchItem = menu.findItem(R.id.menu_action_search);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        if(searchItem != null) {
+            mSearchView = (SearchView) searchItem.getActionView();
+        }
+        if(mSearchView != null) {
+
+            mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Log.i(TAG, "onQueryTextSubmit: " + query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Log.i(TAG, "onQueryTextChange: " + newText);
+                    return false;
+                }
+            });
+        }
+
         return true;
     }
 
@@ -624,6 +650,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 });
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
+            case R.id.menu_action_search:
+                if(mAdapter.getCount() > 0) {
+                    final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+                    searchSrc.setThreshold(1);
+                    final ProjectSearchAdapter searchAdapter = new ProjectSearchAdapter(this, mAdapter.getAllCards());
+                    searchSrc.setAdapter(searchAdapter);
+                    searchSrc.setOnItemClickListener((adapterView, view, i, l) -> mAdapter.moveTo(searchAdapter.getItem(i)));
+                }
         }
 
 
@@ -679,6 +713,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             return -1;
         }
 
+        ArrayList<Card> getAllCards() {
+            final ArrayList<Card> cards = new ArrayList<>();
+            for(int i = 0; i < getCount(); i++) {
+                cards.addAll(getExistingFragment(i).getCards());
+            }
+            return cards;
+        }
+
+        void moveTo(Card card) {
+            for(int i = 0; i < getCount(); i++) {
+                if(getExistingFragment(i).attemptMoveTo(card)) {
+                    mColumnPager.setCurrentItem(i, true);
+                    break;
+                }
+            }
+        }
+
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
             return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
@@ -686,7 +737,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mAccessLevel,
                     columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
         }
-
 
     }
 

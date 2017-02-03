@@ -17,6 +17,8 @@
 
 package com.tpb.projects.project;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -53,9 +55,9 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
+import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
-import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -87,6 +89,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     @BindView(R.id.column_name) EditText mName;
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
+    @BindView(R.id.column_scrollview) NestedScrollView mNestedScroller;
     @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
 
     ProjectActivity mParent;
@@ -325,6 +328,26 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
             }
         }, mColumn.getId(), card.getNote());
+    }
+
+    boolean attemptMoveTo(Card card) {
+        final int index = mAdapter.indexOf(card.getId());
+        if(index == -1) return false;
+
+        mRecycler.getLayoutManager().smoothScrollToPosition(mRecycler, null, index);
+        final View view = mRecycler.getChildAt(index);
+        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                view,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                getContext().getResources().getColor(R.color.md_grey_800),
+                getContext().getResources().getColor(R.color.colorAccent));
+        colorFade.setDuration(300);
+        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+        colorFade.setRepeatCount(1);
+        colorFade.start();
+
+        return true;
     }
 
     ArrayList<Card> getCards() {
