@@ -55,8 +55,9 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         parseCache = new Spanned[data.size()];
         final ArrayList<String> strings = new ArrayList<>();
         for(Card c : data) {
+
             if(c.hasIssue()) {
-                strings.add(c.getIssue().getTitle() + "\n" + c.getIssue().getBody());
+                strings.add("#" + c.getIssue().getNumber() + "\n" + c.getIssue().getTitle() + "\n" + c.getIssue().getBody());
             } else {
                 strings.add(c.getNote());
             }
