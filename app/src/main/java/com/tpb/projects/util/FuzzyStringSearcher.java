@@ -59,7 +59,22 @@ public class FuzzyStringSearcher {
     private ArrayList<String> items;
     private int[] queryMask = new int[65536];
 
-    public FuzzyStringSearcher(ArrayList<String> items) {
+    private static FuzzyStringSearcher instance;
+
+    private FuzzyStringSearcher(ArrayList<String> items) {
+        this.items = items;
+    }
+
+    public static FuzzyStringSearcher getInstance(ArrayList<String> items) {
+        if(instance == null) {
+            instance = new FuzzyStringSearcher(items);
+        } else {
+            instance.setItems(items);
+        }
+        return instance;
+    }
+
+    public void setItems(ArrayList<String> items) {
         this.items = items;
     }
 

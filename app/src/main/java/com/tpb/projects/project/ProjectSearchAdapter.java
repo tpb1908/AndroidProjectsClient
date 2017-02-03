@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
  */
 
 public class ProjectSearchAdapter extends ArrayAdapter<Card> {
+    private static final String TAG = ProjectSearchAdapter.class.getSimpleName();
 
     private ArrayList<Card> data;
     private Spanned[] parseCache;
@@ -62,8 +64,9 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
                 strings.add(c.getNote());
             }
         }
-        mSearcher = new FuzzyStringSearcher(strings);
+        mSearcher = FuzzyStringSearcher.getInstance(strings);
     }
+
 
     @Override
     public long getItemId(int position) {
@@ -101,7 +104,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
             if(data.get(dataPos).hasIssue()) {
                 parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " "  +  Data.parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
-                parseCache[dataPos] = Html.fromHtml(Data.parseMD(data.get(dataPos).getNote()));
+                parseCache[dataPos] = Html.fromHtml(Data.formatMD(data.get(dataPos).getNote(), null));
             }
         }
         if(data.get(pos).hasIssue()) {
@@ -109,6 +112,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
             ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         }
     }
@@ -122,10 +126,11 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            filtered = (ArrayList<Card>) filterResults.values;
             if(filterResults.count > 0) {
                 notifyDataSetChanged();
             } else {
-                notifyDataSetChanged();
+                notifyDataSetInvalidated();
             }
         }
 
@@ -133,12 +138,13 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         protected FilterResults performFiltering(CharSequence charSequence) {
             final FilterResults results = new FilterResults();
             final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
-            filtered.clear();
+            final ArrayList<Card> items = new ArrayList<>(positions.size());
+
             for(int i : positions) {
-                filtered.add(data.get(i));
+                items.add(data.get(i));
             }
-            results.values = filtered;
-            results.count = filtered.size();
+            results.values = items;
+            results.count = items.size();
 
             return results;
         }

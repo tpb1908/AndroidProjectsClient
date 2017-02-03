@@ -87,6 +87,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     @BindView(R.id.column_name) EditText mName;
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
+    @BindView(R.id.column_scrollview) NestedScrollView mNestedScroller;
     @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
 
     ProjectActivity mParent;
@@ -325,6 +326,15 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
             }
         }, mColumn.getId(), card.getNote());
+    }
+
+    boolean attemptMoveTo(Card card) {
+        final int index = mAdapter.indexOf(card.getId());
+        if(index == -1) return false;
+
+        mRecycler.getLayoutManager().smoothScrollToPosition(mRecycler, null, index);
+
+        return true;
     }
 
     ArrayList<Card> getCards() {

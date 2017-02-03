@@ -42,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -655,13 +654,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(mAdapter.getCount() > 0) {
                     final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
                     searchSrc.setThreshold(1);
-                    searchSrc.setAdapter(new ProjectSearchAdapter(this, mAdapter.getCurrentFragment().getCards()));
-                    searchSrc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                        }
-                    });
+                    final ProjectSearchAdapter searchAdapter = new ProjectSearchAdapter(this, mAdapter.getAllCards());
+                    searchSrc.setAdapter(searchAdapter);
+                    searchSrc.setOnItemClickListener((adapterView, view, i, l) -> mAdapter.moveTo(searchAdapter.getItem(i)));
                 }
         }
 
@@ -718,6 +713,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             return -1;
         }
 
+        ArrayList<Card> getAllCards() {
+            final ArrayList<Card> cards = new ArrayList<>();
+            for(int i = 0; i < getCount(); i++) {
+                cards.addAll(getExistingFragment(i).getCards());
+            }
+            return cards;
+        }
+
+        void moveTo(Card card) {
+            for(int i = 0; i < getCount(); i++) {
+                if(getExistingFragment(i).attemptMoveTo(card)) {
+                    mColumnPager.setCurrentItem(i, true);
+                    break;
+                }
+            }
+        }
+
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
             return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
@@ -725,7 +737,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mAccessLevel,
                     columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
         }
-
 
     }
 
