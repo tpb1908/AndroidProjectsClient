@@ -20,6 +20,7 @@ package com.tpb.projects.issues;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -37,7 +38,6 @@ import com.tpb.projects.util.Data;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,8 +50,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private static final String TAG = IssuesAdapter.class.getSimpleName();
 
     private IssuesActivity mParent;
-    private ArrayList<Issue> mIssues = new ArrayList<>();
-    private String[] mParseCache;
+    private ArrayList<Pair<Issue, String>> mIssues = new ArrayList<>();
 
 
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
@@ -65,27 +64,42 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     void loadIssues(Issue[] issues) {
-        mIssues = new ArrayList<>(Arrays.asList(issues));
-        mParseCache = new String[issues.length];
+        mIssues.clear();
+        for(Issue i : issues) {
+            mIssues.add(new Pair<>(i, null));
+        }
         notifyDataSetChanged();
     }
 
     void addIssue(Issue issue) {
-        mIssues.add(0, issue);
-        mParseCache[0] = null;
+        mIssues.add(0, new Pair<>(issue, null));
         notifyItemInserted(0);
+    }
+
+    void addIssues(Issue[] newIssues) {
+        final int oldSize = mIssues.size();
+        for(Issue i : newIssues) {
+            mIssues.add(new Pair<>(i, null));
+        }
+        notifyItemRangeInserted(oldSize, mIssues.size());
     }
 
     void clear() {
         mIssues.clear();
-        Arrays.fill(mParseCache, null);
         notifyDataSetChanged();
     }
 
     void updateIssue(Issue issue) {
-        final int index = mIssues.indexOf(issue);
+        int index = -1;
+        for(int i = 0; i < mIssues.size(); i++) {
+            if(mIssues.get(i).first.equals(issue)) {
+                index = i;
+                break;
+            }
+
+        }
         if(index != -1) {
-            mIssues.set(index, issue);
+            mIssues.set(index, new Pair<>(issue, null));
             notifyItemChanged(index);
         }
     }
@@ -97,8 +111,8 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        if(mParseCache[position] == null) {
-            final Issue issue = mIssues.get(position);
+        if(mIssues.get(position).second == null) {
+            final Issue issue = mIssues.get(position).first;
             final Context context = holder.itemView.getContext();
             holder.mIssueIcon.setVisibility(View.VISIBLE);
             holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
@@ -150,12 +164,12 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             }
             mParseHandler.post(() -> {
                 final String parsed = Data.parseMD(builder.toString());
-                mParseCache[position] = parsed;
+                mIssues.set(position, new Pair<>(issue, parsed));
                 holder.mContent.setHtml(parsed);
             });
 
         } else {
-            holder.mContent.setHtml(mParseCache[position]);
+            holder.mContent.setHtml(mIssues.get(position).second);
         }
     }
 
@@ -165,11 +179,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     private void openIssue(int pos) {
-        mParent.openIssue(mIssues.get(pos));
+        mParent.openIssue(mIssues.get(pos).first);
     }
 
     private void openMenu(View view, int pos) {
-        mParent.openMenu(view, mIssues.get(pos));
+        mParent.openMenu(view, mIssues.get(pos).first);
     }
 
     public class IssueHolder extends RecyclerView.ViewHolder {
