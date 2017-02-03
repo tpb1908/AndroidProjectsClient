@@ -20,6 +20,7 @@ package com.tpb.projects.util;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by theo on 03/02/17.
@@ -56,6 +57,7 @@ public class FuzzyStringSearcher {
     private static final String TAG = FuzzyStringSearcher.class.getSimpleName();
 
     private ArrayList<String> items;
+    private int[] queryMask = new int[65536];
 
     public FuzzyStringSearcher(ArrayList<String> items) {
         this.items = items;
@@ -77,8 +79,8 @@ public class FuzzyStringSearcher {
         int result = -1;
         int m = query.length();
         int[] R;
-        int[] queryMask = new int[128];
         int i, d;
+        Arrays.fill(queryMask, 0);
 
         if(query.isEmpty()) return 0;
         if(m > 31) return -1;
