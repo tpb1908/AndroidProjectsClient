@@ -127,7 +127,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final int w = rect.width();
         final int h = rect.height();
 
-        final int hnum = contribs.size() == 0 ? 52 : contribs.size() / 7; //The number of days to show horizontally
+        final int hnum = contribs.size() == 0 ? 52 : (int)Math.ceil(contribs.size() / 7d); //The number of days to show horizontally
 
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
@@ -146,10 +146,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
             int dow = getDayOfWeek(contribs.get(0).date) - 1;
             float y = (dow * (bd + m)) + tm + mth;
             gridY = y;
-
             for(ContributionsLoader.GitDay d : contribs) {
                 dayPainter.setColor(d.color);
-
                 canvas.drawRect(x, y, x + bd, y + bd, dayPainter);
                 dow = getDayOfWeek(d.date) - 1;
                 if(dow == 6) { //We just drew the last day of the week
@@ -178,12 +176,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
             }
         }
         if(shouldDisplayMonths) {
-            if(contribs.size() > 0) {
-                cal.setTimeInMillis(contribs.get(0).date);
-            } else {
-                cal.setTimeInMillis(System.currentTimeMillis());
-                cal.add(Calendar.MONTH, -12);
-            }
+            cal.setTimeInMillis(System.currentTimeMillis());
+            cal.add(Calendar.MONTH, -12);
             x = 0;
             for(int i = 0; i < 12; i++) {
                 final String month = getMonthName(cal.getTimeInMillis());
