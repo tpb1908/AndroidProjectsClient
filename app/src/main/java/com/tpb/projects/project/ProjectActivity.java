@@ -652,15 +652,17 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
             case R.id.menu_action_search:
-                final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-                searchSrc.setThreshold(1);
-                searchSrc.setAdapter(new ProjectSearchAdapter(this, mAdapter.getCurrentFragment().getCards()));
-                searchSrc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(mAdapter.getCount() > 0) {
+                    final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+                    searchSrc.setThreshold(1);
+                    searchSrc.setAdapter(new ProjectSearchAdapter(this, mAdapter.getCurrentFragment().getCards()));
+                    searchSrc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    }
-                });
+                        }
+                    });
+                }
         }
 
 
