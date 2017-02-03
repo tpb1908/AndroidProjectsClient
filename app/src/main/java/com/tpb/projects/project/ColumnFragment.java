@@ -17,6 +17,8 @@
 
 package com.tpb.projects.project;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -53,9 +55,9 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
+import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
-import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -333,6 +335,17 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         if(index == -1) return false;
 
         mRecycler.getLayoutManager().smoothScrollToPosition(mRecycler, null, index);
+        final View view = mRecycler.getChildAt(index);
+        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                view,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                getContext().getResources().getColor(R.color.md_grey_800),
+                getContext().getResources().getColor(R.color.colorAccent));
+        colorFade.setDuration(300);
+        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+        colorFade.setRepeatCount(1);
+        colorFade.start();
 
         return true;
     }
