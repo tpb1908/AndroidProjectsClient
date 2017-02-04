@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -346,6 +347,14 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         colorFade.setRepeatMode(ObjectAnimator.REVERSE);
         colorFade.setRepeatCount(1);
         colorFade.start();
+
+        //Initial height is the top cardview
+        int height = ((LinearLayout)mNestedScroller.getChildAt(0)).getChildAt(0).getHeight();
+        for(int i = 0; i < mRecycler.getChildCount() && i < index; i++) {
+            height += mRecycler.getChildAt(i).getHeight();
+        }
+        Log.i(TAG, "attemptMoveTo: Height of " + height);
+        mNestedScroller.scrollTo(0, height);
 
         return true;
     }

@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,7 +111,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
             ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
+            //Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         }
     }
@@ -137,15 +136,19 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             final FilterResults results = new FilterResults();
-            final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
-            final ArrayList<Card> items = new ArrayList<>(positions.size());
+            if(charSequence == null) {
+                results.values = null;
+                results.count = 0;
+            } else {
+                final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
+                final ArrayList<Card> items = new ArrayList<>(positions.size());
 
-            for(int i : positions) {
-                items.add(data.get(i));
+                for(int i : positions) {
+                    items.add(data.get(i));
+                }
+                results.values = items;
+                results.count = items.size();
             }
-            results.values = items;
-            results.count = items.size();
-
             return results;
         }
     }
