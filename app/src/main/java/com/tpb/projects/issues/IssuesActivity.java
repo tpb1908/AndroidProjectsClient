@@ -91,6 +91,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     private Repository.AccessLevel mAccessLevel;
     private String mRepoPath;
+    private int mPage = 1;
+    private boolean mMaxPageReached;
+    private boolean mIsLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,7 +119,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
             mRepoPath = getIntent().getExtras().getString(getString(R.string.intent_repo));
-            loadIssues();
+            loadIssues(true);
             mRefresher.setRefreshing(true);
 
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
@@ -126,21 +129,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     mAccessLevel = accessLevel;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
                         mFab.postDelayed(mFab::show, 300);
-
-                        mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
-                                if(dy > 10) {
-                                    mFab.hide();
-                                } else if(dy < -10) {
-                                    mFab.show();
-                                }
-                                if((layoutManager.getChildCount() + layoutManager.findFirstVisibleItemPosition()) >= layoutManager.getItemCount()) {
-                                    Log.i(TAG, "onScrolled: Scrolled to bottom");
-                                }
-                            }
-                        });
+                        enableScrollListener(mRecycler, layoutManager);
                     }
                 }
 
@@ -155,26 +144,63 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }
     }
 
-    private void loadIssues() {
+    private void enableScrollListener(RecyclerView recycler, LinearLayoutManager manager) {
+        recycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy > 10) {
+                    mFab.hide();
+                } else if(dy < -10) {
+                    mFab.show();
+                }
+                if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
+                    Log.i(TAG, "onScrolled: Scrolled to bottom");
+                    if(!mIsLoading && !mMaxPageReached) {
+                        mPage++;
+                        mRefresher.setRefreshing(true);
+                        loadIssues(false);
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadIssues(boolean resetPage) {
+        mIsLoading = true;
+        if(resetPage) {
+            mPage = 1;
+            mMaxPageReached = false;
+        }
         //TODO Add an option for all, and anything
         if(mAssigneeFilter == null || mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, null, mLabelsFilter);
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, null, mLabelsFilter, mPage);
         } else if(mAssigneeFilter.equals(getString(R.string.text_assignee_none))) {
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "none", mLabelsFilter);
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, "none", mLabelsFilter, mPage);
         } else {
-            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, mAssigneeFilter, mLabelsFilter);
+            mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, mAssigneeFilter, mLabelsFilter, mPage);
         }
     }
 
     private void refresh() {
         mAdapter.clear();
-        loadIssues();
+        loadIssues(true);
         mRefresher.setRefreshing(true);
     }
 
     @Override
     public void issuesLoaded(Issue[] issues) {
-        mAdapter.loadIssues(issues);
+        if(mPage == 1) {
+            mAdapter.loadIssues(issues);
+        } else {
+            if(issues.length > 0) {
+                mAdapter.addIssues(issues);
+            } else {
+                mMaxPageReached = true;
+            }
+        }
+        mIsLoading = false;
         mRefresher.setRefreshing(false);
     }
 
