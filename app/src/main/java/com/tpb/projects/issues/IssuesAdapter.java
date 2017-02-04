@@ -20,6 +20,7 @@ package com.tpb.projects.issues;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -58,9 +59,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         parseThread.start();
     }
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
+    private Handler mUiHandler;
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
+        mUiHandler = new Handler(Looper.getMainLooper());
     }
 
     void loadIssues(Issue[] issues) {
@@ -163,9 +166,9 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 final String parsed = Data.parseMD(builder.toString());
                 mParseCache.set(position, parsed);
                 //We can't just set content as the view may be off screen
-                Log.i(TAG, "onBindViewHolder: Completed parsing for " + position);
-                Log.i(TAG, "onBindViewHolder: Parsed: " + mIssues.get(position).toString());
-                holder.mContent.setHtml(parsed);
+                //Log.i(TAG, "onBindViewHolder: Completed parsing for " + position);
+                //Log.i(TAG, "onBindViewHolder: Parsed: " + mIssues.get(position).toString());
+                mUiHandler.post(() -> notifyItemChanged(position));
             });
         } else {
            // Log.i(TAG, "onBindViewHolder: Binding position " + position + " with\n" + mIssues.get(position).second);
