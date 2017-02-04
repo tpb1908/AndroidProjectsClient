@@ -183,9 +183,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     private void openIssue(int pos) {
-        Log.i(TAG, "openIssue: Opening issue " + mIssues.get(pos).toString());
-        Log.i(TAG, "openIssue: Parsed text " + mParseCache.get(pos));
-       // mParent.openIssue(mIssues.get(pos));
+        mParent.openIssue(mIssues.get(pos));
     }
 
     private void openMenu(View view, int pos) {
