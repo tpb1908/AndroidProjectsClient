@@ -55,7 +55,6 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
-import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.login.LoginActivity;
@@ -180,17 +179,6 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     }
                 });
             }
-            loader.loadEvents(new Loader.EventsLoader() {
-                @Override
-                public void eventsLoaded(Event[] events) {
-
-                }
-
-                @Override
-                public void eventsLoadError(APIHandler.APIError error) {
-
-                }
-            }, user);
 
             mUserName.setText(user);
             mContributions.loadUser(user);

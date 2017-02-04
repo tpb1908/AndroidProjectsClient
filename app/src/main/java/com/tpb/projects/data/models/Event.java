@@ -135,7 +135,8 @@ public class Event extends DataModel implements Parcelable {
         try {
             e.id = obj.getInt(ID);
             e.actor = User.parse(obj.getJSONObject(ACTOR));
-            e.event = GITEvent.valueOf(obj.getString(EVENT).toUpperCase());
+            if(obj.has(EVENT)) e.event = GITEvent.valueOf(obj.getString(EVENT).toUpperCase());
+
             try {
                 e.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {

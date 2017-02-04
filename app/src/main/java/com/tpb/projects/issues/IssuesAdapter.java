@@ -20,8 +20,10 @@ package com.tpb.projects.issues;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,6 @@ import com.tpb.projects.util.Data;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,41 +52,55 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     private IssuesActivity mParent;
     private ArrayList<Issue> mIssues = new ArrayList<>();
-    private String[] mParseCache;
-
+    private ArrayList<String> mParseCache = new ArrayList<>();
 
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
     static {
         parseThread.start();
     }
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
+    private Handler mUiHandler;
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
+        mUiHandler = new Handler(Looper.getMainLooper());
     }
 
     void loadIssues(Issue[] issues) {
-        mIssues = new ArrayList<>(Arrays.asList(issues));
-        mParseCache = new String[issues.length];
+        mIssues.clear();
+        mParseCache.clear();
+        for(Issue i : issues) {
+            mIssues.add(i);
+            mParseCache.add(null);
+        }
         notifyDataSetChanged();
     }
 
     void addIssue(Issue issue) {
         mIssues.add(0, issue);
-        mParseCache[0] = null;
+        mParseCache.add(0, null);
         notifyItemInserted(0);
+    }
+
+    void addIssues(Issue[] newIssues) {
+        final int oldSize = mIssues.size();
+        for(Issue i : newIssues) {
+            mIssues.add(i);
+            mParseCache.add(null);
+        }
+        notifyItemRangeInserted(oldSize, mIssues.size());
     }
 
     void clear() {
         mIssues.clear();
-        Arrays.fill(mParseCache, null);
         notifyDataSetChanged();
     }
 
     void updateIssue(Issue issue) {
-        final int index = mIssues.indexOf(issue);
+        int index = mIssues.indexOf(issue);
         if(index != -1) {
             mIssues.set(index, issue);
+            mParseCache.set(index, null);
             notifyItemChanged(index);
         }
     }
@@ -97,12 +112,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        if(mParseCache[position] == null) {
-            final Issue issue = mIssues.get(position);
+        final Issue issue = mIssues.get(position);
+        holder.mIssueIcon.setVisibility(View.VISIBLE);
+        holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        if(mParseCache.get(position) == null) {
             final Context context = holder.itemView.getContext();
-            holder.mIssueIcon.setVisibility(View.VISIBLE);
-            holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
             builder.append(issue.getTitle());
@@ -150,12 +164,16 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             }
             mParseHandler.post(() -> {
                 final String parsed = Data.parseMD(builder.toString());
-                mParseCache[position] = parsed;
-                holder.mContent.setHtml(parsed);
+                mParseCache.set(position, parsed);
+                //We can't just set content as the view may be off screen
+                //Log.i(TAG, "onBindViewHolder: Completed parsing for " + position);
+                //Log.i(TAG, "onBindViewHolder: Parsed: " + mIssues.get(position).toString());
+                mUiHandler.post(() -> notifyItemChanged(position));
             });
-
         } else {
-            holder.mContent.setHtml(mParseCache[position]);
+           // Log.i(TAG, "onBindViewHolder: Binding position " + position + " with\n" + mIssues.get(position).second);
+            holder.mContent.setHtml(mParseCache.get(position));
+            //TODO Replace with separate arraylists
         }
     }
 
