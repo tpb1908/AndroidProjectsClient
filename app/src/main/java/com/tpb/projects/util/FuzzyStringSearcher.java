@@ -80,11 +80,26 @@ public class FuzzyStringSearcher {
 
     public ArrayList<Integer> search(String query) {
         final ArrayList<Integer> positions = new ArrayList<>();
+        final ArrayList<Integer> ranks = new ArrayList<>();
         Log.i(TAG, "search: For " + query);
+        int index, rank;
         for(int i = 0; i < items.size(); i++) {
-            if(findIndex(items.get(i), query, 1) >= 0) {
-                Log.i(TAG, "search: Adding item " + items.get(i));
-                positions.add(i);
+            index = findIndex(items.get(i), query, 1);
+            if(index >= 0) {
+                rank = rank(index, query, items.get(i));
+                boolean added = false;
+                for(int j = 0; j < ranks.size(); j++) {
+                    if(rank > ranks.get(j)) {
+                        added = true;
+                        ranks.add(j, rank);
+                        positions.add(j, i);
+                        break;
+                    }
+                }
+                if(!added) {
+                    ranks.add(rank);
+                    positions.add(i);
+                }
             }
         }
         return positions;
@@ -95,18 +110,16 @@ public class FuzzyStringSearcher {
         int m = query.length();
         int[] R;
         int i, d;
-        Arrays.fill(queryMask, 0);
 
         if(query.isEmpty()) return 0;
         if(m > 31) return -1;
 
-        R = new int[(k + 1) * 32];
+        R = new int[k + 1];
         for(i = 0; i <= k; ++i) {
-            R[i] = ~1;
+            R[i] = ~1; //Bitwise complement of 1
         }
-        for(i = 0; i <= 127; ++i) {
-            queryMask[i] = ~0;
-        }
+        Arrays.fill(queryMask, ~0);
+
         for(i = 0; i < m; ++i) {
             queryMask[query.charAt(i)] &= ~(1 << i);
         }
@@ -122,12 +135,20 @@ public class FuzzyStringSearcher {
                 oldRd1 = tmp;
             }
 
-            if (0 == (R[k] & (1 << m))) {
+            if(0 == (R[k] & (1 << m))) {
                 result = (i - m) + 1;
                 break;
             }
         }
         return result;
+    }
+
+    private int rank(int pos, String query, String text) {
+        int rank = -pos;
+        for(int i = pos; i < text.length() && i < query.length(); i++) {
+            if(text.charAt(i) == query.charAt(i - pos)) rank++;
+        }
+        return rank;
     }
 
 }
