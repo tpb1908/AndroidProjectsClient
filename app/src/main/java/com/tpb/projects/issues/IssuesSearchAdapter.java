@@ -30,12 +30,12 @@ public class IssuesSearchAdapter extends ArrayAdapter<Issue> {
     private ArrayList<Issue> data;
     private ArrayFilter<Issue> mFilter;
     private Spanned[] parseCache;
-    private ArrayList<Issue> filtered;
     private FuzzyStringSearcher mSearcher;
 
     public IssuesSearchAdapter(Context context, @NonNull ArrayList<Issue> data) {
         super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
+        this.parseCache = new Spanned[data.size()];
         final ArrayList<String> strings = new ArrayList<>();
         String s;
         for(Issue i : data) {

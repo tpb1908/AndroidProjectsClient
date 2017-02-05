@@ -90,6 +90,10 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         notifyItemRangeInserted(oldSize, mIssues.size());
     }
 
+    ArrayList<Issue> getIssues() {
+        return mIssues;
+    }
+
     void clear() {
         mIssues.clear();
         notifyDataSetChanged();
@@ -102,6 +106,10 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mParseCache.set(index, null);
             notifyItemChanged(index);
         }
+    }
+
+    int indexOf(Issue issue) {
+        return mIssues.indexOf(issue);
     }
 
     @Override
