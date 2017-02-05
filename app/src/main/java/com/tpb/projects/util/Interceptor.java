@@ -82,6 +82,14 @@ public class Interceptor extends Activity {
                         final Intent p = new Intent(Interceptor.this, ProjectActivity.class);
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
+                        final String path = getIntent().getDataString();
+                        if(path.indexOf('#') >  path.indexOf(segments.get(3))) {
+                            try {
+                                final int cardId = Integer.parseInt(path.substring(path.indexOf('#') + 6));
+                                Log.i(TAG, "onCreate: " + cardId);
+                                p.putExtra(getString(R.string.intent_card_id), cardId);
+                            } catch(Exception ignored) {}
+                        }
                         startActivity(p);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
