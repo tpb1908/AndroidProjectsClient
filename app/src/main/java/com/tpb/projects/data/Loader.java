@@ -311,6 +311,7 @@ public class Loader extends APIHandler {
     public void loadColumns(ColumnsLoader loader, int projectId) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
+                .getResponseOnlyFromNetwork()
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -338,6 +339,7 @@ public class Loader extends APIHandler {
     public void loadCards(CardsLoader loader, int columnId) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
+                .getResponseOnlyFromNetwork()
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override

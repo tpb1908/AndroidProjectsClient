@@ -106,8 +106,8 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
                 parseCache[dataPos] = Html.fromHtml(Data.formatMD(data.get(dataPos).getNote(), null));
             }
         }
-        if(data.get(pos).hasIssue()) {
-            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(pos).getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
+        if(data.get(dataPos).hasIssue()) {
+            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dataPos).getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
             ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
