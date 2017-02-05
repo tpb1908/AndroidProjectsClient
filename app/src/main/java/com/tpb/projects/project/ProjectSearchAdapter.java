@@ -31,6 +31,8 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Label;
+import com.tpb.projects.util.ArrayFilter;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.FuzzyStringSearcher;
 
@@ -45,20 +47,20 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
 
     private ArrayList<Card> data;
     private Spanned[] parseCache;
-    private ArrayList<Card> filtered;
-    private ArrayFilter mFilter;
+    private ArrayFilter<Card> mFilter;
     private FuzzyStringSearcher mSearcher;
 
     public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
         super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
-        filtered = new ArrayList<>();
         parseCache = new Spanned[data.size()];
         final ArrayList<String> strings = new ArrayList<>();
+        String s;
         for(Card c : data) {
-
             if(c.hasIssue()) {
-                strings.add("#" + c.getIssue().getNumber() + "\n" + c.getIssue().getTitle() + "\n" + c.getIssue().getBody());
+                s = "#" + c.getIssue().getNumber();
+                for(Label l : c.getIssue().getLabels()) s += "\n" +  l.getName() ;
+                strings.add(s + "\n" + c.getIssue().getBody());
             } else {
                 strings.add(c.getNote());
             }
@@ -69,27 +71,27 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
 
     @Override
     public long getItemId(int position) {
-        return filtered.get(position).getId();
+        return mFilter.getFiltered().get(position).getId();
     }
 
     @Nullable
     @Override
     public Card getItem(int position) {
-        return filtered.get(position);
+        return mFilter.getFiltered().get(position);
     }
 
     @NonNull
     @Override
     public Filter getFilter() {
         if(mFilter == null) {
-            mFilter = new ArrayFilter();
+            mFilter = new ArrayFilter<>(this, mSearcher, data);
         }
         return mFilter;
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         if(convertView == null) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_search_suggestion, parent, false);
         }
@@ -98,10 +100,10 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
     }
 
     private void bindView(int pos, View view) {
-        final int dataPos = data.indexOf(filtered.get(pos));
+        final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " "  +  Data.parseMD(data.get(dataPos).getIssue().getTitle()));
+                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " " + Data.parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
                 parseCache[dataPos] = Html.fromHtml(Data.formatMD(data.get(dataPos).getNote(), null));
             }
@@ -118,38 +120,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
 
     @Override
     public int getCount() {
-        return filtered.size();
+        return mFilter.getFiltered().size();
     }
 
-    private class ArrayFilter extends Filter {
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            filtered = (ArrayList<Card>) filterResults.values;
-            if(filterResults.count > 0) {
-                notifyDataSetChanged();
-            } else {
-                notifyDataSetInvalidated();
-            }
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence charSequence) {
-            final FilterResults results = new FilterResults();
-            if(charSequence == null) {
-                results.values = null;
-                results.count = 0;
-            } else {
-                final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
-                final ArrayList<Card> items = new ArrayList<>(positions.size());
-
-                for(int i : positions) {
-                    items.add(data.get(i));
-                }
-                results.values = items;
-                results.count = items.size();
-            }
-            return results;
-        }
-    }
 }

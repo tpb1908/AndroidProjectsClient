@@ -152,7 +152,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         return -1;
     }
 
-
     ArrayList<Card> getCards() {
         final ArrayList<Card> cards = new ArrayList<>();
         for(Pair<Card, String> p : mCards) cards.add(p.first);

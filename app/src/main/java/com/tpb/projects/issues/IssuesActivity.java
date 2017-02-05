@@ -17,10 +17,13 @@
 
 package com.tpb.projects.issues;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +32,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -88,6 +92,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private Issue.IssueState mFilter = Issue.IssueState.OPEN;
     private String mAssigneeFilter;
     private ArrayList<String> mLabelsFilter = new ArrayList<>();
+    private SearchView mSearchView;
+    private MenuItem mSearchItem;
 
     private Repository.AccessLevel mAccessLevel;
     private String mRepoPath;
@@ -488,6 +494,26 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         dialog.show(getSupportFragmentManager(), TAG);
     }
 
+    private void moveTo(Issue issue) {
+        final int index = mAdapter.indexOf(issue);
+        mRecycler.scrollToPosition(index);
+        new Handler().postDelayed(() -> {
+            Log.i(TAG, "moveTo: Should be highlighting " + index);
+            final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
+            final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                    view,
+                    "backgroundColor",
+                    new ArgbEvaluator(),
+                    getResources().getColor(R.color.md_grey_800),
+                    getResources().getColor(R.color.colorAccent));
+            colorFade.setDuration(300);
+            colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+            colorFade.setRepeatCount(1);
+            colorFade.start();
+        }, 300);
+
+    }
+
     @OnClick(R.id.issues_fab)
     public void createNewIssue() {
         final NewIssueDialog newDialog = new NewIssueDialog();
@@ -512,7 +538,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_search, menu);
+        mSearchItem = menu.findItem(R.id.menu_action_search);
+
+        if(mSearchItem != null) {
+            mSearchView = (SearchView) mSearchItem.getActionView();
+        }
+
         return true;
     }
 
@@ -556,6 +588,17 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 });
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
+            case R.id.menu_action_search:
+                if(mAdapter.getItemCount()> 0) {
+                    final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+                    searchSrc.setThreshold(1);
+                    final IssuesSearchAdapter searchAdapter = new IssuesSearchAdapter(this, mAdapter.getIssues());
+                    searchSrc.setAdapter(searchAdapter);
+                    searchSrc.setOnItemClickListener((adapterView, view, i, l) -> {
+                        mSearchItem.collapseActionView();
+                        moveTo(searchAdapter.getItem(i));
+                    });
+                }
         }
         return super.onOptionsItemSelected(item);
     }

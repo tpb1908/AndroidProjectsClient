@@ -94,10 +94,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @BindView(R.id.project_add_column) FloatingActionButton mAddColumn;
     @BindView(R.id.project_add_issue) FloatingActionButton mAddIssue;
     private SearchView mSearchView;
+    private MenuItem mSearchItem;
 
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
-    private MenuItem mSearchItem;
     private Loader mLoader;
     Project mProject;
     private Editor mEditor;
@@ -590,22 +590,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         if(mSearchItem != null) {
             mSearchView = (SearchView) mSearchItem.getActionView();
         }
-        if(mSearchView != null) {
-
-            mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    Log.i(TAG, "onQueryTextSubmit: " + query);
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    Log.i(TAG, "onQueryTextChange: " + newText);
-                    return false;
-                }
-            });
-        }
 
         return true;
     }
@@ -687,17 +671,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 } else if(event.getX() / metrics.widthPixels < 0.15f) {
                     dragLeft();
                 }
-            }
-            switch(event.getAction()) {
-                case DragEvent.ACTION_DRAG_EXITED:
-                    Log.i(TAG, "onDrag: Exited");
-                    break;
-                case DragEvent.ACTION_DRAG_ENDED:
-                    Log.i(TAG, "onDrag: Ended");
-                    break;
-                case DragEvent.ACTION_DROP:
-                    Log.i(TAG, "onDrag: Dropped");
-                    break;
             }
             return true;
         }
