@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.FuzzyStringSearcher;
 
@@ -55,10 +56,12 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         filtered = new ArrayList<>();
         parseCache = new Spanned[data.size()];
         final ArrayList<String> strings = new ArrayList<>();
+        String s;
         for(Card c : data) {
-
             if(c.hasIssue()) {
-                strings.add("#" + c.getIssue().getNumber() + "\n" + c.getIssue().getTitle() + "\n" + c.getIssue().getBody());
+                s = "#" + c.getIssue().getNumber();
+                for(Label l : c.getIssue().getLabels()) s += "\n" +  l.getName() ;
+                strings.add(s + "\n" + c.getIssue().getBody());
             } else {
                 strings.add(c.getNote());
             }
@@ -101,7 +104,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         final int dataPos = data.indexOf(filtered.get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " "  +  Data.parseMD(data.get(dataPos).getIssue().getTitle()));
+                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " " + Data.parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
                 parseCache[dataPos] = Html.fromHtml(Data.formatMD(data.get(dataPos).getNote(), null));
             }

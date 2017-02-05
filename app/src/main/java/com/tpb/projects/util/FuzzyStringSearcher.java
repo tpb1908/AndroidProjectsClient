@@ -146,7 +146,7 @@ public class FuzzyStringSearcher {
     private int rank(int pos, String query, String text) {
         int rank = -pos;
         for(int i = pos; i < text.length() && i < query.length(); i++) {
-            if(text.charAt(i) == query.charAt(i - pos)) rank++;
+            if(text.charAt(i) == query.charAt(i - pos)) rank += 2;
         }
         return rank;
     }
