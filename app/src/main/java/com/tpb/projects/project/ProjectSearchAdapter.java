@@ -140,7 +140,7 @@ public class ProjectSearchAdapter extends ArrayAdapter<Card> {
         protected FilterResults performFiltering(CharSequence charSequence) {
             final FilterResults results = new FilterResults();
             if(charSequence == null) {
-                results.values = null;
+                results.values = new ArrayList<Card>();
                 results.count = 0;
             } else {
                 final ArrayList<Integer> positions = mSearcher.search(charSequence.toString());
