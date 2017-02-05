@@ -103,6 +103,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     private Editor mEditor;
     private NavigationDragListener mNavListener;
     private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
+    private int mLaunchCardId = -1;
     private int mLoadCount;
 
     @Override
@@ -131,6 +132,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
+            if(launchIntent.hasExtra(getString(R.string.intent_card_id))) {
+                mLaunchCardId = launchIntent.getIntExtra(getString(R.string.intent_card_id), -1);
+            }
             //We have to load all of the projects to get the id that we want
             mLoader.loadProjects(new Loader.ProjectsLoader() {
                 int projectLoadAttempts = 0;
@@ -564,6 +568,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mLoadCount++;
         if(mLoadCount == mAdapter.getCount()) {
             mRefresher.setRefreshing(false);
+            if(mLaunchCardId != -1) {
+                new Handler().postDelayed(() -> mAdapter.moveTo(mLaunchCardId), 500);
+            }
         }
     }
 
@@ -643,7 +650,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     searchSrc.setAdapter(searchAdapter);
                     searchSrc.setOnItemClickListener((adapterView, view, i, l) -> {
                         mSearchItem.collapseActionView();
-                        mAdapter.moveTo(searchAdapter.getItem(i));
+                        mAdapter.moveTo(searchAdapter.getItem(i).getId());
                     });
                 }
         }
@@ -698,9 +705,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             return cards;
         }
 
-        void moveTo(Card card) {
+        void moveTo(int cardId) {
             for(int i = 0; i < getCount(); i++) {
-                if(getExistingFragment(i).attemptMoveTo(card)) {
+                if(getExistingFragment(i).attemptMoveTo(cardId)) {
                     mColumnPager.setCurrentItem(i, true);
                     break;
                 }
