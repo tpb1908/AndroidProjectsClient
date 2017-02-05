@@ -18,7 +18,6 @@
 package com.tpb.projects.project;
 
 import android.app.Dialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -98,6 +97,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private ColumnPagerAdapter mAdapter;
     private int mCurrentPosition = -1;
+    private MenuItem mSearchItem;
     private Loader mLoader;
     Project mProject;
     private Editor mEditor;
@@ -585,11 +585,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_search, menu);
-        final MenuItem searchItem = menu.findItem(R.id.menu_action_search);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchItem = menu.findItem(R.id.menu_action_search);
 
-        if(searchItem != null) {
-            mSearchView = (SearchView) searchItem.getActionView();
+        if(mSearchItem != null) {
+            mSearchView = (SearchView) mSearchItem.getActionView();
         }
         if(mSearchView != null) {
 
@@ -658,7 +657,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     searchSrc.setThreshold(1);
                     final ProjectSearchAdapter searchAdapter = new ProjectSearchAdapter(this, mAdapter.getAllCards());
                     searchSrc.setAdapter(searchAdapter);
-                    searchSrc.setOnItemClickListener((adapterView, view, i, l) -> mAdapter.moveTo(searchAdapter.getItem(i)));
+                    searchSrc.setOnItemClickListener((adapterView, view, i, l) -> {
+                        mSearchItem.collapseActionView();
+                        mAdapter.moveTo(searchAdapter.getItem(i));
+                    });
                 }
         }
 
