@@ -335,7 +335,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final int index = mAdapter.indexOf(cardId);
         if(index == -1) return false;
 
-        mRecycler.getLayoutManager().smoothScrollToPosition(mRecycler, null, index);
         final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
         final ObjectAnimator colorFade = ObjectAnimator.ofObject(
                 view,
