@@ -331,12 +331,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }, mColumn.getId(), card.getNote());
     }
 
-    boolean attemptMoveTo(Card card) {
-        final int index = mAdapter.indexOf(card.getId());
+    boolean attemptMoveTo(int cardId) {
+        final int index = mAdapter.indexOf(cardId);
         if(index == -1) return false;
 
         mRecycler.getLayoutManager().smoothScrollToPosition(mRecycler, null, index);
-        final View view = mRecycler.getChildAt(index);
+        final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
         final ObjectAnimator colorFade = ObjectAnimator.ofObject(
                 view,
                 "backgroundColor",
