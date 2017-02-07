@@ -7,8 +7,8 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
@@ -26,5 +26,15 @@
             android:scrollHorizontally="false"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/card_from_issue_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="0"
+        android:text="@string/hint_from_issue"
+        android:background="?android:attr/selectableItemBackground"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
 
 </LinearLayout>
