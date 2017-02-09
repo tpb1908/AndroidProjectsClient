@@ -32,6 +32,5 @@ public class IssueEditor extends AppCompatActivity {
         stub.setLayoutResource(R.layout.stub_issue_editor);
         stub.inflate();
         ButterKnife.bind(this);
-
     }
 }
