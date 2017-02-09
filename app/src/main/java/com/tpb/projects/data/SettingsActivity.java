@@ -141,7 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
         private static final String KEY_ANALYTICS = "A";
         private static final String KEY_CARD_ACTION = "C";
 
-        private SharedPreferences prefs;
+        private final SharedPreferences prefs;
 
         private Preferences(Context context) {
             prefs = context.getSharedPreferences(KEY, Context.MODE_PRIVATE);
@@ -209,7 +209,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static class LicenseDialogBuilder extends AlertDialog.Builder {
 
-        private Context mContext;
+        private final Context mContext;
 
         LicenseDialogBuilder(Context context) {
             super(context);

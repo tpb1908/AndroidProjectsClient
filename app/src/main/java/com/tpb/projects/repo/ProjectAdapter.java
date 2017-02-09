@@ -52,8 +52,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private ArrayList<Project> mProjects = new ArrayList<>();
-    private ProjectEditor mEditor;
-    private AnimatingRecycler mRecycler;
+    private final ProjectEditor mEditor;
+    private final AnimatingRecycler mRecycler;
     private boolean canAccessRepo = false;
 
 

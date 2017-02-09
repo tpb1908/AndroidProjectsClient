@@ -51,9 +51,9 @@ import butterknife.ButterKnife;
 class IssueContentAdapter extends RecyclerView.Adapter {
     private static final String TAG = IssueContentAdapter.class.getSimpleName();
 
-    private ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
+    private final ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
     private Issue mIssue;
-    private IssueActivity mParent;
+    private final IssueActivity mParent;
     private boolean mHasOtherContentLoaded = false;
 
     IssueContentAdapter(IssueActivity parent) {

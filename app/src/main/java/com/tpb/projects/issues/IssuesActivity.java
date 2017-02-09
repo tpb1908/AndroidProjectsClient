@@ -91,7 +91,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private IssuesAdapter mAdapter;
     private Issue.IssueState mFilter = Issue.IssueState.OPEN;
     private String mAssigneeFilter;
-    private ArrayList<String> mLabelsFilter = new ArrayList<>();
+    private final ArrayList<String> mLabelsFilter = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchItem;
 

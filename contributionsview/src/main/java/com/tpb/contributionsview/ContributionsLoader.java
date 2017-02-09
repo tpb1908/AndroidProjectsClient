@@ -38,12 +38,12 @@ import java.util.List;
  * Created by theo on 12/01/17.
  */
 
-public class ContributionsLoader {
+class ContributionsLoader {
     private static final String TAG = ContributionsLoader.class.getSimpleName();
 
     private static final String IMAGE_BASE = "https://github.com/users/%s/contributions";
 
-    private ContributionsRequestListener mListener;
+    private final ContributionsRequestListener mListener;
 
     ContributionsLoader(@NonNull ContributionsRequestListener listener) {
         mListener = listener;
@@ -82,9 +82,9 @@ public class ContributionsLoader {
 
     public static class GitDay {
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        @ColorInt int color;
+        @ColorInt final int color;
         long date;
-        int contributions;
+        final int contributions;
 
         GitDay(String rect) {
             //rect is <rect class="day" width="10" height="10" x="" y="" fill="#FFFFF" data-count="n" data-date="yyyy-mm-dd"/>

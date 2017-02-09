@@ -217,7 +217,7 @@ public class Event extends DataModel implements Parcelable {
         REVIEW_REQUESTED("review_requested"),
         REVIEW_REQUEST_REMOVED("review_request_removed");
 
-        private String JSON_KEY;
+        private final String JSON_KEY;
 
         GITEvent(String jsonKey) {
             this.JSON_KEY = jsonKey;
@@ -252,7 +252,7 @@ public class Event extends DataModel implements Parcelable {
     public Event() {
     }
 
-    protected Event(Parcel in) {
+    private Event(Parcel in) {
         this.id = in.readInt();
         this.actor = in.readParcelable(User.class.getClassLoader());
         int tmpEvent = in.readInt();

@@ -59,7 +59,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     @Nullable
     private DrawTableLinkSpan drawTableLinkSpan;
 
-    boolean dontConsumeNonUrlClicks = true;
+    private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
     private boolean showUnderLines = true;
@@ -67,7 +67,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private LinkClickHandler mLinkHandler;
 
     private ImageClickHandler mImageClickHandler;
-    private HashMap<String, Drawable> mDrawables = new HashMap<>();
+    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
 
     private Handler mParseHandler;
 
@@ -118,7 +118,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
-    public void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
+    private void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
         InputStream inputStreamText = getContext().getResources().openRawResource(resId);
 
         setHtml(convertStreamToString(inputStreamText), imageGetter);
@@ -272,7 +272,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         public void writeToParcel(Parcel dest, int flags) {
         }
 
-        protected URLSpanWithoutUnderline(Parcel in) {
+        URLSpanWithoutUnderline(Parcel in) {
             super(in);
         }
 
@@ -303,7 +303,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public static class ImageDialog implements ImageClickHandler {
 
-        private Context mContext;
+        private final Context mContext;
 
         public ImageDialog(Context context) {
             mContext = context;

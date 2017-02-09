@@ -63,8 +63,8 @@ public class EditIssueDialog extends KeyboardDismissingDialogFragment {
     private String repoFullName;
     private HtmlTextView assigneesText;
     private TextView labelsText;
-    private ArrayList<String> assignees = new ArrayList<>();
-    private ArrayList<String> selectedLabels = new ArrayList<>();
+    private final ArrayList<String> assignees = new ArrayList<>();
+    private final ArrayList<String> selectedLabels = new ArrayList<>();
 
     @NonNull
     @Override

@@ -134,7 +134,7 @@ public class Comment extends DataModel implements Parcelable {
         dest.writeLong(this.createdAt);
     }
 
-    protected Comment(Parcel in) {
+    private Comment(Parcel in) {
         this.id = in.readInt();
         this.url = in.readString();
         this.htmlUrl = in.readString();

@@ -31,12 +31,12 @@ import android.text.style.ReplacementSpan;
 public class DrawTableLinkSpan extends ReplacementSpan {
 
     private static final String DEFAULT_TABLE_LINK_TEXT = "";
-    private static float DEFAULT_TEXT_SIZE = 80f;
-    private static int DEFAULT_TEXT_COLOR = Color.BLUE;
+    private static final float DEFAULT_TEXT_SIZE = 80f;
+    private static final int DEFAULT_TEXT_COLOR = Color.BLUE;
 
-    protected String mTableLinkText = DEFAULT_TABLE_LINK_TEXT;
-    protected float mTextSize = DEFAULT_TEXT_SIZE;
-    protected int mTextColor = DEFAULT_TEXT_COLOR;
+    private String mTableLinkText = DEFAULT_TABLE_LINK_TEXT;
+    private float mTextSize = DEFAULT_TEXT_SIZE;
+    private int mTextColor = DEFAULT_TEXT_COLOR;
 
     // This sucks, but we need this so that each table can get drawn.
     // Otherwise, we end up with the default table link text (nothing) for earlier tables.
@@ -67,15 +67,15 @@ public class DrawTableLinkSpan extends ReplacementSpan {
         canvas.drawText(mTableLinkText, x, bottom, paint2);
     }
 
-    public void setTableLinkText(String tableLinkText) {
+    private void setTableLinkText(String tableLinkText) {
         this.mTableLinkText = tableLinkText;
     }
 
-    public void setTextSize(float textSize) {
+    private void setTextSize(float textSize) {
         this.mTextSize = textSize;
     }
 
-    public void setTextColor(int textColor) {
+    private void setTextColor(int textColor) {
         this.mTextColor = textColor;
     }
 

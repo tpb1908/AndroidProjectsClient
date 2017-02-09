@@ -725,7 +725,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private static class ColumnPageDescriptor implements PageDescriptor {
-        private Column mColumn;
+        private final Column mColumn;
 
         ColumnPageDescriptor(Column column) {
             mColumn = column;

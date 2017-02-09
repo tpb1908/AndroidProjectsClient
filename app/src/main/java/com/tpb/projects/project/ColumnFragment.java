@@ -289,7 +289,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     }
 
-    void addCard(Card card) {
+    private void addCard(Card card) {
         mAdapter.addCard(card);
         resetLastUpdate();
     }
@@ -723,7 +723,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         createIssueCard(issue, -1);
     }
 
-    void createIssueCard(Issue issue, int oldCardId) {
+    private void createIssueCard(Issue issue, int oldCardId) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int issueCardCreationAttempts = 0;
@@ -765,13 +765,13 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }, mColumn.getId(), issue.getId());
     }
 
-    void copyToClipboard(String text) {
+    private void copyToClipboard(String text) {
         final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(ClipData.newPlainText("Card", text));
         Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
     }
 
-    void showFullscreen(Card card) {
+    private void showFullscreen(Card card) {
         final FullScreenDialog dialog = new FullScreenDialog();
         final Bundle b = new Bundle();
         b.putString(getString(R.string.intent_markdown), card.getNote());

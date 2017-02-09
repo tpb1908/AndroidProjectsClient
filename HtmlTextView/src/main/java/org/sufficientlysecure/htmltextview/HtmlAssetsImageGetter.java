@@ -32,7 +32,7 @@ import java.io.InputStream;
  *
  * @author <a href="mailto:daniel@passos.me">Daniel Passos</a>
  */
-public class HtmlAssetsImageGetter implements Html.ImageGetter {
+class HtmlAssetsImageGetter implements Html.ImageGetter {
 
     private final Context context;
 

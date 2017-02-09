@@ -39,11 +39,11 @@ import java.util.Stack;
 /**
  * Some parts of this code are based on android.text.Html
  */
-public class HtmlTagHandler implements Html.TagHandler {
+class HtmlTagHandler implements Html.TagHandler {
 
-    public static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
-    public static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
-    public static final String LIST_ITEM = "HTML_TEXTVIEW_ESCAPED_LI_TAG";
+    private static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
+    private static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
+    private static final String LIST_ITEM = "HTML_TEXTVIEW_ESCAPED_LI_TAG";
 
     /**
      * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
@@ -74,12 +74,12 @@ public class HtmlTagHandler implements Html.TagHandler {
      * Keeps track of lists (ol, ul). On bottom of Stack is the outermost list
      * and on top of Stack is the most nested list
      */
-    Stack<String> lists = new Stack<>();
+    private final Stack<String> lists = new Stack<>();
     /**
      * Tracks indexes of ordered lists so that after a nested list ends
      * we can continue with correct index of outer list
      */
-    Stack<Integer> olNextIndex = new Stack<>();
+    private final Stack<Integer> olNextIndex = new Stack<>();
     /**
      * List indentation in pixels. Nested lists use multiple of this.
      */
@@ -96,11 +96,11 @@ public class HtmlTagHandler implements Html.TagHandler {
      * </table>
      * <!-- This is the root level closing table tag and the end of the string we track. -->
      */
-    StringBuilder tableHtmlBuilder = new StringBuilder();
+    private StringBuilder tableHtmlBuilder = new StringBuilder();
     /**
      * Tells us which level of table tag we're on; ultimately used to find the root table tag.
      */
-    int tableTagLevel = 0;
+    private int tableTagLevel = 0;
 
     private static final int indent = 10;
     private static final int listItemIndent = indent * 2;

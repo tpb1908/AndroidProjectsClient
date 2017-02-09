@@ -52,13 +52,13 @@ import butterknife.ButterKnife;
 class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
     private static final String TAG = UserReposAdapter.class.getSimpleName();
 
-    private Loader mLoader;
-    private SwipeRefreshLayout mRefresher;
-    private AnimatingRecycler mRecycler;
+    private final Loader mLoader;
+    private final SwipeRefreshLayout mRefresher;
+    private final AnimatingRecycler mRecycler;
     private ArrayList<Repository> mRepos = new ArrayList<>();
     private String mUser;
-    private RepoPinSorter mSorter;
-    private RepositoriesManager mManager;
+    private final RepoPinSorter mSorter;
+    private final RepositoriesManager mManager;
 
     UserReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
@@ -172,10 +172,10 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     private class RepoPinSorter {
 
-        private SharedPreferences prefs;
+        private final SharedPreferences prefs;
         private static final String PREFS_KEY = "PINS";
         private String KEY;
-        private ArrayList<Integer> pins = new ArrayList<>();
+        private final ArrayList<Integer> pins = new ArrayList<>();
         private int[] standardPositions;
 
         RepoPinSorter(Context context) {

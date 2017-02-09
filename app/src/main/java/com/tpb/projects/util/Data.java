@@ -43,7 +43,7 @@ public class Data {
     private static final Parser parser = Parser.builder().build();
     private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-    public static Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
+    public static final Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
 
     public static String intArrayForPrefs(List<Integer> values) {
         final StringBuilder builder = new StringBuilder();

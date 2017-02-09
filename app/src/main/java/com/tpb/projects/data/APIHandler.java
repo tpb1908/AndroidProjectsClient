@@ -43,9 +43,9 @@ public abstract class APIHandler {
     private static final String AUTHORIZATION_TOKEN_FORMAT = "token %1$s";
     private static GitHubSession mSession;
 
-    protected static HashMap<String, String> API_AUTH_HEADERS = new HashMap<>();
-    static HashMap<String, String> PROJECTS_PREVIEW_API_AUTH_HEADERS = new HashMap<>();
-    static HashMap<String, String> ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS = new HashMap<>();
+    protected static final HashMap<String, String> API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> PROJECTS_PREVIEW_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS = new HashMap<>();
 
     static final String SEGMENT_USER = "/user";
     static final String SEGMENT_USERS = "/users";
@@ -85,7 +85,7 @@ public abstract class APIHandler {
         return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
     }
 
-    public static final String CONNECTION_ERROR = "connectionError";
+    private static final String CONNECTION_ERROR = "connectionError";
 
     public static final int HTTP_OK_200 = 200; //OK
 
@@ -95,26 +95,26 @@ public abstract class APIHandler {
     public static final int HTTP_302_TEMPORARY_REDIRECT = 302; //Redirect for this request only
     public static final int HTTP_307_TEMPORARY_REDIRECT = 307; //Same as above
 
-    public static final int HTTP_BAD_REQUEST_400 = 400; //Bad request problems passing JSON
+    private static final int HTTP_BAD_REQUEST_400 = 400; //Bad request problems passing JSON
 
     public static final String KEY_MESSAGE = "message";
-    public static final String MESSAGE_BAD_CREDENTIALS = "Bad credentials";
-    public static final int HTTP_UNAUTHORIZED_401 = 401; //Login required, account locked, permission error
+    private static final String MESSAGE_BAD_CREDENTIALS = "Bad credentials";
+    private static final int HTTP_UNAUTHORIZED_401 = 401; //Login required, account locked, permission error
 
-    public static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded. Please try again later.";
+    private static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded. Please try again later.";
 
     /*
     Unauthenticated requests have a 60/h limit which is unusable for the app
     Authenticated requests have a 5000/h limit
      */
     public static final String KEY_HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset";
-    public static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
-    public static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
-    public static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
+    private static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
+    private static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
+    private static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
     
-    public static final int HTTP_NOT_FOUND_404 = 404;
+    private static final int HTTP_NOT_FOUND_404 = 404;
 
-    public static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
+    private static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
 
     public static final int HTTP_419 = 419; //This function can only be executed with an CL-account
 
@@ -123,7 +123,7 @@ public abstract class APIHandler {
     public static final String ERROR_MESSAGE_VALIDATION_MISSING_FIELD = "missing_field";
     public static final String ERROR_MESSAGE_VALIDATION_INVALID = "invalid";
     public static final String ERROR_MESSAGE_VALIDATION_ALREADY_EXISTS = "already_exists";
-    public static final int HTTP_UNPROCESSABLE_422 = 422; // Validation failed
+    private static final int HTTP_UNPROCESSABLE_422 = 422; // Validation failed
 
     //600 codes are server codes https://github.com/GleSYS/API/wiki/API-Error-codes#6xx---server
 
@@ -201,7 +201,7 @@ public abstract class APIHandler {
         BAD_REQUEST(R.string.error_bad_request);
 
         @StringRes
-        public int resId;
+        public final int resId;
 
         APIError(@StringRes int resId) {
             this.resId = resId;

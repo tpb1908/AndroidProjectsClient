@@ -42,13 +42,13 @@ import java.util.ArrayList;
  * Created by theo on 02/02/17.
  */
 
-public class ProjectSearchAdapter extends ArrayAdapter<Card> {
+class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private static final String TAG = ProjectSearchAdapter.class.getSimpleName();
 
-    private ArrayList<Card> data;
-    private Spanned[] parseCache;
+    private final ArrayList<Card> data;
+    private final Spanned[] parseCache;
     private ArrayFilter<Card> mFilter;
-    private FuzzyStringSearcher mSearcher;
+    private final FuzzyStringSearcher mSearcher;
 
     public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
         super(context, R.layout.viewholder_search_suggestion, data);

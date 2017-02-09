@@ -42,10 +42,10 @@ import org.json.JSONObject;
 public class OAuthHandler extends APIHandler {
     private static final String TAG = OAuthHandler.class.getSimpleName();
 
-    private GitHubSession mSession;
+    private final GitHubSession mSession;
     private OAuthAuthenticationListener mListener;
-    private String mAuthUrl;
-    private String mTokenUrl;
+    private final String mAuthUrl;
+    private final String mTokenUrl;
     private String mAccessToken;
 
     /**

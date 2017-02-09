@@ -294,7 +294,7 @@ public class Repository extends DataModel implements Parcelable {
         dest.writeLong(this.createdAt);
     }
 
-    protected Repository(Parcel in) {
+    private Repository(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
         this.updatedAt = in.readLong();

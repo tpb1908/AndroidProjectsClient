@@ -33,7 +33,7 @@ import java.net.URI;
 import java.net.URL;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    private HtmlTextView container;
+    private final HtmlTextView container;
     private URI baseUri;
     private boolean matchParentWidth = true;
 
@@ -79,7 +79,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         private final WeakReference<View> containerReference;
         private final WeakReference<Resources> resources;
         private String source;
-        private boolean matchParentWidth;
+        private final boolean matchParentWidth;
         private float scale;
 
         ImageGetterAsyncTask(UrlDrawable d, HtmlHttpImageGetter imageGetter, View container, boolean matchParentWidth) {
@@ -174,7 +174,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
     @SuppressWarnings("deprecation")
     private class UrlDrawable extends BitmapDrawable {
-        protected Drawable drawable;
+        Drawable drawable;
 
         @Override
         public void draw(Canvas canvas) {

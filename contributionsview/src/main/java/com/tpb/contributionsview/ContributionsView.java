@@ -81,7 +81,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ContributionsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    private ContributionsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context, attrs, defStyleAttr, defStyleRes);
     }
