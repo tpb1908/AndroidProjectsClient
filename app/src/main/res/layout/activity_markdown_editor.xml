@@ -20,6 +20,7 @@
             android:layout_gravity="center_vertical">
 
             <Button
+                android:id="@+id/markdown_editor_discard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -37,6 +38,7 @@
             android:layout_gravity="center_vertical">
 
             <Button
+                android:id="@+id/markdown_editor_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -53,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/markdown_activity_buttons"
-        android:layout_above="@+id/markdown_edit_buttons"
+        android:layout_above="@+id/markdown_edit_scrollview"
         android:fillViewport="true">
 
         <ViewStub
@@ -64,12 +66,21 @@
     </ScrollView>
 
     <HorizontalScrollView
-        android:id="@+id/markdown_edit_buttons"
+        android:id="@+id/markdown_edit_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:minHeight="16dp"
-        android:background="@android:color/holo_red_dark">
+        android:scrollbars="none"
+        android:minHeight="48dp"
+        android:background="@color/cardview_dark_background">
+
+        <LinearLayout
+            android:id="@+id/markdown_edit_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
 
     </HorizontalScrollView>
 
