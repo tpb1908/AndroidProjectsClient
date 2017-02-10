@@ -200,7 +200,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        mInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()), new HtmlHttpImageGetter(mInfo));
+        final String html = Data.parseMD(builder.toString(), mIssue.getRepoPath());
+        Log.i(TAG, "bindIssue: HTML " + html);
+        mInfo.setHtml(html,  new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -212,7 +214,6 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                         DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
                 )
         );
-
         mOpenInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
