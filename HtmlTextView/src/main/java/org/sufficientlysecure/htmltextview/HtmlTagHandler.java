@@ -29,7 +29,6 @@ import android.text.style.AlignmentSpan;
 import android.text.style.BulletSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
-import android.text.style.TypefaceSpan;
 import android.util.Log;
 
 import org.xml.sax.XMLReader;
@@ -225,7 +224,19 @@ public class HtmlTagHandler implements Html.TagHandler {
                     end(output, Ol.class, false, new LeadingMarginSpan.Standard(numberMargin));
                 }
             } else if (tag.equalsIgnoreCase("code")) {
-                end(output, Code.class, false, new TypefaceSpan("monospace"));
+                Log.i("TagHandler", "handleTag: Handling code tag");
+                Object obj = getLast(output, Code.class);
+                // start of the tag
+                int where = output.getSpanStart(obj);
+                // end of the tag
+                int len = output.length();
+
+                output.removeSpan(obj);
+
+                output.replace(where, len, "Click to view code");
+                output.setSpan(new HtmlTextView.CodeSpan(), where, where + "Click to view code".length(), 0);
+
+
             } else if (tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
             } else if (tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {

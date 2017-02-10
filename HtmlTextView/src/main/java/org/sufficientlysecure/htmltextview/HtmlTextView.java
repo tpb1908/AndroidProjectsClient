@@ -34,6 +34,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
@@ -43,6 +44,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.pddstudio.highlightjs.HighlightJsView;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -69,6 +72,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private ImageClickHandler mImageClickHandler;
     private HashMap<String, Drawable> mDrawables = new HashMap<>();
 
+    private CodeClickHandler mCodeHandler;
+
     private Handler mParseHandler;
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
@@ -93,6 +98,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public void setImageHandler(ImageClickHandler imageHandler) {
         mImageClickHandler = imageHandler;
+    }
+
+    public void setCodeClickHandler(CodeClickHandler handler) {
+        mCodeHandler = handler;
     }
 
     /**
@@ -172,6 +181,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     enableImageClicks(buffer);
                 }
 
+                if(mCodeHandler != null) {
+                    enableCodeClicks(html, buffer);
+                }
+
                 HtmlTextView.this.post(new Runnable() {
                     @Override
                     public void run() {
@@ -235,6 +248,24 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         }
     }
 
+    private void enableCodeClicks(String text, final Spannable s) {
+        final CodeSpan[] spans = s.getSpans(0, s.length(), CodeSpan.class);
+        int startIndex = 0;
+        int endIndex = 0;
+        int i = 0;
+        while(startIndex != -1) {
+            startIndex = text.indexOf("<code>", startIndex);
+            if(startIndex == -1) break;
+            endIndex = text.indexOf("</code>", startIndex);
+            if(endIndex != -1) {
+                spans[i].setCode(text.substring(startIndex + "<code>".length(), endIndex));
+                Log.i(TAG, "enableCodeClicks: Setting code "+ spans[i].mCode);
+                spans[i].setHandler(mCodeHandler);
+            }
+            startIndex = endIndex;
+        }
+    }
+
     private static class URLSpanWithoutUnderline extends URLSpan {
         private LinkClickHandler mHandler;
 
@@ -289,6 +320,36 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         };
     }
 
+    public static class CodeSpan extends ClickableSpan {
+        private CodeClickHandler mHandler;
+        private String mCode;
+
+
+        void setHandler(CodeClickHandler handler) {
+            mHandler = handler;
+        }
+
+        void setCode(String code) {
+            mCode = code;
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            super.updateDrawState(ds);
+            ds.setUnderlineText(false);
+            ds.setTypeface(Typeface.DEFAULT_BOLD);
+        }
+
+        @Override
+        public void onClick(View widget) {
+            if(mHandler != null) {
+                mHandler.codeClicked(mCode);
+            }
+        }
+
+
+    }
+
     public interface LinkClickHandler {
 
         void onClick(String url);
@@ -298,6 +359,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     public interface ImageClickHandler {
 
         void imageClicked(Drawable drawable);
+
+    }
+
+    public interface CodeClickHandler {
+
+        void codeClicked(String code);
 
     }
 
@@ -336,6 +403,36 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
             dialog.show();
 
+        }
+    }
+
+    public static class CodeDialog implements CodeClickHandler {
+
+        private Context mContext;
+
+        public CodeDialog(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public void codeClicked(String code) {
+            Log.i(TAG, "codeClicked: " + code);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            final LayoutInflater inflater = LayoutInflater.from(mContext);
+            final View view = inflater.inflate(R.layout.dialog_code, null);
+
+            builder.setView(view);
+
+            final HighlightJsView wv = (HighlightJsView) view.findViewById(R.id.dialog_highlight_view);
+            wv.setSource(code);
+
+            final Dialog dialog = builder.create();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
+
+            dialog.show();
         }
     }
 
