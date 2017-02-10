@@ -252,7 +252,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
                 builder.append(Data.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
-                builder.append("<br><br>");
+                builder.append(" \n\n ");
             }
 
             builder.append(String.format(mParent.getString(R.string.text_opened_by),
@@ -297,6 +297,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             }
 
             final String parsed = Data.parseMD(builder.toString(), card.getIssue().getRepoPath());
+
+            if(card.getIssue().getNumber() == 28) {
+                Log.i(TAG, "bindIssueCard: Problem: " + parsed);
+            }
+
             mCards.set(pos, new Pair<>(card, parsed));
             holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));
         } else {
@@ -330,6 +335,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             mText.setShowUnderLines(false);
             mText.setParseHandler(mParseHandler);
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
+            mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
         }
 
     }

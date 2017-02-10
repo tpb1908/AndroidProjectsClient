@@ -21,17 +21,28 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.tpb.projects.data.models.Repository;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
+
+import org.commonmark.Extension;
+import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
+import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.node.FencedCodeBlock;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.NodeRenderer;
+import org.commonmark.renderer.html.HtmlNodeRendererContext;
+import org.commonmark.renderer.html.HtmlRenderer;
+import org.commonmark.renderer.html.HtmlWriter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by theo on 16/12/16.
@@ -40,8 +51,38 @@ import java.util.List;
 public class Data {
     private static final String TAG = Data.class.getSimpleName();
 
-    private static final Parser parser = Parser.builder().build();
-    private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+    private static final List<Extension> extensions = Arrays.asList(TablesExtension.create(), StrikethroughExtension.create());
+    private static final HtmlRenderer renderer = HtmlRenderer.builder()
+            .nodeRendererFactory(IndentedCodeBlockNodeRenderer::new)
+            .extensions(extensions)
+            .build();
+    private static final Parser parser = Parser.builder().extensions(extensions).build();
+
+    private static class IndentedCodeBlockNodeRenderer implements NodeRenderer {
+
+        private final HtmlWriter html;
+
+        IndentedCodeBlockNodeRenderer(HtmlNodeRendererContext context) {
+            this.html = context.getWriter();
+        }
+
+        @Override
+        public Set<Class<? extends Node>> getNodeTypes() {
+            // Return the node types we want to use this renderer for.
+            return Collections.singleton(FencedCodeBlock.class);
+        }
+
+        @Override
+        public void render(Node node) {
+            // We only handle one type as per getNodeTypes, so we can just cast it here.
+            FencedCodeBlock codeBlock = (FencedCodeBlock) node;
+            html.line();
+            html.tag("code");
+            html.text(codeBlock.getLiteral());
+            html.tag("/code");
+            html.line();
+        }
+    }
 
     public static final Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
 
@@ -51,6 +92,8 @@ public class Data {
             builder.append(i).append(",");
         }
         return builder.toString();
+
+
     }
 
     public static int[] intArrayFromPrefs(String value) {
@@ -160,11 +203,26 @@ public class Data {
             } else if(cs[i] == '(') {
                 builder.append("(");
                 i = parseImageLink(builder, cs, i);
+            } else if(pp == '`' && p == '`' && cs[i] == '`') {
+                pp = ' ';
+                p = ' ';
+                for(int j = i; j < cs.length; j++) {
+                    builder.append(cs[j]);
+                    if(pp == '`' && p == '`' && cs[j] == '`') {
+                        i = j;
+                        break;
+                    } else {
+                        pp = p;
+                        p = cs[j];
+                    }
+                }
+                Log.i(TAG, "formatMD: Found code: " + builder.toString());
             } else {
                 builder.append(cs[i]);
             }
             pp = p;
             p = cs[i];
+
         }
         return builder.toString();
     }
