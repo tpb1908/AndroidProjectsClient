@@ -137,6 +137,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         mOpenInfo.setShowUnderLines(false);
         mInfo.setShowUnderLines(false);
         mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
+        mInfo.setCodeClickHandler(new HtmlTextView.CodeDialog(this));
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
