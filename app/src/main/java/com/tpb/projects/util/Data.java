@@ -203,11 +203,26 @@ public class Data {
             } else if(cs[i] == '(') {
                 builder.append("(");
                 i = parseImageLink(builder, cs, i);
+            } else if(pp == '`' && p == '`' && cs[i] == '`') {
+                pp = ' ';
+                p = ' ';
+                for(int j = i; j < cs.length; j++) {
+                    builder.append(cs[j]);
+                    if(pp == '`' && p == '`' && cs[j] == '`') {
+                        i = j;
+                        break;
+                    } else {
+                        pp = p;
+                        p = cs[j];
+                    }
+                }
+                Log.i(TAG, "formatMD: Found code: " + builder.toString());
             } else {
                 builder.append(cs[i]);
             }
             pp = p;
             p = cs[i];
+
         }
         return builder.toString();
     }

@@ -258,7 +258,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             if(startIndex == -1) break;
             endIndex = text.indexOf("</code>", startIndex);
             if(endIndex != -1) {
-                spans[i].setCode(text.substring(startIndex + "</code>".length(), endIndex));
+                spans[i].setCode(text.substring(startIndex + "<code>".length(), endIndex));
                 Log.i(TAG, "enableCodeClicks: Setting code "+ spans[i].mCode);
                 spans[i].setHandler(mCodeHandler);
             }
