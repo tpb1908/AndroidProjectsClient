@@ -1,10 +1,13 @@
 package com.tpb.projects.dialogs;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -12,6 +15,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -166,6 +170,20 @@ public class IssueEditor extends AppCompatActivity {
         finish();
     }
 
+    @OnClick(R.id.markdown_editor_discard)
+    void onDiscard() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_discard_issue);
+        builder.setMessage(R.string.text_discard_issue);
+        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+            finish();
+        });
+        builder.setNegativeButton(R.string.action_no, null);
+        final Dialog deleteDialog = builder.create();
+        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        deleteDialog.show();
+    }
+
     @OnClick(R.id.issue_add_assignees_button)
     public void showAssigneesDialog() {
         final ProgressDialog pd = new ProgressDialog(this);
@@ -302,4 +320,10 @@ public class IssueEditor extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    public void finish() {
+        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+        super.finish();
+    }
 }
