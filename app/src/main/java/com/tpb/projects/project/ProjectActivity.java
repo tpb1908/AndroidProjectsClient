@@ -62,7 +62,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
-import com.tpb.projects.dialogs.NewIssueDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 
@@ -397,22 +397,10 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @OnClick(R.id.project_add_issue)
     void addIssue() {
         mMenu.close(true);
-        final NewIssueDialog newDialog = new NewIssueDialog();
-        newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
-            @Override
-            public void issueCreated(Issue issue) {
-                mAdapter.getCurrentFragment().createIssueCard(issue);
-            }
 
-            @Override
-            public void issueCreationCancelled() {
-
-            }
-        });
-        final Bundle c = new Bundle();
-        c.putString(getString(R.string.intent_repo), mProject.getRepoPath());
-        newDialog.setArguments(c);
-        newDialog.show(getSupportFragmentManager(), TAG);
+        final Intent intent = new Intent(ProjectActivity.this, IssueEditor.class);
+        intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
+        startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
     void deleteColumn(Column column) {
@@ -657,6 +645,36 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == IssueEditor.RESULT_OK) {
+            if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
+                String[] assignees = null;
+                String[] labels = null;
+                if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                }
+                if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                    labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+                }
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+                mEditor.createIssue(new Editor.IssueCreationListener() {
+                    @Override
+                    public void issueCreated(Issue issue) {
+                        mAdapter.getCurrentFragment().createIssueCard(issue);
+                    }
+
+                    @Override
+                    public void issueCreationError(APIHandler.APIError error) {
+
+                    }
+                }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
+
+            }
+        }
     }
 
     @Override
