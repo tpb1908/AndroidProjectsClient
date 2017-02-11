@@ -1,8 +1,10 @@
 package com.tpb.projects.dialogs;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,6 +18,7 @@ import com.tpb.projects.util.UI;
  */
 
 public class MarkdownButtonAdapter {
+    private static final String TAG = MarkdownButtonAdapter.class.getSimpleName();
 
     private Context mContext;
     private LinearLayout mScrollView;
@@ -31,7 +34,17 @@ public class MarkdownButtonAdapter {
     private void initViews() {
         ImageButton preview = (ImageButton) LayoutInflater.from(mContext).inflate(R.layout.shard_markdown_button, mScrollView, false);
         preview.setImageResource(R.drawable.ic_preview);
+        preview.setOnClickListener((v) -> {
+            if(mListener != null) {
+                final FullScreenDialog dialog = new FullScreenDialog();
+                final Bundle bundle = new Bundle();
+                bundle.putString(mContext.getString(R.string.intent_markdown), mListener.getText());
+                dialog.setArguments(bundle);
+                dialog.show(((AppCompatActivity) mContext).getSupportFragmentManager(), TAG);
+            }
+        });
         mScrollView.addView(preview);
+
         preview = (ImageButton) LayoutInflater.from(mContext).inflate(R.layout.shard_markdown_button, mScrollView, false);
         preview.setImageResource(R.drawable.ic_insert_link);
         preview.setOnClickListener((v) -> showInsertLinkDialog());
@@ -126,6 +139,8 @@ public class MarkdownButtonAdapter {
     public interface MarkDownButtonListener {
 
         void snippetEntered(String snippet, int relativePosition);
+
+        String getText();
 
     }
 

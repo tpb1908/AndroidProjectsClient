@@ -144,17 +144,26 @@ public class IssueEditor extends AppCompatActivity {
             }
         });
 
-        new MarkdownButtonAdapter(this, mEditButtons, (snippet, relativePos) -> {
-            if(mTitleEdit.hasFocus()) {
-                final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
-                mTitleEdit.getText().insert(start, snippet);
-                mTitleEdit.setSelection(start + relativePos);
-            } else if(mBodyEdit.hasFocus()) {
-                final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
-                mBodyEdit.getText().insert(start, snippet);
-                mBodyEdit.setSelection(start + relativePos);
+        new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
+            @Override
+            public void snippetEntered(String snippet, int relativePosition) {
+                if(mTitleEdit.hasFocus()) {
+                    final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
+                    mTitleEdit.getText().insert(start, snippet);
+                    mTitleEdit.setSelection(start + relativePosition);
+                } else if(mBodyEdit.hasFocus()) {
+                    final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
+                    mBodyEdit.getText().insert(start, snippet);
+                    mBodyEdit.setSelection(start + relativePosition);
+                }
+            }
+
+            @Override
+            public String getText() {
+                return mBodyEdit.getText().toString();
             }
         });
+
 
     }
 
