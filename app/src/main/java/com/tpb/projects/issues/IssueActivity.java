@@ -64,8 +64,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
@@ -438,10 +438,31 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
 
     private void editIssue() {
-        final EditIssueDialog editDialog = new EditIssueDialog();
-        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
-            @Override
-            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+        final Intent i = new Intent(IssueActivity.this,  IssueEditor.class);
+        i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
+        i.putExtra(getString(R.string.parcel_issue), mIssue);
+        startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == IssueEditor.RESULT_OK) {
+            if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+                final String[] assignees;
+                final String[] labels;
+                if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                } else {
+                    assignees = null;
+                }
+                if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                    labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+                } else {
+                    labels = null;
+                }
+
                 mRefresher.setRefreshing(true);
                 mEditor.editIssue(new Editor.IssueEditListener() {
                     int issueCreationAttempts = 0;
@@ -477,17 +498,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                     }
                 }, mIssue.getRepoPath(), issue, assignees, labels);
             }
-
-            @Override
-            public void issueEditCancelled() {
-
-            }
-        });
-        final Bundle c = new Bundle();
-        c.putParcelable(getString(R.string.parcel_issue), mIssue);
-        c.putString(getString(R.string.intent_repo), mIssue.getRepoPath());
-        editDialog.setArguments(c);
-        editDialog.show(getSupportFragmentManager(), TAG);
+        }
     }
 
     // TODO Diff events and comments rather than just clearing

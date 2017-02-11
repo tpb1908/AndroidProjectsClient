@@ -29,7 +29,7 @@ import java.util.Arrays;
 
 public class MergedEvent extends DataModel implements Parcelable {
 
-    private ArrayList<Event> events;
+    private final ArrayList<Event> events;
 
     public MergedEvent(ArrayList<Event> events) {
         this.events = events;
@@ -70,7 +70,7 @@ public class MergedEvent extends DataModel implements Parcelable {
         dest.writeTypedList(this.events);
     }
 
-    protected MergedEvent(Parcel in) {
+    private MergedEvent(Parcel in) {
         this.events = in.createTypedArrayList(Event.CREATOR);
     }
 

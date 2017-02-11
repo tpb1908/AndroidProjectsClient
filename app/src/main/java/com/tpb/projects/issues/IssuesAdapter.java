@@ -49,16 +49,16 @@ import butterknife.ButterKnife;
 class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private static final String TAG = IssuesAdapter.class.getSimpleName();
 
-    private IssuesActivity mParent;
-    private ArrayList<Issue> mIssues = new ArrayList<>();
-    private ArrayList<String> mParseCache = new ArrayList<>();
+    private final IssuesActivity mParent;
+    private final ArrayList<Issue> mIssues = new ArrayList<>();
+    private final ArrayList<String> mParseCache = new ArrayList<>();
 
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
     static {
         parseThread.start();
     }
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
-    private Handler mUiHandler;
+    private final Handler mUiHandler;
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;

@@ -43,9 +43,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.pddstudio.highlightjs.HighlightJsView;
+import com.pddstudio.highlightjs.models.Theme;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -62,7 +65,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     @Nullable
     private DrawTableLinkSpan drawTableLinkSpan;
 
-    boolean dontConsumeNonUrlClicks = true;
+    private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
     private boolean showUnderLines = true;
@@ -70,7 +73,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private LinkClickHandler mLinkHandler;
 
     private ImageClickHandler mImageClickHandler;
-    private HashMap<String, Drawable> mDrawables = new HashMap<>();
+    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
 
     private CodeClickHandler mCodeHandler;
 
@@ -127,7 +130,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
-    public void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
+    private void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
         InputStream inputStreamText = getContext().getResources().openRawResource(resId);
 
         setHtml(convertStreamToString(inputStreamText), imageGetter);
@@ -253,7 +256,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         int startIndex = 0;
         int endIndex = 0;
         int i = 0;
-        while(startIndex != -1) {
+        while(startIndex != -1 && i < spans.length) {
             startIndex = text.indexOf("<code>", startIndex);
             if(startIndex == -1) break;
             endIndex = text.indexOf("</code>", startIndex);
@@ -262,6 +265,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 Log.i(TAG, "enableCodeClicks: Setting code "+ spans[i].mCode);
                 spans[i].setHandler(mCodeHandler);
             }
+            i++;
             startIndex = endIndex;
         }
     }
@@ -303,7 +307,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         public void writeToParcel(Parcel dest, int flags) {
         }
 
-        protected URLSpanWithoutUnderline(Parcel in) {
+        URLSpanWithoutUnderline(Parcel in) {
             super(in);
         }
 
@@ -370,7 +374,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public static class ImageDialog implements ImageClickHandler {
 
-        private Context mContext;
+        private final Context mContext;
 
         public ImageDialog(Context context) {
             mContext = context;
@@ -424,14 +428,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             builder.setView(view);
 
             final HighlightJsView wv = (HighlightJsView) view.findViewById(R.id.dialog_highlight_view);
+            wv.setTheme(Theme.ANDROID_STUDIO);
             wv.setSource(code);
-
             final Dialog dialog = builder.create();
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT);
 
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             dialog.show();
         }
     }

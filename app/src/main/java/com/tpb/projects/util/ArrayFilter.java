@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class ArrayFilter<T> extends Filter {
 
-    private ArrayAdapter<T> parent;
-    private FuzzyStringSearcher searcher;
-    private ArrayList<T> data;
+    private final ArrayAdapter<T> parent;
+    private final FuzzyStringSearcher searcher;
+    private final ArrayList<T> data;
     private ArrayList<T> filtered;
 
     public ArrayFilter(ArrayAdapter<T> parent,  FuzzyStringSearcher searcher, ArrayList<T> data) {

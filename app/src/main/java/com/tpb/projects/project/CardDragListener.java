@@ -36,7 +36,7 @@ class CardDragListener implements View.OnDragListener {
 
     private boolean isDropped = false;
     private Drawable selectedBG;
-    private int accent;
+    private final int accent;
     private View.OnDragListener mParent;
 
     CardDragListener(Context context) {

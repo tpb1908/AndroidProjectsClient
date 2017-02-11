@@ -57,7 +57,7 @@ public class FuzzyStringSearcher {
     private static final String TAG = FuzzyStringSearcher.class.getSimpleName();
 
     private ArrayList<String> items;
-    private int[] queryMask = new int[65536];
+    private final int[] queryMask = new int[65536];
 
     private static FuzzyStringSearcher instance;
 
@@ -74,7 +74,7 @@ public class FuzzyStringSearcher {
         return instance;
     }
 
-    public void setItems(ArrayList<String> items) {
+    private void setItems(ArrayList<String> items) {
         this.items = items;
     }
 

@@ -225,7 +225,7 @@ public class User extends DataModel implements Parcelable {
         dest.writeLong(this.createdAt);
     }
 
-    protected User(Parcel in) {
+    User(Parcel in) {
         this.login = in.readString();
         this.id = in.readInt();
         this.avatarUrl = in.readString();

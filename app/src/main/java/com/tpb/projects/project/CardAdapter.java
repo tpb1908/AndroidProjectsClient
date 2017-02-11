@@ -62,10 +62,10 @@ import butterknife.OnClick;
 class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
-    private ArrayList<Pair<Card, String>> mCards = new ArrayList<>();
+    private final ArrayList<Pair<Card, String>> mCards = new ArrayList<>();
 
-    private ColumnFragment mParent;
-    private Editor mEditor;
+    private final ColumnFragment mParent;
+    private final Editor mEditor;
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
     static {
         parseThread.start();

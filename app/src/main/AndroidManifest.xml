@@ -73,7 +73,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".data.SettingsActivity"/>
+        <activity android:name=".dialogs.IssueEditor" android:exported="true"/>
+
+        <activity android:name=".data.SettingsActivity">
+
+
+        </activity>
 
         <activity
             android:name=".util.Interceptor"

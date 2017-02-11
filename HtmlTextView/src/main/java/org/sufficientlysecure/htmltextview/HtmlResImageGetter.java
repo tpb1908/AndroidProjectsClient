@@ -26,8 +26,8 @@ import android.widget.TextView;
 /**
  * Copied from http://stackoverflow.com/a/22298833
  */
-public class HtmlResImageGetter implements Html.ImageGetter {
-    TextView container;
+class HtmlResImageGetter implements Html.ImageGetter {
+    private final TextView container;
 
     public HtmlResImageGetter(TextView textView) {
         this.container = textView;

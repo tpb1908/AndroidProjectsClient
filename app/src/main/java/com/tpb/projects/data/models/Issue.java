@@ -279,7 +279,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeLong(this.createdAt);
     }
 
-    protected Issue(Parcel in) {
+    Issue(Parcel in) {
         this.id = in.readInt();
         this.number = in.readInt();
         this.state = in.readString();

@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private class OAuthWebViewClient extends WebViewClient {
-        private OAuthLoginListener mListener;
+        private final OAuthLoginListener mListener;
 
         OAuthWebViewClient(OAuthLoginListener listener) {
             mListener = listener;

@@ -25,12 +25,12 @@ import java.util.ArrayList;
  * Created by theo on 05/02/17.
  */
 
-public class IssuesSearchAdapter extends ArrayAdapter<Issue> {
+class IssuesSearchAdapter extends ArrayAdapter<Issue> {
 
-    private ArrayList<Issue> data;
+    private final ArrayList<Issue> data;
     private ArrayFilter<Issue> mFilter;
-    private Spanned[] parseCache;
-    private FuzzyStringSearcher mSearcher;
+    private final Spanned[] parseCache;
+    private final FuzzyStringSearcher mSearcher;
 
     public IssuesSearchAdapter(Context context, @NonNull ArrayList<Issue> data) {
         super(context, R.layout.viewholder_search_suggestion, data);

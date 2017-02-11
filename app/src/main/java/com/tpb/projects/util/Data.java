@@ -84,7 +84,7 @@ public class Data {
         }
     }
 
-    public static Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
+    public static final Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
 
     public static String intArrayForPrefs(List<Integer> values) {
         final StringBuilder builder = new StringBuilder();

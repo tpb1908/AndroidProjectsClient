@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,9 +58,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
 import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
-import com.tpb.projects.dialogs.NewIssueDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
@@ -289,7 +289,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     }
 
-    void addCard(Card card) {
+    private void addCard(Card card) {
         mAdapter.addCard(card);
         resetLastUpdate();
     }
@@ -360,6 +360,115 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
     ArrayList<Card> getCards() {
         return mAdapter.getCards();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode != IssueEditor.RESULT_OK) return;
+        String[] assignees = null;
+        String[] labels = null;
+        if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+            assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+        }
+        if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+            labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+        }
+        switch(requestCode) {
+            case IssueEditor.REQUEST_CODE_EDIT_ISSUE:
+                final Card card = data.getParcelableExtra(getString(R.string.parcel_card));
+                final Issue edited = data.getParcelableExtra(getString(R.string.parcel_issue));
+                editIssue(card, edited, assignees, labels);
+                break;
+            case IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD:
+                final Card oldCard = data.getParcelableExtra(getString(R.string.parcel_card));
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+
+                mEditor.createIssue(new Editor.IssueCreationListener() {
+                    @Override
+                    public void issueCreated(Issue issue) {
+                        convertCardToIssue(oldCard, issue);
+                    }
+
+                    @Override
+                    public void issueCreationError(APIHandler.APIError error) {
+
+                    }
+                }, mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
+                break;
+        }
+    }
+
+    void openMenu(View view, Card card) {
+        //We use the non AppCompat popup as the AppCompat version has a bug which scrolls the RecyclerView up
+        final android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
+        popup.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case R.id.menu_edit_note:
+                    final CardDialog dialog = new CardDialog();
+                    final Bundle b = new Bundle();
+                    b.putParcelable(getString(R.string.parcel_card), card);
+                    dialog.setArguments(b);
+                    showCardDialog(dialog);
+                    break;
+                case R.id.menu_delete_note:
+                    mParent.deleteCard(card, true);
+                    break;
+                case R.id.menu_copy_card_note:
+                    copyToClipboard(card.getNote());
+                    break;
+                case R.id.menu_copy_card_url:
+                    copyToClipboard(String.format(mParent.getString(R.string.text_card_url),
+                            mParent.mProject.getRepoPath(),
+                            mParent.mProject.getNumber(),
+                            mCard.getId()));
+                    break;
+                case R.id.menu_copy_issue_url:
+                    copyToClipboard(String.format(mParent.getString(R.string.text_issue_url),
+                            mParent.mProject.getRepoPath(),
+                            card.getIssue().getNumber()));
+                    break;
+                case R.id.menu_card_fullscreen:
+                    showFullscreen(card);
+                    break;
+                case R.id.menu_convert_to_issue:
+                    final Intent intent = new Intent(getContext(), IssueEditor.class);
+                    intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+                    intent.putExtra(getString(R.string.parcel_card), card);
+                    startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
+                    break;
+                case R.id.menu_edit_issue:
+                    showIssueEditor(card);
+                    break;
+                case R.id.menu_delete_issue_card:
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.title_close_issue);
+                    builder.setMessage(R.string.text_close_issue_on_delete);
+                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                        mEditor.closeIssue(null, mParent.mProject.getRepoPath(), card.getIssue().getNumber());
+                        mParent.deleteCard(card, false);
+                    });
+                    builder.setNeutralButton(R.string.action_cancel, null);
+                    builder.setNegativeButton(R.string.action_no, (dialogInterface, i) -> mParent.deleteCard(card, false));
+                    final Dialog deleteDialog = builder.create();
+                    deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                    deleteDialog.show();
+                    break;
+                case 1:
+                    toggleIssueState(card);
+                    break;
+            }
+
+            return true;
+        });
+        if(card.hasIssue()) {
+            popup.inflate(R.menu.menu_card_issue);
+            popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+        } else {
+            popup.inflate(R.menu.menu_card);
+        }
+
+        popup.show();
     }
 
     void showCardDialog(CardDialog dialog) {
@@ -446,93 +555,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
         });
         dialog.show(getFragmentManager(), "TAG");
-    }
-
-    void openMenu(View view, Card card) {
-        //We use the non AppCompat popup as the AppCompat version has a bug which scrolls the RecyclerView up
-        final android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
-        popup.setOnMenuItemClickListener(menuItem -> {
-            switch(menuItem.getItemId()) {
-                case R.id.menu_edit_note:
-                    final CardDialog dialog = new CardDialog();
-                    final Bundle b = new Bundle();
-                    b.putParcelable(getString(R.string.parcel_card), card);
-                    dialog.setArguments(b);
-                    showCardDialog(dialog);
-                    break;
-                case R.id.menu_delete_note:
-                    mParent.deleteCard(card, true);
-                    break;
-                case R.id.menu_copy_card_note:
-                    copyToClipboard(card.getNote());
-                    break;
-                case R.id.menu_copy_card_url:
-                    copyToClipboard(String.format(mParent.getString(R.string.text_card_url),
-                            mParent.mProject.getRepoPath(),
-                            mParent.mProject.getNumber(),
-                            mCard.getId()));
-                    break;
-                case R.id.menu_copy_issue_url:
-                    copyToClipboard(String.format(mParent.getString(R.string.text_issue_url),
-                            mParent.mProject.getRepoPath(),
-                            card.getIssue().getNumber()));
-                    break;
-                case R.id.menu_card_fullscreen:
-                    showFullscreen(card);
-                    break;
-                case R.id.menu_convert_to_issue:
-                    final NewIssueDialog newDialog = new NewIssueDialog();
-                    newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
-                        @Override
-                        public void issueCreated(Issue issue) {
-                            convertCardToIssue(card, issue);
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
-                        }
-
-                        @Override
-                        public void issueCreationCancelled() {
-                        }
-                    });
-                    final Bundle c = new Bundle();
-                    c.putParcelable(getString(R.string.parcel_card), card);
-                    c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
-                    newDialog.setArguments(c);
-                    newDialog.show(getFragmentManager(), TAG);
-                    break;
-                case R.id.menu_edit_issue:
-                    editIssue(card);
-                    break;
-                case R.id.menu_delete_issue_card:
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle(R.string.title_close_issue);
-                    builder.setMessage(R.string.text_close_issue_on_delete);
-                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-                        mEditor.closeIssue(null, mParent.mProject.getRepoPath(), card.getIssue().getNumber());
-                        mParent.deleteCard(card, false);
-                    });
-                    builder.setNeutralButton(R.string.action_cancel, null);
-                    builder.setNegativeButton(R.string.action_no, (dialogInterface, i) -> mParent.deleteCard(card, false));
-                    final Dialog deleteDialog = builder.create();
-                    deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-                    deleteDialog.show();
-                    break;
-                case 1:
-                    toggleIssueState(card);
-                    break;
-            }
-
-            return true;
-        });
-        if(card.hasIssue()) {
-            popup.inflate(R.menu.menu_card_issue);
-            popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
-        } else {
-            popup.inflate(R.menu.menu_card);
-        }
-
-        popup.show();
     }
 
     private void toggleIssueState(Card card) {
@@ -629,59 +651,51 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         dialog.show(getFragmentManager(), TAG);
     }
 
-    private void editIssue(Card card) {
-        final EditIssueDialog editDialog = new EditIssueDialog();
-        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
-            @Override
-            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
-                mParent.mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
-                    int issueCreationAttempts = 0;
+    private void showIssueEditor(Card card) {
+        final Intent i = new Intent(getContext(), IssueEditor.class);
+        i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+        i.putExtra(getString(R.string.parcel_card), card);
+        i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+        startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
+    }
 
-                    @Override
-                    public void issueEdited(Issue issue) {
-                        card.setFromIssue(issue);
-                        mAdapter.updateCard(card);
+    private void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+        mParent.mRefresher.setRefreshing(true);
+        mEditor.editIssue(new Editor.IssueEditListener() {
+            int issueCreationAttempts = 0;
+
+            @Override
+            public void issueEdited(Issue issue) {
+                card.setFromIssue(issue);
+                mAdapter.updateCard(card);
+                mParent.mRefresher.setRefreshing(false);
+                resetLastUpdate();
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+            }
+
+            @Override
+            public void issueEditError(APIHandler.APIError error) {
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mParent.mRefresher.setRefreshing(false);
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+
+                } else {
+                    if(issueCreationAttempts < 5) {
+                        issueCreationAttempts++;
+                        mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
+                    } else {
+                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mParent.mRefresher.setRefreshing(false);
-                        resetLastUpdate();
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
+                }
 
-                    @Override
-                    public void issueEditError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mParent.mRefresher.setRefreshing(false);
-                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-        
-                        } else {
-                            if(issueCreationAttempts < 5) {
-                                issueCreationAttempts++;
-                                mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
-                            } else {
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                mParent.mRefresher.setRefreshing(false);
-                            }
-                        }
-
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                    }
-                }, card.getIssue().getRepoPath(), issue, assignees, labels);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
             }
-
-            @Override
-            public void issueEditCancelled() {
-
-            }
-        });
-        final Bundle c = new Bundle();
-        c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
-        c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
-        editDialog.setArguments(c);
-        editDialog.show(getFragmentManager(), TAG);
+        }, card.getIssue().getRepoPath(), issue, assignees, labels);
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {
@@ -723,7 +737,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         createIssueCard(issue, -1);
     }
 
-    void createIssueCard(Issue issue, int oldCardId) {
+    private void createIssueCard(Issue issue, int oldCardId) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int issueCardCreationAttempts = 0;
@@ -765,13 +779,13 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }, mColumn.getId(), issue.getId());
     }
 
-    void copyToClipboard(String text) {
+    private void copyToClipboard(String text) {
         final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(ClipData.newPlainText("Card", text));
         Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
     }
 
-    void showFullscreen(Card card) {
+    private void showFullscreen(Card card) {
         final FullScreenDialog dialog = new FullScreenDialog();
         final Bundle b = new Bundle();
         b.putString(getString(R.string.intent_markdown), card.getNote());
@@ -790,7 +804,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         switch(action) {
             case EDIT:
                 if(card.hasIssue()) {
-                    editIssue(card);
+                    showIssueEditor(card);
                 } else {
                     final CardDialog dialog = new CardDialog();
                     final Bundle b = new Bundle();

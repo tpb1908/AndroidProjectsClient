@@ -32,7 +32,7 @@ public class GitHubSession {
     private static final String TAG = GitHubSession.class.getSimpleName();
 
     private static GitHubSession session;
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
     private static final String SHARED = "GitHub_Preferences";
     private static final String API_LOGIN = "username";

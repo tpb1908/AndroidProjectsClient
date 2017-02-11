@@ -29,7 +29,7 @@ import android.widget.TextView;
  * Copied from http://stackoverflow.com/questions/8558732
  */
 public class LocalLinkMovementMethod extends LinkMovementMethod {
-    static LocalLinkMovementMethod sInstance;
+    private static LocalLinkMovementMethod sInstance;
 
     public static LocalLinkMovementMethod getInstance() {
         if (sInstance == null)

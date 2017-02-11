@@ -56,9 +56,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.dialogs.MultiChoiceDialog;
-import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 
@@ -91,7 +90,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private IssuesAdapter mAdapter;
     private Issue.IssueState mFilter = Issue.IssueState.OPEN;
     private String mAssigneeFilter;
-    private ArrayList<String> mLabelsFilter = new ArrayList<>();
+    private final ArrayList<String> mLabelsFilter = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchItem;
 
@@ -380,55 +379,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     private void editIssue(Issue issue) {
-        final EditIssueDialog editDialog = new EditIssueDialog();
-        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
-            @Override
-            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
-                mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
-                    int issueCreationAttempts = 0;
+        final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
+        intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        intent.putExtra(getString(R.string.parcel_issue), issue);
+        startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
 
-                    @Override
-                    public void issueEdited(Issue issue) {
-                        mAdapter.updateIssue(issue);
-                        mRefresher.setRefreshing(false);
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                    }
-
-                    @Override
-                    public void issueEditError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mRefresher.setRefreshing(false);
-                            Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        } else {
-                            if(issueCreationAttempts < 5) {
-                                issueCreationAttempts++;
-                                mEditor.editIssue(this, mRepoPath, issue, assignees, labels);
-                            } else {
-                                Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                                mRefresher.setRefreshing(false);
-                            }
-                        }
-
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                    }
-                }, mRepoPath, issue, assignees, labels);
-            }
-
-            @Override
-            public void issueEditCancelled() {
-
-            }
-        });
-        final Bundle c = new Bundle();
-        c.putParcelable(getString(R.string.parcel_issue), issue);
-        c.putString(getString(R.string.intent_repo), issue.getRepoPath());
-        editDialog.setArguments(c);
-        editDialog.show(getSupportFragmentManager(), TAG);
     }
 
     private void toggleIssueState(Issue issue) {
@@ -516,24 +471,85 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     @OnClick(R.id.issues_fab)
     public void createNewIssue() {
-        final NewIssueDialog newDialog = new NewIssueDialog();
-        newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
-            @Override
-            public void issueCreated(Issue issue) {
-                mAdapter.addIssue(issue);
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
-            }
+        final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
+        intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
+    }
 
-            @Override
-            public void issueCreationCancelled() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == IssueEditor.RESULT_OK) {
+            final String[] assignees;
+            final String[] labels;
+            if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+            } else {
+                assignees = null;
             }
-        });
-        final Bundle c = new Bundle();
-        c.putString(getString(R.string.intent_repo), mRepoPath);
-        newDialog.setArguments(c);
-        newDialog.show(getSupportFragmentManager(), TAG);
+            if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+            } else {
+                labels = null;
+            }
+            final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+            if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
+
+                mRefresher.setRefreshing(true);
+                mEditor.createIssue(new Editor.IssueCreationListener() {
+                    @Override
+                    public void issueCreated(Issue issue) {
+                        mAdapter.addIssue(issue);
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                    }
+
+                    @Override
+                    public void issueCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                    }
+                }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
+            } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
+                mRefresher.setRefreshing(true);
+                mEditor.editIssue(new Editor.IssueEditListener() {
+                    int issueCreationAttempts = 0;
+
+                    @Override
+                    public void issueEdited(Issue issue) {
+                        mAdapter.updateIssue(issue);
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                    }
+
+                    @Override
+                    public void issueEditError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        } else {
+                            if(issueCreationAttempts < 5) {
+                                issueCreationAttempts++;
+                                mEditor.editIssue(this, mRepoPath, issue, assignees, labels);
+                            } else {
+                                Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                mRefresher.setRefreshing(false);
+                            }
+                        }
+
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                    }
+                }, mRepoPath, issue, assignees, labels);
+            }
+        }
     }
 
     @Override
