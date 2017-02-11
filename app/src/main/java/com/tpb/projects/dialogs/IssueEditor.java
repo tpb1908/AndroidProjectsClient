@@ -186,16 +186,7 @@ public class IssueEditor extends AppCompatActivity {
 
     @OnClick(R.id.markdown_editor_discard)
     void onDiscard() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.title_discard_issue);
-        builder.setMessage(R.string.text_discard_issue);
-        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-            finish();
-        });
-        builder.setNegativeButton(R.string.action_no, null);
-        final Dialog deleteDialog = builder.create();
-        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        deleteDialog.show();
+        onBackPressed();
     }
 
     @OnClick(R.id.issue_add_assignees_button)
@@ -336,8 +327,17 @@ public class IssueEditor extends AppCompatActivity {
 
     @Override
     public void finish() {
-        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-        super.finish();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_discard_issue);
+        builder.setMessage(R.string.text_discard_issue);
+        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+            final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+            super.finish();
+        });
+        builder.setNegativeButton(R.string.action_no, null);
+        final Dialog deleteDialog = builder.create();
+        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        deleteDialog.show();
     }
 }
