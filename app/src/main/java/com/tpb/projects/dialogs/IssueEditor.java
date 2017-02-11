@@ -1,6 +1,7 @@
 package com.tpb.projects.dialogs;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +21,8 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Card;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 
@@ -41,6 +43,7 @@ public class IssueEditor extends AppCompatActivity {
 
 
     @BindView(R.id.issue_title_edit) TextView mTitleEdit;
+    @BindView(R.id.issue_body_edit) TextView mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButon;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
@@ -51,6 +54,7 @@ public class IssueEditor extends AppCompatActivity {
     private final ArrayList<String> mAssignees = new ArrayList<>();
     private final ArrayList<String> mSelectedLabels = new ArrayList<>();
 
+    private boolean mIsNewIssue = true;
     private String repoFullName;
 
     @Override
@@ -65,6 +69,47 @@ public class IssueEditor extends AppCompatActivity {
         stub.setLayoutResource(R.layout.stub_issue_editor);
         stub.inflate();
         ButterKnife.bind(this);
+
+        mAssigneesText.setShowUnderLines(false);
+
+        final Intent launchIntent = getIntent();
+        repoFullName = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
+            final Issue issue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
+            mTitleEdit.setText(issue.getTitle());
+            mBodyEdit.setText(issue.getBody());
+
+            if(issue.getAssignees() != null) {
+                for(User u : issue.getAssignees()) mAssignees.add(u.getLogin());
+                setAssigneesText();
+            }
+
+            if(issue.getLabels() != null) {
+                final ArrayList<String> labels = new ArrayList<>();
+                final ArrayList<Integer> colours = new ArrayList<>();
+                for(Label l : issue.getLabels())  {
+                    labels.add(l.getName());
+                    colours.add(l.getColor());
+                }
+                setLabelsText(labels, colours);
+            }
+
+            mIsNewIssue = false;
+        } else if(launchIntent.hasExtra(getString(R.string.parcel_card))) {
+            final Card card = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
+
+            final String[] text = card.getNote().split("\n", 2);
+            if(text[0].length() > 140) {
+                text[1] = text[0].substring(140) + text[1];
+                text[0] = text[0].substring(0, 140);
+            }
+            mTitleEdit.setText(text[0]);
+            if(text.length > 1) {
+                mBodyEdit.setText(text[1]);
+            }
+        }
+
+
 
         final View content = findViewById(android.R.id.content);
 
@@ -86,7 +131,7 @@ public class IssueEditor extends AppCompatActivity {
             }
             else {
                 Log.i(TAG, "onGlobalLayout: Keyboard closed");
-                mInfoLayout.setVisibility(View.VISIBLE);
+                mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
         });

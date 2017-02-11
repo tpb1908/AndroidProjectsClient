@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,8 +58,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
 import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.EditIssueDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 
@@ -630,58 +631,63 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     private void editIssue(Card card) {
-        final EditIssueDialog editDialog = new EditIssueDialog();
-        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
-            @Override
-            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
-                mParent.mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
-                    int issueCreationAttempts = 0;
+        final Intent i = new Intent(getContext(), IssueEditor.class);
+        i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+        i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+        startActivity(i);
 
-                    @Override
-                    public void issueEdited(Issue issue) {
-                        card.setFromIssue(issue);
-                        mAdapter.updateCard(card);
-                        mParent.mRefresher.setRefreshing(false);
-                        resetLastUpdate();
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                    }
-
-                    @Override
-                    public void issueEditError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mParent.mRefresher.setRefreshing(false);
-                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-        
-                        } else {
-                            if(issueCreationAttempts < 5) {
-                                issueCreationAttempts++;
-                                mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
-                            } else {
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                mParent.mRefresher.setRefreshing(false);
-                            }
-                        }
-
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
-                    }
-                }, card.getIssue().getRepoPath(), issue, assignees, labels);
-            }
-
-            @Override
-            public void issueEditCancelled() {
-
-            }
-        });
-        final Bundle c = new Bundle();
-        c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
-        c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
-        editDialog.setArguments(c);
-        editDialog.show(getFragmentManager(), TAG);
+//        final EditIssueDialog editDialog = new EditIssueDialog();
+//        editDialog.setListener(new EditIssueDialog.EditIssueDialogListener() {
+//            @Override
+//            public void issueEdited(Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+//                mParent.mRefresher.setRefreshing(true);
+//                mEditor.editIssue(new Editor.IssueEditListener() {
+//                    int issueCreationAttempts = 0;
+//
+//                    @Override
+//                    public void issueEdited(Issue issue) {
+//                        card.setFromIssue(issue);
+//                        mAdapter.updateCard(card);
+//                        mParent.mRefresher.setRefreshing(false);
+//                        resetLastUpdate();
+//                        final Bundle bundle = new Bundle();
+//                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+//                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+//                    }
+//
+//                    @Override
+//                    public void issueEditError(APIHandler.APIError error) {
+//                        if(error == APIHandler.APIError.NO_CONNECTION) {
+//                            mParent.mRefresher.setRefreshing(false);
+//                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+//
+//                        } else {
+//                            if(issueCreationAttempts < 5) {
+//                                issueCreationAttempts++;
+//                                mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
+//                            } else {
+//                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+//                                mParent.mRefresher.setRefreshing(false);
+//                            }
+//                        }
+//
+//                        final Bundle bundle = new Bundle();
+//                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+//                        mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+//                    }
+//                }, card.getIssue().getRepoPath(), issue, assignees, labels);
+//            }
+//
+//            @Override
+//            public void issueEditCancelled() {
+//
+//            }
+//        });
+//        final Bundle c = new Bundle();
+//        c.putParcelable(getString(R.string.parcel_issue), card.getIssue());
+//        c.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+//        editDialog.setArguments(c);
+//        editDialog.show(getFragmentManager(), TAG);
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {
