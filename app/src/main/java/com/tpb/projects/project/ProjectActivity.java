@@ -665,11 +665,16 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     @Override
                     public void issueCreated(Issue issue) {
                         mAdapter.getCurrentFragment().createIssueCard(issue);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                     }
 
                     @Override
                     public void issueCreationError(APIHandler.APIError error) {
-
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 

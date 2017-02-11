@@ -118,7 +118,6 @@ public class IssueEditor extends AppCompatActivity {
             }
         }
 
-
         final View content = findViewById(android.R.id.content);
 
         content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {

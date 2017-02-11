@@ -57,8 +57,8 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.EditIssueDialog;
+import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.dialogs.MultiChoiceDialog;
-import com.tpb.projects.dialogs.NewIssueDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 
@@ -516,24 +516,46 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
     @OnClick(R.id.issues_fab)
     public void createNewIssue() {
-        final NewIssueDialog newDialog = new NewIssueDialog();
-        newDialog.setListener(new NewIssueDialog.IssueDialogListener() {
-            @Override
-            public void issueCreated(Issue issue) {
-                mAdapter.addIssue(issue);
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
-            }
+        final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
+        intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
+    }
 
-            @Override
-            public void issueCreationCancelled() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == IssueEditor.RESULT_OK) {
+            if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
+                String[] assignees = null;
+                String[] labels = null;
+                if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                }
+                if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                    labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+                }
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+                mRefresher.setRefreshing(true);
+                mEditor.createIssue(new Editor.IssueCreationListener() {
+                    @Override
+                    public void issueCreated(Issue issue) {
+                        mAdapter.addIssue(issue);
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                    }
+
+                    @Override
+                    public void issueCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                        final Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                    }
+                }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
             }
-        });
-        final Bundle c = new Bundle();
-        c.putString(getString(R.string.intent_repo), mRepoPath);
-        newDialog.setArguments(c);
-        newDialog.show(getSupportFragmentManager(), TAG);
+        }
     }
 
     @Override
