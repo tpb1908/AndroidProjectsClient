@@ -250,6 +250,8 @@
     <string name="intent_drawable" translatable="false">drawable</string>
     <string name="intent_markdown" translatable="false">markdown</string>
     <string name="intent_card_id" translatable="false">card_id</string>
+    <string name="intent_issue_assignees" translatable="false">issue_assignees</string>
+    <string name="intent_issue_labels" translatable="false">issue_labels</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>
     <string name="parcel_card" translatable="false">card</string>

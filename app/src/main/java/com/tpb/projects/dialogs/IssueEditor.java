@@ -41,6 +41,9 @@ import butterknife.OnClick;
 public class IssueEditor extends AppCompatActivity {
     private static final String TAG = IssueEditor.class.getSimpleName();
 
+    public static final int REQUEST_CODE_NEW_ISSUE = 3025;
+    public static final int REQUEST_CODE_EDIT_ISSUE = 1188;
+    public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
     @BindView(R.id.issue_title_edit) TextView mTitleEdit;
     @BindView(R.id.issue_body_edit) TextView mBodyEdit;
@@ -54,7 +57,9 @@ public class IssueEditor extends AppCompatActivity {
     private final ArrayList<String> mAssignees = new ArrayList<>();
     private final ArrayList<String> mSelectedLabels = new ArrayList<>();
 
-    private boolean mIsNewIssue = true;
+    private Card mLaunchCard;
+    private Issue mLaunchIssue;
+
     private String repoFullName;
 
     @Override
@@ -75,30 +80,30 @@ public class IssueEditor extends AppCompatActivity {
         final Intent launchIntent = getIntent();
         repoFullName = launchIntent.getStringExtra(getString(R.string.intent_repo));
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
-            final Issue issue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
-            mTitleEdit.setText(issue.getTitle());
-            mBodyEdit.setText(issue.getBody());
+            mLaunchIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
+            mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
+            mTitleEdit.setText(mLaunchIssue.getTitle());
+            mBodyEdit.setText(mLaunchIssue.getBody());
 
-            if(issue.getAssignees() != null) {
-                for(User u : issue.getAssignees()) mAssignees.add(u.getLogin());
+            if(mLaunchIssue.getAssignees() != null) {
+                for(User u : mLaunchIssue.getAssignees()) mAssignees.add(u.getLogin());
                 setAssigneesText();
             }
 
-            if(issue.getLabels() != null) {
+            if(mLaunchIssue.getLabels() != null) {
                 final ArrayList<String> labels = new ArrayList<>();
                 final ArrayList<Integer> colours = new ArrayList<>();
-                for(Label l : issue.getLabels())  {
+                for(Label l : mLaunchIssue.getLabels())  {
                     labels.add(l.getName());
                     colours.add(l.getColor());
                 }
                 setLabelsText(labels, colours);
             }
 
-            mIsNewIssue = false;
         } else if(launchIntent.hasExtra(getString(R.string.parcel_card))) {
-            final Card card = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
+            mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
 
-            final String[] text = card.getNote().split("\n", 2);
+            final String[] text = mLaunchCard.getNote().split("\n", 2);
             if(text[0].length() > 140) {
                 text[1] = text[0].substring(140) + text[1];
                 text[0] = text[0].substring(0, 140);
@@ -108,7 +113,6 @@ public class IssueEditor extends AppCompatActivity {
                 mBodyEdit.setText(text[1]);
             }
         }
-
 
 
         final View content = findViewById(android.R.id.content);
@@ -143,6 +147,23 @@ public class IssueEditor extends AppCompatActivity {
             }
         });
 
+    }
+
+    @OnClick(R.id.markdown_editor_done)
+    void onDone() {
+        final Intent done = new Intent();
+        if(mLaunchIssue == null) {
+            mLaunchIssue = new Issue();
+        }
+        mLaunchIssue.setTitle(mTitleEdit.getText().toString());
+        mLaunchIssue.setBody(mBodyEdit.getText().toString());
+        done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
+        if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
+        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+
+        setResult(RESULT_OK, done);
+        finish();
     }
 
     @OnClick(R.id.issue_add_assignees_button)
