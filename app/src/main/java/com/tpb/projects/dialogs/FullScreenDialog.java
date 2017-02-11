@@ -41,8 +41,6 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         final WebView wv = new WebView(getContext());
         wv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         final ProgressBar pb = new ProgressBar(getContext());
-//        final MarkedView view = new MarkedView(getContext());
-//        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         final AlertDialog ad = new AlertDialog.Builder(getActivity()).setView(pb).create();
         if(getArguments() != null &&  getArguments().containsKey(getString(R.string.intent_markdown))) {
