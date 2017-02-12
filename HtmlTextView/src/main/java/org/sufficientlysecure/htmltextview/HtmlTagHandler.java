@@ -151,13 +151,18 @@ class HtmlTagHandler implements Html.TagHandler {
                 if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                     output.append("\n");
                 }
-                String parentList = lists.peek();
-                if (parentList.equalsIgnoreCase(ORDERED_LIST)) {
+                if(!lists.isEmpty()) {
+                    String parentList = lists.peek();
+                    if(parentList.equalsIgnoreCase(ORDERED_LIST)) {
+                        start(output, new Ol());
+                        output.append(olNextIndex.peek().toString()).append("•");
+                        olNextIndex.push(olNextIndex.pop() + 1);
+                    } else if(parentList.equalsIgnoreCase(UNORDERED_LIST)) {
+                        start(output, new Ul());
+                    }
+                } else {
                     start(output, new Ol());
-                    output.append(olNextIndex.peek().toString()).append(". ");
-                    olNextIndex.push(olNextIndex.pop() + 1);
-                } else if (parentList.equalsIgnoreCase(UNORDERED_LIST)) {
-                    start(output, new Ul());
+                    output.append("•");
                 }
             } else if (tag.equalsIgnoreCase("code")) {
                 start(output, new Code());
@@ -194,34 +199,38 @@ class HtmlTagHandler implements Html.TagHandler {
                 lists.pop();
                 olNextIndex.pop();
             } else if (tag.equalsIgnoreCase(LIST_ITEM)) {
-                if (lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
-                    if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                        output.append("\n");
-                    }
-                    // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
-                    int bulletMargin = indent;
-                    if (lists.size() > 1) {
-                        bulletMargin = indent - bullet.getLeadingMargin(true);
-                        if (lists.size() > 2) {
-                            // This get's more complicated when we add a LeadingMarginSpan into the same line:
-                            // we have also counter it's effect to BulletSpan
-                            bulletMargin -= (lists.size() - 2) * listItemIndent;
+                if(!lists.isEmpty()) {
+                    if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
+                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                            output.append("\n");
                         }
+                        // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
+                        int bulletMargin = indent;
+                        if(lists.size() > 1) {
+                            bulletMargin = indent - bullet.getLeadingMargin(true);
+                            if(lists.size() > 2) {
+                                // This get's more complicated when we add a LeadingMarginSpan into the same line:
+                                // we have also counter it's effect to BulletSpan
+                                bulletMargin -= (lists.size() - 2) * listItemIndent;
+                            }
+                        }
+                        BulletSpan newBullet = new BulletSpan(bulletMargin);
+                        end(output, Ul.class, false,
+                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
+                                newBullet);
+                    } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
+                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                            output.append("\n");
+                        }
+                        int numberMargin = listItemIndent * (lists.size() - 1);
+                        if(lists.size() > 2) {
+                            // Same as in ordered lists: counter the effect of nested Spans
+                            numberMargin -= (lists.size() - 2) * listItemIndent;
+                        }
+                        end(output, Ol.class, false, new LeadingMarginSpan.Standard(numberMargin));
                     }
-                    BulletSpan newBullet = new BulletSpan(bulletMargin);
-                    end(output, Ul.class, false,
-                            new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                            newBullet);
-                } else if (lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
-                    if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                        output.append("\n");
-                    }
-                    int numberMargin = listItemIndent * (lists.size() - 1);
-                    if (lists.size() > 2) {
-                        // Same as in ordered lists: counter the effect of nested Spans
-                        numberMargin -= (lists.size() - 2) * listItemIndent;
-                    }
-                    end(output, Ol.class, false, new LeadingMarginSpan.Standard(numberMargin));
+                } else {
+                    end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }
             } else if (tag.equalsIgnoreCase("code")) {
                 Log.i("TagHandler", "handleTag: Handling code tag");

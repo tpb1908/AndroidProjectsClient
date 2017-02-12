@@ -216,7 +216,6 @@ public class Data {
                         p = cs[j];
                     }
                 }
-                Log.i(TAG, "formatMD: Found code: " + builder.toString());
             } else {
                 builder.append(cs[i]);
             }

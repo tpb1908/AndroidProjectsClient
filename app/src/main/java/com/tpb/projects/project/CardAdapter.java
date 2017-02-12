@@ -298,10 +298,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
             final String parsed = Data.parseMD(builder.toString(), card.getIssue().getRepoPath());
 
-            if(card.getIssue().getNumber() == 28) {
-                Log.i(TAG, "bindIssueCard: Problem: " + parsed);
-            }
-
             mCards.set(pos, new Pair<>(card, parsed));
             holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));
         } else {
