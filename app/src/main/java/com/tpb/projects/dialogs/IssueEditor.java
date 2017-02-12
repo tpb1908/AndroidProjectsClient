@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -52,7 +54,7 @@ public class IssueEditor extends AppCompatActivity {
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
     @BindView(R.id.issue_body_edit) EditText mBodyEdit;
-    @BindView(R.id.markdown_editor_discard) Button mDiscardButon;
+    @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
     @BindView(R.id.issue_assignees_text) HtmlTextView mAssigneesText;
@@ -66,6 +68,8 @@ public class IssueEditor extends AppCompatActivity {
     private Issue mLaunchIssue;
 
     private String repoFullName;
+
+    private boolean mHasBeenEdited = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,6 +123,26 @@ public class IssueEditor extends AppCompatActivity {
             }
         }
 
+        final TextWatcher editWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mHasBeenEdited = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+
+        mTitleEdit.addTextChangedListener(editWatcher);
+        mBodyEdit.addTextChangedListener(editWatcher);
+
         final View content = findViewById(android.R.id.content);
 
         content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
@@ -147,6 +171,7 @@ public class IssueEditor extends AppCompatActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
+                mHasBeenEdited = true;
                 if(mTitleEdit.hasFocus()) {
                     final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
                     mTitleEdit.getText().insert(start, snippet);
@@ -220,6 +245,7 @@ public class IssueEditor extends AppCompatActivity {
                             if(checked[i]) mAssignees.add(choices[i]);
                         }
                         setAssigneesText();
+                        mHasBeenEdited = true;
                     }
 
                     @Override
@@ -279,6 +305,7 @@ public class IssueEditor extends AppCompatActivity {
                             }
                         }
                         setLabelsText(labels, colours);
+                        mHasBeenEdited = true;
                     }
 
                     @Override
@@ -327,17 +354,22 @@ public class IssueEditor extends AppCompatActivity {
 
     @Override
     public void finish() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.title_discard_issue);
-        builder.setMessage(R.string.text_discard_issue);
-        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-            final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(mHasBeenEdited) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.title_discard_issue);
+            builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            });
+            builder.setNegativeButton(R.string.action_no, null);
+            final Dialog deleteDialog = builder.create();
+            deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            deleteDialog.show();
+        } else {
+            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
             super.finish();
-        });
-        builder.setNegativeButton(R.string.action_no, null);
-        final Dialog deleteDialog = builder.create();
-        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        deleteDialog.show();
+        }
     }
 }
