@@ -21,7 +21,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -158,6 +157,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
                 final Spanned text;
                 if(removeFromHtmlSpace) {
+                    Log.i(TAG, "run: Text is " + overridden);
                     text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
                 } else {
                     text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
@@ -227,7 +227,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-            Log.i(TAG, "enableImageClicks: Enabling click on span with drawable " + (((BitmapDrawable) span.getDrawable()).getBitmap() == null) );
             s.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
@@ -262,7 +261,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             endIndex = text.indexOf("</code>", startIndex);
             if(endIndex != -1) {
                 spans[i].setCode(text.substring(startIndex + "<code>".length(), endIndex));
-                Log.i(TAG, "enableCodeClicks: Setting code "+ spans[i].mCode);
                 spans[i].setHandler(mCodeHandler);
             }
             i++;

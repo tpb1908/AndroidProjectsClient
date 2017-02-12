@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +50,8 @@ public class IssueEditor extends AppCompatActivity {
     public static final int REQUEST_CODE_EDIT_ISSUE = 1188;
     public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
-    @BindView(R.id.issue_title_edit) TextView mTitleEdit;
-    @BindView(R.id.issue_body_edit) TextView mBodyEdit;
+    @BindView(R.id.issue_title_edit) EditText mTitleEdit;
+    @BindView(R.id.issue_body_edit) EditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButon;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
@@ -145,10 +146,24 @@ public class IssueEditor extends AppCompatActivity {
 
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
-            public void snippetEntered(String snippet) {
+            public void snippetEntered(String snippet, int relativePosition) {
+                if(mTitleEdit.hasFocus()) {
+                    final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
+                    mTitleEdit.getText().insert(start, snippet);
+                    mTitleEdit.setSelection(start + relativePosition);
+                } else if(mBodyEdit.hasFocus()) {
+                    final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
+                    mBodyEdit.getText().insert(start, snippet);
+                    mBodyEdit.setSelection(start + relativePosition);
+                }
+            }
 
+            @Override
+            public String getText() {
+                return mBodyEdit.getText().toString();
             }
         });
+
 
     }
 
@@ -171,16 +186,7 @@ public class IssueEditor extends AppCompatActivity {
 
     @OnClick(R.id.markdown_editor_discard)
     void onDiscard() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.title_discard_issue);
-        builder.setMessage(R.string.text_discard_issue);
-        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-            finish();
-        });
-        builder.setNegativeButton(R.string.action_no, null);
-        final Dialog deleteDialog = builder.create();
-        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        deleteDialog.show();
+        onBackPressed();
     }
 
     @OnClick(R.id.issue_add_assignees_button)
@@ -321,8 +327,17 @@ public class IssueEditor extends AppCompatActivity {
 
     @Override
     public void finish() {
-        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-        super.finish();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_discard_issue);
+        builder.setMessage(R.string.text_discard_issue);
+        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+            final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+            super.finish();
+        });
+        builder.setNegativeButton(R.string.action_no, null);
+        final Dialog deleteDialog = builder.create();
+        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        deleteDialog.show();
     }
 }

@@ -28,6 +28,7 @@
     <string name="action_no">No</string>
     <string name="action_discard">Discard</string>
     <string name="action_done">Done</string>
+    <string name="action_insert">Insert</string>
 
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
