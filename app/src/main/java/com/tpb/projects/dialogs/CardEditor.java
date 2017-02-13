@@ -2,6 +2,7 @@ package com.tpb.projects.dialogs;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -123,7 +124,30 @@ public class CardEditor extends AppCompatActivity {
             }
         });
 
+        final View content = findViewById(android.R.id.content);
 
+        content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            final Rect r = new Rect();
+            content.getWindowVisibleDisplayFrame(r);
+            final int screenHeight = content.getRootView().getHeight();
+
+            // r.bottom is the position above soft keypad or device button.
+            // if keypad is shown, the r.bottom is smaller than that before.
+            final int keypadHeight = screenHeight - r.bottom;
+
+            Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+            if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                Log.i(TAG, "onGlobalLayout: Keyboard open");
+                mIssueButton.setVisibility(View.GONE);
+                // keyboard is opened
+            }
+            else {
+                Log.i(TAG, "onGlobalLayout: Keyboard closed");
+                mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
+                // keyboard is closed
+            }
+        });
 
     }
 }
