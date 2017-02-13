@@ -329,7 +329,12 @@ public class IssueEditor extends AppCompatActivity {
             builder.append(String.format(getString(R.string.text_href), "https://github.com/" + a, a));
             builder.append("<br>");
         }
-        mAssigneesText.setHtml(builder.toString());
+        if(builder.length() > 0) {
+            mAssigneesText.setVisibility(View.VISIBLE);
+            mAssigneesText.setHtml(builder.toString());
+        } else {
+            mAssigneesText.setVisibility(View.GONE);
+        }
     }
 
     private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {
@@ -342,7 +347,13 @@ public class IssueEditor extends AppCompatActivity {
             builder.append(s);
             builder.append('\n');
         }
-        mLabelsText.setText(builder, TextView.BufferType.SPANNABLE);
+        if(builder.length() > 0) {
+            mLabelsText.setVisibility(View.VISIBLE);
+            mLabelsText.setText(builder, TextView.BufferType.SPANNABLE);
+        } else {
+            mLabelsText.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
