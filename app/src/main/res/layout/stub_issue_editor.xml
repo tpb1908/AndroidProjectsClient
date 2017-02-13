@@ -9,6 +9,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:layout_margin="8dp"
             android:layout_gravity="bottom"
             android:hint="@string/hint_issue_title">
 
@@ -26,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_margin="8dp"
             android:hint="@string/hint_issue_body">
 
             <android.support.design.widget.TextInputEditText
@@ -64,9 +66,7 @@
                     android:id="@+id/issue_assignees_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:gravity="center_horizontal"/>
 
             </LinearLayout>
 
@@ -88,9 +88,7 @@
                     android:id="@+id/issue_labels_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:gravity="center_horizontal"/>
 
             </LinearLayout>
 

@@ -99,7 +99,7 @@ public class IssueEditor extends AppCompatActivity {
                 setAssigneesText();
             }
 
-            if(mLaunchIssue.getLabels() != null) {
+            if(mLaunchIssue.getLabels() != null && mLaunchIssue.getLabels().length > 0) {
                 final ArrayList<String> labels = new ArrayList<>();
                 final ArrayList<Integer> colours = new ArrayList<>();
                 for(Label l : mLaunchIssue.getLabels())  {
@@ -157,12 +157,10 @@ public class IssueEditor extends AppCompatActivity {
             Log.d(TAG, "keypadHeight = " + keypadHeight);
 
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                Log.i(TAG, "onGlobalLayout: Keyboard open");
                 mInfoLayout.setVisibility(View.GONE);
                 // keyboard is opened
             }
             else {
-                Log.i(TAG, "onGlobalLayout: Keyboard closed");
                 mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
