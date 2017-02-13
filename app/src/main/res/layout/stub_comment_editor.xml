@@ -23,7 +23,8 @@
             android:layout_height="match_parent"
             android:inputType="textMultiLine|textCapSentences"
             android:imeOptions="actionNone"
-            android:scrollHorizontally="false"/>
+            android:scrollHorizontally="false"
+            android:gravity="top"/>
 
     </android.support.design.widget.TextInputLayout>
 

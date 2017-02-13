@@ -23,7 +23,8 @@
             android:layout_height="match_parent"
             android:inputType="textMultiLine|textCapSentences"
             android:imeOptions="actionNone"
-            android:scrollHorizontally="false"/>
+            android:scrollHorizontally="false"
+            android:gravity="top"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -35,6 +36,7 @@
         android:layout_weight="0"
         android:text="@string/hint_from_issue"
         android:background="?android:attr/selectableItemBackground"
-        style="@style/Widget.AppCompat.Button.Borderless"/>
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:visibility="gone"/>
 
 </LinearLayout>

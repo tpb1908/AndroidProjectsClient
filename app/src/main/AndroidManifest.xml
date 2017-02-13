@@ -73,7 +73,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".dialogs.IssueEditor" android:exported="true"/>
+        <activity android:name=".dialogs.IssueEditor" />
+
+        <activity android:name=".dialogs.CardEditor" />
 
         <activity android:name=".data.SettingsActivity">
 

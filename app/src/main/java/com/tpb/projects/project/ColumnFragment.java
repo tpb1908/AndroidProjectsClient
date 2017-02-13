@@ -57,6 +57,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.dialogs.CardDialog;
+import com.tpb.projects.dialogs.CardEditor;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
 import com.tpb.projects.dialogs.IssueEditor;
@@ -405,11 +406,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case R.id.menu_edit_note:
-                    final CardDialog dialog = new CardDialog();
-                    final Bundle b = new Bundle();
-                    b.putParcelable(getString(R.string.parcel_card), card);
-                    dialog.setArguments(b);
-                    showCardDialog(dialog);
+                    final Intent i = new Intent(getContext(), CardEditor.class);
+                    i.putExtra(getString(R.string.parcel_card), card);
+                    startActivity(i);
                     break;
                 case R.id.menu_delete_note:
                     mParent.deleteCard(card, true);
@@ -444,12 +443,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle(R.string.title_close_issue);
                     builder.setMessage(R.string.text_close_issue_on_delete);
-                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, j) -> {
                         mEditor.closeIssue(null, mParent.mProject.getRepoPath(), card.getIssue().getNumber());
                         mParent.deleteCard(card, false);
                     });
                     builder.setNeutralButton(R.string.action_cancel, null);
-                    builder.setNegativeButton(R.string.action_no, (dialogInterface, i) -> mParent.deleteCard(card, false));
+                    builder.setNegativeButton(R.string.action_no, (dialogInterface, j) -> mParent.deleteCard(card, false));
                     final Dialog deleteDialog = builder.create();
                     deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                     deleteDialog.show();
@@ -802,11 +801,9 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(card.hasIssue()) {
                     showIssueEditor(card);
                 } else {
-                    final CardDialog dialog = new CardDialog();
-                    final Bundle b = new Bundle();
-                    b.putParcelable(getString(R.string.parcel_card), card);
-                    dialog.setArguments(b);
-                    showCardDialog(dialog);
+                    final Intent i = new Intent(getContext(), CardEditor.class);
+                    i.putExtra(getString(R.string.parcel_card), card);
+                    startActivity(i);
                 }
                 break;
             case FULLSCREEN:
