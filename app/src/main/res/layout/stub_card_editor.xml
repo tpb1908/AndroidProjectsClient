@@ -6,6 +6,7 @@
               android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/card_note_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -19,11 +20,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textMultiLine|textCapSentences"
+            android:maxLength="250"
             android:imeOptions="actionNone"
             android:scrollHorizontally="false"
             android:gravity="top"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/card_clear_issue_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="0"
+        android:text="@string/text_clear"
+        android:background="?android:attr/selectableItemBackground"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/card_from_issue_button"

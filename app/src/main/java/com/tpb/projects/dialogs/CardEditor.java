@@ -7,10 +7,14 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.Html;
+import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -26,6 +30,8 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
+import com.tpb.projects.util.Data;
 
 import java.util.ArrayList;
 
@@ -45,9 +51,11 @@ public class CardEditor extends AppCompatActivity {
 
     @BindView(R.id.card_note_edit) EditText mEditor;
     @BindView(R.id.card_from_issue_button) Button mIssueButton;
+    @BindView(R.id.card_clear_issue_button) Button mClearButton;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
+    @BindView(R.id.card_note_wrapper) TextInputLayout mEditorWrapper;
 
     private Card mCard;
 
@@ -112,6 +120,11 @@ public class CardEditor extends AppCompatActivity {
                         scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
                             Log.i(TAG, "issuesLoaded: Issue selected: " + validIssues.get(selectedIssuePosition));
                             mCard.setFromIssue(validIssues.get(selectedIssuePosition));
+                            mEditor.setFilters(new InputFilter[] {});
+                            bindIssue(mCard.getIssue());
+                            mEditor.setEnabled(false);
+                            mEditorWrapper.setCounterEnabled(false);
+                            mClearButton.setVisibility(View.VISIBLE);
                         }));
                         scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
                         scBuilder.create().show();
@@ -124,12 +137,20 @@ public class CardEditor extends AppCompatActivity {
                     }
                 }, fullRepoName);
             });
+
+            mClearButton.setOnClickListener((v) -> {
+                mEditor.setText("");
+                mEditor.setFilters(new InputFilter[] { new InputFilter.LengthFilter(250) });
+                mEditorWrapper.setCounterEnabled(true);
+                mCard = new Card();
+                mClearButton.setVisibility(View.GONE);
+            });
         }
 
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus()) {
+                if(mEditor.hasFocus() && mEditor.isEnabled()) {
                     final int start = Math.max(mEditor.getSelectionStart(), 0);
                     mEditor.getText().insert(start, snippet);
                     mEditor.setSelection(start + relativePosition);
@@ -153,16 +174,11 @@ public class CardEditor extends AppCompatActivity {
             // if keypad is shown, the r.bottom is smaller than that before.
             final int keypadHeight = screenHeight - r.bottom;
 
-            Log.d(TAG, "keypadHeight = " + keypadHeight);
-
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                Log.i(TAG, "onGlobalLayout: Keyboard open");
                 mIssueButton.setVisibility(View.GONE);
                 // keyboard is opened
             }
             else if(mIssueButton.hasOnClickListeners()){
-                Log.i(TAG, "onGlobalLayout: Keyboard closed");
-
                 mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
@@ -185,6 +201,33 @@ public class CardEditor extends AppCompatActivity {
             }
         });
 
+    }
+    
+    private void bindIssue(Issue issue) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("<h1>");
+        builder.append(issue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append("</h1>");
+        builder.append("\n");
+        if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
+            builder.append(issue.getBody().replaceFirst("\\s++$", ""));
+            builder.append("\n");
+        }
+        if(issue.getLabels() != null && issue.getLabels().length > 0) {
+            Label.appendLabels(builder, issue.getLabels(), "   ");
+        }
+        builder.append("\n");
+        builder.append(
+                String.format(
+                        getString(R.string.text_opened_this_issue),
+                        String.format(getString(R.string.text_href),
+                                "https://github.com/" + issue.getOpenedBy().getLogin(),
+                                issue.getOpenedBy().getLogin()
+                        ),
+                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
+                )
+        );
+        mEditor.setText(Html.fromHtml(Data.parseMD(builder.toString(), issue.getRepoPath())));
     }
 
     @OnClick(R.id.markdown_editor_done)

@@ -149,6 +149,7 @@
     <string name="text_unstar">Unstar</string>
     <string name="text_watch">Watch</string>
     <string name="text_unwatch">Unwatch</string>
+    <string name="text_clear">Clear</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
