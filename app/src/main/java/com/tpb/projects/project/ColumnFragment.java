@@ -348,7 +348,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         colorFade.start();
 
         //Initial height is the top cardview
-        int height = ((LinearLayout)mNestedScroller.getChildAt(0)).getChildAt(0).getHeight();
+        int height = ((LinearLayout) mNestedScroller.getChildAt(0)).getChildAt(0).getHeight();
         for(int i = 0; i < mRecycler.getChildCount() && i < index; i++) {
             height += mRecycler.getChildAt(i).getHeight();
         }
@@ -680,7 +680,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
@@ -715,7 +714,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
                 } else {
                     if(cardDeletionAttempts < 5) {
                         cardDeletionAttempts++;
@@ -754,7 +752,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                 mAnalytics.logEvent(Analytics.TAG_CARD_TO_ISSUE, bundle);
-
             }
 
             @Override
@@ -762,7 +759,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
                 } else {
                     if(issueCardCreationAttempts < 5) {
                         issueCardCreationAttempts++;

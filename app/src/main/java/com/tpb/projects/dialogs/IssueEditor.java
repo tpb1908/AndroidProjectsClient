@@ -369,7 +369,7 @@ public class IssueEditor extends AppCompatActivity {
         } else {
             final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-            super.finish();
+            mDoneButton.postDelayed(super::finish, 150);
         }
     }
 }
