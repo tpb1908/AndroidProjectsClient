@@ -55,9 +55,9 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.IssueEditor;
-import com.tpb.projects.dialogs.MultiChoiceDialog;
+import com.tpb.projects.editors.CommentDialog;
+import com.tpb.projects.editors.IssueEditor;
+import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 

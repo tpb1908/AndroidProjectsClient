@@ -56,10 +56,10 @@ import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.dialogs.CardEditor;
-import com.tpb.projects.dialogs.CommentDialog;
-import com.tpb.projects.dialogs.FullScreenDialog;
-import com.tpb.projects.dialogs.IssueEditor;
+import com.tpb.projects.editors.CardEditor;
+import com.tpb.projects.editors.CommentDialog;
+import com.tpb.projects.editors.FullScreenDialog;
+import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
