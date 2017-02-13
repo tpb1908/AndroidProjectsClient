@@ -61,7 +61,7 @@ import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.dialogs.CardDialog;
+import com.tpb.projects.dialogs.CardEditor;
 import com.tpb.projects.dialogs.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
@@ -484,18 +484,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @OnClick(R.id.project_add_card)
     void addCard() {
         mMenu.close(true);
-        final CardDialog dialog = new CardDialog();
+        final Intent intent = new Intent(this, CardEditor.class);
+
         final ArrayList<Integer> ids = new ArrayList<>();
         for(int i = 0; i < mAdapter.getCount(); i++) {
             for(Card c : mAdapter.getExistingFragment(i).getCards()) {
                 if(c.hasIssue()) ids.add(c.getIssue().getId());
             }
         }
-        final Bundle bundle = new Bundle();
-        bundle.putString(getString(R.string.intent_repo), mProject.getRepoPath());
-        bundle.putIntegerArrayList(getString(R.string.intent_int_arraylist), ids);
-        dialog.setArguments(bundle);
-        mAdapter.getCurrentFragment().showCardDialog(dialog);
+        intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
+        intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
+        startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
+        //mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
 
     void deleteCard(Card card, boolean showWarning) {
@@ -650,7 +650,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == IssueEditor.RESULT_OK) {
+        if(resultCode == AppCompatActivity.RESULT_OK) {
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
                 String[] labels = null;
@@ -678,6 +678,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 
+            } else if(requestCode == CardEditor.REQUEST_CODE_NEW_CARD) {
+                final Card card = data.getParcelableExtra(getString(R.string.parcel_card));
+                if(card.hasIssue()) {
+                    mAdapter.getCurrentFragment().createIssueCard(card.getIssue());
+                } else {
+                    mAdapter.getCurrentFragment().newCard(card);
+                }
+            } else if(requestCode == CardEditor.REQUEST_CODE_EDIT_CARD) {
+                mAdapter.getCurrentFragment().editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
             }
         }
     }

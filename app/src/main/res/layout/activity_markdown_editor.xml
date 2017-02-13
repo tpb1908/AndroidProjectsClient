@@ -71,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:scrollbars="none"
+        android:layout_marginTop="8dp"
         android:minHeight="48dp"
         android:background="@color/cardview_dark_background">
 
@@ -83,6 +84,5 @@
         </LinearLayout>
 
     </HorizontalScrollView>
-
 
 </RelativeLayout>

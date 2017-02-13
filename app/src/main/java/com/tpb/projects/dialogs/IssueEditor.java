@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -52,7 +54,7 @@ public class IssueEditor extends AppCompatActivity {
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
     @BindView(R.id.issue_body_edit) EditText mBodyEdit;
-    @BindView(R.id.markdown_editor_discard) Button mDiscardButon;
+    @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
     @BindView(R.id.issue_assignees_text) HtmlTextView mAssigneesText;
@@ -66,6 +68,8 @@ public class IssueEditor extends AppCompatActivity {
     private Issue mLaunchIssue;
 
     private String repoFullName;
+
+    private boolean mHasBeenEdited = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +99,7 @@ public class IssueEditor extends AppCompatActivity {
                 setAssigneesText();
             }
 
-            if(mLaunchIssue.getLabels() != null) {
+            if(mLaunchIssue.getLabels() != null && mLaunchIssue.getLabels().length > 0) {
                 final ArrayList<String> labels = new ArrayList<>();
                 final ArrayList<Integer> colours = new ArrayList<>();
                 for(Label l : mLaunchIssue.getLabels())  {
@@ -119,6 +123,26 @@ public class IssueEditor extends AppCompatActivity {
             }
         }
 
+        final TextWatcher editWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mHasBeenEdited = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+
+        mTitleEdit.addTextChangedListener(editWatcher);
+        mBodyEdit.addTextChangedListener(editWatcher);
+
         final View content = findViewById(android.R.id.content);
 
         content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
@@ -133,12 +157,10 @@ public class IssueEditor extends AppCompatActivity {
             Log.d(TAG, "keypadHeight = " + keypadHeight);
 
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                Log.i(TAG, "onGlobalLayout: Keyboard open");
                 mInfoLayout.setVisibility(View.GONE);
                 // keyboard is opened
             }
             else {
-                Log.i(TAG, "onGlobalLayout: Keyboard closed");
                 mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
@@ -147,6 +169,7 @@ public class IssueEditor extends AppCompatActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
+                mHasBeenEdited = true;
                 if(mTitleEdit.hasFocus()) {
                     final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
                     mTitleEdit.getText().insert(start, snippet);
@@ -165,28 +188,6 @@ public class IssueEditor extends AppCompatActivity {
         });
 
 
-    }
-
-    @OnClick(R.id.markdown_editor_done)
-    void onDone() {
-        final Intent done = new Intent();
-        if(mLaunchIssue == null) {
-            mLaunchIssue = new Issue();
-        }
-        mLaunchIssue.setTitle(mTitleEdit.getText().toString());
-        mLaunchIssue.setBody(mBodyEdit.getText().toString());
-        done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
-        if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
-        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
-        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
-
-        setResult(RESULT_OK, done);
-        finish();
-    }
-
-    @OnClick(R.id.markdown_editor_discard)
-    void onDiscard() {
-        onBackPressed();
     }
 
     @OnClick(R.id.issue_add_assignees_button)
@@ -220,6 +221,7 @@ public class IssueEditor extends AppCompatActivity {
                             if(checked[i]) mAssignees.add(choices[i]);
                         }
                         setAssigneesText();
+                        mHasBeenEdited = true;
                     }
 
                     @Override
@@ -279,6 +281,7 @@ public class IssueEditor extends AppCompatActivity {
                             }
                         }
                         setLabelsText(labels, colours);
+                        mHasBeenEdited = true;
                     }
 
                     @Override
@@ -304,7 +307,12 @@ public class IssueEditor extends AppCompatActivity {
             builder.append(String.format(getString(R.string.text_href), "https://github.com/" + a, a));
             builder.append("<br>");
         }
-        mAssigneesText.setHtml(builder.toString());
+        if(builder.length() > 0) {
+            mAssigneesText.setVisibility(View.VISIBLE);
+            mAssigneesText.setHtml(builder.toString());
+        } else {
+            mAssigneesText.setVisibility(View.GONE);
+        }
     }
 
     private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {
@@ -317,7 +325,36 @@ public class IssueEditor extends AppCompatActivity {
             builder.append(s);
             builder.append('\n');
         }
-        mLabelsText.setText(builder, TextView.BufferType.SPANNABLE);
+        if(builder.length() > 0) {
+            mLabelsText.setVisibility(View.VISIBLE);
+            mLabelsText.setText(builder, TextView.BufferType.SPANNABLE);
+        } else {
+            mLabelsText.setVisibility(View.GONE);
+        }
+
+    }
+
+    @OnClick(R.id.markdown_editor_done)
+    void onDone() {
+        final Intent done = new Intent();
+        if(mLaunchIssue == null) {
+            mLaunchIssue = new Issue();
+        }
+        mLaunchIssue.setTitle(mTitleEdit.getText().toString());
+        mLaunchIssue.setBody(mBodyEdit.getText().toString());
+        done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
+        if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
+        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+
+        setResult(RESULT_OK, done);
+        mHasBeenEdited = false;
+        finish();
+    }
+
+    @OnClick(R.id.markdown_editor_discard)
+    void onDiscard() {
+        onBackPressed();
     }
 
     @Override
@@ -327,17 +364,22 @@ public class IssueEditor extends AppCompatActivity {
 
     @Override
     public void finish() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.title_discard_issue);
-        builder.setMessage(R.string.text_discard_issue);
-        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-            final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(mHasBeenEdited) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.title_discard_issue);
+            builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            });
+            builder.setNegativeButton(R.string.action_no, null);
+            final Dialog deleteDialog = builder.create();
+            deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            deleteDialog.show();
+        } else {
+            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-            super.finish();
-        });
-        builder.setNegativeButton(R.string.action_no, null);
-        final Dialog deleteDialog = builder.create();
-        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        deleteDialog.show();
+            mDoneButton.postDelayed(super::finish, 150);
+        }
     }
 }
