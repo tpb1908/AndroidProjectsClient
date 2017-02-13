@@ -190,28 +190,6 @@ public class IssueEditor extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.markdown_editor_done)
-    void onDone() {
-        final Intent done = new Intent();
-        if(mLaunchIssue == null) {
-            mLaunchIssue = new Issue();
-        }
-        mLaunchIssue.setTitle(mTitleEdit.getText().toString());
-        mLaunchIssue.setBody(mBodyEdit.getText().toString());
-        done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
-        if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
-        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
-        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
-
-        setResult(RESULT_OK, done);
-        finish();
-    }
-
-    @OnClick(R.id.markdown_editor_discard)
-    void onDiscard() {
-        onBackPressed();
-    }
-
     @OnClick(R.id.issue_add_assignees_button)
     public void showAssigneesDialog() {
         final ProgressDialog pd = new ProgressDialog(this);
@@ -354,6 +332,29 @@ public class IssueEditor extends AppCompatActivity {
             mLabelsText.setVisibility(View.GONE);
         }
 
+    }
+
+    @OnClick(R.id.markdown_editor_done)
+    void onDone() {
+        final Intent done = new Intent();
+        if(mLaunchIssue == null) {
+            mLaunchIssue = new Issue();
+        }
+        mLaunchIssue.setTitle(mTitleEdit.getText().toString());
+        mLaunchIssue.setBody(mBodyEdit.getText().toString());
+        done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
+        if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
+        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+
+        setResult(RESULT_OK, done);
+        mHasBeenEdited = false;
+        finish();
+    }
+
+    @OnClick(R.id.markdown_editor_discard)
+    void onDiscard() {
+        onBackPressed();
     }
 
     @Override

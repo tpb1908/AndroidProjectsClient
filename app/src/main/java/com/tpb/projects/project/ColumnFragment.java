@@ -56,7 +56,6 @@ import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.dialogs.CardDialog;
 import com.tpb.projects.dialogs.CardEditor;
 import com.tpb.projects.dialogs.CommentDialog;
 import com.tpb.projects.dialogs.FullScreenDialog;
@@ -408,7 +407,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 case R.id.menu_edit_note:
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    startActivity(i);
+                    getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                     break;
                 case R.id.menu_delete_note:
                     mParent.deleteCard(card, true);
@@ -434,7 +433,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
                     intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     intent.putExtra(getString(R.string.parcel_card), card);
-                    startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
+                    getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
                     break;
                 case R.id.menu_edit_issue:
                     showIssueEditor(card);
@@ -470,90 +469,74 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         popup.show();
     }
 
-    void showCardDialog(CardDialog dialog) {
-        dialog.setListener(new CardDialog.CardDialogListener() {
+    void newCard(Card card) {
+        mParent.mRefresher.setRefreshing(true);
+        mEditor.createCard(new Editor.CardCreationListener() {
+            int createAttempts = 0;
             @Override
-            public void cardEditDone(Card card, boolean isNewCard) {
-                mParent.mRefresher.setRefreshing(true);
-                if(isNewCard) {
-                    mEditor.createCard(new Editor.CardCreationListener() {
-                        int createAttempts = 0;
-                        @Override
-                        public void cardCreated(int columnId, Card card) {
-                            addCard(card);
-                            mParent.mRefresher.setRefreshing(false);
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
-                        }
+            public void cardCreated(int columnId, Card card) {
+                addCard(card);
+                mParent.mRefresher.setRefreshing(false);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+            }
 
-                        @Override
-                        public void cardCreationError(APIHandler.APIError error) {
-                            if(error == APIHandler.APIError.NO_CONNECTION) {
-                                mParent.mRefresher.setRefreshing(false);
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-            
-                            } else {
-                                if(createAttempts < 5) {
-                                    createAttempts++;
-                                    mEditor.createCard(this, mColumn.getId(), card.getNote());
-                                } else {
-                                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                    mParent.mRefresher.setRefreshing(false);
-                                }
-                            }
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
-                        }
-                    }, mColumn.getId(), card.getNote());
+            @Override
+            public void cardCreationError(APIHandler.APIError error) {
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mParent.mRefresher.setRefreshing(false);
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+
                 } else {
-                    mEditor.updateCard(new Editor.CardUpdateListener() {
-                        int updateAttempts = 0;
-                        @Override
-                        public void cardUpdated(Card card) {
-                            mAdapter.updateCard(card);
-                            resetLastUpdate();
-                            mParent.mRefresher.setRefreshing(false);
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
-                        }
-
-                        @Override
-                        public void cardUpdateError(APIHandler.APIError error) {
-                            if(error == APIHandler.APIError.NO_CONNECTION) {
-                                mParent.mRefresher.setRefreshing(false);
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-            
-                            } else {
-                                if(updateAttempts < 5) {
-                                    updateAttempts++;
-                                    mEditor.updateCard(this, card.getId(), card.getNote());
-                                } else {
-                                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                    mParent.mRefresher.setRefreshing(false);
-                                }
-                            }
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
-                        }
-                    }, card.getId(), card.getNote());
+                    if(createAttempts < 5) {
+                        createAttempts++;
+                        mEditor.createCard(this, mColumn.getId(), card.getNote());
+                    } else {
+                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                        mParent.mRefresher.setRefreshing(false);
+                    }
                 }
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+            }
+        }, mColumn.getId(), card.getNote());
+    }
+
+    void editCard(Card card) {
+        mEditor.updateCard(new Editor.CardUpdateListener() {
+            int updateAttempts = 0;
+            @Override
+            public void cardUpdated(Card card) {
+                mAdapter.updateCard(card);
+                resetLastUpdate();
+                mParent.mRefresher.setRefreshing(false);
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+                mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
             }
 
             @Override
-            public void issueCardCreated(Issue issue) {
-                createIssueCard(issue);
-            }
+            public void cardUpdateError(APIHandler.APIError error) {
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mParent.mRefresher.setRefreshing(false);
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void cardEditCancelled() {
-
+                } else {
+                    if(updateAttempts < 5) {
+                        updateAttempts++;
+                        mEditor.updateCard(this, card.getId(), card.getNote());
+                    } else {
+                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                        mParent.mRefresher.setRefreshing(false);
+                    }
+                }
+                final Bundle bundle = new Bundle();
+                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+                mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
             }
-        });
-        dialog.show(getFragmentManager(), "TAG");
+        }, card.getId(), card.getNote());
     }
 
     private void toggleIssueState(Card card) {
@@ -655,7 +638,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
-        startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
+        getActivity().startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
     private void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
@@ -803,7 +786,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    startActivity(i);
+                    getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                 }
                 break;
             case FULLSCREEN:
@@ -814,6 +797,8 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 break;
         }
     }
+
+
 
     @Override
     public void onAttach(Context context) {

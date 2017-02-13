@@ -1,15 +1,20 @@
 package com.tpb.projects.dialogs;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,6 +31,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by theo on 13/02/17.
@@ -34,6 +40,9 @@ import butterknife.ButterKnife;
 public class CardEditor extends AppCompatActivity {
     private static final String TAG = CardEditor.class.getSimpleName();
 
+    public static final int REQUEST_CODE_NEW_CARD = 1606;
+    public static final int REQUEST_CODE_EDIT_CARD = 7180;
+
     @BindView(R.id.card_note_edit) EditText mEditor;
     @BindView(R.id.card_from_issue_button) Button mIssueButton;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -41,6 +50,9 @@ public class CardEditor extends AppCompatActivity {
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
 
     private Card mCard;
+
+    private boolean mHasBeenEdited = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,6 +111,7 @@ public class CardEditor extends AppCompatActivity {
                         });
                         scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
                             Log.i(TAG, "issuesLoaded: Issue selected: " + validIssues.get(selectedIssuePosition));
+                            mCard.setFromIssue(validIssues.get(selectedIssuePosition));
                         }));
                         scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
                         scBuilder.create().show();
@@ -155,5 +168,65 @@ public class CardEditor extends AppCompatActivity {
             }
         });
 
+        mEditor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mHasBeenEdited = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+    }
+
+    @OnClick(R.id.markdown_editor_done)
+    void onDone() {
+        final Intent done = new Intent();
+
+        mCard.setNote(mEditor.getText().toString());
+        done.putExtra(getString(R.string.parcel_card), mCard);
+
+        setResult(RESULT_OK, done);
+        mHasBeenEdited = false;
+        finish();
+    }
+
+    @OnClick(R.id.markdown_editor_discard)
+    void onDiscard() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public void finish() {
+        if(mHasBeenEdited) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.title_discard_issue);
+            builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            });
+            builder.setNegativeButton(R.string.action_no, null);
+            final Dialog deleteDialog = builder.create();
+            deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            deleteDialog.show();
+        } else {
+            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+            mDoneButton.postDelayed(super::finish, 150);
+        }
     }
 }

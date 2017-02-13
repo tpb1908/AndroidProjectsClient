@@ -494,7 +494,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
         intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
-        startActivity(intent);
+        startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
         //mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
 
@@ -650,7 +650,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == IssueEditor.RESULT_OK) {
+        if(resultCode == AppCompatActivity.RESULT_OK) {
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
                 String[] labels = null;
@@ -678,6 +678,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 
+            } else if(requestCode == CardEditor.REQUEST_CODE_NEW_CARD) {
+                final Card card = data.getParcelableExtra(getString(R.string.parcel_card));
+                if(card.hasIssue()) {
+                    mAdapter.getCurrentFragment().createIssueCard(card.getIssue());
+                } else {
+                    mAdapter.getCurrentFragment().newCard(card);
+                }
+            } else if(requestCode == CardEditor.REQUEST_CODE_EDIT_CARD) {
+                mAdapter.getCurrentFragment().editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
             }
         }
     }
