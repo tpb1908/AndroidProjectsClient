@@ -19,6 +19,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class CardEditor extends AppCompatActivity {
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
 
+    private Card mCard;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +59,10 @@ public class CardEditor extends AppCompatActivity {
         final Intent launchIntent = getIntent();
 
         if(launchIntent.hasExtra(getString(R.string.parcel_card))) { //We are editing
-
+            mCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
+            mEditor.setText(mCard.getNote());
         } else {
+            mCard = new Card();
             final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final ArrayList<Integer> invalidIds = launchIntent.getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
 
@@ -142,8 +147,9 @@ public class CardEditor extends AppCompatActivity {
                 mIssueButton.setVisibility(View.GONE);
                 // keyboard is opened
             }
-            else {
+            else if(mIssueButton.hasOnClickListeners()){
                 Log.i(TAG, "onGlobalLayout: Keyboard closed");
+
                 mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
