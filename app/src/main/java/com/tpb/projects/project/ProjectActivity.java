@@ -58,10 +58,12 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CardEditor;
+import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
@@ -697,6 +699,20 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 }
             } else if(requestCode == CardEditor.REQUEST_CODE_EDIT_CARD) {
                 mAdapter.getCurrentFragment().editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
+            } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
+                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+
+                    }
+                }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
             }
         }
     }

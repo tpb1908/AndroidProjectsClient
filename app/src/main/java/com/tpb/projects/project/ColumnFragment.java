@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -576,63 +577,35 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
         };
 
-        final Intent i = new Intent(getContext(), CommentEditor.class);
-        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
 
-//        final CommentDialog dialog = new CommentDialog();
-//        dialog.enableNeutralButton();
-//        dialog.setListener(new CommentDialog.CommentDialogListener() {
-//            @Override
-//            public void onPositive(String body) {
-//                mEditor.createComment(new Editor.CommentCreationListener() {
-//                    int commentCreationAttempts = 0;
-//                    @Override
-//                    public void commentCreated(Comment comment) {
-//                        if(card.getIssue().isClosed()) {
-//                            Log.i(TAG, "openMenu: Closing issue");
-//                            mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-//                            resetLastUpdate();
-//                        } else {
-//                            Log.i(TAG, "openMenu: Opening issue");
-//                            mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-//                            resetLastUpdate();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void commentCreationError(APIHandler.APIError error) {
-//                        if(error == APIHandler.APIError.NO_CONNECTION) {
-//                            mParent.mRefresher.setRefreshing(false);
-//                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-//
-//                        } else {
-//                            if(commentCreationAttempts < 5) {
-//                                commentCreationAttempts++;
-//                                mEditor.createComment(this, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
-//                            } else {
-//                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-//                                mParent.mRefresher.setRefreshing(false);
-//                            }
-//                        }
-//                    }
-//                }, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled() {
-//                if(card.getIssue().isClosed()) {
-//                    Log.i(TAG, "openMenu: Closing issue");
-//                    mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-//                    resetLastUpdate();
-//                } else {
-//                    Log.i(TAG, "openMenu: Opening issue");
-//                    mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-//                    resetLastUpdate();
-//                }
-//            }
-//        });
-//        dialog.show(getFragmentManager(), TAG);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_state_change_comment);
+        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(card.getIssue().isClosed()) {
+                    mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                } else {
+                    mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                }
+                final Intent i = new Intent(getContext(), CommentEditor.class);
+                i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+                getActivity().startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+
+            }
+        });
+        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(card.getIssue().isClosed()) {
+                    mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                } else {
+                    mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.create().show();
     }
 
     private void showIssueEditor(Card card) {

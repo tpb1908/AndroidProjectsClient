@@ -150,6 +150,7 @@
     <string name="text_watch">Watch</string>
     <string name="text_unwatch">Unwatch</string>
     <string name="text_clear">Clear</string>
+    <string name="text_comment_created">Comment created</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
@@ -168,7 +169,6 @@
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_user_or_repo">Username or user/repo</string>
     <string name="hint_comment_new">Comment</string>
-    <string name="hint_comment_state_change">Reason for changing state</string>
 
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_card_action">Card tap action</string>
@@ -207,6 +207,7 @@
     <string name="title_choose_assignee">Choose assignee</string>
     <string name="title_delete_comment">Delete comment</string>
     <string name="title_discard_changes">Discard changes?</string>
+    <string name="title_state_change_comment">Add a comment</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>

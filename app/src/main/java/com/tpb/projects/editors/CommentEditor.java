@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Comment;
+import com.tpb.projects.data.models.Issue;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +29,6 @@ import butterknife.OnClick;
  */
 
 public class CommentEditor extends AppCompatActivity {
-
 
     public static final int REQUEST_CODE_NEW_COMMENT = 1799;
     public static final int REQUEST_CODE_EDIT_COMMENT = 5734;
@@ -42,6 +42,7 @@ public class CommentEditor extends AppCompatActivity {
     private boolean mHasBeenEdited;
 
     private Comment mComment;
+    private Issue mIssue;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +64,9 @@ public class CommentEditor extends AppCompatActivity {
         if(launchIntent.hasExtra(getString(R.string.parcel_comment))) {
             mComment = launchIntent.getParcelableExtra(getString(R.string.parcel_comment));
             mEditor.setText(mComment.getBody());
+        }
+        if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
+            mIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
         }
 
         mEditor.addTextChangedListener(new TextWatcher() {
@@ -104,6 +108,7 @@ public class CommentEditor extends AppCompatActivity {
         if(mComment == null) mComment = new Comment();
         mComment.setBody(mEditor.getText().toString());
         done.putExtra(getString(R.string.parcel_comment), mComment);
+        if(mIssue != null) done.putExtra(getString(R.string.parcel_issue), mIssue);
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;
         finish();

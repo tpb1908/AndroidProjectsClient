@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -297,69 +298,12 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     void newComment() {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
-//        final CommentDialog cd = new CommentDialog();
-//        cd.setListener(new CommentDialog.CommentDialogListener() {
-//            @Override
-//            public void onPositive(String body) {
-//                mRefresher.setRefreshing(true);
-//                mEditor.createComment(new Editor.CommentCreationListener() {
-//                    @Override
-//                    public void commentCreated(Comment comment) {
-//                        mRefresher.setRefreshing(false);
-//                        mAdapter.addComment(comment);
-//                        mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
-//                       // mRecycler.scrollToPosition(mAdapter.getItemCount());
-//                    }
-//
-//                    @Override
-//                    public void commentCreationError(APIHandler.APIError error) {
-//                        mRefresher.setRefreshing(false);
-//                    }
-//                }, mIssue.getRepoPath(), mIssue.getNumber(), body);
-//            }
-//
-//            @Override
-//            public void onCancelled() {
-//
-//            }
-//        });
-//        cd.show(getSupportFragmentManager(), TAG);
     }
 
     private void editComment(Comment comment) {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_comment), comment);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
-
-//        final  CommentDialog cd = new CommentDialog();
-//        cd.setTitleResource(R.string.title_edit_comment);
-//        final Bundle bundle = new Bundle();
-//        bundle.putParcelable(getString(R.string.parcel_comment), comment);
-//        cd.setArguments(bundle);
-//        cd.setListener(new CommentDialog.CommentDialogListener() {
-//            @Override
-//            public void onPositive(String body) {
-//                mRefresher.setRefreshing(true);
-//                mEditor.editComment(new Editor.CommentEditListener() {
-//                    @Override
-//                    public void commentEdited(Comment comment) {
-//                        mRefresher.setRefreshing(false);
-//                        mAdapter.updateComment(comment);
-//                    }
-//
-//                    @Override
-//                    public void commentEditError(APIHandler.APIError error) {
-//                        mRefresher.setRefreshing(false);
-//                    }
-//                }, mIssue.getRepoPath(), comment.getId(), body);
-//            }
-//
-//            @Override
-//            public void onCancelled() {
-//
-//            }
-//        });
-        //cd.show(getSupportFragmentManager(), TAG);
     }
 
     private void deleteComment(Comment comment) {
@@ -453,7 +397,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == IssueEditor.RESULT_OK) {
+        if(resultCode == AppCompatActivity.RESULT_OK) {
             if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
                 final String[] assignees;
@@ -503,6 +447,55 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
                     }
                 }, mIssue.getRepoPath(), issue, assignees, labels);
+            } else if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
+                mRefresher.setRefreshing(true);
+                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.addComment(comment);
+                        mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
+                        // mRecycler.scrollToPosition(mAdapter.getItemCount());
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mIssue.getRepoPath(), mIssue.getNumber(), comment.getBody());
+            } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
+                mRefresher.setRefreshing(true);
+                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+                mEditor.editComment(new Editor.CommentEditListener() {
+                    @Override
+                    public void commentEdited(Comment comment) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.updateComment(comment);
+                    }
+
+                    @Override
+                    public void commentEditError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
+            } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
+                mRefresher.setRefreshing(true);
+                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+                mEditor.createComment(new Editor.CommentCreationListener() {
+                    @Override
+                    public void commentCreated(Comment comment) {
+                        mLoader.loadComments(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                    }
+
+                    @Override
+                    public void commentCreationError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, mIssue.getRepoPath(), mIssue.getNumber(), comment.getBody());
             }
         }
     }
@@ -534,50 +527,33 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             }
         };
 
-        final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
-        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_state_change_comment);
+        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+                startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+                if(mIssue.isClosed()) {
+                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                } else {
+                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                }
 
-//        final CommentDialog dialog = new CommentDialog();
-//        dialog.setListener(new CommentDialog.CommentDialogListener() {
-//            @Override
-//            public void onPositive(String body) {
-//                mEditor.createComment(new Editor.CommentCreationListener() {
-//                    @Override
-//                    public void commentCreated(Comment comment) {
-//                        mRefresher.setRefreshing(true);
-//                        if(mIssue.isClosed()) {
-//                            mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-//                            mAdapter.clear();
-//                            mAdapter.addComment(comment);
-//                        } else {
-//                            mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-//                        }
-//                        mLoader.loadComments(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
-//                    }
-//
-//                    @Override
-//                    public void commentCreationError(APIHandler.APIError error) {
-//                        if(error == APIHandler.APIError.NO_CONNECTION) {
-//                            mRefresher.setRefreshing(false);
-//                            Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }, mIssue.getRepoPath(), mIssue.getNumber(), body);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled() {
-//                mRefresher.setRefreshing(true);
-//                mAdapter.clear();
-//                if(mIssue.isClosed()) {
-//                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-//                } else {
-//                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-//                }
-//            }
-//        });
-//        dialog.show(getSupportFragmentManager(), TAG);
+            }
+        });
+        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(mIssue.isClosed()) {
+                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                } else {
+                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.create().show();
     }
 
     @SuppressLint("SetTextI18n")
