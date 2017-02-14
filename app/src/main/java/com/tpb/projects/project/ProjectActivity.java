@@ -135,39 +135,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             if(launchIntent.hasExtra(getString(R.string.intent_card_id))) {
                 mLaunchCardId = launchIntent.getIntExtra(getString(R.string.intent_card_id), -1);
             }
-            //We have to load all of the projects to get the id that we want
-            mLoader.loadProjects(new Loader.ProjectsLoader() {
-                int projectLoadAttempts = 0;
-                @Override
-                public void projectsLoaded(Project[] projects) {
-                    for(Project p : projects) {
-                        if(number == p.getNumber()) {
-                            projectLoaded(p);
-                            checkAccess(p);
-                            return;
-                        }
-                    }
-                    Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
-                    finish();
-                }
-
-                @Override
-                public void projectsLoadError(APIHandler.APIError error) {
-                    if(error == APIHandler.APIError.NO_CONNECTION) {
-                        mRefresher.setRefreshing(false);
-                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-    
-                    } else {
-                        if(projectLoadAttempts < 5) {
-                            projectLoadAttempts++;
-                            mLoader.loadProjects(this, repo);
-                        } else {
-                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                            mRefresher.setRefreshing(false);
-                        }
-                    }
-                }
-            }, repo);
+            loadFromId(repo, number);
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
@@ -199,12 +167,54 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mRefresher.setRefreshing(true);
         mMenu.hideMenuButton(false); //Hide the button so that we can show it later
         mMenu.setClosedOnTouchOutside(true);
-
-        mRefresher.setOnRefreshListener(() -> mLoader.loadProject(ProjectActivity.this, mProject.getId()));
+        mRefresher.setOnRefreshListener(() -> {
+            if(mProject != null) {
+                mLoader.loadProject(ProjectActivity.this, mProject.getId());
+            } else {
+                final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+                final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
+                loadFromId(repo, number);
+            }
+        });
         mNavListener = new NavigationDragListener();
         mRefresher.setOnDragListener(mNavListener);
     }
 
+    private void loadFromId(String repo, int number) {
+        //We have to load all of the projects to get the id that we want
+        mLoader.loadProjects(new Loader.ProjectsLoader() {
+            int projectLoadAttempts = 0;
+            @Override
+            public void projectsLoaded(Project[] projects) {
+                for(Project p : projects) {
+                    if(number == p.getNumber()) {
+                        projectLoaded(p);
+                        checkAccess(p);
+                        return;
+                    }
+                }
+                Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
+                finish();
+            }
+
+            @Override
+            public void projectsLoadError(APIHandler.APIError error) {
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mRefresher.setRefreshing(false);
+                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+
+                } else {
+                    if(projectLoadAttempts < 5) {
+                        projectLoadAttempts++;
+                        mLoader.loadProjects(this, repo);
+                    } else {
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        mRefresher.setRefreshing(false);
+                    }
+                }
+            }
+        }, repo);
+    }
     private void checkAccess(Project project) {
         mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
             int accessCheckAttempts = 0;
