@@ -35,7 +35,7 @@ import java.text.ParseException;
 public class Comment extends DataModel implements Parcelable {
     private static final String TAG = Comment.class.getSimpleName();
 
-    private Comment() {}
+    public Comment() {}
 
     private int id;
 
@@ -62,6 +62,10 @@ public class Comment extends DataModel implements Parcelable {
 
     public String getHtmlUrl() {
         return htmlUrl;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getBody() {

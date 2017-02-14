@@ -77,6 +77,8 @@
 
         <activity android:name=".editors.CardEditor" />
 
+        <activity android:name=".editors.CommentEditor" />
+
         <activity android:name=".data.SettingsActivity">
 
 

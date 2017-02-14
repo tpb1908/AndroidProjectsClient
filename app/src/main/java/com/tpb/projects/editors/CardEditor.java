@@ -256,7 +256,7 @@ public class CardEditor extends AppCompatActivity {
     public void finish() {
         if(mHasBeenEdited) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.title_discard_issue);
+            builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
                 final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);

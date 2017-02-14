@@ -56,8 +56,8 @@ public class CommentDialog extends KeyboardDismissingDialogFragment {
         final TextInputLayout wrapper = (TextInputLayout) view.findViewById(R.id.comment_body_wrapper);
         final MarkedView md = (MarkedView) view.findViewById(R.id.comment_body_markdown);
 
-        if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_comment))) {
-            final Comment c = getArguments().getParcelable(getString(R.string.intent_comment));
+        if(getArguments() != null && getArguments().containsKey(getString(R.string.parcel_comment))) {
+            final Comment c = getArguments().getParcelable(getString(R.string.parcel_comment));
             if(c != null) {
                 body.setText(c.getBody());
                 md.setMDText(c.getBody());

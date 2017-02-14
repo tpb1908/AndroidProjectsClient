@@ -50,12 +50,11 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.editors.CommentDialog;
+import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
@@ -409,44 +408,47 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         };
 
-        final CommentDialog dialog = new CommentDialog();
-        dialog.enableNeutralButton();
-        dialog.setListener(new CommentDialog.CommentDialogListener() {
-            @Override
-            public void onPositive(String body) {
-                mEditor.createComment(new Editor.CommentCreationListener() {
-                    @Override
-                    public void commentCreated(Comment comment) {
-                        mRefresher.setRefreshing(true);
-                        if(issue.isClosed()) {
-                            mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
-                        } else {
-                            mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
-                        }
-                    }
+        final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
+        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
 
-                    @Override
-                    public void commentCreationError(APIHandler.APIError error) {
-                        mRefresher.setRefreshing(false);
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, issue.getRepoPath(), issue.getNumber(), body);
-
-            }
-
-            @Override
-            public void onCancelled() {
-                mRefresher.setRefreshing(true);
-                if(issue.isClosed()) {
-                    mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
-                }Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
-            }
-        });
-        dialog.show(getSupportFragmentManager(), TAG);
+//        final CommentDialog dialog = new CommentDialog();
+//        dialog.enableNeutralButton();
+//        dialog.setListener(new CommentDialog.CommentDialogListener() {
+//            @Override
+//            public void onPositive(String body) {
+//                mEditor.createComment(new Editor.CommentCreationListener() {
+//                    @Override
+//                    public void commentCreated(Comment comment) {
+//                        mRefresher.setRefreshing(true);
+//                        if(issue.isClosed()) {
+//                            mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+//                        } else {
+//                            mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void commentCreationError(APIHandler.APIError error) {
+//                        mRefresher.setRefreshing(false);
+//                        if(error == APIHandler.APIError.NO_CONNECTION) {
+//                            Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }, issue.getRepoPath(), issue.getNumber(), body);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled() {
+//                mRefresher.setRefreshing(true);
+//                if(issue.isClosed()) {
+//                    mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+//                } else {
+//                    mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+//                }Toast.makeText(getApplicationContext(), "TODO: Edit issue", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        dialog.show(getSupportFragmentManager(), TAG);
     }
 
     private void moveTo(Issue issue) {

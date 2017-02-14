@@ -53,11 +53,10 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
-import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CardEditor;
-import com.tpb.projects.editors.CommentDialog;
+import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
@@ -577,60 +576,63 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             }
         };
 
-        final CommentDialog dialog = new CommentDialog();
-        dialog.enableNeutralButton();
-        dialog.setListener(new CommentDialog.CommentDialogListener() {
-            @Override
-            public void onPositive(String body) {
-                mEditor.createComment(new Editor.CommentCreationListener() {
-                    int commentCreationAttempts = 0;
-                    @Override
-                    public void commentCreated(Comment comment) {
-                        if(card.getIssue().isClosed()) {
-                            Log.i(TAG, "openMenu: Closing issue");
-                            mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-                            resetLastUpdate();
-                        } else {
-                            Log.i(TAG, "openMenu: Opening issue");
-                            mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-                            resetLastUpdate();
-                        }
-                    }
+        final Intent i = new Intent(getContext(), CommentEditor.class);
+        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
 
-                    @Override
-                    public void commentCreationError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mParent.mRefresher.setRefreshing(false);
-                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-        
-                        } else {
-                            if(commentCreationAttempts < 5) {
-                                commentCreationAttempts++;
-                                mEditor.createComment(this, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
-                            } else {
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                                mParent.mRefresher.setRefreshing(false);
-                            }
-                        }
-                    }
-                }, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
-
-            }
-
-            @Override
-            public void onCancelled() {
-                if(card.getIssue().isClosed()) {
-                    Log.i(TAG, "openMenu: Closing issue");
-                    mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-                    resetLastUpdate();
-                } else {
-                    Log.i(TAG, "openMenu: Opening issue");
-                    mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
-                    resetLastUpdate();
-                }
-            }
-        });
-        dialog.show(getFragmentManager(), TAG);
+//        final CommentDialog dialog = new CommentDialog();
+//        dialog.enableNeutralButton();
+//        dialog.setListener(new CommentDialog.CommentDialogListener() {
+//            @Override
+//            public void onPositive(String body) {
+//                mEditor.createComment(new Editor.CommentCreationListener() {
+//                    int commentCreationAttempts = 0;
+//                    @Override
+//                    public void commentCreated(Comment comment) {
+//                        if(card.getIssue().isClosed()) {
+//                            Log.i(TAG, "openMenu: Closing issue");
+//                            mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
+//                            resetLastUpdate();
+//                        } else {
+//                            Log.i(TAG, "openMenu: Opening issue");
+//                            mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
+//                            resetLastUpdate();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void commentCreationError(APIHandler.APIError error) {
+//                        if(error == APIHandler.APIError.NO_CONNECTION) {
+//                            mParent.mRefresher.setRefreshing(false);
+//                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+//
+//                        } else {
+//                            if(commentCreationAttempts < 5) {
+//                                commentCreationAttempts++;
+//                                mEditor.createComment(this, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
+//                            } else {
+//                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+//                                mParent.mRefresher.setRefreshing(false);
+//                            }
+//                        }
+//                    }
+//                }, mParent.mProject.getRepoPath(), card.getIssue().getNumber(), body);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled() {
+//                if(card.getIssue().isClosed()) {
+//                    Log.i(TAG, "openMenu: Closing issue");
+//                    mEditor.openIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
+//                    resetLastUpdate();
+//                } else {
+//                    Log.i(TAG, "openMenu: Opening issue");
+//                    mEditor.closeIssue(listener, mParent.mProject.getRepoPath(), card.getIssueId());
+//                    resetLastUpdate();
+//                }
+//            }
+//        });
+//        dialog.show(getFragmentManager(), TAG);
     }
 
     private void showIssueEditor(Card card) {
