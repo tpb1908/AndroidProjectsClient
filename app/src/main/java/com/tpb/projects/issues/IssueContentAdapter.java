@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.DataModel;
@@ -456,8 +457,21 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                     event.getRequestedReviewer().getLogin()));
                 }
                 break;
+            case REMOVED_FROM_PROJECT:
+                text = String.format(res.getString(R.string.text_event_removed_from_project),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()));
+                break;
+            case ADDED_TO_PROJECT:
+                text = String.format(res.getString(R.string.text_event_added_to_project),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()));
+                break;
             default:
-                text = "Something that I haven't bothered to implement " + event.getEvent();
+                text = "An event type hasn't been implemented " + event.getEvent();
+                text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
