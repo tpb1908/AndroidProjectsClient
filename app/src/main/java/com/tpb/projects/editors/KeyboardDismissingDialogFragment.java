@@ -15,7 +15,7 @@
  *
  */
 
-package com.tpb.projects.dialogs;
+package com.tpb.projects.editors;
 
 import android.content.Context;
 import android.os.Bundle;
