@@ -163,17 +163,17 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
                 }
 
-                final URLSpan[] spans = text.getSpans(0, text.length(), URLSpan.class);
 
                 final SpannableString buffer = new SpannableString(text);
+                final URLSpan[] spans = buffer.getSpans(0, buffer.length(), URLSpan.class);
+
                 Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
+                //Copy back the spans from the original text
                 for(URLSpan us : spans) {
-                    final int end = text.getSpanEnd(us);
                     final int start = text.getSpanStart(us);
-                    buffer.setSpan(
-                            showUnderLines ? us : mLinkHandler == null ? new URLSpanWithoutUnderline(us.getURL()) : new URLSpanWithoutUnderline(us.getURL(), mLinkHandler),
-                            start, end, 0);
+                    final int end = text.getSpanEnd(us);
+                    buffer.setSpan(us, start, end, 0);
                 }
 
                 if(!showUnderLines) {
