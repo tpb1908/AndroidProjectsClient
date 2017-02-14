@@ -203,8 +203,6 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, "onError: load ReadMe: ", anError);
-                        Log.i(TAG, "onError: load ReadMe: " + anError.getErrorBody());
                         if(loader != null) loader.readmeLoadError(parseError(anError));
                     }
                 });
