@@ -33,11 +33,18 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
+        <com.androidnetworking.widget.ANImageView
+            android:id="@+id/event_comment_avatar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_alignParentStart="true"/>
+
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@+id/event_comment_avatar"
             android:layout_toStartOf="@+id/comment_menu_button"/>
 
         <ImageButton
