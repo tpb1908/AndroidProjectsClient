@@ -157,7 +157,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
                 final Spanned text;
                 if(removeFromHtmlSpace) {
-                    Log.i(TAG, "run: Text is " + overridden);
                     text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
                 } else {
                     text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);

@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.androidnetworking.widget.ANImageView;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.DataModel;
@@ -185,10 +187,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void bindComment(CommentHolder commentHolder, int pos) {
-
+    private void bindComment(CommentHolder commentHolder, int position) {
+        final int pos = commentHolder.getAdapterPosition();
         if(mData.get(pos).second == null) {
             final Comment comment = (Comment) mData.get(pos).first;
+            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             final StringBuilder builder = new StringBuilder();
             builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
                     String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
@@ -205,6 +208,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mData.set(pos, new Pair<>(comment, parsed));
             commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText));
         } else {
+            commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
             commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText));
         }
     }
@@ -308,6 +312,12 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
         eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        if(me.getEvents().get(0).getActor() != null) {
+            eventHolder.mAvatar.setVisibility(View.VISIBLE);
+            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor() .getAvatarUrl());
+        } else {
+            eventHolder.mAvatar.setVisibility(View.GONE);
+        }
     }
 
     private void bindEvent(EventHolder eventHolder, Event event) {
@@ -456,11 +466,30 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                     event.getRequestedReviewer().getLogin()));
                 }
                 break;
+            case REMOVED_FROM_PROJECT:
+                text = String.format(res.getString(R.string.text_event_removed_from_project),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()));
+                break;
+            case ADDED_TO_PROJECT:
+                text = String.format(res.getString(R.string.text_event_added_to_project),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()));
+                break;
             default:
-                text = "Something that I haven't bothered to implement " + event.getEvent();
+                text = "An event type hasn't been implemented " + event.getEvent();
+                text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        if(event.getActor() != null) {
+            eventHolder.mAvatar.setVisibility(View.VISIBLE);
+            eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
+        } else {
+            eventHolder.mAvatar.setVisibility(View.GONE);
+        }
     }
 
     private void displayMenu(View view, int pos) {
@@ -472,6 +501,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.event_comment_avatar) ANImageView mAvatar;
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
 
@@ -489,6 +519,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     class EventHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_text) HtmlTextView mText;
+        @BindView(R.id.event_user_avatar) ANImageView mAvatar;
 
         EventHolder(View view) {
             super(view);

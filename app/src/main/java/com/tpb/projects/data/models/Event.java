@@ -136,6 +136,9 @@ public class Event extends DataModel implements Parcelable {
             e.id = obj.getInt(ID);
             e.actor = User.parse(obj.getJSONObject(ACTOR));
             if(obj.has(EVENT)) e.event = GITEvent.valueOf(obj.getString(EVENT).toUpperCase());
+            if(e.event == GITEvent.ADDED_TO_PROJECT || e.event == GITEvent.REMOVED_FROM_PROJECT) {
+                Log.i(TAG, "parse: " + obj.toString());
+            }
 
             try {
                 e.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
@@ -219,10 +222,8 @@ public class Event extends DataModel implements Parcelable {
         ADDED_TO_PROJECT("added_to_project"),
         REMOVED_FROM_PROJECT("removed_from_project");
 
-        private final String JSON_KEY;
 
-        GITEvent(String jsonKey) {
-            this.JSON_KEY = jsonKey;
+        GITEvent(String key) {
         }
 
     }
