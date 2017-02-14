@@ -216,7 +216,8 @@ public class Event extends DataModel implements Parcelable {
         REVIEW_DISMISSED("review_dismissed"),
         REVIEW_REQUESTED("review_requested"),
         REVIEW_REQUEST_REMOVED("review_request_removed"),
-        ADDED_TO_PROJECT("added_to_project");
+        ADDED_TO_PROJECT("added_to_project"),
+        REMOVED_FROM_PROJECT("removed_from_project");
 
         private final String JSON_KEY;
 
