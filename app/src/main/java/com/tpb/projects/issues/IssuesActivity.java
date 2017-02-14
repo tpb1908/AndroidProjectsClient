@@ -426,7 +426,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
             }
         });
-        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.action_no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(issue.isClosed()) {
@@ -436,7 +436,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 }
             }
         });
-        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
         
         final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);

@@ -594,7 +594,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
             }
         });
-        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.action_no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(card.getIssue().isClosed()) {
@@ -604,7 +604,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 }
             }
         });
-        builder.setNegativeButton(R.string.action_cancel, null);
+        builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
     }
 
