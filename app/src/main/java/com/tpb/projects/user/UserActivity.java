@@ -165,7 +165,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 if(isTaskRoot()) {
                     findViewById(R.id.back_button).setVisibility(View.GONE);
                 }
-                loader.loadAuthenticateUser(new Loader.AuthenticatedUserLoader() {
+                loader.loadAuthenticatedUser(new Loader.AuthenticatedUserLoader() {
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());

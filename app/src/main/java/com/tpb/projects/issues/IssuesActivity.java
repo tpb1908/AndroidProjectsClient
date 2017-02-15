@@ -350,7 +350,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         }, mRepoPath);
     }
-
+    
     void openIssue(Issue issue) {
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);

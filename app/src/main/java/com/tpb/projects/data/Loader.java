@@ -70,7 +70,7 @@ public class Loader extends APIHandler {
         super(context);
     }
 
-    public void loadAuthenticateUser(AuthenticatedUserLoader loader) {
+    public void loadAuthenticatedUser(AuthenticatedUserLoader loader) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
