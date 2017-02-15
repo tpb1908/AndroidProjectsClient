@@ -43,6 +43,8 @@ android {
             it.buildConfigField('String', 'GITHUB_REDIRECT_URL', GITHUB_REDIRECT_URL)
             it.buildConfigField('String', 'FEATURE_REQUEST_EMAIL', FEATURE_REQUEST_EMAIL)
             it.buildConfigField('String', 'BUG_EMAIL', BUG_EMAIL)
+            it.buildConfigField('String', 'IMGUR_CLIENT_ID', IMGUR_CLIENT_ID)
+            it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', IMGUR_CLIENT_SECRET)
         }
     }
 
