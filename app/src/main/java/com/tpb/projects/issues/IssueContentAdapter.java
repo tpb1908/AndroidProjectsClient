@@ -35,6 +35,7 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
@@ -492,6 +493,20 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
+    private void onAvatarClick(ANImageView view, int pos) {
+        final User user;
+        if(getItemViewType(pos) == 1) {
+            user = ((Comment) mData.get(pos).first).getUser();
+        } else {
+            if(mData.get(pos).first instanceof Event) {
+                user = ((Event) mData.get(pos).first).getActor();
+            } else {
+                user = ((MergedEvent) mData.get(pos).first).getEvents().get(0).getActor();
+            }
+        }
+        mParent.openUser(view, user);
+    }
+
     private void displayMenu(View view, int pos) {
         mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }
@@ -512,6 +527,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
+            mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
@@ -525,6 +541,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             super(view);
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
+            mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
         }
 
     }
