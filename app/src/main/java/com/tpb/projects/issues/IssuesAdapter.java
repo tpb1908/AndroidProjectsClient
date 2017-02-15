@@ -20,7 +20,6 @@ package com.tpb.projects.issues;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -58,11 +57,9 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         parseThread.start();
     }
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
-    private final Handler mUiHandler;
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
-        mUiHandler = new Handler(Looper.getMainLooper());
     }
 
     void loadIssues(Issue[] issues) {
@@ -119,10 +116,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        final Issue issue = mIssues.get(position);
+        final int pos = holder.getAdapterPosition();
+        final Issue issue = mIssues.get(pos);
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-        if(mParseCache.get(position) == null) {
+        if(mParseCache.get(pos) == null) {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
@@ -169,17 +167,12 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 builder.append("<br>");
                 builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
             }
-            mParseHandler.post(() -> {
-                final String parsed = Data.parseMD(builder.toString());
-                mParseCache.set(position, parsed);
-                //We can't just set content as the view may be off screen
-                //Log.i(TAG, "onBindViewHolder: Completed parsing for " + position);
-                //Log.i(TAG, "onBindViewHolder: Parsed: " + mIssues.get(position).toString());
-                mUiHandler.post(() -> notifyItemChanged(position));
-            });
+            final String parsed = Data.parseMD(builder.toString());
+            mParseCache.set(pos, parsed);
+            holder.mContent.setHtml(parsed);
         } else {
-           // Log.i(TAG, "onBindViewHolder: Binding position " + position + " with\n" + mIssues.get(position).second);
-            holder.mContent.setHtml(mParseCache.get(position));
+           // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
+            holder.mContent.setHtml(mParseCache.get(pos));
             //TODO Replace with separate arraylists
         }
     }

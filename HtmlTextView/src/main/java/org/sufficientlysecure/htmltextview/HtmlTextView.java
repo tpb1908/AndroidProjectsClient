@@ -417,7 +417,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
         @Override
         public void codeClicked(String code) {
-            Log.i(TAG, "codeClicked: " + code);
             final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             final LayoutInflater inflater = LayoutInflater.from(mContext);
             final View view = inflater.inflate(R.layout.dialog_code, null);
