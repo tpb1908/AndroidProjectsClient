@@ -366,16 +366,30 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                 event.getActor().getLogin()));
                 break;
             case ASSIGNED:
-                text = String.format(res.getString(R.string.text_event_assigned),
-                        String.format(res.getString(R.string.text_href),
-                                event.getActor().getHtmlUrl(),
-                                event.getActor().getLogin()));
+                if(event.getAssignee() != null && event.getActor().equals(event.getAssignee())) {
+                    text = String.format(res.getString(R.string.text_event_assigned_themselves),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()));
+                } else {
+                    text = String.format(res.getString(R.string.text_event_assigned),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()));
+                }
                 break;
             case UNASSIGNED:
-                text = String.format(res.getString(R.string.text_event_unassigned),
-                        String.format(res.getString(R.string.text_href),
-                                event.getActor().getHtmlUrl(),
-                                event.getActor().getLogin()));
+                if(event.getAssignee() != null && event.getActor().equals(event.getAssignee())) {
+                    text = String.format(res.getString(R.string.text_event_unassigned_themselves),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()));
+                } else {
+                    text = String.format(res.getString(R.string.text_event_unassigned),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()));
+                }
                 break;
             case LABELED:
                 text = String.format(res.getString(R.string.text_event_labeled),

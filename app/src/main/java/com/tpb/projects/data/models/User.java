@@ -185,6 +185,11 @@ public class User extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User && ((User) obj).id == id;
+    }
+
+    @Override
     public String toString() {
         return "User{" +
                 "login='" + login + '\'' +
@@ -201,7 +206,6 @@ public class User extends DataModel implements Parcelable {
                 ", bio='" + bio + '\'' +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
