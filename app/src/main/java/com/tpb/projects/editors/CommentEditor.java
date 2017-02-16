@@ -1,21 +1,23 @@
 package com.tpb.projects.editors;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.androidnetworking.interfaces.UploadProgressListener;
+import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
@@ -131,13 +133,20 @@ public class CommentEditor extends ImageLoadingActivity {
     }
 
     @Override
-    void imageLoadComplete(String image64, ProgressDialog dialog) {
-        new Uploader().uploadImage(image64, new UploadProgressListener() {
+    void imageLoadComplete(String image64) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
+        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
             @Override
-            public void onProgress(long bytesUploaded, long totalBytes) {
-                dialog.setProgress(Math.round(100 * ((float)bytesUploaded/totalBytes)));
+            public void imageUploaded(String link) {
+                Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                mUploadDialog.cancel();
             }
-        });
+
+            @Override
+            public void uploadError(ANError error) {
+
+            }
+        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
     }
 
     @Override

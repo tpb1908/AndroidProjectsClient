@@ -34,8 +34,9 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 9403;
     private static final int SELECT_FILE = 6113;
     private String mCurrentFilePath;
+    protected ProgressDialog mUploadDialog;
 
-    abstract void imageLoadComplete(String image64, ProgressDialog dialog);
+    abstract void imageLoadComplete(String image64);
 
     abstract void imageLoadException(IOException ioe);
 
@@ -44,6 +45,8 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Upload an image");
         builder.setItems(items, (dialog, which) -> {
+            mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);
+            mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             if (items[which].equals(items[0])) {
                 attemptTakePicture();
             } else if (items[which].equals(items[1])) {
@@ -130,7 +133,8 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
                     final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
                     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    imageLoadComplete(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT), pd);
+                    pd.cancel();
+                    imageLoadComplete(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
                 });
 
             } else if(requestCode == SELECT_FILE) {
@@ -140,8 +144,10 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
                 pd.setTitle("Converting image");
                 pd.show();
                 AsyncTask.execute(() -> {
-                    try {
-                        imageLoadComplete(attemptLoadPicture(selectedFile), pd);
+                    try{
+                        final String image = attemptLoadPicture(selectedFile);
+                        pd.cancel();
+                        imageLoadComplete(image);
                     } catch(IOException ioe) {
                         Log.e(TAG, "onActivityResult: ", ioe);
                         pd.cancel();
