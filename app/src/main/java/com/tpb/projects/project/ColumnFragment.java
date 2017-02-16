@@ -216,7 +216,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
             return true;
         });
         final ColumnDragListener listener = new ColumnDragListener(mCard);
-        mCard.setOnDragListener(new ColumnDragListener());
         mName.setOnDragListener(listener);
         mLastUpdate.setOnDragListener(listener);
         mCard.setOnDragListener(listener);
@@ -773,7 +772,21 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
     }
 
+    void scrollUp() {
+        final LinearLayoutManager lm = (LinearLayoutManager) mRecycler.getLayoutManager();
+        final int pos = lm.findFirstVisibleItemPosition();
+        final int height = mRecycler.getChildAt(pos).getHeight();
+        mNestedScroller.smoothScrollBy(0, -height);
+        //mNestedScroller.smoothScrollTo(0, Math.max(mNestedScroller.getScrollY() - height, 0));
+    }
 
+    void scrollDown() {
+        final LinearLayoutManager lm = (LinearLayoutManager) mRecycler.getLayoutManager();
+        final int pos = lm.findLastVisibleItemPosition();
+        final int height = mRecycler.getChildAt(pos).getHeight();
+        mNestedScroller.smoothScrollBy(0, height);
+        //mNestedScroller.smoothScrollTo(0, Math.min(mNestedScroller.getScrollY() + height, mNestedScroller.getChildAt(0).getHeight()));
+    }
 
     @Override
     public void onAttach(Context context) {

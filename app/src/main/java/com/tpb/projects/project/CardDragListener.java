@@ -50,7 +50,10 @@ class CardDragListener implements View.OnDragListener {
 
     @Override
     public boolean onDrag(View view, DragEvent event) {
-        if(mParent != null) mParent.onDrag(view, event);
+        if(mParent != null) {
+            Log.i(TAG, "onDrag: Drag with parent");
+            mParent.onDrag(view, event);
+        }
         final int action = event.getAction();
         final View sourceView = (View) event.getLocalState();
         if(sourceView.getId() == R.id.column_card || view.getTag() == sourceView.getTag()) {

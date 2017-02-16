@@ -20,6 +20,7 @@ package com.tpb.projects.project;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,6 +68,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -544,20 +546,24 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
-    private long lastPageChange;
-
     private void dragLeft() {
-        if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
+        if(mCurrentPosition > 0) {
             mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
-            lastPageChange = System.nanoTime();
         }
     }
 
     private void dragRight() {
-        if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastPageChange > 5E8) {
+        if(mCurrentPosition < mAdapter.getCount()) {
             mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
-            lastPageChange = System.nanoTime();
         }
+    }
+
+    private void dragUp() {
+        mAdapter.getCurrentFragment().scrollUp();
+    }
+
+    private void dragDown() {
+        mAdapter.getCurrentFragment().scrollDown();
     }
 
     public void onToolbarBackPressed(View view) {
@@ -724,17 +730,44 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     class NavigationDragListener implements View.OnDragListener {
+        private float dragViewY;
+        private float dragStartY = 0;
+        private long mLastPageChange = 0;
 
         @Override
         public boolean onDrag(View view, DragEvent event) {
+            if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED) {
+                final Point p = UI.getTouchPositionFromDragEvent(view, event);
+                dragStartY = p.y;
+                Log.i(TAG, "onDrag: Drag entered at " + dragStartY);
+                final int[] pos = new int[2];
+                ((View) event.getLocalState()).getLocationOnScreen(pos);
+                Log.i(TAG, "onDrag: View position: " + pos[1]);
+                dragViewY = pos[1];
+            } else if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
 
-            if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
+                final Point p = UI.getTouchPositionFromDragEvent(view, event);
+                final float relativePos = (dragViewY + p.y - dragStartY);
+                Log.i(TAG, "onDrag: Relative position " + relativePos);
+                if(relativePos / metrics.heightPixels > 0.85 && System.nanoTime() - mLastPageChange > 5E8) {
+                    Log.i(TAG, "onDrag: Sufficient change at bottom");
+                    dragUp();
+                    mLastPageChange = System.nanoTime();
+                } else if(relativePos / metrics.heightPixels < 0.15 && System.nanoTime() - mLastPageChange > 5E8) {
+                    Log.i(TAG, "onDrag: Sufficient change at top");
+                    dragDown();
+                    mLastPageChange = System.nanoTime();
+                }
 
-                if(event.getX() / metrics.widthPixels > 0.85f) {
+
+
+                if(event.getX() / metrics.widthPixels > 0.85f && System.nanoTime() - mLastPageChange > 5E8) {
                     dragRight();
-                } else if(event.getX() / metrics.widthPixels < 0.15f) {
+                    mLastPageChange = System.nanoTime();
+                } else if(event.getX() / metrics.widthPixels < 0.15f && System.nanoTime() - mLastPageChange > 5E8) {
                     dragLeft();
+                    mLastPageChange = System.nanoTime();
                 }
             }
             return true;
