@@ -6,9 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -24,10 +25,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
@@ -35,6 +38,7 @@ import com.tpb.projects.data.models.User;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -45,7 +49,7 @@ import butterknife.OnClick;
  * Created by theo on 07/02/17.
  */
 
-public class IssueEditor extends AppCompatActivity {
+public class IssueEditor extends ImageLoadingActivity {
     private static final String TAG = IssueEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_ISSUE = 3025;
@@ -331,6 +335,32 @@ public class IssueEditor extends AppCompatActivity {
         } else {
             mLabelsText.setVisibility(View.GONE);
         }
+
+    }
+
+    @Override
+    void imageLoadComplete(String image64) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
+        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
+            @Override
+            public void imageUploaded(String link) {
+                Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                mUploadDialog.cancel();
+                final String snippet = String.format(getString(R.string.text_image_link), link);
+                final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
+                mBodyEdit.getText().insert(start, snippet);
+                mBodyEdit.setSelection(start + snippet.indexOf("]"));
+            }
+
+            @Override
+            public void uploadError(ANError error) {
+
+            }
+        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
+    }
+
+    @Override
+    void imageLoadException(IOException ioe) {
 
     }
 

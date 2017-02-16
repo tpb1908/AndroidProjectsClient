@@ -128,8 +128,7 @@ public class CommentEditor extends ImageLoadingActivity {
 
     @OnClick(R.id.markdown_editor_discard)
     void onDiscard() {
-        showDialog();
-        //onBackPressed();
+        onBackPressed();
     }
 
     @Override

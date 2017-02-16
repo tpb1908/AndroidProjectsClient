@@ -41,7 +41,7 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
 
     abstract void imageLoadException(IOException ioe);
 
-    void showDialog() {
+    void showImageUploadDialog() {
         final CharSequence[] items = {"Take a picture", "Choose from gallery", "Cancel"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Upload an image");
