@@ -6,10 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.InputFilter;
@@ -24,15 +25,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.Data;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -43,7 +47,7 @@ import butterknife.OnClick;
  * Created by theo on 13/02/17.
  */
 
-public class CardEditor extends AppCompatActivity {
+public class CardEditor extends ImageLoadingActivity {
     private static final String TAG = CardEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_CARD = 1606;
@@ -228,6 +232,32 @@ public class CardEditor extends AppCompatActivity {
                 )
         );
         mEditor.setText(Html.fromHtml(Data.parseMD(builder.toString(), issue.getRepoPath())));
+    }
+
+    @Override
+    void imageLoadComplete(String image64) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
+        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
+            @Override
+            public void imageUploaded(String link) {
+                Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                mUploadDialog.cancel();
+                final String snippet = String.format(getString(R.string.text_image_link), link);
+                final int start = Math.max(mEditor.getSelectionStart(), 0);
+                mEditor.getText().insert(start, snippet);
+                mEditor.setSelection(start + snippet.indexOf("]"));
+            }
+
+            @Override
+            public void uploadError(ANError error) {
+
+            }
+        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
+    }
+
+    @Override
+    void imageLoadException(IOException ioe) {
+
     }
 
     @OnClick(R.id.markdown_editor_done)

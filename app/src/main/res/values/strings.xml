@@ -104,6 +104,7 @@
     <string name="text_delete_project_warning">Do you want to delete this project?</string>
     <string name="text_assigned_to">Assigned to </string>
     <string name="text_md_link">[%1$s](%2$s)</string>
+    <string name="text_image_link">![Description](%1$s)</string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s) %3$s</string>
     <string name="text_opened_by">%1$s opened by %2$s %3$s</string>
     <string name="text_opened_this_issue">%1$s opened this issue %2$s</string>
@@ -212,6 +213,7 @@
     <string name="title_delete_comment">Delete comment</string>
     <string name="title_discard_changes">Discard changes?</string>
     <string name="title_state_change_comment">Add a comment</string>
+    <string name="title_image_upload">Uploading</string>
 
     <string name="menu_copy_card">Copy card note</string>
     <string name="menu_convert_to_issue">Convert to issue</string>
