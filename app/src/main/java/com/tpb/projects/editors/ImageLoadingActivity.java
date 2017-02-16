@@ -119,7 +119,8 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == AppCompatActivity.RESULT_OK) {
             final ProgressDialog pd = new ProgressDialog(this);
-
+            pd.setCanceledOnTouchOutside(false);
+            pd.setCancelable(false);
             if(requestCode == REQUEST_CAMERA) {
                 Log.i(TAG, "onActivityResult: Camera request returned");
                 Toast.makeText(this, mCurrentFilePath, Toast.LENGTH_LONG).show();
@@ -143,6 +144,7 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
                         imageLoadComplete(attemptLoadPicture(selectedFile), pd);
                     } catch(IOException ioe) {
                         Log.e(TAG, "onActivityResult: ", ioe);
+                        pd.cancel();
                         imageLoadException(ioe);
                     }
                 });

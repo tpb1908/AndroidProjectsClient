@@ -130,7 +130,7 @@ public class CommentEditor extends ImageLoadingActivity {
 
     @Override
     void imageLoadComplete(String image64, ProgressDialog dialog) {
-
+        dialog.cancel();
     }
 
     @Override
