@@ -15,8 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 
@@ -130,7 +132,12 @@ public class CommentEditor extends ImageLoadingActivity {
 
     @Override
     void imageLoadComplete(String image64, ProgressDialog dialog) {
-        dialog.cancel();
+        new Uploader().uploadImage(image64, new UploadProgressListener() {
+            @Override
+            public void onProgress(long bytesUploaded, long totalBytes) {
+                dialog.setProgress(Math.round(100 * ((float)bytesUploaded/totalBytes)));
+            }
+        });
     }
 
     @Override
