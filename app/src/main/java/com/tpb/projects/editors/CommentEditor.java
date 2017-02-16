@@ -216,7 +216,18 @@ public class CommentEditor extends AppCompatActivity {
                 byte[] array = stream.toByteArray();
                 Log.i(TAG, "onActivityResult: Array length " + array.length);
                 String base64 = Base64.encodeToString(array, Base64.DEFAULT);
-                Log.i(TAG, "onActivityResult: String is " + base64);
+                if(base64.length() > 4000) {
+                    Log.v(TAG, "base64.length = " + base64.length());
+                    int chunkCount = base64.length() / 4000;     // integer division
+                    for(int i = 0; i <= chunkCount; i++) {
+                        int max = 4000 * (i + 1);
+                        if(max >= base64.length()) {
+                            Log.v(TAG, "chunk " + i + " of " + chunkCount + ":" + base64.substring(4000 * i));
+                        } else {
+                            Log.v(TAG, "chunk " + i + " of " + chunkCount + ":" + base64.substring(4000 * i, max));
+                        }
+                    }
+                }
             } else if(requestCode == SELECT_FILE) {
                 Log.i(TAG, "onActivityResult: File request returned");
             }
