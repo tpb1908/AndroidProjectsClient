@@ -14,7 +14,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.tpb.projects.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,8 +46,11 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Upload an image");
         builder.setItems(items, (dialog, which) -> {
-            mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);
-            mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            if(mUploadDialog == null) {
+                mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);
+                mUploadDialog.setTitle(R.string.title_image_upload);
+                mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            }
             if (items[which].equals(items[0])) {
                 attemptTakePicture();
             } else if (items[which].equals(items[1])) {
@@ -126,7 +130,6 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
             pd.setCancelable(false);
             if(requestCode == REQUEST_CAMERA) {
                 Log.i(TAG, "onActivityResult: Camera request returned");
-                Toast.makeText(this, mCurrentFilePath, Toast.LENGTH_LONG).show();
                 pd.setTitle("Converting image");
                 pd.show();
                 AsyncTask.execute(() -> {

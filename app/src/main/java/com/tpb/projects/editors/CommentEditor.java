@@ -41,10 +41,6 @@ public class CommentEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_EDIT_COMMENT = 5734;
     public static final int REQUEST_CODE_COMMENT_FOR_STATE = 1400;
 
-    private static final int REQUEST_CAMERA = 9403;
-    private static final int SELECT_FILE = 6113;
-    private String mCurrentFilePath;
-
     @BindView(R.id.comment_body_edit) EditText mEditor;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
@@ -99,11 +95,7 @@ public class CommentEditor extends ImageLoadingActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus() && mEditor.isEnabled()) {
-                    final int start = Math.max(mEditor.getSelectionStart(), 0);
-                    mEditor.getText().insert(start, snippet);
-                    mEditor.setSelection(start + relativePosition);
-                }
+                insertString(snippet, relativePosition);
             }
 
             @Override
@@ -112,6 +104,14 @@ public class CommentEditor extends ImageLoadingActivity {
             }
         });
 
+    }
+
+    private void insertString(String snippet, int relativePosition) {
+        if(mEditor.hasFocus() && mEditor.isEnabled()) {
+            final int start = Math.max(mEditor.getSelectionStart(), 0);
+            mEditor.getText().insert(start, snippet);
+            mEditor.setSelection(start + relativePosition);
+        }
     }
 
     @OnClick(R.id.markdown_editor_done)
@@ -140,6 +140,8 @@ public class CommentEditor extends ImageLoadingActivity {
             public void imageUploaded(String link) {
                 Log.i(TAG, "imageUploaded: Image uploaded " + link);
                 mUploadDialog.cancel();
+                final String snippet = String.format(getString(R.string.text_image_link), link);
+                insertString(snippet, snippet.indexOf("]"));
             }
 
             @Override
