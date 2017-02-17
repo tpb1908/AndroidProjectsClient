@@ -19,6 +19,7 @@ import java.util.List;
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeViewHolder> {
 
     private List<Node> root = new ArrayList<>();
+    private List<Node> currentNodes = new ArrayList<>();
 
     @Override
     public NodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -27,21 +28,27 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     @Override
     public void onBindViewHolder(NodeViewHolder holder, int position) {
-
+        holder.mText.setText(currentNodes.get(position).getName());
+        if(currentNodes.get(position).getType() == Node.NodeType.FILE) {
+            holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
+        } else {
+            holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
+        }
     }
 
     void setNodes(List<Node> nodes) {
         root = nodes;
+        currentNodes = root;
         notifyDataSetChanged();
     }
 
     void appendNode(Node parent, List<Node> node) {
-        //TODO Traverse and insert
+        //TODO Traverse and insert, checking current nodes first
     }
 
     @Override
     public int getItemCount() {
-        return root.size();
+        return currentNodes.size();
     }
 
     class NodeViewHolder extends RecyclerView.ViewHolder {

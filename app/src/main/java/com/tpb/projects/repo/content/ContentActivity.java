@@ -34,6 +34,7 @@ public class ContentActivity extends AppCompatActivity {
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
 
+    private ContentAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,12 +49,15 @@ public class ContentActivity extends AppCompatActivity {
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
 
+        mAdapter = new ContentAdapter();
+        mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         new FileLoader(this).loadDirectory(new FileLoader.DirectoryLoader() {
             @Override
             public void directoryLoaded(List<Node> directory) {
                 Log.i(TAG, "directoryLoaded: " + directory);
+                mAdapter.setNodes(directory);
             }
 
             @Override
