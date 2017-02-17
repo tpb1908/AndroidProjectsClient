@@ -1,5 +1,8 @@
 package com.tpb.projects.data.models.files;
 
+import android.util.Base64;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,12 +47,12 @@ public class Node {
 
     public Node(JSONObject obj) {
         try {
-            type = NodeType.valueOf(obj.getString(TYPE_KEY));
+            type = NodeType.fromString(obj.getString(TYPE_KEY));
             size = obj.getInt(SIZE_KEY);
-            encoding = obj.getString(ENCODING_KEY);
+            if(obj.has(ENCODING_KEY)) encoding = obj.getString(ENCODING_KEY);
             name = obj.getString(NAME_KEY);
             path = obj.getString(PATH_KEY);
-            content = obj.getString(CONTENT_KEY);
+            if(obj.has(CONTENT_KEY)) content = obj.getString(CONTENT_KEY);
             sha = obj.getString(SHA_KEY);
             url = obj.getString(URL_KEY);
             gitUrl = obj.getString(GIT_URL_KEY);
@@ -57,7 +60,7 @@ public class Node {
             downloadUrl = obj.getString(DOWNLOAD_URL_KEY);
             if(obj.has(SUBMODULE_GIT_URL_KEY)) submoduleGitUrl = obj.getString(SUBMODULE_GIT_URL_KEY);
         } catch(JSONException jse) {
-
+            Log.e("Node", "Node: Exception: ", jse);
         }
     }
 
@@ -83,6 +86,10 @@ public class Node {
 
     public String getContent() {
         return content;
+    }
+
+    public String getDecodedContent() {
+        return new String(Base64.decode(content, Base64.DEFAULT));
     }
 
     public String getSha() {
@@ -155,8 +162,17 @@ public class Node {
         SYMLINK("symlink"),
         SUBMODULE("submodule");
 
-        NodeType(String type) {
+        private String type;
 
+        NodeType(String type) {
+            this.type = type;
+        }
+
+        public static NodeType fromString(String type) {
+            for(NodeType nt : NodeType.values()) {
+                if(nt.type.equals(type)) return nt;
+            }
+            throw new IllegalArgumentException("No NodeType with String value " + type);
         }
     }
 

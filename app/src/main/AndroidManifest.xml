@@ -57,6 +57,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".repo.content.ContentActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".project.ProjectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
