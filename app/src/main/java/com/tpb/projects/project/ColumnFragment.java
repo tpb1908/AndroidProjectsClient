@@ -123,7 +123,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mName.setText(mColumn.getName());
 
         mViewsValid = true;
-        mAdapter = new CardAdapter(this, mAccessLevel);
+        mAdapter = new CardAdapter(this, mNavListener, mAccessLevel);
         mRecycler.setAdapter(mAdapter);
         mRecycler.disableAnimation();
         if(!mShouldAnimate) mRecycler.disableAnimation();

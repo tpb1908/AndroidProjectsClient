@@ -39,10 +39,6 @@ class CardDragListener implements View.OnDragListener {
     private final int accent;
     private View.OnDragListener mParent;
 
-    CardDragListener(Context context) {
-        accent = context.getResources().getColor(R.color.colorAccent);
-    }
-
     CardDragListener(Context context, View.OnDragListener parent) {
         accent = context.getResources().getColor(R.color.colorAccent);
         mParent = parent;
@@ -51,7 +47,6 @@ class CardDragListener implements View.OnDragListener {
     @Override
     public boolean onDrag(View view, DragEvent event) {
         if(mParent != null) {
-            Log.i(TAG, "onDrag: Drag with parent");
             mParent.onDrag(view, event);
         }
         final int action = event.getAction();
@@ -83,6 +78,7 @@ class CardDragListener implements View.OnDragListener {
 
                 if(view.getId() == R.id.viewholder_card) {
                     targetPosition = targetAdapter.indexOf((int) view.getTag());
+                    Log.i(TAG, "onDrag: Hovering over position " + targetPosition);
                     if(event.getY() < view.getHeight() / 2) {
                         targetPosition = Math.max(0, targetPosition - 1);
                     }
@@ -102,6 +98,8 @@ class CardDragListener implements View.OnDragListener {
                     targetAdapter.addCardFromDrag(card);
                 }
                 view.setBackground(selectedBG);
+
+
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 //  Log.i(TAG, "onDrag: Drag entered");
