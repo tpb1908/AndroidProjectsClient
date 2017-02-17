@@ -44,21 +44,35 @@
             android:layout_centerVertical="true"
             android:visibility="invisible"/>
 
-        <ImageView
-            android:id="@+id/card_issue_drawable"
+        <LinearLayout
+            android:id="@+id/card_drawable_wrapper"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:visibility="gone"/>
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/card_issue_drawable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"/>
+
+            <com.androidnetworking.widget.ANImageView
+                android:id="@+id/card_user_avatar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"/>
+
+        </LinearLayout>
+
+
 
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/card_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:layout_toEndOf="@+id/card_issue_drawable"
+            android:layout_toEndOf="@+id/card_drawable_wrapper"
             android:layout_toStartOf="@+id/card_menu_button"
             android:layout_centerVertical="true">
         </org.sufficientlysecure.htmltextview.HtmlTextView>

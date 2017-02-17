@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -235,6 +236,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindStandardCard(CardHolder holder, int pos) {
         holder.mIssueIcon.setVisibility(View.GONE);
+        holder.mUserAvatar.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
             mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
@@ -243,9 +245,15 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private void bindIssueCard(CardHolder holder,  int pos) {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
-        holder.mIssueIcon.setImageResource(mCards.get(pos).first.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        holder.mUserAvatar.setVisibility(View.VISIBLE);
+        final Card card = mCards.get(pos).first;
+        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
+        holder.mUserAvatar.setOnClickListener((v) -> {
+            mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy());
+        });
         if(mCards.get(pos).second == null) {
-            final Card card = mCards.get(pos).first;
+
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
             builder.append(card.getIssue().getTitle());
@@ -318,6 +326,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) ImageButton mMenuButton;
         @BindView(R.id.card_issue_drawable) ImageView mIssueIcon;
+        @BindView(R.id.card_user_avatar) ANImageView mUserAvatar;
 
         @OnClick(R.id.card_menu_button)
         void onMenuClick(View v) {

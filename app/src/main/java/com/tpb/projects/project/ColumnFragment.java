@@ -25,9 +25,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -56,10 +59,12 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
+import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 
 import java.util.ArrayList;
@@ -773,8 +778,21 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
     }
 
+    void openUser(ANImageView imageView, User user) {
+        final Intent i = new Intent(getContext(), UserActivity.class);
+        i.putExtra(getString(R.string.intent_username), user.getLogin());
+        if(imageView.getDrawable() != null) {
+            Log.i(TAG, "openUser: Putting bitmap");
+            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+        }
+        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                getActivity(),
+                imageView,
+                getString(R.string.transition_user_image)
+                ).toBundle()
+        );
 
-
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
