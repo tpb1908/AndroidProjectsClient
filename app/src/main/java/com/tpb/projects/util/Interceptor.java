@@ -20,6 +20,7 @@ import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
+import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 
 import java.util.ArrayList;
@@ -105,7 +106,24 @@ public class Interceptor extends Activity {
                     }
                     break;
                 default:
-                    fail();
+                    if("tree".equals(segments.get(2))) {
+                        final Intent content = new Intent(Interceptor.this, ContentActivity.class);
+                        content.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        String path = "";
+                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
+                        Log.i(TAG, "onCreate: Path is " + path);
+                        content.putExtra(getString(R.string.intent_path), path);
+                        startActivity(content);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                        finish();
+                    } else if("blob".equals(segments.get(2))) {
+                        String path = "";
+                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
+                        Log.i(TAG, "onCreate: Blob path is " + path);
+                        fail();
+                    } else {
+                        fail();
+                    }
             }
         } else {
             fail();
