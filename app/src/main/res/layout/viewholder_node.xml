@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:textAppearance="@android:style/TextAppearance.Material.Medium"/>
+        android:drawablePadding="4dp"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"/>
 
     <View
         android:layout_width="match_parent"
