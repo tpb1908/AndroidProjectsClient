@@ -20,7 +20,6 @@ package com.tpb.projects.project;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,7 +67,6 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
-import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -730,37 +728,48 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     class NavigationDragListener implements View.OnDragListener {
-        private float dragViewY;
-        private float dragStartY = 0;
+
         private long mLastPageChange = 0;
+        private boolean mIsMoving = false;
 
         @Override
         public boolean onDrag(View view, DragEvent event) {
-            if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED) {
-                final Point p = UI.getTouchPositionFromDragEvent(view, event);
-                dragStartY = p.y;
-                Log.i(TAG, "onDrag: Drag entered at " + dragStartY);
-                final int[] pos = new int[2];
-                ((View) event.getLocalState()).getLocationOnScreen(pos);
-                Log.i(TAG, "onDrag: View position: " + pos[1]);
-                dragViewY = pos[1];
-            } else if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
 
+            if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
-                final Point p = UI.getTouchPositionFromDragEvent(view, event);
-                final float relativePos = (dragViewY + p.y - dragStartY);
-                Log.i(TAG, "onDrag: Relative position " + relativePos);
-                if(relativePos / metrics.heightPixels > 0.85 && System.nanoTime() - mLastPageChange > 5E8) {
+                final float startHeight = mAdapter.getCurrentFragment().mNestedScroller.getScrollY();
+                Log.i(TAG, "onDrag: \n\n\n\nStart height is " + startHeight);
+                Log.i(TAG, "onDrag: Adjusted height " + (event.getY() - startHeight));
+                Log.i(TAG, "onDrag: Adjusted percentage " +  ((event.getY() - startHeight)/metrics.heightPixels));
+                if((event.getY() - startHeight) / metrics.heightPixels > 0.85 && System.nanoTime() - mLastPageChange > 5E8) {
                     Log.i(TAG, "onDrag: Sufficient change at bottom");
-                    dragUp();
-                    mLastPageChange = System.nanoTime();
-                } else if(relativePos / metrics.heightPixels < 0.15 && System.nanoTime() - mLastPageChange > 5E8) {
-                    Log.i(TAG, "onDrag: Sufficient change at top");
                     dragDown();
                     mLastPageChange = System.nanoTime();
+                    mIsMoving = true;
+                    view.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(mIsMoving) {
+                                dragUp();
+                                view.postDelayed(this, 50);
+                            }
+                        }
+                    }, 50);
+                } else if((event.getY() - startHeight) / metrics.heightPixels < 0.15 && System.nanoTime() - mLastPageChange > 5E8) {
+                    Log.i(TAG, "onDrag: Sufficient change at top");
+                    dragUp();
+                    mLastPageChange = System.nanoTime();
+                    mIsMoving = true;
+                    view.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(mIsMoving) {
+                                dragDown();
+                                view.postDelayed(this, 50);
+                            }
+                        }
+                    }, 50);
                 }
-
-
 
                 if(event.getX() / metrics.widthPixels > 0.85f && System.nanoTime() - mLastPageChange > 5E8) {
                     dragRight();
@@ -769,6 +778,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     dragLeft();
                     mLastPageChange = System.nanoTime();
                 }
+            } else {
+                mIsMoving = false;
+                Log.i(TAG, "onDrag: Drag stopped");
             }
             return true;
         }

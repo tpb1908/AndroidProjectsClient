@@ -82,18 +82,12 @@ class CardDragListener implements View.OnDragListener {
                 final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
 
                 if(view.getId() == R.id.viewholder_card) {
-
                     targetPosition = targetAdapter.indexOf((int) view.getTag());
-
-                    Log.i(TAG, "onDrag: Dropping onto view of " + view.getHeight() + " with view at " + event.getY());
-                    boolean below = event.getY() < view.getHeight() / 2;
-                    if(below) {
+                    if(event.getY() < view.getHeight() / 2) {
                         targetPosition = Math.max(0, targetPosition - 1);
                     }
-                    Log.i(TAG, "onDrag: Should drop below " + below);
                     if(source != target) {
                         if(targetPosition >= 0) {
-                            Log.i(TAG, "onDrag: Adding to position " + targetPosition);
                             targetAdapter.addCardFromDrag(targetPosition, card);
                         } else {
                             targetAdapter.addCardFromDrag(card);
@@ -104,7 +98,6 @@ class CardDragListener implements View.OnDragListener {
                     }
 
                 } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0) {
-                    Log.i(TAG, "onDrag: Drop on the recycler");
                     sourceAdapter.removeCard(card);
                     targetAdapter.addCardFromDrag(card);
                 }

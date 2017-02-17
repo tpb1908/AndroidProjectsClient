@@ -777,6 +777,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final int pos = lm.findFirstVisibleItemPosition();
         final int height = mRecycler.getChildAt(pos).getHeight();
         mNestedScroller.smoothScrollBy(0, -height);
+        Log.i(TAG, "scrollUp: Scrolling up");
         //mNestedScroller.smoothScrollTo(0, Math.max(mNestedScroller.getScrollY() - height, 0));
     }
 
@@ -785,6 +786,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final int pos = lm.findLastVisibleItemPosition();
         final int height = mRecycler.getChildAt(pos).getHeight();
         mNestedScroller.smoothScrollBy(0, height);
+        Log.i(TAG, "scrollDown: Scrolling down");
         //mNestedScroller.smoothScrollTo(0, Math.min(mNestedScroller.getScrollY() + height, mNestedScroller.getChildAt(0).getHeight()));
     }
 
