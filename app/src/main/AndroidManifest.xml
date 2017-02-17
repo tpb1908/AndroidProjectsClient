@@ -45,6 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login">
@@ -80,9 +81,7 @@
 
         <activity android:name=".editors.CommentEditor" />
 
-        <activity android:name=".data.SettingsActivity">
-
-        </activity>
+        <activity android:name=".data.SettingsActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -92,8 +91,7 @@
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/image_paths"
-                />
+                android:resource="@xml/image_paths"/>
 
         </provider>
 

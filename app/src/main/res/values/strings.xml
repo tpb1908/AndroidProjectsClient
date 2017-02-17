@@ -156,6 +156,7 @@
     <string name="text_unwatch">Unwatch</string>
     <string name="text_clear">Clear</string>
     <string name="text_comment_created">Comment created</string>
+    <string name="text_show_files">Show files</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
