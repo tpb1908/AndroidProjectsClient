@@ -63,8 +63,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     }
 
-
-
     private void setNodes(List<Node> nodes) {
         mCurrentNodes = nodes;
         mPreviousNode = null;
@@ -94,10 +92,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     }
 
-    void appendNode(Node parent, List<Node> node) {
-        //TODO Traverse and insert, checking current nodes first
-    }
-
     private void loadNode(int pos) {
         final Node node  = mCurrentNodes.get(pos);
         if(node.getType() == Node.NodeType.FILE) {
@@ -105,6 +99,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         } else if(node.getType() == Node.NodeType.SUBMODULE) {
             //TODO Open the submodule in another instance
         } else {
+            mParent.addRibbonItem(node);
+
             Log.i(TAG, "loadNode: Loading path " + node.getPath());
             mPreviousNode = node;
             if(node.getChildren() == null) {
@@ -122,34 +118,31 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         public void directoryLoaded(List<Node> directory) {
             if(directory.size() > 0) {
                 final Node parent = directory.get(0).getParent();
-                boolean foundParent = false;
                 for(Node n : mCurrentNodes) { //Most likely here
                     if(parent.equals(n)) {
                         Log.i(TAG, "directoryLoaded: Found parent");
                         n.setChildren(directory);
-                        foundParent = true;
-                        break;
+                        return;
                     }
                 }
-                if(!foundParent) {
-                    final Stack<Node> stack =  new Stack<>();
-                    Node current;
-                    int depth = 0;
-                    for(Node n : mRootNodes) {
-                        stack.push(n);
-                        while(!stack.isEmpty()) {
-                            current = stack.pop();
-                            if(current.getChildren() != null) {
-                                for(Node child : current.getChildren()) {
-                                    if(parent.equals(child)) {
-                                        parent.setChildren(directory);
-                                        return;
-                                    }
-                                    stack.push(child);
+
+                final Stack<Node> stack =  new Stack<>();
+                Node current;
+                int depth = 0;
+                for(Node n : mRootNodes) {
+                    stack.push(n);
+                    while(!stack.isEmpty()) {
+                        current = stack.pop();
+                        if(current.getChildren() != null) {
+                            for(Node child : current.getChildren()) {
+                                if(parent.equals(child)) {
+                                    parent.setChildren(directory);
+                                    return;
                                 }
-                                depth += 1;
-                                Log.i(TAG, "directoryLoaded: Traversing at depth " + depth);
+                                stack.push(child);
                             }
+                            depth += 1;
+                            Log.i(TAG, "directoryLoaded: Traversing at depth " + depth);
                         }
                     }
                 }
