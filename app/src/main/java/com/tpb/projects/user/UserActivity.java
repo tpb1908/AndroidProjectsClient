@@ -92,6 +92,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.user_contributions) ContributionsView mContributions;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +115,8 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-            mRecycler.setLayoutManager(new LinearLayoutManager(this));
+            final LinearLayoutManager manager = new LinearLayoutManager(this);
+            mRecycler.setLayoutManager(manager);
             final UserReposAdapter adapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
             mRecycler.setAdapter(adapter);
 
@@ -126,6 +128,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                        fab.hide();
                     } else if(scrollY - oldScrollY < -10) {
                         fab.show();
+                    }
+                    if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
+                        adapter.notifyBottomReached();
                     }
                 }
             });
@@ -189,8 +194,8 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 mUserImage.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
 
             }
-
-            adapter.loadReposForUser(user);
+            adapter.setUser(user);
+            adapter.loadReposForUser(false);
 
             mApp.validateKey(isValid -> {
                 if(!isValid) {
