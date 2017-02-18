@@ -124,7 +124,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     public void onBindViewHolder(RepoHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Repository r = mRepos.get(pos);
-        holder.mName.setText(r.getFullName().contains(mAuthenticatedUser) ? r.getName() : r.getFullName());
+        holder.mName.setText(r.getFullName().contains(mUser) ? r.getName() : r.getFullName());
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         if(r.getDescription() != null && !r.getDescription().equals(Constants.JSON_NULL)) {
             builder.append(r.getDescription());
