@@ -28,7 +28,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private List<Node> mRootNodes = new ArrayList<>();
     private List<Node> mCurrentNodes = new ArrayList<>();
     private Node mPreviousNode;
-    private int mCurrentDepth = 0;
 
     private ContentActivity mParent;
     private String mRepo;
@@ -63,10 +62,15 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     }
 
-    private void setNodes(List<Node> nodes) {
-        mCurrentNodes = nodes;
+    void moveToStart() {
+        mCurrentNodes = mRootNodes;
         mPreviousNode = null;
-        mCurrentDepth = 0;
+        notifyDataSetChanged();
+    }
+
+    void moveTo(Node node) {
+        mPreviousNode = node;
+        mCurrentNodes = node.getChildren();
         notifyDataSetChanged();
     }
 
@@ -81,12 +85,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         } else if(mPreviousNode.getParent() == null) {
             mPreviousNode = mPreviousNode.getParent();
             mCurrentNodes = mRootNodes;
-            mCurrentDepth = 0;
             notifyDataSetChanged();
         } else {
             mCurrentNodes = mPreviousNode.getParent().getChildren();
             mPreviousNode = mPreviousNode.getParent();
-            mCurrentDepth = Data.instancesOf(mPreviousNode.getPath(), "/") + 1;
             notifyDataSetChanged();
         }
 
@@ -160,7 +162,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     public void directoryLoaded(List<Node> directory) {
         if(mPreviousNode == null) { //We are at the root
             mRootNodes = directory;
-            setNodes(directory);
+            mCurrentNodes = directory;
+            mPreviousNode = null;
+            notifyDataSetChanged();
         } else {
             mPreviousNode.setChildren(directory);
             mCurrentNodes = directory;

@@ -17,6 +17,8 @@ import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -56,17 +58,36 @@ public class ContentActivity extends AppCompatActivity {
     private void initRibbon() {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText("Root");
+        view.setOnClickListener((v) -> {
+            mRibbon.removeAllViews();
+            mRibbon.addView(view);
+            mAdapter.moveToStart();
+        });
         mRibbon.addView(view);
     }
 
-    void addRibbonItem(Node node) {
+    void addRibbonItem(final Node node) {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText(node.getName());
-        view.setTag(node.getSha());
+        view.setFocusable(false);
+        view.setOnClickListener(v -> {
+            //FIXME- Dirty hack
+            final ArrayList<View> views = new ArrayList<>();
+            for(int i = 0; i <= mRibbon.indexOfChild(view); i++) {
+                views.add(mRibbon.getChildAt(i));
+            }
+            mRibbon.removeAllViews();
+            for(View item : views) {
+                mRibbon.addView(item);
+            }
+//            final ViewGroup parent = (ViewGroup) view.getParent();
+//            parent.removeViews(parent.indexOfChild(view) + 1, parent.getChildCount());
+            mAdapter.moveTo(node);
+        });
+
+
         mRibbon.addView(view);
-        mRibbon.postDelayed(() -> {
-            mRibonScrollView.fullScroll(View.FOCUS_RIGHT);
-        }, 17);
+        mRibbon.postDelayed(() -> mRibonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
 
     }
 
@@ -80,6 +101,11 @@ public class ContentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        mAdapter.moveBack();
+        if(mRibbon.getChildCount() > 1) {
+            mAdapter.moveBack();
+        } else {
+            finish();
+        }
+
     }
 }
