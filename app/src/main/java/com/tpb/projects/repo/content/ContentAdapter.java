@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.util.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         holder.mText.setText(currentNodes.get(position).getName());
         if(currentNodes.get(position).getType() == Node.NodeType.FILE) {
             holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
+            holder.mSize.setText(Data.formatBytes(currentNodes.get(position).getSize()));
         } else {
             holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
+            holder.mSize.setText("");
         }
+
     }
 
     void setNodes(List<Node> nodes) {
@@ -54,10 +58,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     class NodeViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mText;
+        private TextView mSize;
 
         public NodeViewHolder(View itemView) {
             super(itemView);
             mText = (TextView) itemView.findViewById(R.id.node_text);
+            mSize = (TextView) itemView.findViewById(R.id.node_size);
         }
     }
 
