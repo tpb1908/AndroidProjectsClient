@@ -60,9 +60,14 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private final SwipeRefreshLayout mRefresher;
     private final AnimatingRecycler mRecycler;
     private ArrayList<Repository> mRepos = new ArrayList<>();
+    private String mAuthenticatedUser;
     private String mUser;
     private final RepoPinSorter mSorter;
     private final RepositoriesManager mManager;
+
+    private int mPage = 1;
+    private boolean mIsLoading = false;
+    private boolean mMaxPageReached = false;
 
     UserReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
@@ -72,21 +77,40 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
             mRepos.clear();
+            mPage = 1;
+            mMaxPageReached = false;
             notifyDataSetChanged();
-            mLoader.loadRepositories(UserReposAdapter.this, mUser);
+            loadReposForUser(true);
         });
         mSorter = new RepoPinSorter(context);
-        mUser = GitHubSession.getSession(context).getUserLogin();
+        mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
-    void loadReposForUser(String user) {
-        if(user.equals(mUser)) { //The session user
-            mLoader.loadRepositories(this);
-        } else {
-            mUser = user;
-            mLoader.loadRepositories(this, user);
+    void setUser(String user) {
+        mUser = user;
+    }
+
+
+    void notifyBottomReached() {
+        if(!mIsLoading && !mMaxPageReached) {
+            mPage++;
+            loadReposForUser(false);
         }
-        mSorter.setKey(mUser);
+    }
+
+    void loadReposForUser(boolean resetPage) {
+        mIsLoading = true;
+        mRefresher.setRefreshing(true);
+        if(resetPage) {
+            mPage = 1;
+            mMaxPageReached = false;
+        }
+        if(mUser.equals(mAuthenticatedUser)) { //The session user
+            mLoader.loadRepositories(this, mPage);
+        } else {
+            mLoader.loadRepositories(this, mUser, mPage);
+        }
+        mSorter.setKey(mAuthenticatedUser);
 
     }
 
@@ -100,7 +124,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     public void onBindViewHolder(RepoHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Repository r = mRepos.get(pos);
-        holder.mName.setText(r.getFullName().contains(mUser) ? r.getName() : r.getFullName());
+        holder.mName.setText(r.getFullName().contains(mAuthenticatedUser) ? r.getName() : r.getFullName());
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         if(r.getDescription() != null && !r.getDescription().equals(Constants.JSON_NULL)) {
             builder.append(r.getDescription());
@@ -141,11 +165,28 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     @Override
     public void repositoriesLoaded(Repository[] repos) {
         Log.i(TAG, "repositoriesLoaded: " + repos.length);
-        mRecycler.enableAnimation();
-        mRepos = new ArrayList<>(Arrays.asList(repos));
-        mSorter.sort(mRepos);
+
         mRefresher.setRefreshing(false);
-        notifyDataSetChanged();
+        mIsLoading = false;
+        if(repos.length > 0) {
+            int oldLength = mRepos.size();
+
+            if(mPage == 1) {
+                mRecycler.enableAnimation();
+                mRepos = new ArrayList<>(Arrays.asList(repos));
+            } else {
+                mRepos.addAll(Arrays.asList(repos));
+            }
+            mSorter.sort(mRepos);
+
+            if(mPage == 1) {
+                notifyDataSetChanged();
+            } else {
+                notifyItemRangeInserted(oldLength, mRepos.size());
+            }
+        } else {
+            mMaxPageReached = true;
+        }
     }
 
     @Override
