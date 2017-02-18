@@ -20,8 +20,12 @@ package com.tpb.projects.user;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,11 +101,15 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         final int pos = holder.getAdapterPosition();
         final Repository r = mRepos.get(pos);
         holder.mName.setText(r.getFullName().contains(mUser) ? r.getName() : r.getFullName());
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
         if(r.getDescription() != null && !r.getDescription().equals(Constants.JSON_NULL)) {
-            holder.mDescription.setText(r.getDescription());
-        } else {
-            holder.mDescription.setText(null);
+            builder.append(r.getDescription());
         }
+        if(r.getLanguage() != null && !r.getLanguage().equals(Constants.JSON_NULL)) {
+            if(builder.length() > 0) builder.append("\n");
+            builder.append(r.getLanguage(), new ForegroundColorSpan(Color.WHITE), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        holder.mDescription.setText(builder);
         final boolean isPinned = mSorter.isPinned(r.getId());
         holder.isPinned = isPinned;
         holder.mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
