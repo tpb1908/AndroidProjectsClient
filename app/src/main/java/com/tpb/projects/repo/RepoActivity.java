@@ -54,6 +54,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.ProjectDialog;
 import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
+import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
@@ -235,6 +236,12 @@ public class RepoActivity extends AppCompatActivity implements
         }
     }
 
+    @OnClick(R.id.repo_show_files)
+    void showFiles() {
+        final Intent i = new Intent(this, ContentActivity.class);
+        i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+        startActivity(i);
+    }
 
     @Override
     public void repoLoaded(Repository repo) {

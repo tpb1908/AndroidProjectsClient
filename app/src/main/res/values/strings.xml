@@ -156,6 +156,7 @@
     <string name="text_unwatch">Unwatch</string>
     <string name="text_clear">Clear</string>
     <string name="text_comment_created">Comment created</string>
+    <string name="text_show_files">Show files</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>
@@ -250,6 +251,7 @@
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
+    <string name="intent_path" translatable="false">path</string>
     <string name="intent_username" translatable="false">username</string>
     <string name="intent_access_level" translatable="false">access_level</string>
     <string name="intent_project_number" translatable="false">project_number</string>

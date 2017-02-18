@@ -39,10 +39,6 @@ class CardDragListener implements View.OnDragListener {
     private final int accent;
     private View.OnDragListener mParent;
 
-    CardDragListener(Context context) {
-        accent = context.getResources().getColor(R.color.colorAccent);
-    }
-
     CardDragListener(Context context, View.OnDragListener parent) {
         accent = context.getResources().getColor(R.color.colorAccent);
         mParent = parent;
@@ -50,7 +46,9 @@ class CardDragListener implements View.OnDragListener {
 
     @Override
     public boolean onDrag(View view, DragEvent event) {
-        if(mParent != null) mParent.onDrag(view, event);
+        if(mParent != null) {
+            mParent.onDrag(view, event);
+        }
         final int action = event.getAction();
         final View sourceView = (View) event.getLocalState();
         if(sourceView.getId() == R.id.column_card || view.getTag() == sourceView.getTag()) {
@@ -79,18 +77,13 @@ class CardDragListener implements View.OnDragListener {
                 final CardAdapter targetAdapter = (CardAdapter) target.getAdapter();
 
                 if(view.getId() == R.id.viewholder_card) {
-
                     targetPosition = targetAdapter.indexOf((int) view.getTag());
-
-                    Log.i(TAG, "onDrag: Dropping onto view of " + view.getHeight() + " with view at " + event.getY());
-                    boolean below = event.getY() < view.getHeight() / 2;
-                    if(below) {
+                    Log.i(TAG, "onDrag: Hovering over position " + targetPosition);
+                    if(event.getY() < view.getHeight() / 2) {
                         targetPosition = Math.max(0, targetPosition - 1);
                     }
-                    Log.i(TAG, "onDrag: Should drop below " + below);
                     if(source != target) {
                         if(targetPosition >= 0) {
-                            Log.i(TAG, "onDrag: Adding to position " + targetPosition);
                             targetAdapter.addCardFromDrag(targetPosition, card);
                         } else {
                             targetAdapter.addCardFromDrag(card);
@@ -101,11 +94,12 @@ class CardDragListener implements View.OnDragListener {
                     }
 
                 } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0) {
-                    Log.i(TAG, "onDrag: Drop on the recycler");
                     sourceAdapter.removeCard(card);
                     targetAdapter.addCardFromDrag(card);
                 }
                 view.setBackground(selectedBG);
+
+
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 //  Log.i(TAG, "onDrag: Drag entered");
