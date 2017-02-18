@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:layout_margin="8dp"
-    android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
+    android:textAppearance="@android:style/TextAppearance.Material.Subhead"
+    android:drawableEnd="@drawable/ic_chevron_right"/>
