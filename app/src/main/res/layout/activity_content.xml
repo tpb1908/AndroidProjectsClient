@@ -36,6 +36,7 @@
         </android.support.v7.widget.Toolbar>
 
         <HorizontalScrollView
+            android:id="@+id/content_ribbon_scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

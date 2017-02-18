@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 public class ContentActivity extends AppCompatActivity {
     private static final String TAG = ContentActivity.class.getSimpleName();
 
+    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibonScrollView;
     @BindView(R.id.content_file_ribbon) LinearLayout mRibbon;
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
@@ -62,6 +64,10 @@ public class ContentActivity extends AppCompatActivity {
         view.setText(node.getName());
         view.setTag(node.getSha());
         mRibbon.addView(view);
+        mRibbon.postDelayed(() -> {
+            mRibonScrollView.fullScroll(View.FOCUS_RIGHT);
+        }, 17);
+
     }
 
     private void removeRibbonItems(Node node) {
