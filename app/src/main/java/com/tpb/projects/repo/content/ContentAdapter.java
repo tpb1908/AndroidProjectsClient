@@ -24,6 +24,7 @@ import java.util.List;
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeViewHolder> implements FileLoader.DirectoryLoader {
     private static final String TAG = ContentAdapter.class.getSimpleName();
 
+    private List<Node> mRootNodes = new ArrayList<>();
     private List<Node> mCurrentNodes = new ArrayList<>();
     private Node mPreviousNode;
 
@@ -33,7 +34,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     ContentAdapter(FileLoader loader, String repo, @Nullable String path) {
         mLoader = loader;
         mRepo = repo;
-        mLoader.loadDirectory(this, repo, path);
+        mLoader.loadDirectory(this, repo, path, null);
     }
 
     @Override
@@ -60,6 +61,26 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         notifyDataSetChanged();
     }
 
+    void moveBack() {
+        /*
+        If we are at the root, mPreviousNode is null
+        If we are one layer down, mPreviousNode is non null, but its parent is null
+        If we are further down, both mPreviousNode and its parent are non null
+         */
+        if(mPreviousNode == null) {
+            Log.i(TAG, "moveBack: We are already at the root");
+        } else if(mPreviousNode.getParent() == null) {
+            mPreviousNode = mPreviousNode.getParent();
+            mCurrentNodes = mRootNodes;
+            notifyDataSetChanged();
+        } else {
+            mCurrentNodes = mPreviousNode.getParent().getChildren();
+            mPreviousNode = mPreviousNode.getParent();
+            notifyDataSetChanged();
+        }
+
+    }
+
     void appendNode(Node parent, List<Node> node) {
         //TODO Traverse and insert, checking current nodes first
     }
@@ -70,7 +91,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             //TODO- Open file
         } else {
             Log.i(TAG, "loadNode: Loading path " + node.getPath());
-            mLoader.loadDirectory(this, mRepo, node.getPath());
+            mPreviousNode = node;
+            if(node.getChildren() == null) {
+                mLoader.loadDirectory(this, mRepo, node.getPath(), node);
+            } else {
+                directoryLoaded(node.getChildren());
+            }
         }
     }
 
@@ -89,6 +115,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     @Override
     public void directoryLoaded(List<Node> directory) {
         if(mPreviousNode == null) { //We are at the root
+            mRootNodes = directory;
             setNodes(directory);
         } else {
             mPreviousNode.setChildren(directory);

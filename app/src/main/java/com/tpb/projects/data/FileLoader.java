@@ -29,7 +29,7 @@ public class FileLoader extends APIHandler {
         super(context);
     }
 
-    public void loadDirectory(DirectoryLoader loader, String repo, @Nullable String path) {
+    public void loadDirectory(DirectoryLoader loader, String repo, @Nullable String path, @Nullable Node parent) {
         String PATH = GIT_BASE + SEGMENT_REPOS + "/" + repo + SEGMENT_CONTENTS;
         if(path != null) PATH += "/" + path;
         AndroidNetworking.get(PATH)
@@ -42,6 +42,7 @@ public class FileLoader extends APIHandler {
                         try {
                             for(int i = 0; i < response.length(); i++) {
                                 nodes.add(new Node(response.getJSONObject(i)));
+                                nodes.get(i).setParent(parent);
                             }
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);

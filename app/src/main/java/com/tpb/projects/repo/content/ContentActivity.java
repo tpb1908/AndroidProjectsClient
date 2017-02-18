@@ -70,4 +70,9 @@ public class ContentActivity extends AppCompatActivity {
     public void onToolbarBackPressed(View view) {
         onBackPressed();
     }
+
+    @Override
+    public void onBackPressed() {
+        mAdapter.moveBack();
+    }
 }
