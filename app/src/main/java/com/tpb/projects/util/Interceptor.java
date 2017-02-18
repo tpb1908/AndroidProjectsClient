@@ -85,9 +85,12 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         final String path = getIntent().getDataString();
                         if(path.indexOf('#') >  path.indexOf(segments.get(3))) {
+                            final StringBuilder id = new StringBuilder();
+                            for(int i = path.indexOf('#') + 6; i < path.length(); i++) {
+                                if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
+                            }
                             try {
-                                final int cardId = Integer.parseInt(path.substring(path.indexOf('#') + 6));
-                                Log.i(TAG, "onCreate: " + cardId);
+                                final int cardId = Integer.parseInt(id.toString());
                                 p.putExtra(getString(R.string.intent_card_id), cardId);
                             } catch(Exception ignored) {}
                         }
@@ -173,17 +176,17 @@ public class Interceptor extends Activity {
 
     private Intent generateFailIntentWithoutApp() {
         try {
-            Intent intent = new Intent(getIntent().getAction());
+            final Intent intent = new Intent(getIntent().getAction());
             intent.setData(getIntent().getData());
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-            final List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            final List<ResolveInfo> resolvedInfo = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-            if (!resolveInfos.isEmpty()) {
+            if (!resolvedInfo.isEmpty()) {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
 
-                for (ResolveInfo resolveInfo : resolveInfos) {
+                for (ResolveInfo resolveInfo : resolvedInfo) {
                     final String packageName = resolveInfo.activityInfo.packageName;
                     if (!packageName.equals(getPackageName())) {
                         final Intent targetedShareIntent = new Intent(getIntent().getAction());
