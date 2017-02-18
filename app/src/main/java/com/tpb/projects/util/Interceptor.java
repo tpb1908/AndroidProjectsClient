@@ -84,16 +84,15 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         final String path = getIntent().getDataString();
-                        if(path.indexOf('#') >  path.indexOf(segments.get(3))) {
-                            final StringBuilder id = new StringBuilder();
-                            for(int i = path.indexOf('#') + 6; i < path.length(); i++) {
-                                if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
-                            }
-                            try {
-                                final int cardId = Integer.parseInt(id.toString());
-                                p.putExtra(getString(R.string.intent_card_id), cardId);
-                            } catch(Exception ignored) {}
+
+                        final StringBuilder id = new StringBuilder();
+                        for(int i = path.indexOf('#', path.indexOf(segments.get(3))) + 6; i < path.length(); i++) {
+                            if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
                         }
+                        try {
+                            final int cardId = Integer.parseInt(id.toString());
+                            p.putExtra(getString(R.string.intent_card_id), cardId);
+                        } catch(Exception ignored) {}
                         startActivity(p);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
@@ -112,10 +111,13 @@ public class Interceptor extends Activity {
                     if("tree".equals(segments.get(2))) {
                         final Intent content = new Intent(Interceptor.this, ContentActivity.class);
                         content.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        String path = "";
-                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
+                        final StringBuilder path = new StringBuilder();
+                        for(int i = 3; i < segments.size(); i++){
+                            path.append(segments.get(i));
+                            path.append('/');
+                        }
                         Log.i(TAG, "onCreate: Path is " + path);
-                        content.putExtra(getString(R.string.intent_path), path);
+                        content.putExtra(getString(R.string.intent_path), path.toString());
                         startActivity(content);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
