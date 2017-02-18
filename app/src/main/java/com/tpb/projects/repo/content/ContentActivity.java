@@ -45,7 +45,7 @@ public class ContentActivity extends AppCompatActivity {
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
 
-        mAdapter = new ContentAdapter(new FileLoader(this), repo, null);
+        mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
 
