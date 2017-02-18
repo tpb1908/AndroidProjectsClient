@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -45,6 +47,7 @@ public class FileLoader extends APIHandler {
                             Log.e(TAG, "onResponse: ", jse);
                             if(loader != null) loader.directoryLoadError(APIError.UNPROCESSABLE);
                         }
+                        Collections.sort(nodes, sorter);
                         if(loader != null) loader.directoryLoaded(nodes);
                     }
 
@@ -54,6 +57,12 @@ public class FileLoader extends APIHandler {
                     }
                 });
     }
+
+    private static final Comparator<Node> sorter = (n1, n2) -> {
+        if(n1.getType() == Node.NodeType.FILE && n2.getType() != Node.NodeType.FILE) return 1;
+        if(n1.getType() != Node.NodeType.FILE && n2.getType() == Node.NodeType.FILE) return -1;
+        return n1.getName().compareToIgnoreCase(n1.getName());
+    };
 
     public interface DirectoryLoader {
 
