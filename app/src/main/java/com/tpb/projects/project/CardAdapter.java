@@ -73,11 +73,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
+    private ProjectActivity.NavigationDragListener mNavListener;
 
-    CardAdapter(ColumnFragment parent, Repository.AccessLevel accessLevel) {
+    CardAdapter(ColumnFragment parent, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
         mParent = parent;
         mEditor = new Editor(mParent.getContext());
         mAccessLevel = accessLevel;
+        mNavListener = navListener;
     }
 
     void setAccessLevel(Repository.AccessLevel accessLevel) {
@@ -189,7 +191,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 view.setVisibility(View.INVISIBLE);
                 return true;
             });
-            holder.mCardView.setOnDragListener(new CardDragListener(mParent.getContext()));
+            holder.mCardView.setOnDragListener(new CardDragListener(mParent.getContext(), mNavListener));
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }

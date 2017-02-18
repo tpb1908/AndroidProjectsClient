@@ -20,6 +20,7 @@ package com.tpb.projects.project;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,9 +29,11 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -544,20 +547,24 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         }
     }
 
-    private long lastPageChange;
-
     private void dragLeft() {
-        if(mCurrentPosition > 0 && System.nanoTime() - lastPageChange > 5E8) {
+        if(mCurrentPosition > 0) {
             mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
-            lastPageChange = System.nanoTime();
         }
     }
 
     private void dragRight() {
-        if(mCurrentPosition < mAdapter.getCount() && System.nanoTime() - lastPageChange > 5E8) {
+        if(mCurrentPosition < mAdapter.getCount()) {
             mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
-            lastPageChange = System.nanoTime();
         }
+    }
+
+    private void dragUp() {
+        mAdapter.getCurrentFragment().scrollUp();
+    }
+
+    private void dragDown() {
+        mAdapter.getCurrentFragment().scrollDown();
     }
 
     public void onToolbarBackPressed(View view) {
@@ -725,20 +732,69 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     class NavigationDragListener implements View.OnDragListener {
 
+        private long mLastPageChange = 0;
+
         @Override
         public boolean onDrag(View view, DragEvent event) {
+            final DisplayMetrics metrics = getResources().getDisplayMetrics();
+            if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED && view.getId() == R.id.viewholder_card) {
+                final RecyclerView rv = (RecyclerView) view.getParent();
+                final CardAdapter ca = (CardAdapter) rv.getAdapter();
+                final Rect r = new Rect();
+                ((NestedScrollView) rv.getParent().getParent()).getHitRect(r);
+                int first = -1;
+                int last = -1;
+                for(int i = 0; i < rv.getAdapter().getItemCount(); i++) {
+                    if(rv.getChildAt(i).getLocalVisibleRect(r) ) {
+                        if(first == -1) {
+                            first = i;
+                        } else if(i == rv.getAdapter().getItemCount() - 1) {
+                            last = i;
+                        }
+                    } else if(first != -1) {
+                        last = i - 1;
+                        break;
+                    }
+                }
+                Log.i(TAG, "onDrag: Range of positions " + first + ", to " + last);
+                final int tp = ca.indexOf((int) view.getTag());
+                Log.i(TAG, "onDrag: View is at " + view.getY());
+                Log.i(TAG, "onDrag: Event is at " + event.getY());
+                Log.i(TAG, "onDrag: Position in view is " + (event.getY() - view.getY()));
+                final float relativePos = event.getY() - view.getY();
+                final int[] pos = new int[2];
+                if(tp == first) {
+                    rv.getChildAt(first).getLocationOnScreen(pos);
+                    Log.i(TAG, "onDrag: First view " + pos[1]);
+                    if(pos[1] + relativePos < 0.1 * metrics.heightPixels) {
+                        Log.i(TAG, "onDrag: In bottom 10%");
+                        dragUp();
+                    }
+                    Log.i(TAG, "onDrag: At the first position- We should scroll up");
 
-            if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
-                final DisplayMetrics metrics = getResources().getDisplayMetrics();
+                } else if(tp == last) {
+                    Log.i(TAG, "onDrag: At the last position- We should scroll down");
+                    rv.getChildAt(last).getLocationOnScreen(pos);
+                    Log.i(TAG, "onDrag: Last view " + pos[1]);
+                    if(pos[1] + relativePos > 0.9 * metrics.heightPixels) {
+                        Log.i(TAG, "onDrag: In top 10%");
+                        dragDown();
+                    }
 
-                if(event.getX() / metrics.widthPixels > 0.85f) {
+                }
+
+            } else if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
+                if(event.getX() / metrics.widthPixels > 0.85f && System.nanoTime() - mLastPageChange > 5E8) {
                     dragRight();
-                } else if(event.getX() / metrics.widthPixels < 0.15f) {
+                    mLastPageChange = System.nanoTime();
+                } else if(event.getX() / metrics.widthPixels < 0.15f && System.nanoTime() - mLastPageChange > 5E8) {
                     dragLeft();
+                    mLastPageChange = System.nanoTime();
                 }
             }
             return true;
         }
+
     }
 
     private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {

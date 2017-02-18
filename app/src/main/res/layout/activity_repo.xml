@@ -264,6 +264,7 @@
 
                         </TableLayout>
 
+
                         <Button
                             android:id="@+id/repo_show_readme"
                             android:layout_width="match_parent"
@@ -285,6 +286,31 @@
                     android:visibility="gone"
                     android:nestedScrollingEnabled="false"/>
 
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/repo_view_files_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp">
+
+                    <Button
+                        android:id="@+id/repo_show_files"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_show_files"
+                        style="@style/Widget.AppCompat.Button.Borderless"/>
+
+                </android.support.v7.widget.CardView>
+
+                <com.tpb.animatingrecyclerview.AnimatingRecycler
+                    android:id="@+id/repo_project_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false">
+
+                </com.tpb.animatingrecyclerview.AnimatingRecycler>
+
+
                 <android.support.v7.widget.CardView
                     android:id="@+id/repo_new_project_card"
                     android:layout_width="match_parent"
@@ -301,14 +327,6 @@
                         android:text="@string/text_create_project"/>
 
                 </android.support.v7.widget.CardView>
-
-                <com.tpb.animatingrecyclerview.AnimatingRecycler
-                    android:id="@+id/repo_project_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false">
-
-                </com.tpb.animatingrecyclerview.AnimatingRecycler>
 
             </LinearLayout>
 

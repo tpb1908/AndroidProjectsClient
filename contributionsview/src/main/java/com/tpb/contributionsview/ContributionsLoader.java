@@ -75,7 +75,6 @@ class ContributionsLoader {
             contribs.add(new GitDay(response.substring(first, last)));
             first = response.indexOf("<rect", last);
         }
-        Log.i(TAG, "parse: " + contribs);
         mListener.onResponse(contribs);
 
     }

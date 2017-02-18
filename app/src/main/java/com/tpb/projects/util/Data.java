@@ -120,6 +120,13 @@ public class Data {
         return String.format("%.2f", kb / (1024f * 1024f)) + " GB";
     }
 
+    public static String formatBytes(int b) {
+        if(b < 1024) return Integer.toString(b) + " B";
+        if(b < 1024 * 1024) return String.format("%.2f", b / 1024f) + " KB";
+        if(b < 1024 * 1024 * 1024) return String.format("%.2f", b / (1024f * 1024f)) + " MB";
+        return String.format("%.2f", b / (1024f * 1024f * 1024f)) + " GB";
+    }
+
     public static String base64Decode(String base64) {
         return new String(Base64.decode(base64, Base64.DEFAULT));
     }
