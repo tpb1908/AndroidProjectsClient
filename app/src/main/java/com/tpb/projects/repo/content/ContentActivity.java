@@ -7,18 +7,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,22 +45,10 @@ public class ContentActivity extends AppCompatActivity {
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
 
-        mAdapter = new ContentAdapter();
+        mAdapter = new ContentAdapter(new FileLoader(this), repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-        new FileLoader(this).loadDirectory(new FileLoader.DirectoryLoader() {
-            @Override
-            public void directoryLoaded(List<Node> directory) {
-                Log.i(TAG, "directoryLoaded: " + directory);
-                mAdapter.setNodes(directory);
-            }
-
-            @Override
-            public void directoryLoadError(APIHandler.APIError error) {
-                Log.i(TAG, "directoryLoadError: " + error);
-            }
-        }, repo, null);
     }
 
     private void initRibbon() {
