@@ -42,8 +42,8 @@
     <com.pddstudio.highlightjs.HighlightJsView
             android:id="@+id/file_webview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="match_parent"
+            android:layout_marginTop="-16dp">
 
     </com.pddstudio.highlightjs.HighlightJsView>
 
