@@ -62,6 +62,16 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     }
 
+    void reload() {
+        mCurrentNodes.clear();
+        notifyDataSetChanged();
+        if(mPreviousNode == null) {
+            mLoader.loadDirectory(this, mRepo, null, null);
+        } else {
+            mLoader.loadDirectory(this, mRepo, mPreviousNode.getPath(), mPreviousNode);
+        }
+    }
+
     void moveToStart() {
         mCurrentNodes = mRootNodes;
         mPreviousNode = null;

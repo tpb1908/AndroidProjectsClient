@@ -52,7 +52,9 @@ public class ContentActivity extends AppCompatActivity {
         mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.reload();
+        });
     }
 
     private void initRibbon() {
