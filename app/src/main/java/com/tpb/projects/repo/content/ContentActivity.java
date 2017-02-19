@@ -81,6 +81,8 @@ public class ContentActivity extends AppCompatActivity {
                 mRibbon.addView(item);
             }
 //            final ViewGroup parent = (ViewGroup) view.getParent();
+//            Log.i(TAG, "addRibbonItem: Focused child " + parent.getFocusedChild());
+//            parent.requestChildFocus(view, parent.getFocusedChild());
 //            parent.removeViews(parent.indexOfChild(view) + 1, parent.getChildCount());
             mAdapter.moveTo(node);
         });
@@ -102,6 +104,13 @@ public class ContentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(mRibbon.getChildCount() > 1) {
+            //FIXME Dirty hack
+            final ArrayList<View> views = new ArrayList<>();
+            for(int i = 0; i < mRibbon.getChildCount() - 1; i++) {
+                views.add(mRibbon.getChildAt(i));
+            }
+            mRibbon.removeAllViews();
+            for(View v  : views) mRibbon.addView(v);
             mAdapter.moveBack();
         } else {
             finish();
