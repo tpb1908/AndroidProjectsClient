@@ -29,7 +29,8 @@ import butterknife.ButterKnife;
 public class ContentActivity extends AppCompatActivity {
     private static final String TAG = ContentActivity.class.getSimpleName();
 
-    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibonScrollView;
+    @BindView(R.id.content_title) TextView mTitle;
+    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibbonScrollView;
     @BindView(R.id.content_file_ribbon) LinearLayout mRibbon;
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
@@ -50,6 +51,7 @@ public class ContentActivity extends AppCompatActivity {
 
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        mTitle.setText(repo.substring(repo.indexOf('/') + 1));
 
         mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
@@ -97,7 +99,7 @@ public class ContentActivity extends AppCompatActivity {
 
 
         mRibbon.addView(view);
-        mRibbon.postDelayed(() -> mRibonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
+        mRibbon.postDelayed(() -> mRibbonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
 
     }
 
