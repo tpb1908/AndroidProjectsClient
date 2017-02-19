@@ -68,6 +68,10 @@ public class ContentActivity extends AppCompatActivity {
         mRibbon.addView(view);
     }
 
+    void flashRecycler() {
+
+    }
+
     void addRibbonItem(final Node node) {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText(node.getName());

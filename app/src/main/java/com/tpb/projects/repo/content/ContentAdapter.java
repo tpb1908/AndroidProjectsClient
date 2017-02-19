@@ -32,12 +32,14 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private ContentActivity mParent;
     private String mRepo;
     private FileLoader mLoader;
+    private boolean mIsLoading = false;
 
     ContentAdapter(FileLoader loader, ContentActivity parent, String repo, @Nullable String path) {
         mLoader = loader;
         mParent = parent;
         mRepo = repo;
         mLoader.loadDirectory(this, repo, path, null);
+        mIsLoading = true;
     }
 
     @Override
@@ -105,6 +107,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     }
 
     private void loadNode(int pos) {
+        if(mIsLoading) return;
+        mIsLoading = true;
         final Node node  = mCurrentNodes.get(pos);
         if(node.getType() == Node.NodeType.FILE) {
             //TODO- Open file
@@ -112,13 +116,13 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             //TODO Open the submodule in another instance
         } else {
             mParent.addRibbonItem(node);
-
             Log.i(TAG, "loadNode: Loading path " + node.getPath());
             mPreviousNode = node;
+            mParent.mRefresher.setRefreshing(true);
             if(node.getChildren() == null) {
-                mParent.mRefresher.setRefreshing(true);
                 mLoader.loadDirectory(this, mRepo, node.getPath(), node);
             } else {
+                mParent.mRefresher.setRefreshing(true);
                 directoryLoaded(node.getChildren());
             }
         }
@@ -179,7 +183,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             mPreviousNode.setChildren(directory);
             mCurrentNodes = directory;
             notifyDataSetChanged();
+
         }
+        mIsLoading = false;
         mParent.mRefresher.setRefreshing(false);
         for(Node n : directory) {
             if(n.getType() == Node.NodeType.DIRECTORY && n.getChildren() == null) {
