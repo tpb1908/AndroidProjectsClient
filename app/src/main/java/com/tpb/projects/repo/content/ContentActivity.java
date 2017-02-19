@@ -63,7 +63,7 @@ public class ContentActivity extends AppCompatActivity {
 
     private void initRibbon() {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
-        view.setText("Root");
+        view.setText(R.string.text_ribbon_root);
         view.setOnClickListener((v) -> {
             mRibbon.removeAllViews();
             mRibbon.addView(view);
