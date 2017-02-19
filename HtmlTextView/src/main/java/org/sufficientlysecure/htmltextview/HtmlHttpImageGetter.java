@@ -43,7 +43,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
     public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl) {
         this.container = textView;
-        if (baseUrl != null) {
+        if(baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
     }
@@ -51,7 +51,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
     public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl, boolean matchParentWidth) {
         this.container = textView;
         this.matchParentWidth = matchParentWidth;
-        if (baseUrl != null) {
+        if(baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
     }
@@ -60,7 +60,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         final UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
-         new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth).execute(source);
+        new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth).execute(source);
 
         // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
@@ -94,7 +94,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         protected Drawable doInBackground(String... params) {
             source = params[0];
 
-            if (resources.get() != null) {
+            if(resources.get() != null) {
                 return fetchDrawable(resources.get(), source);
             }
 
@@ -103,12 +103,12 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
         @Override
         protected void onPostExecute(Drawable result) {
-            if (result == null) {
+            if(result == null) {
                 Log.w(HtmlTextView.TAG, "Drawable result is null! (source: " + source + ")");
                 return;
             }
             final UrlDrawable urlDrawable = drawableReference.get();
-            if (urlDrawable == null) {
+            if(urlDrawable == null) {
                 return;
             }
             // set the correct bound according to the result from HTTP call
@@ -118,7 +118,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
             urlDrawable.drawable = result;
 
             final HtmlHttpImageGetter imageGetter = imageGetterReference.get();
-            if (imageGetter == null) {
+            if(imageGetter == null) {
                 return;
             }
 
@@ -141,14 +141,14 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 scale = getScale(drawable);
                 drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
                 return drawable;
-            } catch (Exception e) {
+            } catch(Exception e) {
                 return null;
             }
         }
 
         private float getScale(Drawable drawable) {
             final View container = containerReference.get();
-            if (!matchParentWidth || container == null) {
+            if(!matchParentWidth || container == null) {
                 return 1f;
             }
             float maxWidth = container.getWidth();
@@ -159,10 +159,10 @@ public class HtmlHttpImageGetter implements ImageGetter {
         private InputStream fetch(String urlString) throws IOException {
             URL url;
             final HtmlHttpImageGetter imageGetter = imageGetterReference.get();
-            if (imageGetter == null) {
+            if(imageGetter == null) {
                 return null;
             }
-            if (imageGetter.baseUri != null) {
+            if(imageGetter.baseUri != null) {
                 url = imageGetter.baseUri.resolve(urlString).toURL();
             } else {
                 url = URI.create(urlString).toURL();
@@ -179,7 +179,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
         @Override
         public void draw(Canvas canvas) {
             // override the draw to facilitate refresh function later
-            if (drawable != null) {
+            if(drawable != null) {
                 drawable.draw(canvas);
             }
         }

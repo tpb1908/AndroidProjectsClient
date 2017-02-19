@@ -57,7 +57,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private boolean canAccessRepo = false;
 
 
-
     public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
         mRecycler = recycler;

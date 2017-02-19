@@ -116,11 +116,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         mEditor = new Editor(this);
 
         mAdapter = new IssuesAdapter(this);
-        
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecycler.setLayoutManager(layoutManager);
         mRecycler.setAdapter(mAdapter);
-        
+
         mRefresher.setOnRefreshListener(this::refresh);
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
@@ -350,7 +350,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         }, mRepoPath);
     }
-    
+
     void openIssue(Issue issue) {
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
@@ -438,7 +438,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         });
         builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
-        
+
         final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
@@ -616,7 +616,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
             case R.id.menu_action_search:
-                if(mAdapter.getItemCount()> 0) {
+                if(mAdapter.getItemCount() > 0) {
                     final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
                     searchSrc.setThreshold(1);
                     final IssuesSearchAdapter searchAdapter = new IssuesSearchAdapter(this, mAdapter.getIssues());

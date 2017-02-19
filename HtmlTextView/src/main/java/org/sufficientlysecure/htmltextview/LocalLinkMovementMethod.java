@@ -32,7 +32,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
     private static LocalLinkMovementMethod sInstance;
 
     public static LocalLinkMovementMethod getInstance() {
-        if (sInstance == null)
+        if(sInstance == null)
             sInstance = new LocalLinkMovementMethod();
         return sInstance;
     }
@@ -41,7 +41,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
     public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
         int action = event.getAction();
 
-        if (action == MotionEvent.ACTION_UP ||
+        if(action == MotionEvent.ACTION_UP ||
                 action == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
@@ -58,16 +58,16 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
 
             final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
-            if (link.length != 0) {
-                if (action == MotionEvent.ACTION_UP) {
+            if(link.length != 0) {
+                if(action == MotionEvent.ACTION_UP) {
                     link[0].onClick(widget);
-                } else if (action == MotionEvent.ACTION_DOWN) {
+                } else if(action == MotionEvent.ACTION_DOWN) {
                     Selection.setSelection(buffer,
                             buffer.getSpanStart(link[0]),
                             buffer.getSpanEnd(link[0]));
                 }
 
-                if (widget instanceof HtmlTextView) {
+                if(widget instanceof HtmlTextView) {
                     ((HtmlTextView) widget).linkHit = true;
                 }
                 return true;

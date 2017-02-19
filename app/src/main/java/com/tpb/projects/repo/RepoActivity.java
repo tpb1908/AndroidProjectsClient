@@ -174,9 +174,9 @@ public class RepoActivity extends AppCompatActivity implements
             }
             startActivity(i,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        this,
-                        new Pair<>(mUserName, getString(R.string.transition_username)),
-                        new Pair<>(mUserImage, getString(R.string.transition_user_image))
+                            this,
+                            new Pair<>(mUserName, getString(R.string.transition_username)),
+                            new Pair<>(mUserImage, getString(R.string.transition_user_image))
                     ).toBundle()
             );
         }

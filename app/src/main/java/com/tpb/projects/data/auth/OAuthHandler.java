@@ -60,7 +60,6 @@ public class OAuthHandler extends APIHandler {
     private static final String RATE_LIMIT = "/rate_limit";
 
 
-
     public OAuthHandler(Context context, String clientId, String clientSecret,
                         String callbackUrl) {
         super(context);

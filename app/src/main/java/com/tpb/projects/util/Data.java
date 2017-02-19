@@ -98,7 +98,7 @@ public class Data {
 
     public static int[] intArrayFromPrefs(String value) {
         final String[] values = value.split(",");
-        final int[] ints = new int[values.length ];
+        final int[] ints = new int[values.length];
         if(value.length() == 0) return ints;
         for(int i = 0; i < values.length; i++) ints[i] = Integer.parseInt(values[i]);
         return ints;
@@ -174,7 +174,7 @@ public class Data {
             if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
                 builder.append("\n");
             }
-            if(cs[i] == '@' && (p == ' '  || p == '\n')) {
+            if(cs[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
@@ -184,9 +184,9 @@ public class Data {
                 builder.setLength(builder.length() - 2);
                 builder.append("──────────\n");
 
-            } else if(cs[i] == '#'  && (p == ' '  || p == '\n') && fullRepoPath != null) {
+            } else if(cs[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
-            } else if (pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
+            } else if(pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
                 if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
@@ -200,7 +200,7 @@ public class Data {
                     builder.setLength(builder.length() - 2);
                 }
                 builder.append("\u2610");
-            } else if (pp == '[' && p == ' ' && cs[i] == ']') {
+            } else if(pp == '[' && p == ' ' && cs[i] == ']') {
                 if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {

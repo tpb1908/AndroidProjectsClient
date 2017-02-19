@@ -109,7 +109,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     private void loadNode(int pos) {
         if(mIsLoading) return;
-        final Node node  = mCurrentNodes.get(pos);
+        final Node node = mCurrentNodes.get(pos);
         if(node.getType() == Node.NodeType.FILE) {
             ContentActivity.mLaunchNode = node;
             final Intent file = new Intent(mParent, FileActivity.class);
@@ -145,7 +145,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
                     }
                 }
 
-                final Stack<Node> stack =  new Stack<>();
+                final Stack<Node> stack = new Stack<>();
                 Node current;
                 int depth = 0;
                 for(Node n : mRootNodes) {

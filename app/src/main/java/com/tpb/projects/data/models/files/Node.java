@@ -43,7 +43,6 @@ public class Node {
     private static final String SUBMODULE_GIT_URL_KEY = "submodule_git_url";
 
 
-
     public Node(JSONObject obj) {
         try {
             type = NodeType.fromString(obj.getString(TYPE_KEY));
@@ -57,7 +56,8 @@ public class Node {
             gitUrl = obj.getString(GIT_URL_KEY);
             htmlUrl = obj.getString(HTML_URL_KEY);
             downloadUrl = obj.getString(DOWNLOAD_URL_KEY);
-            if(obj.has(SUBMODULE_GIT_URL_KEY)) submoduleGitUrl = obj.getString(SUBMODULE_GIT_URL_KEY);
+            if(obj.has(SUBMODULE_GIT_URL_KEY))
+                submoduleGitUrl = obj.getString(SUBMODULE_GIT_URL_KEY);
         } catch(JSONException jse) {
             Log.e("Node", "Node: Exception: ", jse);
         }

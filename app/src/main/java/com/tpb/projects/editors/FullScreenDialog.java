@@ -43,7 +43,7 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         final ProgressBar pb = new ProgressBar(getContext());
 
         final AlertDialog ad = new AlertDialog.Builder(getActivity()).setView(pb).create();
-        if(getArguments() != null &&  getArguments().containsKey(getString(R.string.intent_markdown))) {
+        if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_markdown))) {
             final String markdown = getArguments().getString(getString(R.string.intent_markdown));
 
             final Loader.MarkDownRenderLoader loader = new Loader.MarkDownRenderLoader() {
@@ -67,7 +67,6 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
             } else {
                 new Loader(getContext()).renderMarkDown(loader, markdown);
             }
-
 
 
         }

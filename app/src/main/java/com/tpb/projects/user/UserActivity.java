@@ -125,7 +125,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     if(scrollY - oldScrollY > 10) {
-                       fab.hide();
+                        fab.hide();
                     } else if(scrollY - oldScrollY < -10) {
                         fab.show();
                     }
@@ -145,6 +145,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
                 loader.loadUser(new Loader.UserLoader() {
                     int errorCount = 0;
+
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
@@ -155,7 +156,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     public void userLoadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        } else if(errorCount < 5){
+                        } else if(errorCount < 5) {
                             errorCount++;
                             loader.loadUser(this, user);
                         } else {
@@ -235,8 +236,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         container.addView(input);
         builder.setView(container);
 
-        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
-        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) ->{
+        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {
+        });
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(input.getText().toString().contains("/")) {
                 new Loader(UserActivity.this).loadRepository(new Loader.RepositoryLoader() {
                     @Override

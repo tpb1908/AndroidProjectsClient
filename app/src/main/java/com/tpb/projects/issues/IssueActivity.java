@@ -151,7 +151,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
 
-       // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
+        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
     @Override
@@ -204,7 +204,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         }
         final String html = Data.parseMD(builder.toString(), mIssue.getRepoPath());
         Log.i(TAG, "bindIssue: HTML " + html);
-        mInfo.setHtml(html,  new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -243,7 +243,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void issueLoadError(APIHandler.APIError error) {
 
     }
-    
+
     private void displayAssignees() {
         mAssignees.removeAllViews();
         if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
@@ -283,7 +283,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void commentsLoaded(Comment[] comments) {
-        Log.i(TAG, "commentsLoaded: "+ comments.length);
+        Log.i(TAG, "commentsLoaded: " + comments.length);
         mRecycler.enableAnimation();
         mAdapter.loadComments(comments);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -395,9 +395,9 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
         }
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this,
-                    imageView,
-                    getString(R.string.transition_user_image)
+                this,
+                imageView,
+                getString(R.string.transition_user_image)
                 ).toBundle()
         );
 
@@ -405,7 +405,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
 
 
     private void editIssue() {
-        final Intent i = new Intent(IssueActivity.this,  IssueEditor.class);
+        final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);

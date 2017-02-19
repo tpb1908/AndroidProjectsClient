@@ -68,9 +68,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private final ColumnFragment mParent;
     private final Editor mEditor;
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
+
     static {
         parseThread.start();
     }
+
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
     private ProjectActivity.NavigationDragListener mNavListener;
@@ -245,7 +247,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
     }
 
-    private void bindIssueCard(CardHolder holder,  int pos) {
+    private void bindIssueCard(CardHolder holder, int pos) {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mUserAvatar.setVisibility(View.VISIBLE);
         final Card card = mCards.get(pos).first;

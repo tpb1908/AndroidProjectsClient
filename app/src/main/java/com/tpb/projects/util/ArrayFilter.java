@@ -18,7 +18,7 @@ public class ArrayFilter<T> extends Filter {
     private final ArrayList<T> data;
     private ArrayList<T> filtered;
 
-    public ArrayFilter(ArrayAdapter<T> parent,  FuzzyStringSearcher searcher, ArrayList<T> data) {
+    public ArrayFilter(ArrayAdapter<T> parent, FuzzyStringSearcher searcher, ArrayList<T> data) {
         this.parent = parent;
         this.searcher = searcher;
         this.data = data;

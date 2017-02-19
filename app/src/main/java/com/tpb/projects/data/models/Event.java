@@ -68,7 +68,7 @@ public class Event extends DataModel implements Parcelable {
     private User requestedReviewer;
 
     private static final String RENAME = "rename";
-    private static final String RENAME_FROM ="from";
+    private static final String RENAME_FROM = "from";
     private static final String RENAME_TO = "to";
     private String renameFrom;
     private String renameTo;

@@ -47,6 +47,7 @@ public class FileActivity extends AppCompatActivity {
         mNode = ContentActivity.mLaunchNode;
         mName.setText(mNode.getName());
         Log.i(TAG, "onCreate: Download URL " + mNode.getDownloadUrl());
+        Log.i(TAG, "onCreate: Encoding " + mNode.getEncoding());
         AndroidNetworking.get(mNode.getDownloadUrl())
                 .setPriority(Priority.IMMEDIATE)
                 .build()

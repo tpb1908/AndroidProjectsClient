@@ -127,7 +127,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final int w = rect.width();
         final int h = rect.height();
 
-        final int hnum = contribs.size() == 0 ? 52 : (int)Math.ceil(contribs.size() / 7d); //The number of days to show horizontally
+        final int hnum = contribs.size() == 0 ? 52 : (int) Math.ceil(contribs.size() / 7d); //The number of days to show horizontally
 
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
@@ -194,7 +194,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 x += w / 12;
             }
         }
-        final ViewGroup.LayoutParams lp =  getLayoutParams();
+        final ViewGroup.LayoutParams lp = getLayoutParams();
         lp.height = h;
         setLayoutParams(lp);
     }
@@ -222,6 +222,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
     private static final Calendar cal = Calendar.getInstance();
+
     private int getDayOfWeek(long stamp) {
         cal.setTimeInMillis(stamp);
         //Day of week is indexed 1 to 7
@@ -234,6 +235,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
     private static final SimpleDateFormat month = new SimpleDateFormat("MMM");
+
     private String getMonthName(long stamp) {
         return month.format(stamp);
     }

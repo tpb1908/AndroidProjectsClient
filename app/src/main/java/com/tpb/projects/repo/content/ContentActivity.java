@@ -120,7 +120,7 @@ public class ContentActivity extends AppCompatActivity {
                 views.add(mRibbon.getChildAt(i));
             }
             mRibbon.removeAllViews();
-            for(View v  : views) mRibbon.addView(v);
+            for(View v : views) mRibbon.addView(v);
             mAdapter.moveBack();
         } else {
             finish();

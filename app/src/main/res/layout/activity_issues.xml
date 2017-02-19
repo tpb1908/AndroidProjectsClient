@@ -21,8 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-  >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/issues_appbar"
@@ -54,6 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/issue_back_button"
+                    android:layout_toStartOf="@+id/issues_filter_button"
                     android:layout_marginStart="16dp"
                     android:text="@string/text_issues"
                     android:maxLines="1"
@@ -72,7 +72,6 @@
                     android:src="@drawable/ic_filter"/>
 
             </RelativeLayout>
-
 
 
         </android.support.v7.widget.Toolbar>

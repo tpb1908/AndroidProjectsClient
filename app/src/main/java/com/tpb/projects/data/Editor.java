@@ -80,7 +80,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE +  SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
+        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -147,7 +147,7 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
                         if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
                             listener.projectDeleted(project);
-                        } else if(listener != null){
+                        } else if(listener != null) {
                             listener.projectDeletionError(parseError(anError));
                         }
                     }
@@ -397,7 +397,7 @@ public class Editor extends APIHandler {
                     public void onError(ANError anError) {
                         if(anError.getErrorCode() == 0 && listener != null) {
                             listener.cardDeleted(card);
-                        } else if(listener != null){
+                        } else if(listener != null) {
                             listener.cardDeletionError(parseError(anError));
                         }
                         Log.i(TAG, "onError: Card deleted: " + anError.getErrorBody());
@@ -488,7 +488,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees,  @Nullable String[] labels) {
+    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -498,7 +498,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath +  SEGMENT_ISSUES + "/" + issue.getNumber())
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issue.getNumber())
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -550,7 +550,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createComment: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath +  SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -582,7 +582,7 @@ public class Editor extends APIHandler {
                     public void onError(ANError anError) {
                         if(anError.getErrorCode() == 0 && listener != null) {
                             listener.commentDeleted();
-                        } else if(listener != null){
+                        } else if(listener != null) {
                             listener.commentDeletionError(parseError(anError));
                         }
                         Log.i(TAG, "onError: Comment deletion error: " + anError.getErrorBody());
@@ -645,11 +645,13 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onResponse: Subscription change " + response.toString());
                         try {
                             if(response.has("subscribed")) {
-                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                                if(listener != null)
+                                    listener.watchStatusChanged(response.getBoolean("subscribed"));
                             } else {
                                 if(listener != null) listener.watchStatusChanged(false);
                             }
-                        } catch(JSONException jse) {}
+                        } catch(JSONException jse) {
+                        }
                     }
 
                     @Override
@@ -670,11 +672,13 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onResponse: Subscription change " + response.toString());
                         try {
                             if(response.has("subscribed")) {
-                                if(listener != null) listener.watchStatusChanged(response.getBoolean("subscribed"));
+                                if(listener != null)
+                                    listener.watchStatusChanged(response.getBoolean("subscribed"));
                             } else {
                                 if(listener != null) listener.watchStatusChanged(true);
                             }
-                        } catch(JSONException jse) {}
+                        } catch(JSONException jse) {
+                        }
                     }
 
                     @Override

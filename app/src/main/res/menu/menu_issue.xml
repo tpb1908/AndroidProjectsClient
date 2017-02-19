@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/menu_reactions"
-        android:title="Reactions">
+        android:title="@string/menu_reactions">
         <menu>
             <item
                 android:id="@+id/menu_plus_one"

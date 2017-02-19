@@ -147,10 +147,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
                     toMerge.add(events[j++]);
                 }
-               // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
+                // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
                 i = j - 1;
                 merged.add(new MergedEvent(toMerge));
-             //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
+                //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
                 toMerge = new ArrayList<>();
             } else {
                 merged.add(events[i]);
@@ -251,7 +251,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 requested.setLength(requested.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_review_requested_multiple),
                         String.format(res.getString(R.string.text_href),
-                        me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
+                                me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
                                 me.getEvents().get(0).getReviewRequester().getLogin()),
                         requested.toString());
                 break;
@@ -282,8 +282,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text = String.format(
                         res.getString(R.string.text_event_labels_added),
                         String.format(res.getString(R.string.text_href),
-                            me.getEvents().get(0).getActor().getHtmlUrl(),
-                            me.getEvents().get(0).getActor().getLogin()),
+                                me.getEvents().get(0).getActor().getHtmlUrl(),
+                                me.getEvents().get(0).getActor().getLogin()),
                         labels.toString());
                 break;
             case UNLABELED:
@@ -291,8 +291,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 for(Event e : me.getEvents()) {
                     unlabels.append(
                             String.format(res.getString(R.string.text_label),
-                            String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
-                            e.getLabelName()));
+                                    String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
+                                    e.getLabelName()));
                     unlabels.append(", ");
                 }
                 unlabels.setLength(unlabels.length() - 2);
@@ -300,7 +300,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                         String.format(res.getString(R.string.text_href),
                                 me.getEvents().get(0).getActor().getHtmlUrl(),
                                 me.getEvents().get(0).getActor().getLogin()),
-                         unlabels.toString());
+                        unlabels.toString());
                 break;
             case CLOSED:
                 //Duplicate close events seem to happen
@@ -315,7 +315,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
-            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor() .getAvatarUrl());
+            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
@@ -526,7 +526,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void displayInFullScreen(int pos) {
-        mParent.showCardInFullscreen(((Comment)mData.get(pos).first).getBody());
+        mParent.showCardInFullscreen(((Comment) mData.get(pos).first).getBody());
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {

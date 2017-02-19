@@ -189,6 +189,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         //We have to load all of the projects to get the id that we want
         mLoader.loadProjects(new Loader.ProjectsLoader() {
             int projectLoadAttempts = 0;
+
             @Override
             public void projectsLoaded(Project[] projects) {
                 for(Project p : projects) {
@@ -220,9 +221,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
         }, repo);
     }
+
     private void checkAccess(Project project) {
         mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
             int accessCheckAttempts = 0;
+
             @Override
             public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                 Log.i(TAG, "accessCheckComplete: " + accessLevel);
@@ -360,6 +363,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
                     int addColumnAttempts = 0;
+
                     @Override
                     public void columnAdded(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
@@ -378,11 +382,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-        
+
                         } else {
                             if(addColumnAttempts < 5) {
                                 addColumnAttempts++;
-                               mEditor.addColumn(this, mProject.getId(), text);
+                                mEditor.addColumn(this, mProject.getId(), text);
                             } else {
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);
@@ -427,6 +431,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mRefresher.setRefreshing(true);
                     mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
                         int deleteColumnAttempts = 0;
+
                         @Override
                         public void columnDeleted() {
                             mAdapter.remove(mCurrentPosition);
@@ -446,7 +451,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-            
+
                             } else {
                                 if(deleteColumnAttempts < 5) {
                                     deleteColumnAttempts++;
@@ -745,7 +750,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 int first = -1;
                 int last = -1;
                 for(int i = 0; i < rv.getAdapter().getItemCount(); i++) {
-                    if(rv.getChildAt(i).getLocalVisibleRect(r) ) {
+                    if(rv.getChildAt(i).getLocalVisibleRect(r)) {
                         if(first == -1) {
                             first = i;
                         } else if(i == rv.getAdapter().getItemCount() - 1) {

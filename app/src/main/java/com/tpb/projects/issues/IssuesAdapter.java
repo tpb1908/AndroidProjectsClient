@@ -53,9 +53,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private final ArrayList<String> mParseCache = new ArrayList<>();
 
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
+
     static {
         parseThread.start();
     }
+
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
 
     IssuesAdapter(IssuesActivity parent) {
@@ -171,7 +173,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);
         } else {
-           // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
+            // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
             holder.mContent.setHtml(mParseCache.get(pos));
             //TODO Replace with separate arraylists
         }

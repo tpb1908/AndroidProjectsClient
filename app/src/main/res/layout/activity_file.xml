@@ -40,10 +40,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <com.pddstudio.highlightjs.HighlightJsView
-            android:id="@+id/file_webview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="-16dp">
+        android:id="@+id/file_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-16dp">
 
     </com.pddstudio.highlightjs.HighlightJsView>
 

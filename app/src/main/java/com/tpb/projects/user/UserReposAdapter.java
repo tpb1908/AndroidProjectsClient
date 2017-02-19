@@ -265,7 +265,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
                 standardPositions[i] = repos.get(i).getId();
             }
             Collections.sort(repos, (r1, r2) -> {
-                final int i1 =  pins.indexOf(r1.getId());
+                final int i1 = pins.indexOf(r1.getId());
                 final int i2 = pins.indexOf(r2.getId());
                 return i1 < i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
             });

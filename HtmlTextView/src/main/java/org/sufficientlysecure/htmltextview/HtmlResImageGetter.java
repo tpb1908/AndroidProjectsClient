@@ -37,12 +37,12 @@ class HtmlResImageGetter implements Html.ImageGetter {
         Context context = container.getContext();
         int id = context.getResources().getIdentifier(source, "drawable", context.getPackageName());
 
-        if (id == 0) {
+        if(id == 0) {
             // the drawable resource wasn't found in our package, maybe it is a stock android drawable?
             id = context.getResources().getIdentifier(source, "drawable", "android");
         }
 
-        if (id == 0) {
+        if(id == 0) {
             // prevent a crash if the resource still can't be found
             Log.e(HtmlTextView.TAG, "source could not be found: " + source);
             return null;

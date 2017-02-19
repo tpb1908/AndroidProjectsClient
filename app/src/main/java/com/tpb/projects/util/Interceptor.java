@@ -84,12 +84,13 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         final String path = getIntent().getDataString();
-                        if(path.indexOf('#') >  path.indexOf(segments.get(3))) {
+                        if(path.indexOf('#') > path.indexOf(segments.get(3))) {
                             try {
                                 final int cardId = Integer.parseInt(path.substring(path.indexOf('#') + 6));
                                 Log.i(TAG, "onCreate: " + cardId);
                                 p.putExtra(getString(R.string.intent_card_id), cardId);
-                            } catch(Exception ignored) {}
+                            } catch(Exception ignored) {
+                            }
                         }
                         startActivity(p);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
@@ -133,14 +134,14 @@ public class Interceptor extends Activity {
     private void fail() {
         Log.i(TAG, "fail: ");
         try {
-            if (failIntent != null) {
+            if(failIntent != null) {
                 startActivity(failIntent);
                 finish();
             } else {
                 startActivity(onFail());
                 finish();
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
             finish();
         }
@@ -164,7 +165,7 @@ public class Interceptor extends Activity {
 
     private Intent onFail() {
         Log.i(TAG, "onFail: ");
-        if (failIntent == null && getIntent() != null) {
+        if(failIntent == null && getIntent() != null) {
             return generateFailIntentWithoutApp();
         } else {
             return failIntent;
@@ -180,12 +181,12 @@ public class Interceptor extends Activity {
 
             final List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-            if (!resolveInfos.isEmpty()) {
+            if(!resolveInfos.isEmpty()) {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
 
-                for (ResolveInfo resolveInfo : resolveInfos) {
+                for(ResolveInfo resolveInfo : resolveInfos) {
                     final String packageName = resolveInfo.activityInfo.packageName;
-                    if (!packageName.equals(getPackageName())) {
+                    if(!packageName.equals(getPackageName())) {
                         final Intent targetedShareIntent = new Intent(getIntent().getAction());
                         targetedShareIntent.setData(getIntent().getData());
                         targetedShareIntent.setPackage(packageName);
@@ -193,13 +194,13 @@ public class Interceptor extends Activity {
                     }
                 }
                 final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Open with...");
-                if (targetedShareIntents.size() > 0) {
+                if(targetedShareIntents.size() > 0) {
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[targetedShareIntents.size()]));
                 }
 
                 return chooserIntent;
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return failIntent;

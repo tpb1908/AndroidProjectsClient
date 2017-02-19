@@ -19,20 +19,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/menu_filter_open"
-              android:title="@string/menu_filter_open"/>
+        <item
+            android:id="@+id/menu_filter_open"
+            android:title="@string/menu_filter_open"/>
 
-        <item android:id="@+id/menu_filter_closed"
-              android:title="@string/menu_filter_closed"/>
+        <item
+            android:id="@+id/menu_filter_closed"
+            android:title="@string/menu_filter_closed"/>
 
-        <item android:id="@+id/menu_filter_all"
-              android:title="@string/menu_filter_all"/>
+        <item
+            android:id="@+id/menu_filter_all"
+            android:title="@string/menu_filter_all"/>
     </group>
 
-    <item android:id="@+id/menu_filter_labels"
+    <item
+        android:id="@+id/menu_filter_labels"
         android:title="@string/menu_filter_labels"/>
 
-    <item android:id="@+id/menu_filter_assignees"
-          android:title="@string/menu_filter_assignee" />
+    <item
+        android:id="@+id/menu_filter_assignees"
+        android:title="@string/menu_filter_assignee"/>
 
 </menu>

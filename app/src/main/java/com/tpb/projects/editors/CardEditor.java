@@ -98,6 +98,7 @@ public class CardEditor extends ImageLoadingActivity {
                 pd.show();
                 new Loader(CardEditor.this).loadOpenIssues(new Loader.IssuesLoader() {
                     private int selectedIssuePosition = 0;
+
                     @Override
                     public void issuesLoaded(Issue[] loadedIssues) {
                         pd.dismiss();
@@ -144,7 +145,7 @@ public class CardEditor extends ImageLoadingActivity {
 
             mClearButton.setOnClickListener((v) -> {
                 mEditor.setText("");
-                mEditor.setFilters(new InputFilter[] { new InputFilter.LengthFilter(250) });
+                mEditor.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)});
                 mEditorWrapper.setCounterEnabled(true);
                 mCard = new Card();
                 mClearButton.setVisibility(View.GONE);
@@ -181,8 +182,7 @@ public class CardEditor extends ImageLoadingActivity {
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                 mIssueButton.setVisibility(View.GONE);
                 // keyboard is opened
-            }
-            else if(mIssueButton.hasOnClickListeners()){
+            } else if(mIssueButton.hasOnClickListeners()) {
                 mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
@@ -206,7 +206,7 @@ public class CardEditor extends ImageLoadingActivity {
         });
 
     }
-    
+
     private void bindIssue(Issue issue) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");

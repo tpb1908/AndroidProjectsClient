@@ -249,6 +249,7 @@
     <string name="menu_delete_comment">Delete comment</string>
     <string name="menu_copy_comment_text">Copy comment text</string>
     <string name="menu_edit_comment">Edit</string>
+    <string name="menu_search">Search</string>
 
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>

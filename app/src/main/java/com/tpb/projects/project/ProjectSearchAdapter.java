@@ -59,7 +59,7 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
         for(Card c : data) {
             if(c.hasIssue()) {
                 s = "#" + c.getIssue().getNumber();
-                for(Label l : c.getIssue().getLabels()) s += "\n" +  l.getName() ;
+                for(Label l : c.getIssue().getLabels()) s += "\n" + l.getName();
                 strings.add(s + "\n" + c.getIssue().getBody());
             } else {
                 strings.add(c.getNote());

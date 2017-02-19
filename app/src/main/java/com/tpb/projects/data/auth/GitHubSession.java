@@ -50,9 +50,10 @@ public class GitHubSession {
 
     /**
      * Stores the credentials for a newly authenticated user
+     *
      * @param accessToken The OAuth token for the authenticated user
-     * @param id The integer id of the authenticated user
-     * @param login The login of the authenticated user
+     * @param id          The integer id of the authenticated user
+     * @param login       The login of the authenticated user
      */
     void storeCredentials(String accessToken, int id, String login) {
         final SharedPreferences.Editor editor = prefs.edit();
@@ -64,6 +65,7 @@ public class GitHubSession {
 
     /**
      * Updates the login of the authenticated user
+     *
      * @param login The new login for the authenticated user
      */
     public void updateUserLogin(String login) {
@@ -90,6 +92,7 @@ public class GitHubSession {
 
     /**
      * Get the authenticated user's login
+     *
      * @return User name
      */
     public String getUserLogin() {
@@ -98,6 +101,7 @@ public class GitHubSession {
 
     /**
      * Get the authenticated user's id
+     *
      * @return User id
      */
     public int getUserId() {
@@ -106,6 +110,7 @@ public class GitHubSession {
 
     /**
      * Get the OAuth access token
+     *
      * @return Access token
      */
     public String getAccessToken() {

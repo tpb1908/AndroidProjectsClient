@@ -49,18 +49,20 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
         name.setText(getArguments().getString(getString(R.string.intent_name)));
 
         final boolean showCheckbox = getArguments().getBoolean(getString(R.string.intent_drawable));
-        if(showCheckbox) view.findViewById(R.id.shortcut_use_user_image).setVisibility(View.VISIBLE);
+        if(showCheckbox)
+            view.findViewById(R.id.shortcut_use_user_image).setVisibility(View.VISIBLE);
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(mListener != null && !name.getText().toString().isEmpty()) {
                 if(showCheckbox) {
-                    mListener.onPositive(name.getText().toString(), ((CheckBox)view.findViewById(R.id.shortcut_use_user_image)).isChecked());
+                    mListener.onPositive(name.getText().toString(), ((CheckBox) view.findViewById(R.id.shortcut_use_user_image)).isChecked());
                 } else {
                     mListener.onPositive(name.getText().toString(), false);
                 }
             }
         });
-        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
+        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {
+        });
 
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {

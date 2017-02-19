@@ -160,6 +160,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 } else {
                     mEditor.updateColumnName(new Editor.ColumnNameChangeListener() {
                         int loadCount = 0;
+
                         @Override
                         public void columnNameChanged(Column column) {
                             if(mViewsValid) {
@@ -307,6 +308,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int createAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 addCard(card);
@@ -477,6 +479,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int createAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 addCard(card);
@@ -511,6 +514,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     void editCard(Card card) {
         mEditor.updateCard(new Editor.CardUpdateListener() {
             int updateAttempts = 0;
+
             @Override
             public void cardUpdated(Card card) {
                 mAdapter.updateCard(card);
@@ -546,6 +550,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private void toggleIssueState(Card card) {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
             int stateChangeAttempts = 0;
+
             @Override
             public void issueStateChanged(Issue issue) {
                 card.setFromIssue(issue);
@@ -661,6 +666,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private void convertCardToIssue(Card oldCard, Issue issue) {
         mEditor.deleteCard(new Editor.CardDeletionListener() {
             int cardDeletionAttempts = 0;
+
             @Override
             public void cardDeleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
@@ -700,6 +706,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int issueCardCreationAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 Log.i(TAG, "cardCreated: Issue card created");

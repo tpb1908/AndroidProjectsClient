@@ -66,7 +66,6 @@
         </LinearLayout>
 
 
-
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/card_markdown"
             android:layout_width="match_parent"

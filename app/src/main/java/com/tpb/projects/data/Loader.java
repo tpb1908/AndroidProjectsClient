@@ -52,7 +52,6 @@ import okhttp3.Response;
 
 /**
  * Created by theo on 14/12/16.
- *
  */
 
 public class Loader extends APIHandler {
@@ -363,7 +362,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssue(IssueLoader loader, String repoFullName, int issueNumber, boolean highPriority) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" +  repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .setPriority(highPriority ? Priority.HIGH : Priority.MEDIUM)
                 .build()
@@ -389,7 +388,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(JSONArray response) {
                         final ArrayList<Issue> issues = new ArrayList<>();
-                        for(int i = 0; i < response.length() ; i++) {
+                        for(int i = 0; i < response.length(); i++) {
                             try {
                                 final Issue is = Issue.parse(response.getJSONObject(i));
                                 if(!is.isClosed()) issues.add(is);
@@ -445,7 +444,7 @@ public class Loader extends APIHandler {
                     public void onResponse(JSONArray response) {
                         final ArrayList<Issue> issues = new ArrayList<>();
                         Log.i(TAG, "onResponse: Returned " + response.length() + " issues");
-                        for(int i = 0; i < response.length() ; i++) {
+                        for(int i = 0; i < response.length(); i++) {
                             try {
                                 if(!response.getJSONObject(i).has("pull_request")) {
                                     issues.add(Issue.parse(response.getJSONObject(i)));
@@ -454,7 +453,8 @@ public class Loader extends APIHandler {
                                 Log.e(TAG, "onResponse: Parsing open issues", jse);
                             }
                         }
-                        if(loader != null) loader.issuesLoaded(issues.toArray(new Issue[issues.size()]));
+                        if(loader != null)
+                            loader.issuesLoaded(issues.toArray(new Issue[issues.size()]));
                     }
 
                     @Override
@@ -491,7 +491,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadEvents(EventsLoader loader, String repoFullName, int issueNumber) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber  + SEGMENT_EVENTS)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -555,7 +555,8 @@ public class Loader extends APIHandler {
                         if(response.has(PERMISSION)) {
                             try {
                                 permission = response.getString(PERMISSION);
-                            } catch(JSONException ignored) {}
+                            } catch(JSONException ignored) {
+                            }
                         }
                         if(listener != null) {
                             switch(permission) {
@@ -566,7 +567,7 @@ public class Loader extends APIHandler {
                                     listener.accessCheckComplete(Repository.AccessLevel.WRITE);
                                     break;
                                 case PERMISSION_READ:
-                                     listener.accessCheckComplete(Repository.AccessLevel.READ);
+                                    listener.accessCheckComplete(Repository.AccessLevel.READ);
                                     break;
                                 case PERMISSION_NONE:
                                     listener.accessCheckComplete(Repository.AccessLevel.NONE);
@@ -591,7 +592,7 @@ public class Loader extends APIHandler {
     }
 
     public void checkIfCollaborator(AccessCheckListener listener, String login, String repoFullName) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/"  + login)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -599,9 +600,11 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(Response response) {
                         if(response.code() == 204) {
-                            if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
+                            if(listener != null)
+                                listener.accessCheckComplete(Repository.AccessLevel.ADMIN);
                         } else if(response.code() == 404) {
-                            if(listener != null) listener.accessCheckComplete(Repository.AccessLevel.NONE);
+                            if(listener != null)
+                                listener.accessCheckComplete(Repository.AccessLevel.NONE);
                         }
                     }
 
@@ -622,7 +625,7 @@ public class Loader extends APIHandler {
                 .getAsOkHttpResponse(new OkHttpResponseListener() {
                     @Override
                     public void onResponse(Response response) {
-                        Log.i(TAG, "onResponse: Check if starred: "+ response.toString());
+                        Log.i(TAG, "onResponse: Check if starred: " + response.toString());
                         if(response.code() == 204) {
                             if(listener != null) listener.starCheckComplete(true);
                         } else if(response.code() == 404) {
@@ -648,11 +651,13 @@ public class Loader extends APIHandler {
                         Log.i(TAG, "onResponse: Subscription check " + response.toString());
                         try {
                             if(response.has("subscribed")) {
-                                if(listener != null) listener.watchCheckComplete(response.getBoolean("subscribed"));
+                                if(listener != null)
+                                    listener.watchCheckComplete(response.getBoolean("subscribed"));
                             } else {
                                 if(listener != null) listener.watchCheckComplete(false);
                             }
-                        } catch(JSONException jse) {}
+                        } catch(JSONException jse) {
+                        }
                     }
 
                     @Override
@@ -666,7 +671,8 @@ public class Loader extends APIHandler {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
-        } catch(JSONException ignored) {}
+        } catch(JSONException ignored) {
+        }
         AndroidNetworking.post(GIT_BASE + SEGMENT_MARKDOWN)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
@@ -691,7 +697,8 @@ public class Loader extends APIHandler {
             obj.put("text", markdown);
             obj.put("mode", "gfm");
             obj.put("context", context);
-        } catch(JSONException ignored) {}
+        } catch(JSONException ignored) {
+        }
         AndroidNetworking.post(GIT_BASE + SEGMENT_MARKDOWN)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)

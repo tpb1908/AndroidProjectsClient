@@ -62,7 +62,7 @@ public class Analytics {
 
     public static final String TAG_CARD_DELETION = "CARD_DELETION";
 
-    public static final  String TAG_CARD_EDIT = "CARD_EDIT";
+    public static final String TAG_CARD_EDIT = "CARD_EDIT";
 
     public static final String TAG_ISSUE_CREATED = "ISSUE_CREATED";
 

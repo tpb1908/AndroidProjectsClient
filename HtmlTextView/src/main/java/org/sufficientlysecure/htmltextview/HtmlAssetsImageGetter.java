@@ -27,7 +27,7 @@ import java.io.InputStream;
 
 /**
  * Assets Image Getter
- *
+ * <p>
  * Load image from assets folder
  *
  * @author <a href="mailto:daniel@passos.me">Daniel Passos</a>
@@ -52,7 +52,7 @@ class HtmlAssetsImageGetter implements Html.ImageGetter {
             Drawable d = Drawable.createFromStream(inputStream, null);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             return d;
-        } catch (IOException e) {
+        } catch(IOException e) {
             // prevent a crash if the resource still can't be found
             Log.e(HtmlTextView.TAG, "source could not be found: " + source);
             return null;

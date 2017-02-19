@@ -231,7 +231,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 public void onClick(View widget) {
 
                     if(mImageClickHandler == null) {
-                       super.onClick(widget); //Opens image link
+                        super.onClick(widget); //Opens image link
                     } else {
                         Log.i(TAG, "onClick: Source is " + span.getSource());
                         if(mDrawables.containsKey(span.getSource())) {
@@ -469,11 +469,11 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      */
     @Nullable
     static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
-        if (text == null) {
+        if(text == null) {
             return null;
         }
 
-        while (text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
+        while(text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
             text = (Spanned) text.subSequence(0, text.length() - 1);
         }
         return text;
@@ -484,7 +484,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         linkHit = false;
         boolean res = super.onTouchEvent(event);
 
-        if (dontConsumeNonUrlClicks) {
+        if(dontConsumeNonUrlClicks) {
             return linkHit;
         }
         return res;

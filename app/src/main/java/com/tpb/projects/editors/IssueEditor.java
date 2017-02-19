@@ -106,7 +106,7 @@ public class IssueEditor extends ImageLoadingActivity {
             if(mLaunchIssue.getLabels() != null && mLaunchIssue.getLabels().length > 0) {
                 final ArrayList<String> labels = new ArrayList<>();
                 final ArrayList<Integer> colours = new ArrayList<>();
-                for(Label l : mLaunchIssue.getLabels())  {
+                for(Label l : mLaunchIssue.getLabels()) {
                     labels.add(l.getName());
                     colours.add(l.getColor());
                 }
@@ -163,8 +163,7 @@ public class IssueEditor extends ImageLoadingActivity {
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                 mInfoLayout.setVisibility(View.GONE);
                 // keyboard is opened
-            }
-            else {
+            } else {
                 mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
                 // keyboard is closed
             }
@@ -374,8 +373,10 @@ public class IssueEditor extends ImageLoadingActivity {
         mLaunchIssue.setBody(mBodyEdit.getText().toString());
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
-        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
-        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+        if(mSelectedLabels.size() > 0)
+            done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+        if(mAssignees.size() > 0)
+            done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
 
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;
