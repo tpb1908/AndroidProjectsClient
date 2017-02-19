@@ -34,6 +34,8 @@ public class ContentActivity extends AppCompatActivity {
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
 
+    public static Node mLaunchNode;
+
     private ContentAdapter mAdapter;
 
     @Override

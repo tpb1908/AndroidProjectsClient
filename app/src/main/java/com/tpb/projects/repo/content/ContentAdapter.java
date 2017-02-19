@@ -1,5 +1,6 @@
 package com.tpb.projects.repo.content;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -108,10 +109,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     private void loadNode(int pos) {
         if(mIsLoading) return;
-        mIsLoading = true;
         final Node node  = mCurrentNodes.get(pos);
         if(node.getType() == Node.NodeType.FILE) {
-            //TODO- Open file
+            ContentActivity.mLaunchNode = node;
+            final Intent file = new Intent(mParent, FileActivity.class);
+            mParent.startActivity(file);
         } else if(node.getType() == Node.NodeType.SUBMODULE) {
             //TODO Open the submodule in another instance
         } else {
@@ -119,6 +121,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             Log.i(TAG, "loadNode: Loading path " + node.getPath());
             mPreviousNode = node;
             mParent.mRefresher.setRefreshing(true);
+            mIsLoading = true;
             if(node.getChildren() == null) {
                 mLoader.loadDirectory(this, mRepo, node.getPath(), node);
             } else {
@@ -183,7 +186,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             mPreviousNode.setChildren(directory);
             mCurrentNodes = directory;
             notifyDataSetChanged();
-
         }
         mIsLoading = false;
         mParent.mRefresher.setRefreshing(false);
