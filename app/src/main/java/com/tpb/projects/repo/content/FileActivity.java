@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 public class FileActivity extends AppCompatActivity {
     private static final String TAG = FileActivity.class.getSimpleName();
 
+    @BindView(R.id.file_name) TextView mName;
     @BindView(R.id.file_webview) HighlightJsView mWebView;
 
     private Node mNode;
@@ -43,6 +45,7 @@ public class FileActivity extends AppCompatActivity {
         }
 
         mNode = ContentActivity.mLaunchNode;
+        mName.setText(mNode.getName());
         Log.i(TAG, "onCreate: Download URL " + mNode.getDownloadUrl());
         AndroidNetworking.get(mNode.getDownloadUrl())
                 .setPriority(Priority.IMMEDIATE)
