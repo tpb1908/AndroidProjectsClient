@@ -34,6 +34,7 @@ public class FileLoader extends APIHandler {
         if(path != null) PATH += "/" + path;
         AndroidNetworking.get(PATH)
                 .addHeaders(API_AUTH_HEADERS)
+                .getResponseOnlyFromNetwork()
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override

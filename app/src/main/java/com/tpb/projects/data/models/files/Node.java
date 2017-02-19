@@ -1,6 +1,5 @@
 package com.tpb.projects.data.models.files;
 
-import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -86,10 +85,6 @@ public class Node {
 
     public String getContent() {
         return content;
-    }
-
-    public String getDecodedContent() {
-        return new String(Base64.decode(content, Base64.DEFAULT));
     }
 
     public String getSha() {

@@ -29,10 +29,13 @@ import butterknife.ButterKnife;
 public class ContentActivity extends AppCompatActivity {
     private static final String TAG = ContentActivity.class.getSimpleName();
 
-    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibonScrollView;
+    @BindView(R.id.content_title) TextView mTitle;
+    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibbonScrollView;
     @BindView(R.id.content_file_ribbon) LinearLayout mRibbon;
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
+
+    public static Node mLaunchNode;
 
     private ContentAdapter mAdapter;
 
@@ -48,22 +51,29 @@ public class ContentActivity extends AppCompatActivity {
 
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        mTitle.setText(repo.substring(repo.indexOf('/') + 1));
 
         mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.reload();
+        });
     }
 
     private void initRibbon() {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
-        view.setText("Root");
+        view.setText(R.string.text_ribbon_root);
         view.setOnClickListener((v) -> {
             mRibbon.removeAllViews();
             mRibbon.addView(view);
             mAdapter.moveToStart();
         });
         mRibbon.addView(view);
+    }
+
+    void flashRecycler() {
+
     }
 
     void addRibbonItem(final Node node) {
@@ -81,13 +91,15 @@ public class ContentActivity extends AppCompatActivity {
                 mRibbon.addView(item);
             }
 //            final ViewGroup parent = (ViewGroup) view.getParent();
+//            Log.i(TAG, "addRibbonItem: Focused child " + parent.getFocusedChild());
+//            parent.requestChildFocus(view, parent.getFocusedChild());
 //            parent.removeViews(parent.indexOfChild(view) + 1, parent.getChildCount());
             mAdapter.moveTo(node);
         });
 
 
         mRibbon.addView(view);
-        mRibbon.postDelayed(() -> mRibonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
+        mRibbon.postDelayed(() -> mRibbonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
 
     }
 
@@ -102,6 +114,13 @@ public class ContentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(mRibbon.getChildCount() > 1) {
+            //FIXME Dirty hack
+            final ArrayList<View> views = new ArrayList<>();
+            for(int i = 0; i < mRibbon.getChildCount() - 1; i++) {
+                views.add(mRibbon.getChildAt(i));
+            }
+            mRibbon.removeAllViews();
+            for(View v  : views) mRibbon.addView(v);
             mAdapter.moveBack();
         } else {
             finish();
