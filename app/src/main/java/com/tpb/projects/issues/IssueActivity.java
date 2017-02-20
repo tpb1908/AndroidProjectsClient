@@ -298,18 +298,14 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
-        final int[] pos = UI.getViewCenterOnScreen(findViewById(R.id.issue_comment_fab));
-        i.putExtra(getString(R.string.intent_position_x), pos[0]);
-        i.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(i, findViewById(R.id.issue_comment_fab));
         startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
     }
 
     private void editComment(View view, Comment comment) {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_comment), comment);
-        final int[] pos = UI.getViewCenterOnScreen(view);
-        i.putExtra(getString(R.string.intent_position_x), pos[0]);
-        i.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(i, view);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
     }
 
@@ -415,9 +411,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
-        final int[] pos = UI.getViewCenterOnScreen(view);
-        i.putExtra(getString(R.string.intent_position_x), pos[0]);
-        i.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(i, view);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 

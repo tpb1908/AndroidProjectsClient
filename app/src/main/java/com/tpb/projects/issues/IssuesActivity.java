@@ -356,9 +356,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivity(i);
-        final int[] pos = UI.getViewCenterOnScreen(view);
-        i.putExtra(getString(R.string.intent_position_x), pos[0]);
-        i.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(i, view);
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
@@ -387,9 +385,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
-        final int[] pos = UI.getViewCenterOnScreen(view);
-        intent.putExtra(getString(R.string.intent_position_x), pos[0]);
-        intent.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(intent, view);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
 
     }

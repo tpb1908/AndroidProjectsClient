@@ -414,9 +414,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 case R.id.menu_edit_note:
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    final int[] p = UI.getViewCenterOnScreen(view);
-                    i.putExtra(getString(R.string.intent_position_x), p[0]);
-                    i.putExtra(getString(R.string.intent_position_y), p[1]);
+                    UI.getViewCenterOnScreen(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                     break;
                 case R.id.menu_delete_note:
@@ -443,9 +441,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
                     intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     intent.putExtra(getString(R.string.parcel_card), card);
-                    final int[] pos = UI.getViewCenterOnScreen(view);
-                    intent.putExtra(getString(R.string.intent_position_x), pos[0]);
-                    intent.putExtra(getString(R.string.intent_position_y), pos[1]);
+                    UI.getViewCenterOnScreen(intent, view);
                     getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
                     break;
                 case R.id.menu_edit_issue:
@@ -629,9 +625,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
-        final int[] pos = UI.getViewCenterOnScreen(view);
-        i.putExtra(getString(R.string.intent_position_x), pos[0]);
-        i.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(i, view);
         getActivity().startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -782,9 +776,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    final int[] pos = UI.getViewCenterOnScreen(view);
-                    i.putExtra(getString(R.string.intent_position_x), pos[0]);
-                    i.putExtra(getString(R.string.intent_position_y), pos[1]);
+                    UI.getViewCenterOnScreen(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                 }
                 break;

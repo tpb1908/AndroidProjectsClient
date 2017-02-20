@@ -418,9 +418,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addIssue() {
         final Intent intent = new Intent(ProjectActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
-        final int[] pos = UI.getViewCenterOnScreen(mAddIssue);
-        intent.putExtra(getString(R.string.intent_position_x), pos[0]);
-        intent.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(intent, mAddIssue);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
@@ -513,9 +511,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(c.hasIssue()) ids.add(c.getIssue().getId());
             }
         }
-        final int[] pos = UI.getViewCenterOnScreen(mAddCard);
-        intent.putExtra(getString(R.string.intent_position_x), pos[0]);
-        intent.putExtra(getString(R.string.intent_position_y), pos[1]);
+        UI.getViewCenterOnScreen(intent, mAddCard);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
         intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
         startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);

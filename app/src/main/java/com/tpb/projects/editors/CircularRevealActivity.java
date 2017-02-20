@@ -84,7 +84,7 @@ public class CircularRevealActivity extends AppCompatActivity {
 
         // create the animator for this view (the start radius is zero)
         Animator circularClose = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
-        circularClose.setDuration(600);
+        circularClose.setDuration(450);
         circularClose.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
