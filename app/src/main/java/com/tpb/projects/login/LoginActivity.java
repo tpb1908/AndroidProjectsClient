@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -147,7 +146,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public interface OAuthLoginListener {
-        void onComplete(String accessToken);
+
+        void onCodeCollected(String code);
 
         void onError(String error);
     }
@@ -159,17 +159,6 @@ public class LoginActivity extends AppCompatActivity {
             mListener = listener;
         }
 
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.d(TAG, "Redirecting URL " + url);
-
-            if(url.startsWith(OAuthHandler.mCallbackUrl)) {
-                String urls[] = url.split("=");
-                mListener.onComplete(urls[1]);
-                return true;
-            }
-            return false;
-        }
 
         @Override
         public void onReceivedError(WebView view, int errorCode,
@@ -181,19 +170,32 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            if(request.getUrl().toString().startsWith("https://github.com/login/oauth/authorize?") ||
-                    request.getUrl().toString().startsWith("https://github.com/session") ||
-                    request.getUrl().toString().startsWith("https://github.com/sessions/two-factor") ||
-                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
-                return super.shouldOverrideUrlLoading(view, request);
-            }
-            return false;
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return !(url.startsWith("https://github.com/login/oauth/authorize") ||
+                    url.startsWith("https://github.com/login?") ||
+                    url.startsWith("https://github.com/session") ||
+                    url.startsWith(BuildConfig.GITHUB_REDIRECT_URL));
         }
+
+        //
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            if(request.getUrl().toString().startsWith("https://github.com/login") ||
+//                    request.getUrl().toString().startsWith("https://github.com/session") ||
+//                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
+//                return super.shouldOverrideUrlLoading(view, request);
+//            }
+//            return true;
+//        }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d(TAG, "Loading URL: " + url);
+            if(url.contains("?code=")) {
+                Log.i(TAG, "onPageStarted: Code complete " + url);
+                final String[] parts = url.split("=");
+                mListener.onCodeCollected(parts[1]);
+            }
             super.onPageStarted(view, url, favicon);
         }
 
