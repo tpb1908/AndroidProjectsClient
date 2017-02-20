@@ -90,7 +90,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         super(context);
     }
 
-    public void setLinkHandler(LinkClickHandler handler) {
+    public void setLinkClickHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
     }
 

@@ -18,6 +18,8 @@
 package com.tpb.projects.project;
 
 import android.content.ClipData;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -245,6 +247,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
         holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setLinkClickHandler(null);
     }
 
     private void bindIssueCard(CardHolder holder, int pos) {
@@ -255,6 +258,14 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
         holder.mUserAvatar.setOnClickListener((v) -> {
             mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy());
+        });
+        holder.mText.setLinkClickHandler(url -> {
+            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy());
+            } else {
+                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                mParent.startActivity(i);
+            }
         });
         if(mCards.get(pos).second == null) {
 
