@@ -17,7 +17,9 @@
 
 package com.tpb.projects.issues;
 
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -540,6 +542,14 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mText.setShowUnderLines(false);
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
+            mText.setLinkClickHandler(url -> {
+                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                    mAvatar.callOnClick();
+                } else {
+                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mParent.startActivity(i);
+                }
+            });
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
             mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
@@ -556,6 +566,14 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
             mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
+            mText.setLinkClickHandler(url -> {
+                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                    mAvatar.callOnClick();
+                } else {
+                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mParent.startActivity(i);
+                }
+            });
         }
 
     }

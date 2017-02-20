@@ -123,8 +123,7 @@ public class ContentActivity extends AppCompatActivity {
             for(View v : views) mRibbon.addView(v);
             mAdapter.moveBack();
         } else {
-            finish();
+            super.onBackPressed();
         }
-
     }
 }

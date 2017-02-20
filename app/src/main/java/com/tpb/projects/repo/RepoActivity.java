@@ -238,9 +238,18 @@ public class RepoActivity extends AppCompatActivity implements
 
     @OnClick(R.id.repo_show_files)
     void showFiles() {
-        final Intent i = new Intent(this, ContentActivity.class);
-        i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
-        startActivity(i);
+        if(mRepo != null) {
+            final Intent i = new Intent(this, ContentActivity.class);
+            i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+            startActivity(i,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            this,
+                            mName,
+                            getString(R.string.transition_name)
+                    ).toBundle()
+            );
+        }
+
     }
 
     @Override
