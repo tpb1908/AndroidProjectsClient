@@ -14,9 +14,9 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [Clans FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 
-* [CWAC AndDown](https://github.com/commonsguy/cwac-anddown)
+* CommonMark
 
-* [HtmlTextView](https://github.com/SufficientlySecure/html-textview)
+* [HtmlTextView](https://github.com/SufficientlySecure/html-textview) Modified
 
 * [MarkedView](https://github.com/mittsuu/MarkedView-for-Android)
 
@@ -59,10 +59,20 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Add the client ID and secret to gradle.properties
 
-```
-GITHUB_CLIENT_ID="ID"
+**Register a new application on Imgur**
 
-GITHUB_CLIENT_SECRET="SECRET"
+This is not essential, but in app image uploading will not work otherwise
+
+```
+GITHUB_CLIENT_ID="GITHUB_ID"
+
+GITHUB_CLIENT_SECRET="GITHUB_SECRET"
+
+
+IMGUR_CLIENT_ID="IMGUR_ID"
+
+IMGUR_CLIENT_SECRET="IMGUR_SECRET"
+
 ```
 
 **Add your information to gradle.properties**

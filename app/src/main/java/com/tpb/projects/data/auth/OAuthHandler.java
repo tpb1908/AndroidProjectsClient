@@ -75,8 +75,8 @@ public class OAuthHandler extends APIHandler {
     public LoginActivity.OAuthLoginListener getListener() {
         return new LoginActivity.OAuthLoginListener() {
             @Override
-            public void onComplete(String accessToken) {
-                getAccessToken(accessToken);
+            public void onCodeCollected(String code) {
+                getAccessToken(code);
             }
 
             @Override
