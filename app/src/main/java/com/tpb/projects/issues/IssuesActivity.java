@@ -61,6 +61,7 @@ import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 
@@ -351,10 +352,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         }, mRepoPath);
     }
 
-    void openIssue(Issue issue) {
+    void openIssue(View view, Issue issue) {
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivity(i);
+        final int[] pos = UI.getViewCenterOnScreen(view);
+        i.putExtra(getString(R.string.intent_position_x), pos[0]);
+        i.putExtra(getString(R.string.intent_position_y), pos[1]);
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
@@ -371,7 +375,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     toggleIssueState(issue);
                     break;
                 case 2:
-                    editIssue(issue);
+                    editIssue(view, issue);
                     break;
             }
             return false;
@@ -379,10 +383,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         menu.show();
     }
 
-    private void editIssue(Issue issue) {
+    private void editIssue(View view, Issue issue) {
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
+        final int[] pos = UI.getViewCenterOnScreen(view);
+        intent.putExtra(getString(R.string.intent_position_x), pos[0]);
+        intent.putExtra(getString(R.string.intent_position_y), pos[1]);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
 
     }

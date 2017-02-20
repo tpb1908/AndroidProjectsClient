@@ -71,6 +71,7 @@ import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -297,12 +298,18 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+        final int[] pos = UI.getViewCenterOnScreen(findViewById(R.id.issue_comment_fab));
+        i.putExtra(getString(R.string.intent_position_x), pos[0]);
+        i.putExtra(getString(R.string.intent_position_y), pos[1]);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
     }
 
-    private void editComment(Comment comment) {
+    private void editComment(View view, Comment comment) {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_comment), comment);
+        final int[] pos = UI.getViewCenterOnScreen(view);
+        i.putExtra(getString(R.string.intent_position_x), pos[0]);
+        i.putExtra(getString(R.string.intent_position_y), pos[1]);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
     }
 
@@ -340,7 +347,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case 1:
-                    editComment(comment);
+                    editComment(view, comment);
                     break;
                 case 2:
                     deleteComment(comment);
@@ -379,7 +386,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                     toggleIssueState();
                     break;
                 case 2:
-                    editIssue();
+                    editIssue(view);
                     break;
             }
             return false;
@@ -404,10 +411,13 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
 
 
-    private void editIssue() {
+    private void editIssue(View view) {
         final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
+        final int[] pos = UI.getViewCenterOnScreen(view);
+        i.putExtra(getString(R.string.intent_position_x), pos[0]);
+        i.putExtra(getString(R.string.intent_position_y), pos[1]);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -550,6 +560,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+
                 startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
                 if(mIssue.isClosed()) {
                     mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
