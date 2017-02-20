@@ -407,6 +407,11 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     }
 
 
+    @OnClick(R.id.issue_header_card)
+    void onHeaderClick(View view) {
+        if(mIssue != null) editIssue(view);
+    }
+
     private void editIssue(View view) {
         final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
