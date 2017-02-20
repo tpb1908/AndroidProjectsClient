@@ -17,6 +17,7 @@
 
 package com.tpb.projects.util;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -28,12 +29,23 @@ import android.view.ViewGroup;
 import android.view.animation.Transformation;
 import android.widget.TextView;
 
+import com.tpb.projects.R;
+
 /**
  * Created by theo on 16/12/16.
  */
 
 public class UI {
     private static final String TAG = UI.class.getSimpleName();
+
+    public static void getViewCenterOnScreen(Intent i, View view) {
+        final int[] pos = new int[2];
+        view.getLocationOnScreen(pos);
+        pos[0] += view.getWidth() / 2;
+        pos[1] += view.getHeight() / 2;
+        i.putExtra(view.getContext().getString(R.string.intent_position_x), pos[0]);
+        i.putExtra(view.getContext().getString(R.string.intent_position_y), pos[1]);
+    }
 
     //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation
     public static void expand(final View v) {

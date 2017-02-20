@@ -170,7 +170,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     private void cardClick(int position) {
-        mParent.cardClick(mCards.get(position).first);
+        mParent.cardClick(mParent.mRecycler.getChildAt(position), mCards.get(position).first);
     }
 
     @Override

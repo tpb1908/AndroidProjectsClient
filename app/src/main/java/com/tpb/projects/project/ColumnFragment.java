@@ -66,6 +66,7 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -413,6 +414,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 case R.id.menu_edit_note:
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
+                    UI.getViewCenterOnScreen(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                     break;
                 case R.id.menu_delete_note:
@@ -439,10 +441,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
                     intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     intent.putExtra(getString(R.string.parcel_card), card);
+                    UI.getViewCenterOnScreen(intent, view);
                     getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
                     break;
                 case R.id.menu_edit_issue:
-                    showIssueEditor(card);
+                    showIssueEditor(view, card);
                     break;
                 case R.id.menu_delete_issue_card:
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -617,11 +620,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         builder.create().show();
     }
 
-    private void showIssueEditor(Card card) {
+    private void showIssueEditor(View view, Card card) {
         final Intent i = new Intent(getContext(), IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+        UI.getViewCenterOnScreen(i, view);
         getActivity().startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -758,7 +762,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         dialog.show(getFragmentManager(), TAG);
     }
 
-    void cardClick(Card card) {
+    void cardClick(View view, Card card) {
         final SettingsActivity.Preferences.CardAction action;
         if(mAccessLevel == Repository.AccessLevel.NONE || mAccessLevel == Repository.AccessLevel.READ) {
             action = COPY;
@@ -768,10 +772,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         switch(action) {
             case EDIT:
                 if(card.hasIssue()) {
-                    showIssueEditor(card);
+                    showIssueEditor(view, card);
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
+                    UI.getViewCenterOnScreen(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                 }
                 break;

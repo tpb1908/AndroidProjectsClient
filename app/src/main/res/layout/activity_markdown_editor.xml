@@ -53,6 +53,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/editor_stub_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/markdown_activity_buttons"

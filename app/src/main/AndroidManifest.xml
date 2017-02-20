@@ -81,11 +81,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".editors.IssueEditor"/>
+        <activity android:name=".editors.IssueEditor"
+                  android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".editors.CardEditor"/>
+        <activity android:name=".editors.CardEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".editors.CommentEditor"/>
+        <activity android:name=".editors.CommentEditor"
+                  android:theme="@style/AppTheme.Transparent.Dark"/>
 
         <activity android:name=".data.SettingsActivity"/>
 

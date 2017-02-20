@@ -70,6 +70,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -415,10 +416,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_issue)
     void addIssue() {
-        mMenu.close(true);
-
         final Intent intent = new Intent(ProjectActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
+        UI.getViewCenterOnScreen(intent, mAddIssue);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
@@ -503,7 +503,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_card)
     void addCard() {
-        mMenu.close(true);
         final Intent intent = new Intent(this, CardEditor.class);
 
         final ArrayList<Integer> ids = new ArrayList<>();
@@ -512,6 +511,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(c.hasIssue()) ids.add(c.getIssue().getId());
             }
         }
+        UI.getViewCenterOnScreen(intent, mAddCard);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
         intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
         startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
@@ -674,6 +674,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        mMenu.close(true);
         if(resultCode == AppCompatActivity.RESULT_OK) {
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;

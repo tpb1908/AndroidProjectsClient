@@ -174,8 +174,8 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         return mIssues.size();
     }
 
-    private void openIssue(int pos) {
-        mParent.openIssue(mIssues.get(pos));
+    private void openIssue(View view, int pos) {
+        mParent.openIssue(view, mIssues.get(pos));
     }
 
     private void openMenu(View view, int pos) {
@@ -193,7 +193,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             ButterKnife.bind(this, view);
             mContent.setShowUnderLines(false);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
-            view.setOnClickListener((v) -> openIssue(getAdapterPosition()));
+            view.setOnClickListener((v) -> openIssue(v, getAdapterPosition()));
         }
 
 

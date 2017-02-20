@@ -28,7 +28,7 @@ import java.util.Date;
  * Created by theo on 16/02/17.
  */
 
-public abstract class ImageLoadingActivity extends AppCompatActivity {
+public abstract class ImageLoadingActivity extends CircularRevealActivity {
     private static final String TAG = ImageLoadingActivity.class.getSimpleName();
 
 
