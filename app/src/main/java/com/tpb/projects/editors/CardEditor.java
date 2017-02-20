@@ -70,14 +70,13 @@ public class CardEditor extends ImageLoadingActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
-        setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
         setContentView(R.layout.activity_markdown_editor);
 
         final ViewStub stub = (ViewStub) findViewById(R.id.editor_stub);
 
         stub.setLayoutResource(R.layout.stub_card_editor);
         stub.inflate();
-
         ButterKnife.bind(this);
 
         final Intent launchIntent = getIntent();
@@ -169,7 +168,7 @@ public class CardEditor extends ImageLoadingActivity {
         });
 
         final View content = findViewById(android.R.id.content);
-
+        content.setVisibility(View.VISIBLE);
         content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             final Rect r = new Rect();
             content.getWindowVisibleDisplayFrame(r);

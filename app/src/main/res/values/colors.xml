@@ -28,6 +28,9 @@
     <color name="colorDivider">@color/md_grey_400</color>
     <color name="iconColorSecondaryLight">#61000000</color>
     <color name="iconColorSecondaryDark">#80FFFFFF</color>
+
+    <color name="defaultBackgroundLight">#EEEEEE</color>
+    <color name="defaultBackgroundDark">#212121</color>
     <!--grey-->
     <color name="md_grey_50">#FAFAFA</color>
     <color name="md_grey_100">#F5F5F5</color>

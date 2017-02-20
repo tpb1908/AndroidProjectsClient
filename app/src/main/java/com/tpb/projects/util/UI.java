@@ -35,6 +35,14 @@ import android.widget.TextView;
 public class UI {
     private static final String TAG = UI.class.getSimpleName();
 
+    public static int[] getViewCenterOnScreen(View view) {
+        final int[] pos = new int[2];
+        view.getLocationOnScreen(pos);
+        pos[0] += view.getWidth() / 2;
+        pos[1] += view.getHeight() / 2;
+        return pos;
+    }
+
     //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation
     public static void expand(final View v) {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
