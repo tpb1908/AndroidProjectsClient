@@ -17,6 +17,7 @@
 
 package com.tpb.projects.util;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -38,13 +39,18 @@ import com.tpb.projects.R;
 public class UI {
     private static final String TAG = UI.class.getSimpleName();
 
-    public static void getViewCenterOnScreen(Intent i, View view) {
+    public static void setViewPositionForIntent(Intent i, View view) {
         final int[] pos = new int[2];
         view.getLocationOnScreen(pos);
         pos[0] += view.getWidth() / 2;
         pos[1] += view.getHeight() / 2;
         i.putExtra(view.getContext().getString(R.string.intent_position_x), pos[0]);
         i.putExtra(view.getContext().getString(R.string.intent_position_y), pos[1]);
+    }
+
+    public static void setClickPositionForIntent(Context context, Intent i, float[] pos) {
+        i.putExtra(context.getString(R.string.intent_position_x), (int) pos[0]);
+        i.putExtra(context.getString(R.string.intent_position_y), (int) pos[1]);
     }
 
     //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation

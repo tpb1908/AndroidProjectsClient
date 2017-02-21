@@ -63,6 +63,8 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -356,7 +358,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivity(i);
-        UI.getViewCenterOnScreen(i, view);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(this, i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
@@ -385,7 +391,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
-        UI.getViewCenterOnScreen(intent, view);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(this, intent, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(intent, view);
+        }
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
 
     }

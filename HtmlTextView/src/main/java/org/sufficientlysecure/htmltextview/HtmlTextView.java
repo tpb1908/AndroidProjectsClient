@@ -78,6 +78,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private Handler mParseHandler;
 
+    private float[] mLastClickPosition = new float[2];
+
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -453,6 +455,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         showUnderLines = show;
     }
 
+    public float[] getLastClickPosition() {
+        return mLastClickPosition;
+    }
+
     /**
      * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
      */
@@ -481,6 +487,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            mLastClickPosition[0] = event.getRawX();
+            mLastClickPosition[1] = event.getRawY();
+        }
         linkHit = false;
         boolean res = super.onTouchEvent(event);
 

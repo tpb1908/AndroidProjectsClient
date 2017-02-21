@@ -299,14 +299,14 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
-        UI.getViewCenterOnScreen(i, findViewById(R.id.issue_comment_fab));
+        UI.setViewPositionForIntent(i, findViewById(R.id.issue_comment_fab));
         startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
     }
 
     private void editComment(View view, Comment comment) {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_comment), comment);
-        UI.getViewCenterOnScreen(i, view);
+        UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
     }
 
@@ -412,7 +412,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
-        UI.getViewCenterOnScreen(i, view);
+        UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 

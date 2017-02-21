@@ -169,8 +169,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         mParent.openMenu(view, mCards.get(position).first);
     }
 
-    private void cardClick(int position) {
-        mParent.cardClick(mParent.mRecycler.getChildAt(position), mCards.get(position).first);
+    private void cardClick(CardHolder holder) {
+        mParent.cardClick(holder.mText, mCards.get(holder.getAdapterPosition()).first);
     }
 
     @Override
@@ -368,7 +368,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         CardHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener(v -> cardClick(getAdapterPosition()));
+            view.setOnClickListener(v -> cardClick(this));
             mText.setShowUnderLines(false);
             mText.setParseHandler(mParseHandler);
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
