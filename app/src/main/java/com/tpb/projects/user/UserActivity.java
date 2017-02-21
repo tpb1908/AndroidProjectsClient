@@ -30,7 +30,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -57,6 +56,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
@@ -66,17 +66,9 @@ import com.tpb.projects.util.UI;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by theo on 14/12/16.
- * Possible markdown textviews
- * <p>
- * https://github.com/fiskurgit/MarkdownView
- * https://github.com/mukeshsolanki/MarkdownView-Android
- * https://github.com/mittsuu/MarkedView-for-Android
- * https://github.com/falnatsheh/MarkdownView best demo
- */
 
-public class UserActivity extends AppCompatActivity implements UserReposAdapter.RepositoriesManager {
+
+public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepositoriesManager {
     private static final String TAG = UserActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 

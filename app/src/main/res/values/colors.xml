@@ -30,7 +30,7 @@
     <color name="iconColorSecondaryDark">#80FFFFFF</color>
 
     <color name="defaultBackgroundLight">#EEEEEE</color>
-    <color name="defaultBackgroundDark">#212121</color>
+    <color name="defaultBackgroundDark">#303030</color>
     <!--grey-->
     <color name="md_grey_50">#FAFAFA</color>
     <color name="md_grey_100">#F5F5F5</color>

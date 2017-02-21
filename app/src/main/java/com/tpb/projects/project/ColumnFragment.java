@@ -59,11 +59,11 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
+import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
@@ -789,20 +789,33 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         }
     }
 
-    void openUser(ANImageView imageView, User user) {
+    void openUser(View view, String login) {
         final Intent i = new Intent(getContext(), UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), user.getLogin());
-        if(imageView.getDrawable() != null) {
-            Log.i(TAG, "openUser: Putting bitmap");
-            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+        i.putExtra(getString(R.string.intent_username), login);
+        if(view instanceof ANImageView) {
+            if(((ANImageView) view).getDrawable() != null) {
+                Log.i(TAG, "openUser: Putting bitmap");
+                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) ((ANImageView) view).getDrawable()).getBitmap());
+            }
+            startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    getActivity(),
+                    view,
+                    getString(R.string.transition_user_image)
+                    ).toBundle()
+            );
+        } else {
+            UI.getViewCenterOnScreen(i, view);
+            startActivity(i);
         }
-        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                getActivity(),
-                imageView,
-                getString(R.string.transition_user_image)
-                ).toBundle()
-        );
+    }
 
+    void openIssue(View view, String url) {
+        final int number = Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
+        final Intent i = new Intent(getContext(), IssueActivity.class);
+        i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+        i.putExtra(getString(R.string.intent_issue_number), number);
+        UI.getViewCenterOnScreen(i, view);
+        startActivity(i);
     }
 
     void scrollUp() {

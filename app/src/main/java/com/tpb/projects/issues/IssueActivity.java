@@ -64,6 +64,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
@@ -85,7 +86,7 @@ import butterknife.OnClick;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
+public class IssueActivity extends CircularRevealActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
