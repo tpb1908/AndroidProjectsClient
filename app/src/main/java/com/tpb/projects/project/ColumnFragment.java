@@ -51,6 +51,8 @@ import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -397,7 +399,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 case R.id.menu_edit_note:
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    UI.getViewCenterOnScreen(i, view);
+                    UI.setViewPositionForIntent(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                     break;
                 case R.id.menu_delete_note:
@@ -424,7 +426,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
                     intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     intent.putExtra(getString(R.string.parcel_card), card);
-                    UI.getViewCenterOnScreen(intent, view);
+                    UI.setViewPositionForIntent(intent, view);
                     getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
                     break;
                 case R.id.menu_edit_issue:
@@ -498,6 +500,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void editCard(Card card) {
+        mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.CardUpdateListener() {
             int updateAttempts = 0;
 
@@ -608,7 +611,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
-        UI.getViewCenterOnScreen(i, view);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
         getActivity().startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -759,7 +766,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    UI.getViewCenterOnScreen(i, view);
+                    if(view instanceof HtmlTextView) {
+                        UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+                    } else {
+                        UI.setViewPositionForIntent(i, view);
+                    }
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                 }
                 break;
@@ -787,7 +798,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     ).toBundle()
             );
         } else {
-            UI.getViewCenterOnScreen(i, view);
+            if(view instanceof HtmlTextView) {
+                UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+            } else {
+                UI.setViewPositionForIntent(i, view);
+            }
             startActivity(i);
         }
     }
@@ -797,7 +812,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final Intent i = new Intent(getContext(), IssueActivity.class);
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.intent_issue_number), number);
-        UI.getViewCenterOnScreen(i, view);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
         startActivity(i);
     }
 

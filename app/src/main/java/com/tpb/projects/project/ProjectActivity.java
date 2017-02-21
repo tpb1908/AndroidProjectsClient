@@ -401,7 +401,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     void addIssue() {
         final Intent intent = new Intent(ProjectActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
-        UI.getViewCenterOnScreen(intent, mAddIssue);
+        UI.setViewPositionForIntent(intent, mAddIssue);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
@@ -494,7 +494,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(c.hasIssue()) ids.add(c.getIssue().getId());
             }
         }
-        UI.getViewCenterOnScreen(intent, mAddCard);
+        UI.setViewPositionForIntent(intent, mAddCard);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
         intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
         startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
@@ -659,6 +659,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         super.onActivityResult(requestCode, resultCode, data);
         mMenu.close(true);
         if(resultCode == AppCompatActivity.RESULT_OK) {
+            mRefresher.setRefreshing(true);
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
                 String[] labels = null;
@@ -676,6 +677,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
@@ -683,6 +685,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 
@@ -702,11 +705,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     @Override
                     public void commentCreated(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
                     public void commentCreationError(APIHandler.APIError error) {
-
+                        mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
             }
