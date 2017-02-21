@@ -1,9 +1,3 @@
-/*
-   * Credit to Gitskarios
-   * https://github.com/gitskarios/Gitskarios/blob/develop/app/src/main/java/com/alorma/github/Interceptor.java
-   * https://github.com/gitskarios/Gitskarios
- */
-
 package com.tpb.projects.util;
 
 import android.app.Activity;
