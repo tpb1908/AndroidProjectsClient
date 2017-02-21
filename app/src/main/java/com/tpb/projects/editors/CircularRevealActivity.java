@@ -90,18 +90,17 @@ public class CircularRevealActivity extends AppCompatActivity {
             public void onAnimationEnd(Animator animation) {
                 findViewById(android.R.id.content).setVisibility(View.GONE);
                 super.onAnimationEnd(animation);
-                x = -1;
-                y = -1;
-                finish();
+                CircularRevealActivity.super.finish();
+                overridePendingTransition(0, 0);
             }
         });
         // make the view visible and start the animation
         circularClose.start();
     }
 
-
     @Override
     public void finish() {
+        Log.i(CircularRevealActivity.class.getSimpleName(), "finish: ");
         if(x != -1 && y != -1) {
             circularCloseActivity(x, y);
         } else {
