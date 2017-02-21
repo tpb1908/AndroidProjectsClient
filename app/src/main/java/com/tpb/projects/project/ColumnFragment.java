@@ -515,6 +515,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void editCard(Card card) {
+        mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.CardUpdateListener() {
             int updateAttempts = 0;
 

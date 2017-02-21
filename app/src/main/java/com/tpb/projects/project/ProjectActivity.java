@@ -676,6 +676,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         super.onActivityResult(requestCode, resultCode, data);
         mMenu.close(true);
         if(resultCode == AppCompatActivity.RESULT_OK) {
+            mRefresher.setRefreshing(true);
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
                 String[] labels = null;
@@ -693,6 +694,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
@@ -700,6 +702,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 
@@ -719,11 +722,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     @Override
                     public void commentCreated(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
                     public void commentCreationError(APIHandler.APIError error) {
-
+                        mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
             }
