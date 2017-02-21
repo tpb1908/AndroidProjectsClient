@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,6 +34,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +60,8 @@ public class CardEditor extends ImageLoadingActivity {
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.card_note_wrapper) TextInputLayout mEditorWrapper;
+    private KeyBoardVisibilityChecker mKeyBoardChecker;
+
 
     private Card mCard;
 
@@ -169,21 +171,18 @@ public class CardEditor extends ImageLoadingActivity {
 
         final View content = findViewById(android.R.id.content);
         content.setVisibility(View.VISIBLE);
-        content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            final Rect r = new Rect();
-            content.getWindowVisibleDisplayFrame(r);
-            final int screenHeight = content.getRootView().getHeight();
 
-            // r.bottom is the position above soft keypad or device button.
-            // if keypad is shown, the r.bottom is smaller than that before.
-            final int keypadHeight = screenHeight - r.bottom;
-
-            if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+        mKeyBoardChecker = new KeyBoardVisibilityChecker(content, new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
+            @Override
+            public void keyboardShown() {
                 mIssueButton.setVisibility(View.GONE);
-                // keyboard is opened
-            } else if(mIssueButton.hasOnClickListeners()) {
-                mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
-                // keyboard is closed
+            }
+
+            @Override
+            public void keyboardHidden() {
+                if(mIssueButton.hasOnClickListeners()) {
+                    mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
+                }
             }
         });
 
@@ -283,6 +282,7 @@ public class CardEditor extends ImageLoadingActivity {
 
     @Override
     public void finish() {
+        Log.i(TAG, "finish: Card finish called");
         if(mHasBeenEdited) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
@@ -296,9 +296,13 @@ public class CardEditor extends ImageLoadingActivity {
             deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
             deleteDialog.show();
         } else {
-            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-            mDoneButton.postDelayed(super::finish, 150);
+            if(mKeyBoardChecker.isKeyboardOpen()) {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            } else {
+                super.finish();
+            }
         }
     }
 }
