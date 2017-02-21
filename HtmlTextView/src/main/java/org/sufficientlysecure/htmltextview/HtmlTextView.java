@@ -78,7 +78,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private Handler mParseHandler;
 
-    private float[] mLastClickPosition = new float[2];
+    private float[] mLastClickPosition = new float[] { -1, -1};
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -456,6 +456,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     }
 
     public float[] getLastClickPosition() {
+        if(mLastClickPosition[0] == -1) {
+            final int[] pos = new int[2];
+            getLocationOnScreen(pos);
+            mLastClickPosition[0] = pos[0] + getWidth() / 2;
+            mLastClickPosition[1] = pos[1] + getHeight() / 2;
+        }
         return mLastClickPosition;
     }
 
