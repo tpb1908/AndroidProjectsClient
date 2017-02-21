@@ -39,6 +39,7 @@
 
         <activity
             android:name=".user.UserActivity"
+            android:theme="@style/AppTheme.Transparent.Dark"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -69,7 +70,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".issues.IssueActivity">
+        <activity android:name=".issues.IssueActivity"
+                  android:theme="@style/AppTheme.Transparent.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

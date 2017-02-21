@@ -247,7 +247,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
         holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
-        holder.mText.setLinkClickHandler(null);
+        holder.mText.setLinkClickHandler(url -> {
+            Log.i(TAG, "bindStandardCard: URL is " + url);
+            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                Log.i(TAG, "bindStandardCard: Opening user url "+ url);
+                mParent.openUser(holder.mText, url.substring(url.lastIndexOf('/') + 1));
+            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
+                Log.i(TAG, "bindIssueCard: Opening issue url " + url);
+                mParent.openIssue(holder.mText, url.substring(url.lastIndexOf('/') + 1));
+            } else {
+                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                mParent.startActivity(i);
+            }
+        });
     }
 
     private void bindIssueCard(CardHolder holder, int pos) {
@@ -257,11 +269,16 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
         holder.mUserAvatar.setOnClickListener((v) -> {
-            mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy());
+            mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
         });
         holder.mText.setLinkClickHandler(url -> {
+            Log.i(TAG, "bindIssueCard: URL is " + url);
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy());
+                Log.i(TAG, "bindStandardCard: Opening user url "+ url);
+                mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
+            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
+                Log.i(TAG, "bindIssueCard: Opening issue url " + url);
+                mParent.openIssue(holder.mText, url.substring(url.lastIndexOf('/') + 1));
             } else {
                 final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 mParent.startActivity(i);
