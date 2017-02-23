@@ -15,6 +15,7 @@ import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
+import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.UserActivity;
 
 import java.util.ArrayList;
@@ -78,14 +79,15 @@ public class Interceptor extends Activity {
                         p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
                         final String path = getIntent().getDataString();
-                        if(path.indexOf('#') > path.indexOf(segments.get(3))) {
-                            try {
-                                final int cardId = Integer.parseInt(path.substring(path.indexOf('#') + 6));
-                                Log.i(TAG, "onCreate: " + cardId);
-                                p.putExtra(getString(R.string.intent_card_id), cardId);
-                            } catch(Exception ignored) {
-                            }
+
+                        final StringBuilder id = new StringBuilder();
+                        for(int i = path.indexOf('#', path.indexOf(segments.get(3))) + 6; i < path.length(); i++) {
+                            if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
                         }
+                        try {
+                            p.putExtra(getString(R.string.intent_card_id), Integer.parseInt(id.toString()));
+                        } catch(Exception ignored) {}
+
                         startActivity(p);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
@@ -104,18 +106,31 @@ public class Interceptor extends Activity {
                     if("tree".equals(segments.get(2))) {
                         final Intent content = new Intent(Interceptor.this, ContentActivity.class);
                         content.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        String path = "";
-                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
-                        Log.i(TAG, "onCreate: Path is " + path);
-                        content.putExtra(getString(R.string.intent_path), path);
+                        final StringBuilder path = new StringBuilder();
+                        for(int i = 3; i < segments.size(); i++) {
+                            path.append(segments.get(i));
+                            path.append('/');
+                        }
+                        content.putExtra(getString(R.string.intent_path), path.toString());
                         startActivity(content);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("blob".equals(segments.get(2))) {
-                        String path = "";
-                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
-                        Log.i(TAG, "onCreate: Blob path is " + path);
-                        fail();
+                        final Intent file = new Intent(Interceptor.this, FileActivity.class);
+                        final StringBuilder path = new StringBuilder();
+                        path.append(segments.get(0));
+                        path.append('/');
+                        path.append(segments.get(1));
+                        file.putExtra(getString(R.string.intent_repo), path.toString());
+                        path.setLength(0);
+                        for(int i = 3; i < segments.size(); i++) {
+                            path.append('/');
+                            path.append(segments.get(i));
+                        }
+                        file.putExtra(getString(R.string.intent_blob_path), path.toString());
+                        startActivity(file);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                        finish();
                     } else {
                         fail();
                     }
@@ -168,17 +183,16 @@ public class Interceptor extends Activity {
 
     private Intent generateFailIntentWithoutApp() {
         try {
-            Intent intent = new Intent(getIntent().getAction());
+            final Intent intent = new Intent(getIntent().getAction());
             intent.setData(getIntent().getData());
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-            final List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            final List<ResolveInfo> resolvedInfo = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-            if(!resolveInfos.isEmpty()) {
+            if(!resolvedInfo.isEmpty()) {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
-
-                for(ResolveInfo resolveInfo : resolveInfos) {
+                for(ResolveInfo resolveInfo : resolvedInfo) {
                     final String packageName = resolveInfo.activityInfo.packageName;
                     if(!packageName.equals(getPackageName())) {
                         final Intent targetedShareIntent = new Intent(getIntent().getAction());
@@ -187,11 +201,10 @@ public class Interceptor extends Activity {
                         targetedShareIntents.add(targetedShareIntent);
                     }
                 }
-                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Open with...");
+                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), getString(R.string.text_interceptor_open_with));
                 if(targetedShareIntents.size() > 0) {
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[targetedShareIntents.size()]));
                 }
-
                 return chooserIntent;
             }
         } catch(Exception e) {

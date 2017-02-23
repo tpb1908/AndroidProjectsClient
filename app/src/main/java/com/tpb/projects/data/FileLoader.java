@@ -5,8 +5,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.tpb.projects.data.models.files.Node;
 
 import org.json.JSONArray;
@@ -65,6 +67,23 @@ public class FileLoader extends APIHandler {
         if(n1.getType() != Node.NodeType.FILE && n2.getType() == Node.NodeType.FILE) return -1;
         return n1.getName().compareToIgnoreCase(n1.getName());
     };
+
+    public void loadRawFile(StringRequestListener listener, String path) {
+        AndroidNetworking.get(path)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(listener != null) listener.onResponse(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.onError(anError);
+                    }
+                });
+    }
 
     public interface DirectoryLoader {
 
