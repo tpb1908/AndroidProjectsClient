@@ -1,8 +1,11 @@
 package com.tpb.projects.issues;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,6 +98,17 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         final Issue issue = mIssues.get(pos);
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        holder.mContent.setLinkClickHandler(url -> {
+            Log.i(TAG, "bindIssueCard: URL is " + url);
+            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                mParent.openUser(holder.mContent, issue.getOpenedBy().getLogin());
+            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
+                mParent.openIssue(holder.mContent, issue);
+            } else {
+                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                mParent.startActivity(i);
+            }
+        });
         if(mParseCache.get(pos) == null) {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();

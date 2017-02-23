@@ -42,6 +42,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
+import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
@@ -340,13 +341,19 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     void openIssue(View view, Issue issue) {
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
-        startActivity(i);
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(this, i, ((HtmlTextView) view).getLastClickPosition());
         } else {
             UI.setViewPositionForIntent(i, view);
         }
-        overridePendingTransition(R.anim.slide_up, R.anim.none);
+        startActivity(i);
+    }
+
+    void openUser(HtmlTextView view, String user) {
+        final Intent i = new Intent(IssuesActivity.this, UserActivity.class);
+        i.putExtra(getString(R.string.intent_username), user);
+        UI.setClickPositionForIntent(this, i, view.getLastClickPosition());
+        startActivity(i);
     }
 
     void openMenu(View view, final Issue issue) {
