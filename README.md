@@ -14,9 +14,9 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [Clans FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 
-* [CWAC AndDown](https://github.com/commonsguy/cwac-anddown)
+* CommonMark
 
-* [HtmlTextView](https://github.com/SufficientlySecure/html-textview)
+* [HtmlTextView](https://github.com/SufficientlySecure/html-textview) Modified
 
 * [MarkedView](https://github.com/mittsuu/MarkedView-for-Android)
 
@@ -31,42 +31,12 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 ### Features
 
-* Secure sign in with OAUTH
-* Creating projects on a repository
-* Editing projects within a repository
-* Deleting projects within a repository
-* Viewing of projects columns and their cards
-* Home screen shortcuts for users, repositories, and projects
-* MarkDown support throughout
-* Editing of column names
-* Creation of new columns
-* Deletion of columns
-* Creation of new cards
-* Creation of new issue cards from existing open issues
-* Creation of new issue cards (Not available on site)
-* Conversion of cards to issues
-* Tagged users displayed as links on card
-* Issue labels displayed on issue cards
-* Issue assignees displayed on issue cards
-* Assignees formatted as links
-* Editing of issues (Not available on site)
-* Editing of issue collaborators (Not available on site)
-* Collaborators displayed as links
-* Editing of issue labels (Not available on site)
-* Opening and closing of associated issues (Not available on site)
-* Adding a comment when opening or closing issues
-* Option to close issues when their card is removed (Not available on site)
-* Fullscreen viewer for cards
-* Drag and drop to move cards between columns
-* Drag and drop to rearrange columns in a project
-* Link handling to open users, repositories, and projects
+* Fill something in here, the list before looked ridiculous
 
 ### Upcoming features (In order of precedence)
 
-* Comment viewer for issues, and the ability to reply to comments
 * Sharing (Of columns and cards)
 * Adding milestone when creating issue, and editing milestones when editing issues
-* Nougat app shortcuts for projects/repos pinned by the user (this requires link/intent handling)
 * Creating/Editing labels for a repository
 * Extra column in project to display all issues, and allow creating cards from them
 * Moving of columns between projects
@@ -89,10 +59,20 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Add the client ID and secret to gradle.properties
 
-```
-GITHUB_CLIENT_ID="ID"
+**Register a new application on Imgur**
 
-GITHUB_CLIENT_SECRET="SECRET"
+This is not essential, but in app image uploading will not work otherwise
+
+```
+GITHUB_CLIENT_ID="GITHUB_ID"
+
+GITHUB_CLIENT_SECRET="GITHUB_SECRET"
+
+
+IMGUR_CLIENT_ID="IMGUR_ID"
+
+IMGUR_CLIENT_SECRET="IMGUR_SECRET"
+
 ```
 
 **Add your information to gradle.properties**

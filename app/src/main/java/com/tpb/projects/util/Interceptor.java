@@ -1,9 +1,3 @@
-/*
-   * Credit to Gitskarios
-   * https://github.com/gitskarios/Gitskarios/blob/develop/app/src/main/java/com/alorma/github/Interceptor.java
-   * https://github.com/gitskarios/Gitskarios
- */
-
 package com.tpb.projects.util;
 
 import android.app.Activity;
@@ -90,9 +84,9 @@ public class Interceptor extends Activity {
                             if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
                         }
                         try {
-                            final int cardId = Integer.parseInt(id.toString());
-                            p.putExtra(getString(R.string.intent_card_id), cardId);
+                            p.putExtra(getString(R.string.intent_card_id), Integer.parseInt(id.toString()));
                         } catch(Exception ignored) {}
+
                         startActivity(p);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
@@ -138,14 +132,14 @@ public class Interceptor extends Activity {
     private void fail() {
         Log.i(TAG, "fail: ");
         try {
-            if (failIntent != null) {
+            if(failIntent != null) {
                 startActivity(failIntent);
                 finish();
             } else {
                 startActivity(onFail());
                 finish();
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
             finish();
         }
@@ -169,7 +163,7 @@ public class Interceptor extends Activity {
 
     private Intent onFail() {
         Log.i(TAG, "onFail: ");
-        if (failIntent == null && getIntent() != null) {
+        if(failIntent == null && getIntent() != null) {
             return generateFailIntentWithoutApp();
         } else {
             return failIntent;
@@ -185,26 +179,24 @@ public class Interceptor extends Activity {
 
             final List<ResolveInfo> resolvedInfo = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-            if (!resolvedInfo.isEmpty()) {
+            if(!resolvedInfo.isEmpty()) {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
-
-                for (ResolveInfo resolveInfo : resolvedInfo) {
+                for(ResolveInfo resolveInfo : resolvedInfo) {
                     final String packageName = resolveInfo.activityInfo.packageName;
-                    if (!packageName.equals(getPackageName())) {
+                    if(!packageName.equals(getPackageName())) {
                         final Intent targetedShareIntent = new Intent(getIntent().getAction());
                         targetedShareIntent.setData(getIntent().getData());
                         targetedShareIntent.setPackage(packageName);
                         targetedShareIntents.add(targetedShareIntent);
                     }
                 }
-                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Open with...");
-                if (targetedShareIntents.size() > 0) {
+                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), getString(R.string.text_interceptor_open_with));
+                if(targetedShareIntents.size() > 0) {
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[targetedShareIntents.size()]));
                 }
-
                 return chooserIntent;
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return failIntent;

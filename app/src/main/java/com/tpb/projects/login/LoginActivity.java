@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.login;
 
 import android.annotation.SuppressLint;
@@ -29,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -147,7 +129,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public interface OAuthLoginListener {
-        void onComplete(String accessToken);
+
+        void onCodeCollected(String code);
 
         void onError(String error);
     }
@@ -159,17 +142,6 @@ public class LoginActivity extends AppCompatActivity {
             mListener = listener;
         }
 
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.d(TAG, "Redirecting URL " + url);
-
-            if(url.startsWith(OAuthHandler.mCallbackUrl)) {
-                String urls[] = url.split("=");
-                mListener.onComplete(urls[1]);
-                return true;
-            }
-            return false;
-        }
 
         @Override
         public void onReceivedError(WebView view, int errorCode,
@@ -181,19 +153,32 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            if(request.getUrl().toString().startsWith("https://github.com/login/oauth/authorize?") ||
-                    request.getUrl().toString().startsWith("https://github.com/session") ||
-                    request.getUrl().toString().startsWith("https://github.com/sessions/two-factor") ||
-                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
-                return super.shouldOverrideUrlLoading(view, request);
-            }
-            return false;
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return !(url.startsWith("https://github.com/login/oauth/authorize") ||
+                    url.startsWith("https://github.com/login?") ||
+                    url.startsWith("https://github.com/session") ||
+                    url.startsWith(BuildConfig.GITHUB_REDIRECT_URL));
         }
+
+        //
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            if(request.getUrl().toString().startsWith("https://github.com/login") ||
+//                    request.getUrl().toString().startsWith("https://github.com/session") ||
+//                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
+//                return super.shouldOverrideUrlLoading(view, request);
+//            }
+//            return true;
+//        }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d(TAG, "Loading URL: " + url);
+            if(url.contains("?code=")) {
+                Log.i(TAG, "onPageStarted: Code complete " + url);
+                final String[] parts = url.split("=");
+                mListener.onCodeCollected(parts[1]);
+            }
             super.onPageStarted(view, url, favicon);
         }
 

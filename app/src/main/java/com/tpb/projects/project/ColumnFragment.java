@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.project;
 
 import android.animation.ArgbEvaluator;
@@ -25,9 +8,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -60,7 +46,12 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
+import com.tpb.projects.issues.IssueActivity;
+import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.UI;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,6 +146,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 } else {
                     mEditor.updateColumnName(new Editor.ColumnNameChangeListener() {
                         int loadCount = 0;
+
                         @Override
                         public void columnNameChanged(Column column) {
                             if(mViewsValid) {
@@ -302,6 +294,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int createAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 addCard(card);
@@ -406,6 +399,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 case R.id.menu_edit_note:
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
+                    UI.setViewPositionForIntent(i, view);
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                     break;
                 case R.id.menu_delete_note:
@@ -432,10 +426,11 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
                     intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
                     intent.putExtra(getString(R.string.parcel_card), card);
+                    UI.setViewPositionForIntent(intent, view);
                     getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
                     break;
                 case R.id.menu_edit_issue:
-                    showIssueEditor(card);
+                    showIssueEditor(view, card);
                     break;
                 case R.id.menu_delete_issue_card:
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -472,6 +467,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int createAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 addCard(card);
@@ -504,8 +500,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     void editCard(Card card) {
+        mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.CardUpdateListener() {
             int updateAttempts = 0;
+
             @Override
             public void cardUpdated(Card card) {
                 mAdapter.updateCard(card);
@@ -541,6 +539,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private void toggleIssueState(Card card) {
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
             int stateChangeAttempts = 0;
+
             @Override
             public void issueStateChanged(Issue issue) {
                 card.setFromIssue(issue);
@@ -607,11 +606,16 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         builder.create().show();
     }
 
-    private void showIssueEditor(Card card) {
+    private void showIssueEditor(View view, Card card) {
         final Intent i = new Intent(getContext(), IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
         getActivity().startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -656,6 +660,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     private void convertCardToIssue(Card oldCard, Issue issue) {
         mEditor.deleteCard(new Editor.CardDeletionListener() {
             int cardDeletionAttempts = 0;
+
             @Override
             public void cardDeleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
@@ -695,6 +700,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CardCreationListener() {
             int issueCardCreationAttempts = 0;
+
             @Override
             public void cardCreated(int columnId, Card card) {
                 Log.i(TAG, "cardCreated: Issue card created");
@@ -746,7 +752,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         dialog.show(getFragmentManager(), TAG);
     }
 
-    void cardClick(Card card) {
+    void cardClick(View view, Card card) {
         final SettingsActivity.Preferences.CardAction action;
         if(mAccessLevel == Repository.AccessLevel.NONE || mAccessLevel == Repository.AccessLevel.READ) {
             action = COPY;
@@ -756,10 +762,15 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         switch(action) {
             case EDIT:
                 if(card.hasIssue()) {
-                    showIssueEditor(card);
+                    showIssueEditor(view, card);
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
+                    if(view instanceof HtmlTextView) {
+                        UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+                    } else {
+                        UI.setViewPositionForIntent(i, view);
+                    }
                     getActivity().startActivityForResult(i, CardEditor.REQUEST_CODE_EDIT_CARD);
                 }
                 break;
@@ -770,6 +781,43 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 copyToClipboard(card.getNote());
                 break;
         }
+    }
+
+    void openUser(View view, String login) {
+        final Intent i = new Intent(getContext(), UserActivity.class);
+        i.putExtra(getString(R.string.intent_username), login);
+        if(view instanceof ANImageView) {
+            if(((ANImageView) view).getDrawable() != null) {
+                Log.i(TAG, "openUser: Putting bitmap");
+                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) ((ANImageView) view).getDrawable()).getBitmap());
+            }
+            startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    getActivity(),
+                    view,
+                    getString(R.string.transition_user_image)
+                    ).toBundle()
+            );
+        } else {
+            if(view instanceof HtmlTextView) {
+                UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+            } else {
+                UI.setViewPositionForIntent(i, view);
+            }
+            startActivity(i);
+        }
+    }
+
+    void openIssue(View view, String url) {
+        final int number = Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
+        final Intent i = new Intent(getContext(), IssueActivity.class);
+        i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+        i.putExtra(getString(R.string.intent_issue_number), number);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
+        startActivity(i);
     }
 
     void scrollUp() {

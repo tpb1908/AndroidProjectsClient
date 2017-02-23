@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,11 +29,12 @@ public class FileLoader extends APIHandler {
         super(context);
     }
 
-    public void loadDirectory(DirectoryLoader loader, String repo, @Nullable String path) {
+    public void loadDirectory(DirectoryLoader loader, String repo, @Nullable String path, @Nullable Node parent) {
         String PATH = GIT_BASE + SEGMENT_REPOS + "/" + repo + SEGMENT_CONTENTS;
         if(path != null) PATH += "/" + path;
         AndroidNetworking.get(PATH)
                 .addHeaders(API_AUTH_HEADERS)
+                .getResponseOnlyFromNetwork()
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
@@ -40,11 +43,13 @@ public class FileLoader extends APIHandler {
                         try {
                             for(int i = 0; i < response.length(); i++) {
                                 nodes.add(new Node(response.getJSONObject(i)));
+                                nodes.get(i).setParent(parent);
                             }
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);
                             if(loader != null) loader.directoryLoadError(APIError.UNPROCESSABLE);
                         }
+                        Collections.sort(nodes, sorter);
                         if(loader != null) loader.directoryLoaded(nodes);
                     }
 
@@ -54,6 +59,12 @@ public class FileLoader extends APIHandler {
                     }
                 });
     }
+
+    private static final Comparator<Node> sorter = (n1, n2) -> {
+        if(n1.getType() == Node.NodeType.FILE && n2.getType() != Node.NodeType.FILE) return 1;
+        if(n1.getType() != Node.NodeType.FILE && n2.getType() == Node.NodeType.FILE) return -1;
+        return n1.getName().compareToIgnoreCase(n1.getName());
+    };
 
     public interface DirectoryLoader {
 

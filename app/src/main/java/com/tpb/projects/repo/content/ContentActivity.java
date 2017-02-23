@@ -7,18 +7,17 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,9 +29,13 @@ import butterknife.ButterKnife;
 public class ContentActivity extends AppCompatActivity {
     private static final String TAG = ContentActivity.class.getSimpleName();
 
+    @BindView(R.id.content_title) TextView mTitle;
+    @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibbonScrollView;
     @BindView(R.id.content_file_ribbon) LinearLayout mRibbon;
     @BindView(R.id.content_recycler) RecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
+
+    public static Node mLaunchNode;
 
     private ContentAdapter mAdapter;
 
@@ -48,32 +51,55 @@ public class ContentActivity extends AppCompatActivity {
 
         final Intent launchIntent = getIntent();
         final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        mTitle.setText(repo.substring(repo.indexOf('/') + 1));
 
-        mAdapter = new ContentAdapter();
+        mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        new FileLoader(this).loadDirectory(new FileLoader.DirectoryLoader() {
-            @Override
-            public void directoryLoaded(List<Node> directory) {
-                Log.i(TAG, "directoryLoaded: " + directory);
-                mAdapter.setNodes(directory);
-            }
-
-            @Override
-            public void directoryLoadError(APIHandler.APIError error) {
-                Log.i(TAG, "directoryLoadError: " + error);
-            }
-        }, repo, null);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.reload();
+        });
     }
 
     private void initRibbon() {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
-        view.setText("Root");
+        view.setText(R.string.text_ribbon_root);
+        view.setOnClickListener((v) -> {
+            mRibbon.removeAllViews();
+            mRibbon.addView(view);
+            mAdapter.moveToStart();
+        });
         mRibbon.addView(view);
     }
 
-    private void addRibbonItem(Node node) {
+    void flashRecycler() {
+
+    }
+
+    void addRibbonItem(final Node node) {
+        final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
+        view.setText(node.getName());
+        view.setFocusable(false);
+        view.setOnClickListener(v -> {
+            //FIXME- Dirty hack
+            final ArrayList<View> views = new ArrayList<>();
+            for(int i = 0; i <= mRibbon.indexOfChild(view); i++) {
+                views.add(mRibbon.getChildAt(i));
+            }
+            mRibbon.removeAllViews();
+            for(View item : views) {
+                mRibbon.addView(item);
+            }
+//            final ViewGroup parent = (ViewGroup) view.getParent();
+//            Log.i(TAG, "addRibbonItem: Focused child " + parent.getFocusedChild());
+//            parent.requestChildFocus(view, parent.getFocusedChild());
+//            parent.removeViews(parent.indexOfChild(view) + 1, parent.getChildCount());
+            mAdapter.moveTo(node);
+        });
+
+
+        mRibbon.addView(view);
+        mRibbon.postDelayed(() -> mRibbonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
 
     }
 
@@ -83,5 +109,21 @@ public class ContentActivity extends AppCompatActivity {
 
     public void onToolbarBackPressed(View view) {
         onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mRibbon.getChildCount() > 1) {
+            //FIXME Dirty hack
+            final ArrayList<View> views = new ArrayList<>();
+            for(int i = 0; i < mRibbon.getChildCount() - 1; i++) {
+                views.add(mRibbon.getChildAt(i));
+            }
+            mRibbon.removeAllViews();
+            for(View v : views) mRibbon.addView(v);
+            mAdapter.moveBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -28,6 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_placeholder"
+                android:transitionName="@string/transition_name"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="32dp"
@@ -36,9 +37,11 @@
         </android.support.v7.widget.Toolbar>
 
         <HorizontalScrollView
+            android:id="@+id/content_ribbon_scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="16dp"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:id="@+id/content_file_ribbon"

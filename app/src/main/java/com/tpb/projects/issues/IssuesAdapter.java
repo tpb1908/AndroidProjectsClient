@@ -1,25 +1,6 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.issues;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -51,12 +32,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private final IssuesActivity mParent;
     private final ArrayList<Issue> mIssues = new ArrayList<>();
     private final ArrayList<String> mParseCache = new ArrayList<>();
-
-    private static final HandlerThread parseThread = new HandlerThread("card_parser");
-    static {
-        parseThread.start();
-    }
-    private static final Handler mParseHandler = new Handler(parseThread.getLooper());
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
@@ -171,7 +146,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);
         } else {
-           // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
+            // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
             holder.mContent.setHtml(mParseCache.get(pos));
             //TODO Replace with separate arraylists
         }
@@ -182,8 +157,8 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         return mIssues.size();
     }
 
-    private void openIssue(int pos) {
-        mParent.openIssue(mIssues.get(pos));
+    private void openIssue(View view, int pos) {
+        mParent.openIssue(view, mIssues.get(pos));
     }
 
     private void openMenu(View view, int pos) {
@@ -200,9 +175,8 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             super(view);
             ButterKnife.bind(this, view);
             mContent.setShowUnderLines(false);
-            mContent.setParseHandler(mParseHandler);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
-            view.setOnClickListener((v) -> openIssue(getAdapterPosition()));
+            view.setOnClickListener((v) -> openIssue(v, getAdapterPosition()));
         }
 
 

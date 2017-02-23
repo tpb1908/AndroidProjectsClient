@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.data.auth;
 
 import android.content.Context;
@@ -50,9 +33,10 @@ public class GitHubSession {
 
     /**
      * Stores the credentials for a newly authenticated user
+     *
      * @param accessToken The OAuth token for the authenticated user
-     * @param id The integer id of the authenticated user
-     * @param login The login of the authenticated user
+     * @param id          The integer id of the authenticated user
+     * @param login       The login of the authenticated user
      */
     void storeCredentials(String accessToken, int id, String login) {
         final SharedPreferences.Editor editor = prefs.edit();
@@ -64,6 +48,7 @@ public class GitHubSession {
 
     /**
      * Updates the login of the authenticated user
+     *
      * @param login The new login for the authenticated user
      */
     public void updateUserLogin(String login) {
@@ -90,6 +75,7 @@ public class GitHubSession {
 
     /**
      * Get the authenticated user's login
+     *
      * @return User name
      */
     public String getUserLogin() {
@@ -98,6 +84,7 @@ public class GitHubSession {
 
     /**
      * Get the authenticated user's id
+     *
      * @return User id
      */
     public int getUserId() {
@@ -106,6 +93,7 @@ public class GitHubSession {
 
     /**
      * Get the OAuth access token
+     *
      * @return Access token
      */
     public String getAccessToken() {

@@ -28,7 +28,7 @@ import java.util.Date;
  * Created by theo on 16/02/17.
  */
 
-public abstract class ImageLoadingActivity extends AppCompatActivity {
+public abstract class ImageLoadingActivity extends CircularRevealActivity {
     private static final String TAG = ImageLoadingActivity.class.getSimpleName();
 
 
@@ -51,16 +51,16 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
                 mUploadDialog.setTitle(R.string.title_image_upload);
                 mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             }
-            if (items[which].equals(items[0])) {
+            if(items[which].equals(items[0])) {
                 attemptTakePicture();
-            } else if (items[which].equals(items[1])) {
+            } else if(items[which].equals(items[1])) {
                 final Intent intent = new Intent(
                         Intent.ACTION_GET_CONTENT,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
                 startActivityForResult(intent, SELECT_FILE);
 
-            } else if (items[which].equals(items[2])) {
+            } else if(items[which].equals(items[2])) {
                 dialog.dismiss();
             }
         });
@@ -97,7 +97,7 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         final String imageFileName = "JPEG_" + timeStamp + "_";
         final File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        final File image =  File.createTempFile(
+        final File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
@@ -143,11 +143,11 @@ public abstract class ImageLoadingActivity extends AppCompatActivity {
             } else if(requestCode == SELECT_FILE) {
                 Log.i(TAG, "onActivityResult: File request returned");
                 final Uri selectedFile = data.getData();
-                Log.i(TAG, "onActivityResult: Uri is "+ selectedFile.toString());
+                Log.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
                 pd.setTitle("Converting image");
                 pd.show();
                 AsyncTask.execute(() -> {
-                    try{
+                    try {
                         final String image = attemptLoadPicture(selectedFile);
                         pd.cancel();
                         imageLoadComplete(image);

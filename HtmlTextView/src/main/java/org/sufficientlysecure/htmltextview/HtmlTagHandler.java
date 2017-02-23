@@ -50,14 +50,13 @@ class HtmlTagHandler implements Html.TagHandler {
      * ourselves so before passing the string html into Html.fromHtml(), we can use this method to
      * replace the &lt;ul&gt; and &lt;li&gt; tags with tags of our own.
      *
-     * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
-     *
-     * @param html        String containing HTML, for example: "<b>Hello world!</b>"
+     * @param html String containing HTML, for example: "<b>Hello world!</b>"
      * @return html with replaced <ul> and <li> tags
+     * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
-    String overrideTags(@Nullable String html){
+    String overrideTags(@Nullable String html) {
 
-        if (html == null) return null;
+        if(html == null) return null;
 
         html = html.replace("<ul", "<" + UNORDERED_LIST);
         html = html.replace("</ul>", "</" + UNORDERED_LIST + ">");
@@ -136,19 +135,19 @@ class HtmlTagHandler implements Html.TagHandler {
 
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
-        if (opening) {
+        if(opening) {
             // opening tag
-            if (HtmlTextView.DEBUG) {
+            if(HtmlTextView.DEBUG) {
                 Log.d(HtmlTextView.TAG, "opening, output: " + output.toString());
             }
 
-            if (tag.equalsIgnoreCase(UNORDERED_LIST)) {
+            if(tag.equalsIgnoreCase(UNORDERED_LIST)) {
                 lists.push(tag);
-            } else if (tag.equalsIgnoreCase(ORDERED_LIST)) {
+            } else if(tag.equalsIgnoreCase(ORDERED_LIST)) {
                 lists.push(tag);
                 olNextIndex.push(1);
-            } else if (tag.equalsIgnoreCase(LIST_ITEM)) {
-                if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+            } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
+                if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                     output.append("\n");
                 }
                 if(!lists.isEmpty()) {
@@ -164,15 +163,15 @@ class HtmlTagHandler implements Html.TagHandler {
                     start(output, new Ol());
                     output.append("•");
                 }
-            } else if (tag.equalsIgnoreCase("code")) {
+            } else if(tag.equalsIgnoreCase("code")) {
                 start(output, new Code());
-            } else if (tag.equalsIgnoreCase("center")) {
+            } else if(tag.equalsIgnoreCase("center")) {
                 start(output, new Center());
-            } else if (tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
+            } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
                 start(output, new Strike());
-            } else if (tag.equalsIgnoreCase("table")) {
+            } else if(tag.equalsIgnoreCase("table")) {
                 start(output, new Table());
-                if (tableTagLevel == 0) {
+                if(tableTagLevel == 0) {
                     tableHtmlBuilder = new StringBuilder();
                     // We need some text for the table to be replaced by the span because
                     // the other tags will remove their text when their text is extracted
@@ -180,25 +179,25 @@ class HtmlTagHandler implements Html.TagHandler {
                 }
 
                 tableTagLevel++;
-            } else if (tag.equalsIgnoreCase("tr")) {
+            } else if(tag.equalsIgnoreCase("tr")) {
                 start(output, new Tr());
-            } else if (tag.equalsIgnoreCase("th")) {
+            } else if(tag.equalsIgnoreCase("th")) {
                 start(output, new Th());
-            } else if (tag.equalsIgnoreCase("td")) {
+            } else if(tag.equalsIgnoreCase("td")) {
                 start(output, new Td());
             }
         } else {
             // closing tag
-            if (HtmlTextView.DEBUG) {
+            if(HtmlTextView.DEBUG) {
                 Log.d(HtmlTextView.TAG, "closing, output: " + output.toString());
             }
 
-            if (tag.equalsIgnoreCase(UNORDERED_LIST)) {
+            if(tag.equalsIgnoreCase(UNORDERED_LIST)) {
                 lists.pop();
-            } else if (tag.equalsIgnoreCase(ORDERED_LIST)) {
+            } else if(tag.equalsIgnoreCase(ORDERED_LIST)) {
                 lists.pop();
                 olNextIndex.pop();
-            } else if (tag.equalsIgnoreCase(LIST_ITEM)) {
+            } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
                 if(!lists.isEmpty()) {
                     if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
                         if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
@@ -232,7 +231,7 @@ class HtmlTagHandler implements Html.TagHandler {
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }
-            } else if (tag.equalsIgnoreCase("code")) {
+            } else if(tag.equalsIgnoreCase("code")) {
                 Log.i("TagHandler", "handleTag: Handling code tag");
                 Object obj = getLast(output, Code.class);
                 // start of the tag
@@ -246,25 +245,25 @@ class HtmlTagHandler implements Html.TagHandler {
                 output.setSpan(new HtmlTextView.CodeSpan(), where, where + "Click to view code".length(), 0);
 
 
-            } else if (tag.equalsIgnoreCase("center")) {
+            } else if(tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
-            } else if (tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
+            } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
                 end(output, Strike.class, false, new StrikethroughSpan());
-            } else if (tag.equalsIgnoreCase("table")) {
+            } else if(tag.equalsIgnoreCase("table")) {
                 tableTagLevel--;
 
                 // When we're back at the root-level table
-                if (tableTagLevel == 0) {
+                if(tableTagLevel == 0) {
                     final String tableHtml = tableHtmlBuilder.toString();
 
                     ClickableTableSpan myClickableTableSpan = null;
-                    if (clickableTableSpan != null) {
+                    if(clickableTableSpan != null) {
                         myClickableTableSpan = clickableTableSpan.newInstance();
                         myClickableTableSpan.setTableHtml(tableHtml);
                     }
 
                     DrawTableLinkSpan myDrawTableLinkSpan = null;
-                    if (drawTableLinkSpan != null) {
+                    if(drawTableLinkSpan != null) {
                         myDrawTableLinkSpan = drawTableLinkSpan.newInstance();
                     }
 
@@ -272,11 +271,11 @@ class HtmlTagHandler implements Html.TagHandler {
                 } else {
                     end(output, Table.class, false);
                 }
-            } else if (tag.equalsIgnoreCase("tr")) {
+            } else if(tag.equalsIgnoreCase("tr")) {
                 end(output, Tr.class, false);
-            } else if (tag.equalsIgnoreCase("th")) {
+            } else if(tag.equalsIgnoreCase("th")) {
                 end(output, Th.class, false);
-            } else if (tag.equalsIgnoreCase("td")) {
+            } else if(tag.equalsIgnoreCase("td")) {
                 end(output, Td.class, false);
             }
         }
@@ -289,9 +288,9 @@ class HtmlTagHandler implements Html.TagHandler {
      * the raw HTML for our ClickableTableSpan
      */
     private void storeTableTags(boolean opening, String tag) {
-        if (tableTagLevel > 0 || tag.equalsIgnoreCase("table")) {
+        if(tableTagLevel > 0 || tag.equalsIgnoreCase("table")) {
             tableHtmlBuilder.append("<");
-            if (!opening) {
+            if(!opening) {
                 tableHtmlBuilder.append("/");
             }
             tableHtmlBuilder
@@ -307,7 +306,7 @@ class HtmlTagHandler implements Html.TagHandler {
         int len = output.length();
         output.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
 
-        if (HtmlTextView.DEBUG) {
+        if(HtmlTextView.DEBUG) {
             Log.d(HtmlTextView.TAG, "len: " + len);
         }
     }
@@ -323,25 +322,25 @@ class HtmlTagHandler implements Html.TagHandler {
         int len = output.length();
 
         // If we're in a table, then we need to store the raw HTML for later
-        if (tableTagLevel > 0) {
+        if(tableTagLevel > 0) {
             final CharSequence extractedSpanText = extractSpanText(output, kind);
             tableHtmlBuilder.append(extractedSpanText);
         }
 
         output.removeSpan(obj);
 
-        if (where != len) {
+        if(where != len) {
             int thisLen = len;
             // paragraph styles like AlignmentSpan need to end with a new line!
-            if (paragraphStyle) {
+            if(paragraphStyle) {
                 output.append("\n");
                 thisLen++;
             }
-            for (Object replace : replaces) {
+            for(Object replace : replaces) {
                 output.setSpan(replace, where, thisLen, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
-            if (HtmlTextView.DEBUG) {
+            if(HtmlTextView.DEBUG) {
                 Log.d(HtmlTextView.TAG, "where: " + where);
                 Log.d(HtmlTextView.TAG, "thisLen: " + thisLen);
             }
@@ -368,11 +367,11 @@ class HtmlTagHandler implements Html.TagHandler {
      */
     private static Object getLast(Editable text, Class kind) {
         Object[] objs = text.getSpans(0, text.length(), kind);
-        if (objs.length == 0) {
+        if(objs.length == 0) {
             return null;
         } else {
-            for (int i = objs.length; i > 0; i--) {
-                if (text.getSpanFlags(objs[i - 1]) == Spannable.SPAN_MARK_MARK) {
+            for(int i = objs.length; i > 0; i--) {
+                if(text.getSpanFlags(objs[i - 1]) == Spannable.SPAN_MARK_MARK) {
                     return objs[i - 1];
                 }
             }

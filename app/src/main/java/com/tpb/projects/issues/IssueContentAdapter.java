@@ -1,23 +1,8 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.issues;
 
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -147,10 +132,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
                     toMerge.add(events[j++]);
                 }
-               // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
+                // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
                 i = j - 1;
                 merged.add(new MergedEvent(toMerge));
-             //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
+                //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
                 toMerge = new ArrayList<>();
             } else {
                 merged.add(events[i]);
@@ -251,7 +236,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 requested.setLength(requested.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_review_requested_multiple),
                         String.format(res.getString(R.string.text_href),
-                        me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
+                                me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
                                 me.getEvents().get(0).getReviewRequester().getLogin()),
                         requested.toString());
                 break;
@@ -282,8 +267,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text = String.format(
                         res.getString(R.string.text_event_labels_added),
                         String.format(res.getString(R.string.text_href),
-                            me.getEvents().get(0).getActor().getHtmlUrl(),
-                            me.getEvents().get(0).getActor().getLogin()),
+                                me.getEvents().get(0).getActor().getHtmlUrl(),
+                                me.getEvents().get(0).getActor().getLogin()),
                         labels.toString());
                 break;
             case UNLABELED:
@@ -291,8 +276,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 for(Event e : me.getEvents()) {
                     unlabels.append(
                             String.format(res.getString(R.string.text_label),
-                            String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
-                            e.getLabelName()));
+                                    String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
+                                    e.getLabelName()));
                     unlabels.append(", ");
                 }
                 unlabels.setLength(unlabels.length() - 2);
@@ -300,7 +285,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                         String.format(res.getString(R.string.text_href),
                                 me.getEvents().get(0).getActor().getHtmlUrl(),
                                 me.getEvents().get(0).getActor().getLogin()),
-                         unlabels.toString());
+                        unlabels.toString());
                 break;
             case CLOSED:
                 //Duplicate close events seem to happen
@@ -315,7 +300,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
-            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor() .getAvatarUrl());
+            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
@@ -526,7 +511,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     private void displayInFullScreen(int pos) {
-        mParent.showCardInFullscreen(((Comment)mData.get(pos).first).getBody());
+        mParent.showCardInFullscreen(((Comment) mData.get(pos).first).getBody());
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {
@@ -540,6 +525,14 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mText.setShowUnderLines(false);
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
+            mText.setLinkClickHandler(url -> {
+                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                    mAvatar.callOnClick();
+                } else {
+                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mParent.startActivity(i);
+                }
+            });
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
             mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
@@ -556,6 +549,14 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
             mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
+            mText.setLinkClickHandler(url -> {
+                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
+                    mAvatar.callOnClick();
+                } else {
+                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mParent.startActivity(i);
+                }
+            });
         }
 
     }

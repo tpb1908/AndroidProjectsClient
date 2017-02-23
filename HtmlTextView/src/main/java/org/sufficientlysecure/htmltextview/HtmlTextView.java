@@ -78,6 +78,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private Handler mParseHandler;
 
+    private float[] mLastClickPosition = new float[] { -1, -1};
+
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -90,7 +92,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         super(context);
     }
 
-    public void setLinkHandler(LinkClickHandler handler) {
+    public void setLinkClickHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
     }
 
@@ -231,7 +233,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 public void onClick(View widget) {
 
                     if(mImageClickHandler == null) {
-                       super.onClick(widget); //Opens image link
+                        super.onClick(widget); //Opens image link
                     } else {
                         Log.i(TAG, "onClick: Source is " + span.getSource());
                         if(mDrawables.containsKey(span.getSource())) {
@@ -453,6 +455,16 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         showUnderLines = show;
     }
 
+    public float[] getLastClickPosition() {
+        if(mLastClickPosition[0] == -1) {
+            final int[] pos = new int[2];
+            getLocationOnScreen(pos);
+            mLastClickPosition[0] = pos[0] + getWidth() / 2;
+            mLastClickPosition[1] = pos[1] + getHeight() / 2;
+        }
+        return mLastClickPosition;
+    }
+
     /**
      * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
      */
@@ -469,11 +481,11 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
      */
     @Nullable
     static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
-        if (text == null) {
+        if(text == null) {
             return null;
         }
 
-        while (text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
+        while(text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
             text = (Spanned) text.subSequence(0, text.length() - 1);
         }
         return text;
@@ -481,10 +493,14 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            mLastClickPosition[0] = event.getRawX();
+            mLastClickPosition[1] = event.getRawY();
+        }
         linkHit = false;
         boolean res = super.onTouchEvent(event);
 
-        if (dontConsumeNonUrlClicks) {
+        if(dontConsumeNonUrlClicks) {
             return linkHit;
         }
         return res;

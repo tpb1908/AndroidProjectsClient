@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.issues;
 
 import android.annotation.SuppressLint;
@@ -64,6 +47,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
@@ -71,6 +55,7 @@ import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -84,7 +69,7 @@ import butterknife.OnClick;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends AppCompatActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
+public class IssueActivity extends CircularRevealActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -151,7 +136,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
 
-       // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
+        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
     @Override
@@ -204,7 +189,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         }
         final String html = Data.parseMD(builder.toString(), mIssue.getRepoPath());
         Log.i(TAG, "bindIssue: HTML " + html);
-        mInfo.setHtml(html,  new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
         builder.append(
                 String.format(
@@ -243,7 +228,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     public void issueLoadError(APIHandler.APIError error) {
 
     }
-    
+
     private void displayAssignees() {
         mAssignees.removeAllViews();
         if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
@@ -283,7 +268,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @SuppressLint("SetTextI18n")
     @Override
     public void commentsLoaded(Comment[] comments) {
-        Log.i(TAG, "commentsLoaded: "+ comments.length);
+        Log.i(TAG, "commentsLoaded: " + comments.length);
         mRecycler.enableAnimation();
         mAdapter.loadComments(comments);
         mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -297,12 +282,14 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+        UI.setViewPositionForIntent(i, findViewById(R.id.issue_comment_fab));
         startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
     }
 
-    private void editComment(Comment comment) {
+    private void editComment(View view, Comment comment) {
         final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_comment), comment);
+        UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
     }
 
@@ -340,7 +327,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
                 case 1:
-                    editComment(comment);
+                    editComment(view, comment);
                     break;
                 case 2:
                     deleteComment(comment);
@@ -379,7 +366,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
                     toggleIssueState();
                     break;
                 case 2:
-                    editIssue();
+                    editIssue(view);
                     break;
             }
             return false;
@@ -395,19 +382,25 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
         }
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this,
-                    imageView,
-                    getString(R.string.transition_user_image)
+                this,
+                imageView,
+                getString(R.string.transition_user_image)
                 ).toBundle()
         );
 
     }
 
 
-    private void editIssue() {
-        final Intent i = new Intent(IssueActivity.this,  IssueEditor.class);
+    @OnClick(R.id.issue_header_card)
+    void onHeaderClick(View view) {
+        if(mIssue != null) editIssue(view);
+    }
+
+    private void editIssue(View view) {
+        final Intent i = new Intent(IssueActivity.this, IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
+        UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
 
@@ -550,6 +543,7 @@ public class IssueActivity extends AppCompatActivity implements Loader.IssueLoad
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+
                 startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
                 if(mIssue.isClosed()) {
                     mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());

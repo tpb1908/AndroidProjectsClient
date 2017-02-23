@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.user;
 
 import android.app.Dialog;
@@ -30,7 +13,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -57,6 +39,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
@@ -66,17 +49,9 @@ import com.tpb.projects.util.UI;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by theo on 14/12/16.
- * Possible markdown textviews
- * <p>
- * https://github.com/fiskurgit/MarkdownView
- * https://github.com/mukeshsolanki/MarkdownView-Android
- * https://github.com/mittsuu/MarkedView-for-Android
- * https://github.com/falnatsheh/MarkdownView best demo
- */
 
-public class UserActivity extends AppCompatActivity implements UserReposAdapter.RepositoriesManager {
+
+public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepositoriesManager {
     private static final String TAG = UserActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 
@@ -125,7 +100,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     if(scrollY - oldScrollY > 10) {
-                       fab.hide();
+                        fab.hide();
                     } else if(scrollY - oldScrollY < -10) {
                         fab.show();
                     }
@@ -145,6 +120,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
                 loader.loadUser(new Loader.UserLoader() {
                     int errorCount = 0;
+
                     @Override
                     public void userLoaded(User user) {
                         mUserName.setText(user.getLogin());
@@ -155,7 +131,7 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
                     public void userLoadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        } else if(errorCount < 5){
+                        } else if(errorCount < 5) {
                             errorCount++;
                             loader.loadUser(this, user);
                         } else {
@@ -235,8 +211,9 @@ public class UserActivity extends AppCompatActivity implements UserReposAdapter.
         container.addView(input);
         builder.setView(container);
 
-        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
-        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) ->{
+        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {
+        });
+        builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(input.getText().toString().contains("/")) {
                 new Loader(UserActivity.this).loadRepository(new Loader.RepositoryLoader() {
                     @Override

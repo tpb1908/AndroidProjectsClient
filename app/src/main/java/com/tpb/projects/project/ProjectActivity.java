@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.project;
 
 import android.app.Dialog;
@@ -70,6 +53,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -189,6 +173,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         //We have to load all of the projects to get the id that we want
         mLoader.loadProjects(new Loader.ProjectsLoader() {
             int projectLoadAttempts = 0;
+
             @Override
             public void projectsLoaded(Project[] projects) {
                 for(Project p : projects) {
@@ -220,9 +205,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
         }, repo);
     }
+
     private void checkAccess(Project project) {
         mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
             int accessCheckAttempts = 0;
+
             @Override
             public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                 Log.i(TAG, "accessCheckComplete: " + accessLevel);
@@ -360,6 +347,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.ColumnAdditionListener() {
                     int addColumnAttempts = 0;
+
                     @Override
                     public void columnAdded(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
@@ -378,11 +366,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-        
+
                         } else {
                             if(addColumnAttempts < 5) {
                                 addColumnAttempts++;
-                               mEditor.addColumn(this, mProject.getId(), text);
+                                mEditor.addColumn(this, mProject.getId(), text);
                             } else {
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);
@@ -411,10 +399,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_issue)
     void addIssue() {
-        mMenu.close(true);
-
         final Intent intent = new Intent(ProjectActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
+        UI.setViewPositionForIntent(intent, mAddIssue);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
@@ -427,6 +414,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     mRefresher.setRefreshing(true);
                     mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
                         int deleteColumnAttempts = 0;
+
                         @Override
                         public void columnDeleted() {
                             mAdapter.remove(mCurrentPosition);
@@ -446,7 +434,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-            
+
                             } else {
                                 if(deleteColumnAttempts < 5) {
                                     deleteColumnAttempts++;
@@ -498,7 +486,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     @OnClick(R.id.project_add_card)
     void addCard() {
-        mMenu.close(true);
         final Intent intent = new Intent(this, CardEditor.class);
 
         final ArrayList<Integer> ids = new ArrayList<>();
@@ -507,6 +494,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 if(c.hasIssue()) ids.add(c.getIssue().getId());
             }
         }
+        UI.setViewPositionForIntent(intent, mAddCard);
         intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
         intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
         startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
@@ -669,7 +657,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        mMenu.close(true);
         if(resultCode == AppCompatActivity.RESULT_OK) {
+            mRefresher.setRefreshing(true);
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
                 String[] labels = null;
@@ -687,6 +677,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
@@ -694,6 +685,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
+                        mRefresher.setRefreshing(false);
                     }
                 }, mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
 
@@ -713,11 +705,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     @Override
                     public void commentCreated(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
                     public void commentCreationError(APIHandler.APIError error) {
-
+                        mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
             }
@@ -745,7 +738,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 int first = -1;
                 int last = -1;
                 for(int i = 0; i < rv.getAdapter().getItemCount(); i++) {
-                    if(rv.getChildAt(i).getLocalVisibleRect(r) ) {
+                    if(rv.getChildAt(i).getLocalVisibleRect(r)) {
                         if(first == -1) {
                             first = i;
                         } else if(i == rv.getAdapter().getItemCount() - 1) {

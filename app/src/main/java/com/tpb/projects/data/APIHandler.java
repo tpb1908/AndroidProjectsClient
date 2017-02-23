@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.data;
 
 import android.content.Context;
@@ -111,7 +94,7 @@ public abstract class APIHandler {
     private static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
     private static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
     private static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
-    
+
     private static final int HTTP_NOT_FOUND_404 = 404;
 
     private static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
@@ -145,7 +128,7 @@ public abstract class APIHandler {
 
     //1500 vpn https://github.com/GleSYS/API/wiki/API-Error-codes#15xx---vpn
 
-    public static final  int GIT_LOGIN_FAILED_1601 = 1601; //Login failed
+    public static final int GIT_LOGIN_FAILED_1601 = 1601; //Login failed
 
     public static final int GIT_LOGIN_FAILED_1602 = 1602; //Login failed unknown
 
@@ -164,22 +147,30 @@ public abstract class APIHandler {
     static APIError parseError(ANError error) {
         if(CONNECTION_ERROR.equals(error.getErrorDetail())) return APIError.NO_CONNECTION;
         switch(error.getErrorCode()) {
-            case HTTP_BAD_REQUEST_400: return APIError.BAD_REQUEST;
+            case HTTP_BAD_REQUEST_400:
+                return APIError.BAD_REQUEST;
             case HTTP_UNAUTHORIZED_401:
                 if(error.getErrorBody() != null) {
-                    if(error.getErrorBody().contains(MESSAGE_BAD_CREDENTIALS)) return APIError.BAD_CREDENTIALS;
-                    if(error.getErrorBody().contains(MESSAGE_MAX_LOGIN_ATTEMPTS)) return APIError.MAX_LOGIN_ATTEMPTS;
+                    if(error.getErrorBody().contains(MESSAGE_BAD_CREDENTIALS))
+                        return APIError.BAD_CREDENTIALS;
+                    if(error.getErrorBody().contains(MESSAGE_MAX_LOGIN_ATTEMPTS))
+                        return APIError.MAX_LOGIN_ATTEMPTS;
                 }
                 return APIError.UNAUTHORIZED;
             case HTTP_FORBIDDEN_403:
                 if(error.getErrorBody() != null) {
-                    if(error.getErrorBody().contains(MESSAGE_RATE_LIMIT_START)) return APIError.RATE_LIMIT;
-                    if(error.getErrorBody().contains(MESSAGE_ABUSE_LIMIT)) return APIError.ABUSE_LIMIT;
+                    if(error.getErrorBody().contains(MESSAGE_RATE_LIMIT_START))
+                        return APIError.RATE_LIMIT;
+                    if(error.getErrorBody().contains(MESSAGE_ABUSE_LIMIT))
+                        return APIError.ABUSE_LIMIT;
                 }
                 return APIError.FORBIDDEN;
-            case HTTP_NOT_ALLOWED_405: return APIError.NOT_ALLOWED;
-            case HTTP_NOT_FOUND_404: return APIError.NOT_FOUND;
-            case HTTP_UNPROCESSABLE_422: return APIError.UNPROCESSABLE;
+            case HTTP_NOT_ALLOWED_405:
+                return APIError.NOT_ALLOWED;
+            case HTTP_NOT_FOUND_404:
+                return APIError.NOT_FOUND;
+            case HTTP_UNPROCESSABLE_422:
+                return APIError.UNPROCESSABLE;
         }
 
         return APIError.UNKNOWN;

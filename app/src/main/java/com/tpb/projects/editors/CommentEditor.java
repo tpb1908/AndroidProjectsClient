@@ -23,6 +23,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
 
@@ -45,6 +46,7 @@ public class CommentEditor extends ImageLoadingActivity {
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
+    private KeyBoardVisibilityChecker mKeyBoardChecker;
 
     private boolean mHasBeenEdited;
 
@@ -103,6 +105,8 @@ public class CommentEditor extends ImageLoadingActivity {
                 return mEditor.getText().toString();
             }
         });
+
+        mKeyBoardChecker = new KeyBoardVisibilityChecker(findViewById(android.R.id.content));
 
     }
 
@@ -175,9 +179,13 @@ public class CommentEditor extends ImageLoadingActivity {
             deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
             deleteDialog.show();
         } else {
-            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-            mDoneButton.postDelayed(super::finish, 150);
+            if(mKeyBoardChecker.isKeyboardOpen()) {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            } else {
+                super.finish();
+            }
         }
     }
 

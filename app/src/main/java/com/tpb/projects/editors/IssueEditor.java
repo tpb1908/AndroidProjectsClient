@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,6 +34,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -64,6 +64,7 @@ public class IssueEditor extends ImageLoadingActivity {
     @BindView(R.id.issue_assignees_text) HtmlTextView mAssigneesText;
     @BindView(R.id.issue_information_layout) View mInfoLayout;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
+    private KeyBoardVisibilityChecker mKeyBoardChecker;
 
     private final ArrayList<String> mAssignees = new ArrayList<>();
     private final ArrayList<String> mSelectedLabels = new ArrayList<>();
@@ -106,7 +107,7 @@ public class IssueEditor extends ImageLoadingActivity {
             if(mLaunchIssue.getLabels() != null && mLaunchIssue.getLabels().length > 0) {
                 final ArrayList<String> labels = new ArrayList<>();
                 final ArrayList<Integer> colours = new ArrayList<>();
-                for(Label l : mLaunchIssue.getLabels())  {
+                for(Label l : mLaunchIssue.getLabels()) {
                     labels.add(l.getName());
                     colours.add(l.getColor());
                 }
@@ -149,24 +150,15 @@ public class IssueEditor extends ImageLoadingActivity {
 
         final View content = findViewById(android.R.id.content);
 
-        content.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            final Rect r = new Rect();
-            content.getWindowVisibleDisplayFrame(r);
-            final int screenHeight = content.getRootView().getHeight();
-
-            // r.bottom is the position above soft keypad or device button.
-            // if keypad is shown, the r.bottom is smaller than that before.
-            final int keypadHeight = screenHeight - r.bottom;
-
-            Log.d(TAG, "keypadHeight = " + keypadHeight);
-
-            if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+        mKeyBoardChecker = new KeyBoardVisibilityChecker(content, new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
+            @Override
+            public void keyboardShown() {
                 mInfoLayout.setVisibility(View.GONE);
-                // keyboard is opened
             }
-            else {
+
+            @Override
+            public void keyboardHidden() {
                 mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
-                // keyboard is closed
             }
         });
 
@@ -233,12 +225,14 @@ public class IssueEditor extends ImageLoadingActivity {
 
                     }
                 });
+                if(isClosing()) return; //Activity has been closed
                 pd.dismiss();
                 mcd.show(getSupportFragmentManager(), TAG);
             }
 
             @Override
             public void collaboratorsLoadError(APIHandler.APIError error) {
+                if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
             }
@@ -293,6 +287,7 @@ public class IssueEditor extends ImageLoadingActivity {
 
                     }
                 });
+                if(isClosing()) return;
                 pd.dismiss();
                 mcd.show(getSupportFragmentManager(), TAG);
             }
@@ -374,8 +369,10 @@ public class IssueEditor extends ImageLoadingActivity {
         mLaunchIssue.setBody(mBodyEdit.getText().toString());
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
-        if(mSelectedLabels.size() > 0) done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
-        if(mAssignees.size() > 0) done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+        if(mSelectedLabels.size() > 0)
+            done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+        if(mAssignees.size() > 0)
+            done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
 
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;
@@ -407,9 +404,13 @@ public class IssueEditor extends ImageLoadingActivity {
             deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
             deleteDialog.show();
         } else {
-            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-            mDoneButton.postDelayed(super::finish, 150);
+            if(mKeyBoardChecker.isKeyboardOpen()) {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                mDoneButton.postDelayed(super::finish, 150);
+            } else {
+                super.finish();
+            }
         }
     }
 }

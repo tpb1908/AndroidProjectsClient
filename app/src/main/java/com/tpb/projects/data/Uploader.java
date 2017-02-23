@@ -36,7 +36,7 @@ public class Uploader {
                     public void onResponse(JSONObject response) {
                         Log.i("Upload", "onResponse: " + response.toString());
                         try {
-                            final String link= response.getJSONObject("data").getString("link");
+                            final String link = response.getJSONObject("data").getString("link");
                             if(listener != null) listener.imageUploaded(link);
                         } catch(Exception e) {
                             Log.e("Uploader", "onResponse: ", e);

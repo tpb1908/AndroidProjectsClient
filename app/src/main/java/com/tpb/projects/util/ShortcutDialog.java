@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.util;
 
 import android.app.AlertDialog;
@@ -49,18 +32,20 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
         name.setText(getArguments().getString(getString(R.string.intent_name)));
 
         final boolean showCheckbox = getArguments().getBoolean(getString(R.string.intent_drawable));
-        if(showCheckbox) view.findViewById(R.id.shortcut_use_user_image).setVisibility(View.VISIBLE);
+        if(showCheckbox)
+            view.findViewById(R.id.shortcut_use_user_image).setVisibility(View.VISIBLE);
 
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(mListener != null && !name.getText().toString().isEmpty()) {
                 if(showCheckbox) {
-                    mListener.onPositive(name.getText().toString(), ((CheckBox)view.findViewById(R.id.shortcut_use_user_image)).isChecked());
+                    mListener.onPositive(name.getText().toString(), ((CheckBox) view.findViewById(R.id.shortcut_use_user_image)).isChecked());
                 } else {
                     mListener.onPositive(name.getText().toString(), false);
                 }
             }
         });
-        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {});
+        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {
+        });
 
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {

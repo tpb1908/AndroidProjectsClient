@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.editors;
 
 import android.app.Dialog;
@@ -43,7 +26,7 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         final ProgressBar pb = new ProgressBar(getContext());
 
         final AlertDialog ad = new AlertDialog.Builder(getActivity()).setView(pb).create();
-        if(getArguments() != null &&  getArguments().containsKey(getString(R.string.intent_markdown))) {
+        if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_markdown))) {
             final String markdown = getArguments().getString(getString(R.string.intent_markdown));
 
             final Loader.MarkDownRenderLoader loader = new Loader.MarkDownRenderLoader() {
@@ -67,7 +50,6 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
             } else {
                 new Loader(getContext()).renderMarkDown(loader, markdown);
             }
-
 
 
         }

@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.issues;
 
 import android.animation.ArgbEvaluator;
@@ -61,6 +44,9 @@ import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -116,11 +102,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         mEditor = new Editor(this);
 
         mAdapter = new IssuesAdapter(this);
-        
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecycler.setLayoutManager(layoutManager);
         mRecycler.setAdapter(mAdapter);
-        
+
         mRefresher.setOnRefreshListener(this::refresh);
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.intent_repo))) {
@@ -350,11 +336,16 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
         }, mRepoPath);
     }
-    
-    void openIssue(Issue issue) {
+
+    void openIssue(View view, Issue issue) {
         final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivity(i);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(this, i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
         overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
@@ -371,7 +362,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     toggleIssueState(issue);
                     break;
                 case 2:
-                    editIssue(issue);
+                    editIssue(view, issue);
                     break;
             }
             return false;
@@ -379,10 +370,15 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         menu.show();
     }
 
-    private void editIssue(Issue issue) {
+    private void editIssue(View view, Issue issue) {
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(this, intent, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(intent, view);
+        }
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
 
     }
@@ -438,7 +434,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         });
         builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
-        
+
         final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
         i.putExtra(getString(R.string.parcel_issue), issue);
         startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
@@ -616,7 +612,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 dialog.show(getSupportFragmentManager(), TAG);
                 break;
             case R.id.menu_action_search:
-                if(mAdapter.getItemCount()> 0) {
+                if(mAdapter.getItemCount() > 0) {
                     final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
                     searchSrc.setThreshold(1);
                     final IssuesSearchAdapter searchAdapter = new IssuesSearchAdapter(this, mAdapter.getIssues());

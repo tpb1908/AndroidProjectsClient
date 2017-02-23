@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.util;
 
 import android.util.Log;
@@ -24,23 +7,21 @@ import java.util.Arrays;
 
 /**
  * Created by theo on 03/02/17.
- *
+ * <p>
  * Possible algorithms
  * https://en.wikipedia.org/wiki/Bitap_algorithm
  * Uses Levenshtein distance on substrings
  * First computes a set of bitmasks containing one bit for each element of the pattern
- *
+ * <p>
  * Rabin-Karp algorithm
  * https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
  * Uses hashing to find any one of a set of pattern strings in a atext
- *
+ * <p>
  * Knuth-Morris-Pratt algorithm
  * https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
- *
+ * <p>
  * Boyer-Moore string search
  * https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm
- *
- *
  */
 
 /*
@@ -128,7 +109,7 @@ public class FuzzyStringSearcher {
             R[0] |= queryMask[s.charAt(i)];
             R[0] <<= 1;
 
-            for (d = 1; d <= k; ++d) {
+            for(d = 1; d <= k; ++d) {
                 int tmp = R[d];
 
                 R[d] = (oldRd1 & (R[d] | queryMask[s.charAt(i)])) << 1;

@@ -128,11 +128,11 @@ public class MarkdownButtonAdapter {
             if(mListener != null) {
                 mListener.snippetEntered(
                         String.format(
-                            mParent.getString(R.string.text_md_link),
-                            text.getText().toString(),
-                            url.getText().toString()
+                                mParent.getString(R.string.text_md_link),
+                                text.getText().toString(),
+                                url.getText().toString()
                         ),
-                -1);
+                        -1);
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);

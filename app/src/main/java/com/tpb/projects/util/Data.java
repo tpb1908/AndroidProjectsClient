@@ -1,20 +1,3 @@
-/*
- * Copyright  2016 Theo Pearson-Bray
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package com.tpb.projects.util;
 
 import android.util.Base64;
@@ -92,13 +75,23 @@ public class Data {
             builder.append(i).append(",");
         }
         return builder.toString();
+    }
 
+    public static String stringArrayForPrefs(List<String> values) {
+        final StringBuilder builder = new StringBuilder();
+        for(String s : values) {
+            builder.append(s).append(",");
+        }
+        return builder.toString();
+    }
 
+    public static String[] stringArrayFromPrefs(String value) {
+        return value.split(",");
     }
 
     public static int[] intArrayFromPrefs(String value) {
         final String[] values = value.split(",");
-        final int[] ints = new int[values.length ];
+        final int[] ints = new int[values.length];
         if(value.length() == 0) return ints;
         for(int i = 0; i < values.length; i++) ints[i] = Integer.parseInt(values[i]);
         return ints;
@@ -118,6 +111,13 @@ public class Data {
         if(kb < 1024) return Integer.toString(kb) + " KB";
         if(kb < 1024 * 1024) return String.format("%.2f", kb / 1024f) + " MB";
         return String.format("%.2f", kb / (1024f * 1024f)) + " GB";
+    }
+
+    public static String formatBytes(int b) {
+        if(b < 1024) return Integer.toString(b) + " B";
+        if(b < 1024 * 1024) return String.format("%.2f", b / 1024f) + " KB";
+        if(b < 1024 * 1024 * 1024) return String.format("%.2f", b / (1024f * 1024f)) + " MB";
+        return String.format("%.2f", b / (1024f * 1024f * 1024f)) + " GB";
     }
 
     public static String base64Decode(String base64) {
@@ -167,7 +167,7 @@ public class Data {
             if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
                 builder.append("\n");
             }
-            if(cs[i] == '@' && (p == ' '  || p == '\n')) {
+            if(cs[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
@@ -177,9 +177,9 @@ public class Data {
                 builder.setLength(builder.length() - 2);
                 builder.append("──────────\n");
 
-            } else if(cs[i] == '#'  && (p == ' '  || p == '\n') && fullRepoPath != null) {
+            } else if(cs[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
-            } else if (pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
+            } else if(pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
                 if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
@@ -193,7 +193,7 @@ public class Data {
                     builder.setLength(builder.length() - 2);
                 }
                 builder.append("\u2610");
-            } else if (pp == '[' && p == ' ' && cs[i] == ']') {
+            } else if(pp == '[' && p == ' ' && cs[i] == ']') {
                 if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {

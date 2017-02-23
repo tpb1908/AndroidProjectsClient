@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -119,7 +118,6 @@ class ContributionsLoader {
         void onError(VolleyError error);
 
     }
-
 
 
 }
