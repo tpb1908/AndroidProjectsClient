@@ -7,13 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.pddstudio.highlightjs.HighlightJsView;
 import com.pddstudio.highlightjs.models.Theme;
 import com.tpb.projects.R;
+import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
 
@@ -30,8 +29,6 @@ public class FileActivity extends AppCompatActivity {
     @BindView(R.id.file_name) TextView mName;
     @BindView(R.id.file_webview) HighlightJsView mWebView;
 
-    private Node mNode;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,26 +40,26 @@ public class FileActivity extends AppCompatActivity {
         if(prefs.isDarkThemeEnabled()) {
             mWebView.setTheme(Theme.ANDROID_STUDIO);
         }
+        final StringRequestListener fileLoadListener = new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                mWebView.setSource(response);
+            }
 
-        mNode = ContentActivity.mLaunchNode;
-        mName.setText(mNode.getName());
-        Log.i(TAG, "onCreate: Download URL " + mNode.getDownloadUrl());
-        Log.i(TAG, "onCreate: Encoding " + mNode.getEncoding());
-        AndroidNetworking.get(mNode.getDownloadUrl())
-                .setPriority(Priority.IMMEDIATE)
-                .build()
-                .getAsString(new StringRequestListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "onResponse: " + response);
-                        mWebView.setSource(response);
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.toString());
-                    }
-                });
+            @Override
+            public void onError(ANError anError) {
+                Log.i(TAG, "onError: " + anError.toString());
+            }
+        };
+        if(getIntent().hasExtra(getString(R.string.intent_blob_path))) {
+            final String repo = getIntent().getStringExtra(getString(R.string.intent_repo));
+            final String blob = getIntent().getStringExtra(getString(R.string.intent_blob_path));
+            new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
+        } else {
+            final Node node = ContentActivity.mLaunchNode;
+            mName.setText(node.getName());
+            new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
+        }
     }
 
     public void onToolbarBackPressed(View view) {

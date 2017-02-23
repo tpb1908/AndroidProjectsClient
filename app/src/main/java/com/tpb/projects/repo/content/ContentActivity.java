@@ -72,10 +72,6 @@ public class ContentActivity extends AppCompatActivity {
         mRibbon.addView(view);
     }
 
-    void flashRecycler() {
-
-    }
-
     void addRibbonItem(final Node node) {
         final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText(node.getName());
@@ -100,10 +96,6 @@ public class ContentActivity extends AppCompatActivity {
 
         mRibbon.addView(view);
         mRibbon.postDelayed(() -> mRibbonScrollView.fullScroll(View.FOCUS_RIGHT), 17);
-
-    }
-
-    private void removeRibbonItems(Node node) {
 
     }
 

@@ -252,6 +252,7 @@
     <string name="intent_issue_labels" translatable="false">issue_labels</string>
     <string name="intent_position_x" translatable="false">pos_x</string>
     <string name="intent_position_y" translatable="false">pos_y</string>
+    <string name="intent_blob_path" translatable="false">blob_path</string>
     <string name="parcel_project" translatable="false">project</string>
     <string name="parcel_column" translatable="false">column</string>
     <string name="parcel_card" translatable="false">card</string>

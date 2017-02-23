@@ -15,6 +15,7 @@ import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
+import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.UserActivity;
 
 import java.util.ArrayList;
@@ -106,20 +107,30 @@ public class Interceptor extends Activity {
                         final Intent content = new Intent(Interceptor.this, ContentActivity.class);
                         content.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         final StringBuilder path = new StringBuilder();
-                        for(int i = 3; i < segments.size(); i++){
+                        for(int i = 3; i < segments.size(); i++) {
                             path.append(segments.get(i));
                             path.append('/');
                         }
-                        Log.i(TAG, "onCreate: Path is " + path);
                         content.putExtra(getString(R.string.intent_path), path.toString());
                         startActivity(content);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("blob".equals(segments.get(2))) {
-                        String path = "";
-                        for(int i = 3; i < segments.size(); i++) path += segments.get(i) + "/";
-                        Log.i(TAG, "onCreate: Blob path is " + path);
-                        fail();
+                        final Intent file = new Intent(Interceptor.this, FileActivity.class);
+                        final StringBuilder path = new StringBuilder();
+                        path.append(segments.get(0));
+                        path.append('/');
+                        path.append(segments.get(1));
+                        file.putExtra(getString(R.string.intent_repo), path.toString());
+                        path.setLength(0);
+                        for(int i = 3; i < segments.size(); i++) {
+                            path.append('/');
+                            path.append(segments.get(i));
+                        }
+                        file.putExtra(getString(R.string.intent_blob_path), path.toString());
+                        startActivity(file);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                        finish();
                     } else {
                         fail();
                     }
