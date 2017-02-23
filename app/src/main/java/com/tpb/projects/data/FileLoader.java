@@ -70,6 +70,7 @@ public class FileLoader extends APIHandler {
 
     public void loadRawFile(StringRequestListener listener, String path) {
         AndroidNetworking.get(path)
+                .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
                 .getAsString(new StringRequestListener() {

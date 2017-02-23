@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.androidnetworking.error.ANError;
@@ -28,6 +29,7 @@ public class FileActivity extends AppCompatActivity {
 
     @BindView(R.id.file_name) TextView mName;
     @BindView(R.id.file_webview) HighlightJsView mWebView;
+    @BindView(R.id.file_loading_spinner) ProgressBar mSpinner;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +42,10 @@ public class FileActivity extends AppCompatActivity {
         if(prefs.isDarkThemeEnabled()) {
             mWebView.setTheme(Theme.ANDROID_STUDIO);
         }
+        mWebView.setOnContentChangedListener(() -> {
+            mSpinner.setVisibility(View.GONE);
+            mWebView.setVisibility(View.VISIBLE);
+        });
         final StringRequestListener fileLoadListener = new StringRequestListener() {
             @Override
             public void onResponse(String response) {
@@ -49,16 +55,23 @@ public class FileActivity extends AppCompatActivity {
             @Override
             public void onError(ANError anError) {
                 Log.i(TAG, "onError: " + anError.toString());
+                mSpinner.setVisibility(View.GONE);
             }
         };
         if(getIntent().hasExtra(getString(R.string.intent_blob_path))) {
             final String repo = getIntent().getStringExtra(getString(R.string.intent_repo));
             final String blob = getIntent().getStringExtra(getString(R.string.intent_blob_path));
+            final int nameStart = blob.lastIndexOf('/') + 1;
+            if(nameStart < blob.length()) {
+                mName.setText(blob.substring(nameStart));
+            }
             new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
-        } else {
+        } else if(ContentActivity.mLaunchNode != null) {
             final Node node = ContentActivity.mLaunchNode;
             mName.setText(node.getName());
             new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
+        } else {
+            finish();
         }
     }
 
