@@ -61,11 +61,17 @@ public class FileActivity extends AppCompatActivity {
         if(getIntent().hasExtra(getString(R.string.intent_blob_path))) {
             final String repo = getIntent().getStringExtra(getString(R.string.intent_repo));
             final String blob = getIntent().getStringExtra(getString(R.string.intent_blob_path));
+            final int nameStart = blob.lastIndexOf('/') + 1;
+            if(nameStart < blob.length()) {
+                mName.setText(blob.substring(nameStart));
+            }
             new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
-        } else {
+        } else if(ContentActivity.mLaunchNode != null) {
             final Node node = ContentActivity.mLaunchNode;
             mName.setText(node.getName());
             new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
+        } else {
+            finish();
         }
     }
 
