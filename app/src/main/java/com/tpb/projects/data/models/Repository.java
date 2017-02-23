@@ -218,6 +218,11 @@ public class Repository extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Repository && fullName.equals(((Repository) obj).fullName) && updatedAt == ((Repository) obj).updatedAt;
+    }
+
+    @Override
     public String toString() {
         return "Repository{" +
                 "id=" + id +

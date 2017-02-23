@@ -102,6 +102,7 @@ public class CardEditor extends ImageLoadingActivity {
 
                     @Override
                     public void issuesLoaded(Issue[] loadedIssues) {
+                        if(isClosing()) return;;
                         pd.dismiss();
                         final ArrayList<Issue> validIssues = new ArrayList<>();
                         for(Issue i : loadedIssues) {
@@ -138,6 +139,7 @@ public class CardEditor extends ImageLoadingActivity {
 
                     @Override
                     public void issuesLoadError(APIHandler.APIError error) {
+                        if(isClosing()) return;
                         pd.dismiss();
                         Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();
                     }

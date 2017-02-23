@@ -75,8 +75,18 @@ public class Data {
             builder.append(i).append(",");
         }
         return builder.toString();
+    }
 
+    public static String stringArrayForPrefs(List<String> values) {
+        final StringBuilder builder = new StringBuilder();
+        for(String s : values) {
+            builder.append(s).append(",");
+        }
+        return builder.toString();
+    }
 
+    public static String[] stringArrayFromPrefs(String value) {
+        return value.split(",");
     }
 
     public static int[] intArrayFromPrefs(String value) {

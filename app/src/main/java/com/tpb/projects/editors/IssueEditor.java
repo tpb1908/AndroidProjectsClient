@@ -225,12 +225,14 @@ public class IssueEditor extends ImageLoadingActivity {
 
                     }
                 });
+                if(isClosing()) return; //Activity has been closed
                 pd.dismiss();
                 mcd.show(getSupportFragmentManager(), TAG);
             }
 
             @Override
             public void collaboratorsLoadError(APIHandler.APIError error) {
+                if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
             }
@@ -285,6 +287,7 @@ public class IssueEditor extends ImageLoadingActivity {
 
                     }
                 });
+                if(isClosing()) return;
                 pd.dismiss();
                 mcd.show(getSupportFragmentManager(), TAG);
             }

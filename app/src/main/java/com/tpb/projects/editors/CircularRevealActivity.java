@@ -23,6 +23,7 @@ public class CircularRevealActivity extends AppCompatActivity {
 
     private int x = -1;
     private int y = -1;
+    private boolean mIsClosing = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +96,12 @@ public class CircularRevealActivity extends AppCompatActivity {
             }
         });
         // make the view visible and start the animation
+        mIsClosing = true;
         circularClose.start();
+    }
+
+    boolean isClosing() {
+        return mIsClosing;
     }
 
     @Override

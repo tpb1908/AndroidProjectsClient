@@ -27,7 +27,7 @@ import com.tpb.projects.util.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +45,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private ArrayList<Repository> mRepos = new ArrayList<>();
     private String mAuthenticatedUser;
     private String mUser;
-    private final RepoPinSorter mSorter;
+    private final RepoPinChecker mPinChecker;
     private final RepositoriesManager mManager;
 
     private int mPage = 1;
@@ -65,7 +65,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             notifyDataSetChanged();
             loadReposForUser(true);
         });
-        mSorter = new RepoPinSorter(context);
+        mPinChecker = new RepoPinChecker(context);
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
@@ -93,7 +93,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         } else {
             mLoader.loadRepositories(this, mUser, mPage);
         }
-        mSorter.setKey(mAuthenticatedUser);
+        mPinChecker.setKey(mUser);
 
     }
 
@@ -117,7 +117,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             builder.append(r.getLanguage(), new ForegroundColorSpan(Color.WHITE), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         holder.mDescription.setText(builder);
-        final boolean isPinned = mSorter.isPinned(r.getId());
+        final boolean isPinned = mPinChecker.isPinned(r.getFullName());
         holder.isPinned = isPinned;
         holder.mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
         holder.mForks.setText(Integer.toString(r.getForks()));
@@ -126,17 +126,18 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     private void togglePin(int pos) {
         final Repository r = mRepos.get(pos);
-        if(mSorter.isPinned(r.getId())) {
+        if(mPinChecker.isPinned(r.getFullName())) {
             mRepos.remove(pos);
-            final int newPos = mSorter.initialPosition(r.getId());
+            final int newPos = mPinChecker.initialPosition(r.getFullName());
             mRepos.add(newPos, r);
-            mSorter.unpin(r.getId());
+            mPinChecker.unpin(r.getFullName());
             notifyItemMoved(pos, newPos);
         } else {
             mRepos.remove(pos);
             mRepos.add(0, r);
-            mSorter.pin(r.getId());
+            mPinChecker.pin(r.getFullName());
             notifyItemMoved(pos, 0);
+
         }
     }
 
@@ -147,7 +148,6 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     @Override
     public void repositoriesLoaded(Repository[] repos) {
-        Log.i(TAG, "repositoriesLoaded: " + repos.length);
 
         mRefresher.setRefreshing(false);
         mIsLoading = false;
@@ -155,13 +155,25 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             int oldLength = mRepos.size();
 
             if(mPage == 1) {
-                mRecycler.enableAnimation();
-                mRepos = new ArrayList<>(Arrays.asList(repos));
+               // mRecycler.enableAnimation();
+                Log.i(TAG, "repositoriesLoaded: Setting repositories");
+                mRepos.clear();
+                for(Repository r : repos) {
+                    if(mPinChecker.isPinned(r.getFullName())) {
+                        mRepos.add(0, r);
+                    } else {
+                        mRepos.add(r);
+                    }
+                }
+                mPinChecker.setInitialPositions(mRepos.toArray(new Repository[0]));
+                ensureLoadOfPinnedRepos();
             } else {
-                mRepos.addAll(Arrays.asList(repos));
+                Log.i(TAG, "repositoriesLoaded: Adding repositories");
+                for(Repository repo : repos) {
+                    if(!mRepos.contains(repo)) mRepos.add(repo);
+                }
+                mPinChecker.appendInitialPositions(repos);
             }
-            mSorter.sort(mRepos);
-
             if(mPage == 1) {
                 notifyDataSetChanged();
             } else {
@@ -169,6 +181,29 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
             }
         } else {
             mMaxPageReached = true;
+        }
+    }
+
+    private void ensureLoadOfPinnedRepos() {
+        Log.i(TAG, "ensureLoadOfPinnedRepos: Ensuring that repos are loaded ");
+        for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
+            Log.i(TAG, "ensureLoadOfPinnedRepos: Loading " + repo);
+            mLoader.loadRepository(new Loader.RepositoryLoader() {
+                @Override
+                public void repoLoaded(Repository repo) {
+                    if(!mRepos.contains(repo)) {
+                        mRepos.add(0, repo);
+                        mRecycler.disableAnimation();
+                        mPinChecker.appendPinnedPosition(repo.getFullName());
+                        notifyItemInserted(0);
+                    }
+                }
+
+                @Override
+                public void repoLoadError(APIHandler.APIError error) {
+
+                }
+            }, repo);
         }
     }
 
@@ -202,56 +237,65 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     }
 
-    private class RepoPinSorter {
+    private class RepoPinChecker {
 
         private final SharedPreferences prefs;
         private static final String PREFS_KEY = "PINS";
         private String KEY;
-        private final ArrayList<Integer> pins = new ArrayList<>();
-        private int[] standardPositions;
+        private final ArrayList<String> pins = new ArrayList<>();
+        private ArrayList<String> mInitialPositions = new ArrayList<>();
 
-        RepoPinSorter(Context context) {
+        RepoPinChecker(Context context) {
             prefs = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE);
         }
 
         void setKey(String key) {
             KEY = key;
-            final int[] savedPins = Data.intArrayFromPrefs(prefs.getString(KEY, ""));
+            final String[] savedPins = Data.stringArrayFromPrefs(prefs.getString(KEY, ""));
             pins.clear();
-            for(int i : savedPins) pins.add(i);
-            Log.i(TAG, "RepoPinSorter: Loaded pin positions " + pins.toString());
+            pins.addAll(Arrays.asList(savedPins));
+            Log.i(TAG, "RepoPinChecker: Loaded pin positions " + pins.toString());
         }
 
-        void pin(int id) {
-            if(!pins.contains(id)) {
-                pins.add(id);
-                prefs.edit().putString(KEY, Data.intArrayForPrefs(pins)).apply();
+        void pin(String path) {
+            if(!pins.contains(path)) {
+                pins.add(path);
+                prefs.edit().putString(KEY, Data.stringArrayForPrefs(pins)).apply();
             }
         }
 
-        void unpin(int id) {
-            pins.remove(Integer.valueOf(id));
-            prefs.edit().putString(KEY, Data.intArrayForPrefs(pins)).apply();
+        void unpin(String path) {
+            pins.remove(path);
+            prefs.edit().putString(KEY, Data.stringArrayForPrefs(pins)).apply();
         }
 
-        int initialPosition(int key) {
-            return Data.indexOf(standardPositions, key);
+        void setInitialPositions(Repository[] repos) {
+            mInitialPositions.clear();
+            for(Repository r : repos) mInitialPositions.add(r.getFullName());
         }
 
-        boolean isPinned(int key) {
-            return pins.contains(key);
+        void appendInitialPositions(Repository[] repos) {
+            for(Repository r : repos) mInitialPositions.add(r.getFullName());
         }
 
-        void sort(ArrayList<Repository> repos) {
-            standardPositions = new int[repos.size()];
-            for(int i = 0; i < repos.size(); i++) {
-                standardPositions[i] = repos.get(i).getId();
+        void appendPinnedPosition(String key) {
+            mInitialPositions.add(0, key);
+        }
+
+        int initialPosition(String key) {
+            return mInitialPositions.indexOf(key);
+        }
+
+        boolean isPinned(String path) {
+            return pins.contains(path);
+        }
+
+        List<String> findNonLoadedPinnedRepositories() {
+            final List<String> repos = new ArrayList<>();
+            for(String pin : pins) {
+                if(!mInitialPositions.contains(pin)) repos.add(pin);
             }
-            Collections.sort(repos, (r1, r2) -> {
-                final int i1 = pins.indexOf(r1.getId());
-                final int i2 = pins.indexOf(r2.getId());
-                return i1 < i2 ? 1 : i1 == i2 ? Data.repoAlphaSort.compare(r1, r2) : -1;
-            });
+            return repos;
         }
 
     }
