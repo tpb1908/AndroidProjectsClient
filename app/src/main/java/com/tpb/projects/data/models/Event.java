@@ -75,7 +75,7 @@ public class Event extends DataModel implements Parcelable {
     }
 
     public String getShortCommitId() {
-        return commitId == null ? "" : commitId.substring(0, 7);
+        return (commitId == null || Constants.JSON_NULL.equals(commitId)) ? null : commitId.substring(0, 7);
     }
 
     public String getCommitUrl() {
@@ -141,7 +141,7 @@ public class Event extends DataModel implements Parcelable {
                 e.commitUrl = obj.getString(COMMIT_URL);
             }
 
-            if(obj.has(LABEL) && !Constants.JSON_NULL.equals(obj.getString(LABEL))) {
+            if(obj.has(LABEL) && !JSON_NULL.equals(obj.getString(LABEL))) {
                 e.labelName = obj.getJSONObject(LABEL).getString(NAME);
                 e.labelColor = Color.parseColor("#" + obj.getJSONObject(LABEL).getString(COLOR));
             }

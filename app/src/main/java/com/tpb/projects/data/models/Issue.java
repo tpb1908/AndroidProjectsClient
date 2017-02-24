@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONArray;
@@ -151,7 +150,7 @@ public class Issue extends DataModel implements Parcelable {
             i.isLocked = obj.getBoolean(LOCKED);
             //https://api.github.com/repos/user/repo
             i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
-            if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
+            if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                     i.closed = true;
@@ -164,7 +163,7 @@ public class Issue extends DataModel implements Parcelable {
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
-            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(Constants.JSON_NULL)) {
+            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(JSON_NULL)) {
                 i.assignees = new User[] {User.parse(obj.getJSONObject(ASSIGNEE))};
             }
             if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
@@ -175,7 +174,7 @@ public class Issue extends DataModel implements Parcelable {
                 }
             }
             i.openedBy = User.parse(obj.getJSONObject(USER));
-            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(Constants.JSON_NULL)) {
+            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject(CLOSED_BY));
                 Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
             }

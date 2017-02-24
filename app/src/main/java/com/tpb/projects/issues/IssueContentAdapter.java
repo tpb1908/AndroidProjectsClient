@@ -326,10 +326,20 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         final Resources res = eventHolder.itemView.getResources();
         switch(event.getEvent()) {
             case CLOSED:
-                text = String.format(res.getString(R.string.text_event_closed),
-                        String.format(res.getString(R.string.text_href),
-                                event.getActor().getHtmlUrl(),
-                                event.getActor().getLogin()));
+                if(event.getShortCommitId()!= null) {
+                    text = String.format(res.getString(R.string.text_event_closed_in),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()),
+                            String.format(res.getString(R.string.text_href),
+                                    "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                    String.format(res.getString(R.string.text_commit), event.getShortCommitId())));
+                } else {
+                    text = String.format(res.getString(R.string.text_event_closed),
+                            String.format(res.getString(R.string.text_href),
+                                    event.getActor().getHtmlUrl(),
+                                    event.getActor().getLogin()));
+                }
                 break;
             case REOPENED:
                 text = String.format(res.getString(R.string.text_event_reopened),

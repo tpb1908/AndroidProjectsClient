@@ -80,6 +80,7 @@
     <string name="text_comment_edited">Edited</string>
     <string name="text_comment_by">%1$s commented %2$s</string>
     <string name="text_event_closed">Closed by %1$s</string>
+    <string name="text_event_closed_in">Closed by %1$s in %2$s</string>
     <string name="text_event_reopened">Reopened by %1$s</string>
     <string name="text_event_subscribed">%1$s subscribed</string>
     <string name="text_event_merged">Merged by %1$s in %2$s</string>
