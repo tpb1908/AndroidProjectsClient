@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@android:style/TextAppearance.Material.Title"
-                android:text="@string/title_settings"
+                android:text="@string/title_activity_settings"
                 android:layout_marginStart="32dp"/>
 
         </android.support.v7.widget.Toolbar>
