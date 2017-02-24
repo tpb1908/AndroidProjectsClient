@@ -1,15 +1,17 @@
 package com.tpb.projects.util;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
+import android.support.annotation.ColorInt;
 import android.util.TypedValue;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Transformation;
 import android.widget.TextView;
 
@@ -123,14 +125,31 @@ public class UI {
         return l;
     }
 
-    public static Point getTouchPositionFromDragEvent(View item, DragEvent event) {
-        final Rect rItem = new Rect();
-        item.getGlobalVisibleRect(rItem);
-        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
-    }
-
     private static boolean willTextFit(TextView tv, String s) {
         return tv.getPaint().measureText(s) < tv.getMeasuredWidth();
+    }
+
+    public static void setStatusBarColor(Window window, @ColorInt int color) {
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // finally change the color
+        window.setStatusBarColor(color);
+    }
+
+    public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
+        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                view,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                original,
+                flash);
+        colorFade.setDuration(300);
+        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+        colorFade.setRepeatCount(1);
+        colorFade.start();
+
     }
 
 }

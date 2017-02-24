@@ -20,7 +20,7 @@ class CardDragListener implements View.OnDragListener {
     private boolean isDropped = false;
     private Drawable selectedBG;
     private final int accent;
-    private View.OnDragListener mParent;
+    private final View.OnDragListener mParent;
 
     CardDragListener(Context context, View.OnDragListener parent) {
         accent = context.getResources().getColor(R.color.colorAccent);

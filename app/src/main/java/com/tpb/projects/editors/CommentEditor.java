@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +21,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
@@ -65,10 +64,10 @@ public class CommentEditor extends ImageLoadingActivity {
         stub.setLayoutResource(R.layout.stub_comment_editor);
         stub.inflate();
 
+        //Bind after inflating the stub
         ButterKnife.bind(this);
 
         final Intent launchIntent = getIntent();
-
 
         if(launchIntent.hasExtra(getString(R.string.parcel_comment))) {
             mComment = launchIntent.getParcelableExtra(getString(R.string.parcel_comment));
@@ -77,20 +76,10 @@ public class CommentEditor extends ImageLoadingActivity {
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
             mIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
         }
-
-        mEditor.addTextChangedListener(new TextWatcher() {
+        mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void textChanged() {
                 mHasBeenEdited = true;
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -149,19 +138,14 @@ public class CommentEditor extends ImageLoadingActivity {
 
             @Override
             public void uploadError(ANError error) {
-
+                //TODO Error message
             }
-        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
+        }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)));
     }
 
     @Override
     void imageLoadException(IOException ioe) {
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override

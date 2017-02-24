@@ -16,8 +16,8 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.ArrayFilter;
-import com.tpb.projects.util.Data;
 import com.tpb.projects.util.FuzzyStringSearcher;
+import com.tpb.projects.util.MDParser;
 
 import java.util.ArrayList;
 
@@ -80,10 +80,11 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
     private void bindView(int pos, View view) {
         final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
         if(parseCache[dataPos] == null) {
-            parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getNumber() + " " + Data.parseMD(data.get(dataPos).getTitle()));
+            parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getNumber() + " " + MDParser.parseMD(data.get(dataPos).getTitle()));
         }
 
-        ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dataPos).isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
+        ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(
+                data.get(dataPos).isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
         ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
 
     }

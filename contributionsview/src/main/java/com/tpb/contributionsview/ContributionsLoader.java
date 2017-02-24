@@ -40,6 +40,7 @@ import java.util.List;
 class ContributionsLoader {
     private static final String TAG = ContributionsLoader.class.getSimpleName();
 
+    // Format string for svg path
     private static final String IMAGE_BASE = "https://github.com/users/%s/contributions";
 
     private final ContributionsRequestListener mListener;
@@ -48,9 +49,9 @@ class ContributionsLoader {
         mListener = listener;
     }
 
-    public void beginRequest(Context context, String login) {
+    void beginRequest(Context context, String login) {
         final String URL = String.format(IMAGE_BASE, login);
-
+        // Load the svg as a string
         final StringRequest req = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -69,6 +70,7 @@ class ContributionsLoader {
         final List<GitDay> contribs = new ArrayList<>();
         int first = response.indexOf("<rect");
         int last;
+        // Find each rectangle in the image
         while(first != -1) {
             last = response.indexOf("/>", first);
             contribs.add(new GitDay(response.substring(first, last)));
@@ -78,7 +80,7 @@ class ContributionsLoader {
 
     }
 
-    public static class GitDay {
+    static class GitDay {
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         @ColorInt final int color;
         long date;
@@ -111,7 +113,7 @@ class ContributionsLoader {
         }
     }
 
-    public interface ContributionsRequestListener {
+    interface ContributionsRequestListener {
 
         void onResponse(List<GitDay> contributions);
 

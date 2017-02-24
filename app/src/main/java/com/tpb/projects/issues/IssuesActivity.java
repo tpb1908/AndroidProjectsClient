@@ -1,9 +1,6 @@
 package com.tpb.projects.issues;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,7 +39,6 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
-import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
@@ -93,6 +89,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_issues);
         ButterKnife.bind(this);
         mAnalytics = FirebaseAnalytics.getInstance(this);
@@ -115,8 +112,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             loadIssues(true);
             mRefresher.setRefreshing(true);
 
+            //Check if we have access to edit the Issue
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
-
                 @Override
                 public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                     mAccessLevel = accessLevel;
@@ -166,7 +163,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             mPage = 1;
             mMaxPageReached = false;
         }
-        //TODO Add an option for all, and anything
         if(mAssigneeFilter == null || mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
             mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, null, mLabelsFilter, mPage);
         } else if(mAssigneeFilter.equals(getString(R.string.text_assignee_none))) {
@@ -323,9 +319,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 builder.setSingleChoiceItems(collabNames, pos, (dialogInterface, i) -> {
                     mAssigneeFilter = collabNames[i];
                 });
-                builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-                    refresh();
-                });
+                builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> refresh());
                 builder.setNegativeButton(R.string.action_cancel, null);
                 builder.create().show();
                 pd.dismiss();
@@ -336,24 +330,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
-    }
-
-    void openIssue(View view, Issue issue) {
-        final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
-        i.putExtra(getString(R.string.parcel_issue), issue);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(this, i, ((HtmlTextView) view).getLastClickPosition());
-        } else {
-            UI.setViewPositionForIntent(i, view);
-        }
-        startActivity(i);
-    }
-
-    void openUser(HtmlTextView view, String user) {
-        final Intent i = new Intent(IssuesActivity.this, UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), user);
-        UI.setClickPositionForIntent(this, i, view.getLastClickPosition());
-        startActivity(i);
     }
 
     void openMenu(View view, final Issue issue) {
@@ -415,28 +391,22 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_state_change_comment);
-        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
-                i.putExtra(getString(R.string.parcel_issue), issue);
-                startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
-                if(issue.isClosed()) {
-                    mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
-                }
-
+        builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
+            i.putExtra(getString(R.string.parcel_issue), issue);
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            if(issue.isClosed()) {
+                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
             }
+
         });
-        builder.setNegativeButton(R.string.action_no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(issue.isClosed()) {
-                    mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
-                }
+        builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
+            if(issue.isClosed()) {
+                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
             }
         });
         builder.setNeutralButton(R.string.action_cancel, null);
@@ -450,20 +420,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private void moveTo(Issue issue) {
         final int index = mAdapter.indexOf(issue);
         mRecycler.scrollToPosition(index);
-        new Handler().postDelayed(() -> {
-            Log.i(TAG, "moveTo: Should be highlighting " + index);
-            final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
-            final ObjectAnimator colorFade = ObjectAnimator.ofObject(
-                    view,
-                    "backgroundColor",
-                    new ArgbEvaluator(),
+        //Wait until the scroll has finished
+        new Handler().postDelayed(() ->
+            UI.flashViewBackground(
+                    mRecycler.findViewHolderForAdapterPosition(index).itemView,
                     getResources().getColor(R.color.md_grey_800),
-                    getResources().getColor(R.color.colorAccent));
-            colorFade.setDuration(300);
-            colorFade.setRepeatMode(ObjectAnimator.REVERSE);
-            colorFade.setRepeatCount(1);
-            colorFade.start();
-        }, 300);
+                    getResources().getColor(R.color.colorAccent))
+        , 300);
 
     }
 

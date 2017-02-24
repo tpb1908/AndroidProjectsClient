@@ -30,9 +30,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private List<Node> mCurrentNodes = new ArrayList<>();
     private Node mPreviousNode;
 
-    private ContentActivity mParent;
-    private String mRepo;
-    private FileLoader mLoader;
+    private final ContentActivity mParent;
+    private final String mRepo;
+    private final FileLoader mLoader;
     private boolean mIsLoading = false;
 
     ContentAdapter(FileLoader loader, ContentActivity parent, String repo, @Nullable String path) {
@@ -131,7 +131,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         }
     }
 
-    private FileLoader.DirectoryLoader backgroundLoader = new FileLoader.DirectoryLoader() {
+    private final FileLoader.DirectoryLoader backgroundLoader = new FileLoader.DirectoryLoader() {
 
         @Override
         public void directoryLoaded(List<Node> directory) {
@@ -208,8 +208,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     class NodeViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mText;
-        private TextView mSize;
+        private final TextView mText;
+        private final TextView mSize;
 
         public NodeViewHolder(View itemView) {
             super(itemView);

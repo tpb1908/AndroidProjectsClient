@@ -157,7 +157,7 @@ public class Node {
         SYMLINK("symlink"),
         SUBMODULE("submodule");
 
-        private String type;
+        private final String type;
 
         NodeType(String type) {
             this.type = type;

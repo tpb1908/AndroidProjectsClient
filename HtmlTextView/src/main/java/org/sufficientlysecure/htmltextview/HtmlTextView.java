@@ -38,7 +38,6 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -150,11 +149,13 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                mDrawables.clear();
+                mDrawables.clear(); // Clear the drawables that were cached for use earlier
+
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
+                // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(html);
 
                 final Spanned text;
@@ -164,10 +165,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
                 }
 
-
+                // Convert to a buffer to allow editing
                 final SpannableString buffer = new SpannableString(text);
+                //Get the URLSpans that are present before Linkify destroys them
                 final URLSpan[] spans = buffer.getSpans(0, buffer.length(), URLSpan.class);
 
+                //Add links for emails and web-urls
                 Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
                 //Copy back the spans from the original text
@@ -189,6 +192,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                     enableCodeClicks(html, buffer);
                 }
 
+                //Post back on UI thread
                 HtmlTextView.this.post(new Runnable() {
                     @Override
                     public void run() {
@@ -199,6 +203,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 });
             }
         };
+        //If we have a handler use it
         if(mParseHandler != null) {
             mParseHandler.postDelayed(r, 20);
         } else {
@@ -231,11 +236,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             s.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
-
                     if(mImageClickHandler == null) {
                         super.onClick(widget); //Opens image link
                     } else {
-                        Log.i(TAG, "onClick: Source is " + span.getSource());
+                        //Get the drawable from our map and call the handler
                         if(mDrawables.containsKey(span.getSource())) {
                             mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
                         }
@@ -245,6 +249,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
+                    // We don't want to show a line below the image
                     ds.setUnderlineText(false);
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
@@ -252,20 +257,23 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     }
 
     private void enableCodeClicks(String text, final Spannable s) {
+        // Collect all of the CodeSpans
         final CodeSpan[] spans = s.getSpans(0, s.length(), CodeSpan.class);
         int startIndex = 0;
         int endIndex = 0;
-        int i = 0;
+        int i = 0; // Index in spans
         while(startIndex != -1 && i < spans.length) {
+            // Search for the next code start after our previous position
             startIndex = text.indexOf("<code>", startIndex);
-            if(startIndex == -1) break;
+            if(startIndex == -1) break; // No more code tags
             endIndex = text.indexOf("</code>", startIndex);
-            if(endIndex != -1) {
+            if(endIndex != -1) { // Ignore tags which aren't closed
+                // Set the text on the span, and set the handler
                 spans[i].setCode(text.substring(startIndex + "<code>".length(), endIndex));
                 spans[i].setHandler(mCodeHandler);
             }
             i++;
-            startIndex = endIndex;
+            startIndex = endIndex; //Jump to end of current span
         }
     }
 
@@ -293,6 +301,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         @Override
         public void updateDrawState(TextPaint ds) {
             super.updateDrawState(ds);
+            // Links are bold without underline
             ds.setUnderlineText(false);
             ds.setTypeface(Typeface.DEFAULT_BOLD);
         }
@@ -457,6 +466,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     public float[] getLastClickPosition() {
         if(mLastClickPosition[0] == -1) {
+            // If we haven't been clicked yet, get the centre of the view
             final int[] pos = new int[2];
             getLocationOnScreen(pos);
             mLastClickPosition[0] = pos[0] + getWidth() / 2;

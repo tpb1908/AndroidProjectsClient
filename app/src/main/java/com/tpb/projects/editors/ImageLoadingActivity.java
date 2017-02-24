@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tpb.projects.R;
 
@@ -31,8 +32,7 @@ import java.util.Date;
 public abstract class ImageLoadingActivity extends CircularRevealActivity {
     private static final String TAG = ImageLoadingActivity.class.getSimpleName();
 
-
-    private static final int REQUEST_CAMERA = 9403;
+    private static final int REQUEST_CAMERA = 9403; //Random request codes
     private static final int SELECT_FILE = 6113;
     private String mCurrentFilePath;
     protected ProgressDialog mUploadDialog;
@@ -42,9 +42,13 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
     abstract void imageLoadException(IOException ioe);
 
     void showImageUploadDialog() {
-        final CharSequence[] items = {"Take a picture", "Choose from gallery", "Cancel"};
+        final CharSequence[] items = {
+                getString(R.string.text_take_a_picture),
+                getString(R.string.text_choose_from_gallery),
+                getString(R.string.action_cancel)
+        };
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Upload an image");
+        builder.setTitle(getString(R.string.text_upload_an_image));
         builder.setItems(items, (dialog, which) -> {
             if(mUploadDialog == null) {
                 mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);
@@ -69,10 +73,11 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
 
     private void attemptTakePicture() {
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Check if there is an activity which can take a picture
         if(intent.resolveActivity(getPackageManager()) != null) {
-
             File photoFile = null;
             try {
+                //Create the file for the image to be stored in
                 photoFile = createImageFile();
             } catch(IOException ioe) {
                 Log.e(TAG, "attemptTakePicture: ", ioe);
@@ -82,18 +87,17 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
             if(photoFile != null) {
                 final Uri photoURI = FileProvider.getUriForFile(this, "com.tpb.projects.provider", photoFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                Log.i(TAG, "attemptTakePicture: File created");
                 startActivityForResult(intent, REQUEST_CAMERA);
             } else {
-                Log.i(TAG, "attemptTakePicture: File is null");
                 imageLoadException(new IOException("File not created"));
             }
         } else {
-            Log.i(TAG, "onClick: No camera to use");
+            Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT).show();
         }
     }
 
     private File createImageFile() throws IOException {
+        //Create an image file with a formatted name
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         final String imageFileName = "JPEG_" + timeStamp + "_";
         final File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -107,19 +111,19 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
     }
 
     private String attemptLoadPicture(Uri uri) throws IOException {
+        // Open FileDescriptor in read mode
         final ParcelFileDescriptor parcelFileDescriptor =
                 getContentResolver().openFileDescriptor(uri, "r");
         final FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
 
+        //Decode to a bitmap, and convert to a byte array
         final Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        Log.i(TAG, "onActivityResult: Image is: " + image.toString());
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] array = stream.toByteArray();
-        Log.i(TAG, "onActivityResult: Array length " + array.length);
+        //Return base64 string for Imgur
         return Base64.encodeToString(array, Base64.DEFAULT);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -129,10 +133,9 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
             pd.setCanceledOnTouchOutside(false);
             pd.setCancelable(false);
             if(requestCode == REQUEST_CAMERA) {
-                Log.i(TAG, "onActivityResult: Camera request returned");
-                pd.setTitle("Converting image");
+                pd.setTitle(R.string.title_image_conversion);
                 pd.show();
-                AsyncTask.execute(() -> {
+                AsyncTask.execute(() -> { // Execute asynchronously
                     final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
                     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     image.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -141,10 +144,9 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
                 });
 
             } else if(requestCode == SELECT_FILE) {
-                Log.i(TAG, "onActivityResult: File request returned");
                 final Uri selectedFile = data.getData();
                 Log.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
-                pd.setTitle("Converting image");
+                pd.setTitle(R.string.title_image_conversion);
                 pd.show();
                 AsyncTask.execute(() -> {
                     try {

@@ -1,22 +1,21 @@
 package com.tpb.projects.issues;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.IntentHandler;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -96,19 +95,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     public void onBindViewHolder(IssueHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Issue issue = mIssues.get(pos);
-        holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
-        holder.mContent.setLinkClickHandler(url -> {
-            Log.i(TAG, "bindIssueCard: URL is " + url);
-            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                mParent.openUser(holder.mContent, issue.getOpenedBy().getLogin());
-            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
-                mParent.openIssue(holder.mContent, issue);
-            } else {
-                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mParent.startActivity(i);
-            }
-        });
+        holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
+        IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
+        IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, issue);
+
         if(mParseCache.get(pos) == null) {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();
@@ -156,13 +147,12 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 builder.append("<br>");
                 builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
             }
-            final String parsed = Data.parseMD(builder.toString());
+            final String parsed = MDParser.parseMD(builder.toString());
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);
         } else {
             // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
             holder.mContent.setHtml(mParseCache.get(pos));
-            //TODO Replace with separate arraylists
         }
     }
 
@@ -172,7 +162,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     private void openIssue(View view, int pos) {
-        mParent.openIssue(view, mIssues.get(pos));
+        IntentHandler.openIssue(mParent, view, mIssues.get(pos));
     }
 
     private void openMenu(View view, int pos) {
@@ -184,6 +174,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
         @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
         @BindView(R.id.issue_drawable) ImageView mIssueIcon;
+        @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
 
         IssueHolder(View view) {
             super(view);

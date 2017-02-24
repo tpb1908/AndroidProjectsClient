@@ -16,6 +16,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,7 @@ public class ContentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_content);
         ButterKnife.bind(this);
 
@@ -56,9 +58,7 @@ public class ContentActivity extends AppCompatActivity {
         mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mRefresher.setOnRefreshListener(() -> {
-            mAdapter.reload();
-        });
+        mRefresher.setOnRefreshListener(() -> mAdapter.reload());
     }
 
     private void initRibbon() {

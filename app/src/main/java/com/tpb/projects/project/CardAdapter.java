@@ -1,8 +1,6 @@
 package com.tpb.projects.project;
 
 import android.content.ClipData;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +28,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.IntentHandler;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -60,7 +59,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
-    private ProjectActivity.NavigationDragListener mNavListener;
+    private final ProjectActivity.NavigationDragListener mNavListener;
 
     CardAdapter(ColumnFragment parent, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
         mParent = parent;
@@ -227,22 +226,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setVisibility(View.GONE);
         holder.mUserAvatar.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
-            mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
+            mCards.set(pos, new Pair<>(mCards.get(pos).first, MDParser.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
         holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
-        holder.mText.setLinkClickHandler(url -> {
-            Log.i(TAG, "bindStandardCard: URL is " + url);
-            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                Log.i(TAG, "bindStandardCard: Opening user url "+ url);
-                mParent.openUser(holder.mText, url.substring(url.lastIndexOf('/') + 1));
-            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
-                Log.i(TAG, "bindIssueCard: Opening issue url " + url);
-                mParent.openIssue(holder.mText, url.substring(url.lastIndexOf('/') + 1));
-            } else {
-                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mParent.startActivity(i);
-            }
-        });
+        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText);
     }
 
     private void bindIssueCard(CardHolder holder, int pos) {
@@ -251,22 +238,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         final Card card = mCards.get(pos).first;
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
-        holder.mUserAvatar.setOnClickListener((v) -> {
-            mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
-        });
-        holder.mText.setLinkClickHandler(url -> {
-            Log.i(TAG, "bindIssueCard: URL is " + url);
-            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                Log.i(TAG, "bindStandardCard: Opening user url "+ url);
-                mParent.openUser(holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
-            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
-                Log.i(TAG, "bindIssueCard: Opening issue url " + url);
-                mParent.openIssue(holder.mText, url.substring(url.lastIndexOf('/') + 1));
-            } else {
-                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mParent.startActivity(i);
-            }
-        });
+        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
+        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, card.getIssue());
         if(mCards.get(pos).second == null) {
 
             final StringBuilder builder = new StringBuilder();
@@ -274,7 +247,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(card.getIssue().getTitle());
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(Data.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
+                builder.append(MDParser.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
                 builder.append(" \n\n ");
             }
 
@@ -319,7 +292,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
             }
 
-            final String parsed = Data.parseMD(builder.toString(), card.getIssue().getRepoPath());
+            final String parsed = MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath());
 
             mCards.set(pos, new Pair<>(card, parsed));
             holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));

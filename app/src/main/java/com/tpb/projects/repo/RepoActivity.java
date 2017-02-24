@@ -43,6 +43,7 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -100,6 +101,7 @@ public class RepoActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_repo);
         ButterKnife.bind(this);
 

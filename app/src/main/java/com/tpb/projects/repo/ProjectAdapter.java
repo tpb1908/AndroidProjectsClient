@@ -16,7 +16,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -88,7 +88,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         if(!(Constants.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
-                    Data.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
+                    MDParser.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
                     new HtmlHttpImageGetter(holder.mBody)
             );
         }

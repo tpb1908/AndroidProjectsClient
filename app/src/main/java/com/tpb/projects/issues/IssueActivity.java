@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -53,7 +52,7 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
@@ -102,6 +101,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_issue);
         ButterKnife.bind(this);
         mAnalytics = FirebaseAnalytics.getInstance(this);
@@ -135,8 +135,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-
-        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
     @Override
@@ -187,7 +185,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String html = Data.parseMD(builder.toString(), mIssue.getRepoPath());
+        final String html = MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
         Log.i(TAG, "bindIssue: HTML " + html);
         mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
@@ -201,7 +199,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                         DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
                 )
         );
-        mOpenInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);
@@ -374,22 +372,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         menu.show();
     }
 
-    void openUser(ANImageView imageView, User user) {
-        final Intent i = new Intent(IssueActivity.this, UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), user.getLogin());
-        if(imageView.getDrawable() != null) {
-            Log.i(TAG, "openUser: Putting bitmap");
-            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-        }
-        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
-                imageView,
-                getString(R.string.transition_user_image)
-                ).toBundle()
-        );
-
-    }
-
 
     @OnClick(R.id.issue_header_card)
     void onHeaderClick(View view) {
@@ -539,28 +521,22 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_state_change_comment);
-        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+        builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
 
-                startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
-                if(mIssue.isClosed()) {
-                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                }
-
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            if(mIssue.isClosed()) {
+                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
+
         });
-        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(mIssue.isClosed()) {
-                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                }
+        builder.setNeutralButton(R.string.action_no, (dialog, which) -> {
+            if(mIssue.isClosed()) {
+                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);
