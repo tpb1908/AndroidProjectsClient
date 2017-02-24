@@ -9,10 +9,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +32,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -128,20 +127,10 @@ public class IssueEditor extends ImageLoadingActivity {
             }
         }
 
-        final TextWatcher editWatcher = new TextWatcher() {
+        final DumbTextChangeWatcher editWatcher = new DumbTextChangeWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void textChanged() {
                 mHasBeenEdited = true;
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
             }
         };
 

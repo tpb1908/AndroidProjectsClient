@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
@@ -28,12 +27,11 @@ public class CircularRevealActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(CircularRevealActivity.class.getSimpleName(), "onCreate: Reveal called");
         final Intent intent = getIntent();
+        //If we have been given a position to expand from
         if(intent != null &&
                 intent.hasExtra(getString(R.string.intent_position_x)) &&
                 intent.hasExtra(getString(R.string.intent_position_y))) {
-            Log.i(CircularRevealActivity.class.getSimpleName(), "onCreate: Has positions");
             x = intent.getIntExtra(getString(R.string.intent_position_x), -1);
             y = intent.getIntExtra(getString(R.string.intent_position_y), -1);
         }
@@ -43,23 +41,27 @@ public class CircularRevealActivity extends AppCompatActivity {
                 content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
+                        //We need to set the background as it is transparent
                         if(SettingsActivity.Preferences.getPreferences(CircularRevealActivity.this).isDarkThemeEnabled()) {
                             content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundDark));
                         } else {
                             content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundLight));
                         }
                         circularRevealActivity(x, y);
+                        //Remove the observer, as they are expensive
                         content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
             }
         } else {
+            //Even if we don't expand, we still need to show a non-transparent background
             if(SettingsActivity.Preferences.getPreferences(CircularRevealActivity.this).isDarkThemeEnabled()) {
                 content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundDark));
             } else {
                 content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundLight));
             }
         }
+        //Stop the keyboard from automatically focusing
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
@@ -69,11 +71,11 @@ public class CircularRevealActivity extends AppCompatActivity {
 
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
-        // create the animator for this view (the start radius is zero)
-        Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, 0, finalRadius);
-        circularReveal.setDuration(600);
+        // Create the animator for this view (the start radius is zero)
+        final Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, 0, finalRadius);
+        circularReveal.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
 
-        // make the view visible and start the animation
+        // Make the view visible and start the animation
         rootLayout.setVisibility(View.VISIBLE);
         circularReveal.start();
     }
@@ -81,7 +83,7 @@ public class CircularRevealActivity extends AppCompatActivity {
     private void circularCloseActivity(int cx, int cy) {
         final View rootLayout = findViewById(android.R.id.content);
 
-        // We expand to the larger of the two bounds
+        // We shrink from the larger of the two bounds
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
         // Create the animator for this view (the start radius is zero)
@@ -91,12 +93,16 @@ public class CircularRevealActivity extends AppCompatActivity {
         circularClose.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                /*
+                We have to hide the content layout so that it doesn't show as a flash in the
+                frame(s) between the animation ending and finish being called
+                 */
                 findViewById(android.R.id.content).setVisibility(View.GONE);
                 super.onAnimationEnd(animation);
                 CircularRevealActivity.super.finish();
             }
         });
-        // make the view visible and start the animation
+        // Set flag, allowing subclass to check on animation
         mIsClosing = true;
         circularClose.start();
     }
@@ -111,7 +117,6 @@ public class CircularRevealActivity extends AppCompatActivity {
             circularCloseActivity(x, y);
         } else {
             super.finish();
-            overridePendingTransition(0, 0); //Stop any other animations
         }
     }
 }

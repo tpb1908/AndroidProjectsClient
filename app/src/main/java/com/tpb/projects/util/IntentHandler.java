@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 import android.view.View;
 
 import com.androidnetworking.widget.ANImageView;

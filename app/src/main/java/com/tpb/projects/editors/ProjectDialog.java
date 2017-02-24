@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -16,6 +14,7 @@ import android.widget.EditText;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.util.DumbTextChangeWatcher;
 
 /**
  * Created by theo on 17/12/16.
@@ -66,13 +65,12 @@ public class ProjectDialog extends DialogFragment {
         builder.setOnDismissListener(dialogInterface -> {
             if(mListener != null) mListener.projectEditCancelled();
         });
-
-        descriptionEdit.addTextChangedListener(new TextWatcher() {
+        descriptionEdit.addTextChangedListener(new DumbTextChangeWatcher() {
             final Handler updateHandler = new Handler();
             long lastUpdated;
 
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void textChanged() {
                 lastUpdated = System.currentTimeMillis();
                 updateHandler.postDelayed(() -> {
                     if(System.currentTimeMillis() - lastUpdated >= 190) {
@@ -81,18 +79,7 @@ public class ProjectDialog extends DialogFragment {
                     }
                 }, 200);
             }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
         });
-
 
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {
