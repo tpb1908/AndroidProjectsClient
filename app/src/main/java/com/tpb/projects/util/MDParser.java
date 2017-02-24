@@ -1,5 +1,7 @@
 package com.tpb.projects.util;
 
+import android.support.annotation.Nullable;
+
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
@@ -63,7 +65,11 @@ public class MDParser {
         return renderer.render(parser.parse(s));
     }
 
-    public static String formatMD(String s, String fullRepoPath) {
+    public static String formatMD(String s, @Nullable String fullRepoPath) {
+        return formatMD(s, fullRepoPath, true);
+    }
+
+    public static String formatMD(String s, @Nullable String fullRepoPath, boolean linkUsernames) {
 
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
@@ -73,7 +79,7 @@ public class MDParser {
             if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
                 builder.append("\n");
             }
-            if(cs[i] == '@' && (p == ' ' || p == '\n')) {
+            if(linkUsernames && cs[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);

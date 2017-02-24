@@ -137,6 +137,11 @@ public class CardEditor extends ImageLoadingActivity {
         builder.append(issue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
+
+        // The title and body are formatted separately, because the title shouldn't be formatted
+        String html = MDParser.formatMD(builder.toString(), null, false);
+        builder.setLength(0); // Clear the builder to reuse it
+
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
             builder.append(issue.getBody().replaceFirst("\\s++$", ""));
             builder.append("\n");
@@ -144,6 +149,7 @@ public class CardEditor extends ImageLoadingActivity {
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
             Label.appendLabels(builder, issue.getLabels(), "   ");
         }
+        
         builder.append("\n");
         builder.append(
                 String.format(
@@ -155,7 +161,10 @@ public class CardEditor extends ImageLoadingActivity {
                         DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
                 )
         );
-        mEditor.setText(Html.fromHtml(MDParser.parseMD(builder.toString(), issue.getRepoPath())));
+
+        html += MDParser.parseMD(builder.toString(), issue.getRepoPath());
+
+        mEditor.setText(Html.fromHtml(html));
     }
 
     /*
