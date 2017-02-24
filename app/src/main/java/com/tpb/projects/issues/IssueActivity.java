@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -136,8 +135,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             mNumber.setText(String.format("#%1$d", issueNumber));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
-
-        // mOverflowButton.setOnClickListener((v) -> displayCommentMenu(v, null));
     }
 
     @Override

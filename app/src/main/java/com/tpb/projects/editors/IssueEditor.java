@@ -115,11 +115,12 @@ public class IssueEditor extends ImageLoadingActivity {
 
         } else if(launchIntent.hasExtra(getString(R.string.parcel_card))) {
             mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
-
+            //Split the first line of the card to use as a title
             final String[] text = mLaunchCard.getNote().split("\n", 2);
+            //If the title is too long we ellipsize it
             if(text[0].length() > 140) {
-                text[1] = text[0].substring(140) + text[1];
-                text[0] = text[0].substring(0, 140);
+                text[1] = "..." + text[0].substring(137) + text[1];
+                text[0] = text[0].substring(0, 137) + "...";
             }
             mTitleEdit.setText(text[0]);
             if(text.length > 1) {
@@ -155,6 +156,7 @@ public class IssueEditor extends ImageLoadingActivity {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
                 mHasBeenEdited = true;
+                //Check which EditText has focus and insert into the correct one
                 if(mTitleEdit.hasFocus()) {
                     final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
                     mTitleEdit.getText().insert(start, snippet);
@@ -189,15 +191,15 @@ public class IssueEditor extends ImageLoadingActivity {
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
                 mcd.setArguments(b);
 
-                final String[] collabNames = new String[collaborators.length];
-                final boolean[] checked = new boolean[collabNames.length];
-                for(int i = 0; i < collabNames.length; i++) {
-                    collabNames[i] = collaborators[i].getLogin();
-                    if(mAssignees.indexOf(collabNames[i]) != -1) {
+                final String[] names = new String[collaborators.length];
+                final boolean[] checked = new boolean[names.length];
+                for(int i = 0; i < names.length; i++) {
+                    names[i] = collaborators[i].getLogin();
+                    if(mAssignees.indexOf(names[i]) != -1) {
                         checked[i] = true;
                     }
                 }
-                mcd.setChoices(collabNames, checked);
+                mcd.setChoices(names, checked);
                 mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
                     @Override
                     public void ChoicesComplete(String[] choices, boolean[] checked) {
@@ -309,6 +311,7 @@ public class IssueEditor extends ImageLoadingActivity {
         for(int i = 0; i < names.size(); i++) {
             mSelectedLabels.add(names.get(i));
             final SpannableString s = new SpannableString(names.get(i));
+            //Set the colour span on the text span
             s.setSpan(new ForegroundColorSpan(colors.get(i)), 0, names.get(i).length(), 0);
             builder.append(s);
             builder.append('\n');
@@ -340,7 +343,7 @@ public class IssueEditor extends ImageLoadingActivity {
             public void uploadError(ANError error) {
 
             }
-        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
+        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
     }
 
     @Override

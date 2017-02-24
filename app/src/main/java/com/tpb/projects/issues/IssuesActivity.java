@@ -1,9 +1,6 @@
 package com.tpb.projects.issues;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -115,8 +112,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             loadIssues(true);
             mRefresher.setRefreshing(true);
 
+            //Check if we have access to edit the Issue
             mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
-
                 @Override
                 public void accessCheckComplete(Repository.AccessLevel accessLevel) {
                     mAccessLevel = accessLevel;
@@ -166,7 +163,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             mPage = 1;
             mMaxPageReached = false;
         }
-        //TODO Add an option for all, and anything
         if(mAssigneeFilter == null || mAssigneeFilter.equals(getString(R.string.text_assignee_all))) {
             mLoader.loadIssues(IssuesActivity.this, mRepoPath, mFilter, null, mLabelsFilter, mPage);
         } else if(mAssigneeFilter.equals(getString(R.string.text_assignee_none))) {
@@ -424,20 +420,13 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private void moveTo(Issue issue) {
         final int index = mAdapter.indexOf(issue);
         mRecycler.scrollToPosition(index);
-        new Handler().postDelayed(() -> {
-            Log.i(TAG, "moveTo: Should be highlighting " + index);
-            final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
-            final ObjectAnimator colorFade = ObjectAnimator.ofObject(
-                    view,
-                    "backgroundColor",
-                    new ArgbEvaluator(),
+        //Wait until the scroll has finished
+        new Handler().postDelayed(() ->
+            UI.flashViewBackground(
+                    mRecycler.findViewHolderForAdapterPosition(index).itemView,
                     getResources().getColor(R.color.md_grey_800),
-                    getResources().getColor(R.color.colorAccent));
-            colorFade.setDuration(300);
-            colorFade.setRepeatMode(ObjectAnimator.REVERSE);
-            colorFade.setRepeatCount(1);
-            colorFade.start();
-        }, 300);
+                    getResources().getColor(R.color.colorAccent))
+        , 300);
 
     }
 

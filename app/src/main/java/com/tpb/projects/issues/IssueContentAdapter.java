@@ -105,6 +105,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     }
 
     void updateComment(Comment comment) {
+
         int index = -1;
         for(int i = 0; i < mData.size(); i++) {
             if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
@@ -112,7 +113,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 break;
             }
         }
-        Log.i(TAG, "updateComment: Index: " + index);
         if(index != -1) {
             mData.set(index, new Pair<>(comment, null));
             notifyItemChanged(index);
@@ -124,21 +124,21 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         ArrayList<Event> toMerge = new ArrayList<>();
         Event last = new Event();
         for(int i = 0; i < events.length; i++) {
+            //If we have two of the same event, happening at the same time
             if(events[i].getCreatedAt() == last.getCreatedAt() && events[i].getEvent() == last.getEvent()) {
-                toMerge.add(events[i - 1]);
+                toMerge.add(events[i - 1]); //Add the previous event
                 int j = i;
+                //Loop until we find an event which shouldn't be merged
                 while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
                     toMerge.add(events[j++]);
                 }
-                // Log.i(TAG, "mergeEvents: Merging events from " + i + " to " + j);
-                i = j - 1;
+                i = j - 1; //Jump to the end of the merged positions
                 merged.add(new MergedEvent(toMerge));
-                //   Log.i(TAG, "mergeEvents: Merging " + toMerge.toString());
-                toMerge = new ArrayList<>();
+                toMerge = new ArrayList<>(); //Reset the list of merged events
             } else {
                 merged.add(events[i]);
             }
-            last = events[i];
+            last = events[i]; //Set the last event
         }
         return merged;
 
@@ -161,7 +161,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof CommentHolder) {
-            bindComment((CommentHolder) holder, position);
+            bindComment((CommentHolder) holder);
         } else {
             if(mData.get(position).first instanceof Event) {
                 bindEvent((EventHolder) holder, (Event) mData.get(position).first);
@@ -171,7 +171,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void bindComment(CommentHolder commentHolder, int position) {
+    private void bindComment(CommentHolder commentHolder) {
         final int pos = commentHolder.getAdapterPosition();
         if(mData.get(pos).second == null) {
             final Comment comment = (Comment) mData.get(pos).first;
@@ -496,6 +496,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
     }
+
     private void displayMenu(View view, int pos) {
         mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }

@@ -1,12 +1,9 @@
 package com.tpb.projects.project;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -322,17 +319,10 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         final int index = mAdapter.indexOf(cardId);
         if(index == -1) return false;
 
-        final View view = mRecycler.findViewHolderForAdapterPosition(index).itemView;
-        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
-                view,
-                "backgroundColor",
-                new ArgbEvaluator(),
-                getContext().getResources().getColor(R.color.md_grey_800),
-                getContext().getResources().getColor(R.color.colorAccent));
-        colorFade.setDuration(300);
-        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
-        colorFade.setRepeatCount(1);
-        colorFade.start();
+        UI.flashViewBackground(
+                mRecycler.findViewHolderForAdapterPosition(index).itemView,
+                getResources().getColor(R.color.md_grey_800),
+                getResources().getColor(R.color.colorAccent));
 
         //Initial height is the top cardview
         int height = ((LinearLayout) mNestedScroller.getChildAt(0)).getChildAt(0).getHeight();

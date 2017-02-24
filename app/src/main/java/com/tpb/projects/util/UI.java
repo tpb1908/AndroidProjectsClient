@@ -1,5 +1,7 @@
 package com.tpb.projects.util;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -134,6 +136,20 @@ public class UI {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         // finally change the color
         window.setStatusBarColor(color);
+    }
+
+    public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
+        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                view,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                original,
+                flash);
+        colorFade.setDuration(300);
+        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+        colorFade.setRepeatCount(1);
+        colorFade.start();
+
     }
 
 }
