@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Transformation;
 import android.widget.TextView;
 
@@ -122,6 +125,15 @@ public class UI {
 
     private static boolean willTextFit(TextView tv, String s) {
         return tv.getPaint().measureText(s) < tv.getMeasuredWidth();
+    }
+
+    public static void setStatusBarColor(Window window, @ColorInt int color) {
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // finally change the color
+        window.setStatusBarColor(color);
     }
 
 }

@@ -81,18 +81,19 @@ public class CircularRevealActivity extends AppCompatActivity {
     private void circularCloseActivity(int cx, int cy) {
         final View rootLayout = findViewById(android.R.id.content);
 
+        // We expand to the larger of the two bounds
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
-        // create the animator for this view (the start radius is zero)
-        Animator circularClose = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
-        circularClose.setDuration(450);
+        // Create the animator for this view (the start radius is zero)
+        final Animator circularClose = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
+        //Generally 4-500 ms depending on system settings
+        circularClose.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
         circularClose.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 findViewById(android.R.id.content).setVisibility(View.GONE);
                 super.onAnimationEnd(animation);
                 CircularRevealActivity.super.finish();
-                overridePendingTransition(0, 0);
             }
         });
         // make the view visible and start the animation
@@ -106,12 +107,11 @@ public class CircularRevealActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        Log.i(CircularRevealActivity.class.getSimpleName(), "finish: ");
         if(x != -1 && y != -1) {
             circularCloseActivity(x, y);
         } else {
             super.finish();
-            overridePendingTransition(0, 0);
+            overridePendingTransition(0, 0); //Stop any other animations
         }
     }
 }
