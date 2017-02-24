@@ -5,20 +5,17 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/repos_appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/repos_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:contentInsetStart="0dp"
-            android:transitionName="@string/transition_appbar">
+            app:contentInsetStart="0dp">
 
             <ImageButton
                 android:id="@+id/back_button"
