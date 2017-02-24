@@ -44,16 +44,13 @@ import java.util.List;
  * Created by theo on 12/01/17.
  */
 
-//https://github.com/javierugarte/GithubContributionsView/blob/master/githubcontributionsview/src/main/java/com/github/javierugarte/GitHubContributionsView.java
 public class ContributionsView extends View implements ContributionsLoader.ContributionsRequestListener {
     private static final String TAG = ContributionsView.class.getSimpleName();
 
     private boolean shouldDisplayMonths;
-    private boolean shouldDisplayDays;
     private int textColor;
     private int textSize;
     private int backGroundColor;
-    private int weekCount;
 
 
     private List<ContributionsLoader.GitDay> contribs = new ArrayList<>();
@@ -86,7 +83,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         initView(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    //TODO Calculate a minimum height when wrap content is used
 
     private void initView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         rect = new Rect();
@@ -101,7 +97,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     private void useAttributes(TypedArray ta) {
         shouldDisplayMonths = ta.getBoolean(R.styleable.ContributionsView_showMonths, true);
-        shouldDisplayDays = ta.getBoolean(R.styleable.ContributionsView_showDays, true);
         backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor, 0xD6E685); //GitHub default color
         textColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
         textSize = ta.getDimensionPixelSize(R.styleable.ContributionsView_textSize, 7);
@@ -114,15 +109,10 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         new ContributionsLoader(this).beginRequest(getContext(), user);
     }
 
-    //TODO Allow setting text size
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.getClipBounds(rect);
-
-        //TODO Draw placeholder squares
-        //TODO Draw day text
 
         final int w = rect.width();
         final int h = rect.height();
@@ -229,32 +219,17 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
-    private boolean isFirstDayOfMonth(long stamp) {
-        cal.setTimeInMillis(stamp);
-        return (cal.get(Calendar.DAY_OF_MONTH)) == 1;
-    }
-
     private static final SimpleDateFormat month = new SimpleDateFormat("MMM");
 
     private String getMonthName(long stamp) {
         return month.format(stamp);
     }
 
-    public void setShouldDisplayMonths(boolean shouldDisplayMonths) {
-        this.shouldDisplayMonths = shouldDisplayMonths;
-    }
-
-    public void setShouldDisplayDays(boolean shouldDisplayDays) {
-        this.shouldDisplayDays = shouldDisplayDays;
-    }
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
     }
 
-    public void setBackGroundColor(int backGroundColor) {
-        this.backGroundColor = backGroundColor;
-    }
 
     @Override
     public void onResponse(List<ContributionsLoader.GitDay> contributions) {
