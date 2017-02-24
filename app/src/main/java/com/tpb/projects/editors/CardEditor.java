@@ -33,8 +33,8 @@ import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
-import com.tpb.projects.util.Data;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -231,7 +231,7 @@ public class CardEditor extends ImageLoadingActivity {
                         DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
                 )
         );
-        mEditor.setText(Html.fromHtml(Data.parseMD(builder.toString(), issue.getRepoPath())));
+        mEditor.setText(Html.fromHtml(MDParser.parseMD(builder.toString(), issue.getRepoPath())));
     }
 
     @Override

@@ -31,6 +31,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -227,7 +228,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setVisibility(View.GONE);
         holder.mUserAvatar.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
-            mCards.set(pos, new Pair<>(mCards.get(pos).first, Data.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
+            mCards.set(pos, new Pair<>(mCards.get(pos).first, MDParser.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
         holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
         holder.mText.setLinkClickHandler(url -> {
@@ -274,7 +275,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             builder.append(card.getIssue().getTitle());
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(Data.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
+                builder.append(MDParser.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
                 builder.append(" \n\n ");
             }
 
@@ -319,7 +320,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
             }
 
-            final String parsed = Data.parseMD(builder.toString(), card.getIssue().getRepoPath());
+            final String parsed = MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath());
 
             mCards.set(pos, new Pair<>(card, parsed));
             holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));

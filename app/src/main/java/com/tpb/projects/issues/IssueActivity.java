@@ -53,7 +53,7 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
@@ -187,7 +187,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String html = Data.parseMD(builder.toString(), mIssue.getRepoPath());
+        final String html = MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
         Log.i(TAG, "bindIssue: HTML " + html);
         mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
         builder.setLength(0);
@@ -201,7 +201,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                         DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
                 )
         );
-        mOpenInfo.setHtml(Data.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_issue_closed);

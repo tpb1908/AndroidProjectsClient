@@ -18,6 +18,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -160,13 +161,12 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 builder.append("<br>");
                 builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
             }
-            final String parsed = Data.parseMD(builder.toString());
+            final String parsed = MDParser.parseMD(builder.toString());
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);
         } else {
             // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
             holder.mContent.setHtml(mParseCache.get(pos));
-            //TODO Replace with separate arraylists
         }
     }
 

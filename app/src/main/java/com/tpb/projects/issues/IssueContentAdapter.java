@@ -22,6 +22,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
+import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -189,8 +190,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
-            builder.append(Data.formatMD(comment.getBody(), mIssue.getRepoPath()));
-            final String parsed = Data.parseMD(builder.toString());
+            builder.append(MDParser.formatMD(comment.getBody(), mIssue.getRepoPath()));
+            final String parsed = MDParser.parseMD(builder.toString());
             mData.set(pos, new Pair<>(comment, parsed));
             commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText));
         } else {
@@ -297,7 +298,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
-        eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
@@ -483,7 +484,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
-        eventHolder.mText.setHtml(Data.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
