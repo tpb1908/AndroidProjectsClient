@@ -18,7 +18,7 @@ import com.tpb.projects.data.SettingsActivity;
  * Created by theo on 20/02/17.
  */
 
-public class CircularRevealActivity extends AppCompatActivity {
+public abstract class CircularRevealActivity extends AppCompatActivity {
 
     private int x = -1;
     private int y = -1;
