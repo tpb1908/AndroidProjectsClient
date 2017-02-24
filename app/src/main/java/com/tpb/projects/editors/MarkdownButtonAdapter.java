@@ -18,9 +18,9 @@ import com.tpb.projects.util.UI;
 public class MarkdownButtonAdapter {
     private static final String TAG = MarkdownButtonAdapter.class.getSimpleName();
 
-    private ImageLoadingActivity mParent;
-    private LinearLayout mScrollView;
-    private MarkDownButtonListener mListener;
+    private final ImageLoadingActivity mParent;
+    private final LinearLayout mScrollView;
+    private final MarkDownButtonListener mListener;
 
     public MarkdownButtonAdapter(ImageLoadingActivity parent, @NonNull LinearLayout scrollView, @NonNull MarkDownButtonListener listener) {
         mParent = parent;
@@ -50,9 +50,7 @@ public class MarkdownButtonAdapter {
 
         preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
         preview.setImageResource(R.drawable.ic_photo);
-        preview.setOnClickListener((v) -> {
-            mParent.showImageUploadDialog();
-        });
+        preview.setOnClickListener((v) -> mParent.showImageUploadDialog());
         mScrollView.addView(preview);
 
         preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);

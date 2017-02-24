@@ -573,28 +573,22 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.title_state_change_comment);
-        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(card.getIssue().isClosed()) {
-                    mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
-                } else {
-                    mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
-                }
-                final Intent i = new Intent(getContext(), CommentEditor.class);
-                i.putExtra(getString(R.string.parcel_issue), card.getIssue());
-                getActivity().startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
-
+        builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            if(card.getIssue().isClosed()) {
+                mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+            } else {
+                mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
             }
+            final Intent i = new Intent(getContext(), CommentEditor.class);
+            i.putExtra(getString(R.string.parcel_issue), card.getIssue());
+            getActivity().startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+
         });
-        builder.setNegativeButton(R.string.action_no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(card.getIssue().isClosed()) {
-                    mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
-                } else {
-                    mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
-                }
+        builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
+            if(card.getIssue().isClosed()) {
+                mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+            } else {
+                mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
             }
         });
         builder.setNeutralButton(R.string.action_cancel, null);

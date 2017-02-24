@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Projects</string>
 
-    <string name="action_sign_in">Sign in</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_undo">UNDO</string>
     <string name="action_ok">OK</string>
@@ -16,7 +15,6 @@
     <string name="error_no_column_title">Title can\'t be empty</string>
     <string name="error_title_change_failed">Title change failed</string>
     <string name="error_no_issues">There are no open issues which aren\'t already in the project</string>
-    <string name="error_issue_already_in_project">This issue already has a card in the project</string>
     <string name="error_user_not_found">User not found</string>
     <string name="error_project_not_found">Project not found</string>
     <string name="error_repo_not_found">Repository not found</string>
@@ -40,7 +38,6 @@
     <string name="text_forks">Forks</string>
     <string name="text_issues">Issues</string>
     <string name="text_stars">Stars</string>
-    <string name="text_commits">Commits</string>
     <string name="text_size">Size</string>
     <string name="text_watchers">Watchers</string>
     <string name="text_show_readme">Show README</string>
@@ -48,8 +45,6 @@
     <string name="text_create_project">Create new project</string>
     <string name="text_project_created">Project created successfully</string>
     <string name="text_project_edited">Project edited successfully</string>
-    <string name="text_project_deleted">Project deleted successfully</string>
-    <string name="text_project_deleted_undo">Project deleted</string>
     <string name="text_delete_project_warning">Do you want to delete this project?</string>
 
     <!--Project activity-->
@@ -124,8 +119,6 @@
     </plurals>
 
     <!-- Issue strings -->
-    <string name="text_assign_yourself">Assign yourself</string>
-    <string name="text_issue_created">Issue created</string>
     <string name="text_loading_collaborators">Loading collaborators</string>
     <string name="text_loading_labels">Loading labels</string>
     <string name="text_assigned_to">Assigned to </string>
@@ -134,7 +127,6 @@
     <string name="text_opened_this_issue">%1$s opened this issue %2$s</string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
-    <string name="text_creating_issue">Creating Issue</string>
 
     <!-- Settings activity -->
     <string name="text_version">Version</string>
@@ -191,21 +183,15 @@
     <string name="title_edit_project">Edit project</string>
     <string name="title_new_column">New column</string>
     <string name="title_delete_column">Delete column</string>
-    <string name="title_edit_card">Edit card</string>
-    <string name="title_new_card">New card</string>
     <string name="title_delete_card">Delete card</string>
 
-    <string name="title_new_issue">New issue</string>
     <string name="title_choose_issue">Choose issue</string>
     <string name="title_close_issue">Close issue</string>
-    <string name="title_edit_issue">Edit issue</string>
     <string name="title_choose_assignees">Assign to</string>
     <string name="title_choose_labels">Set labels</string>
     <string name="title_choose_assignee">Choose assignee</string>
     <string name="title_state_change_comment">Add a comment</string>
 
-    <string name="title_new_comment">New comment</string>
-    <string name="title_edit_comment">Edit comment</string>
     <string name="title_delete_comment">Delete comment</string>
 
     <string name="title_open_user_or_repo">Open user or repo</string>
@@ -238,7 +224,6 @@
     <string name="menu_reopen_issue">Reopen issue</string>
     <string name="menu_close_issue">Close issue</string>
     <string name="menu_copy_issue_url">Copy issue url</string>
-    <string name="menu_edit_labels">Edit labels</string>
     <string name="menu_delete_comment">Delete comment</string>
     <string name="menu_copy_comment_text">Copy comment text</string>
     <string name="menu_edit_comment">Edit</string>

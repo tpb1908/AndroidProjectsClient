@@ -149,11 +149,6 @@ public class CommentEditor extends ImageLoadingActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     public void finish() {
         if(mHasBeenEdited) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);

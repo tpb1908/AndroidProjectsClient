@@ -8,7 +8,6 @@
     android:layout_height="wrap_content">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/repo_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true">
@@ -271,7 +270,6 @@
 
 
                 <android.support.v7.widget.CardView
-                    android:id="@+id/repo_view_files_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp">

@@ -2,26 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_reactions"
         android:title="@string/menu_reactions">
         <menu>
             <item
-                android:id="@+id/menu_plus_one"
                 android:title="@string/menu_react_plus_one"/>
             <item
-                android:id="@+id/menu_minus_one"
                 android:title="@string/menu_react_minus_one"/>
             <item
-                android:id="@+id/menu_laugh"
                 android:title="@string/menu_react_laugh"/>
             <item
-                android:id="@+id/menu_hooray"
                 android:title="@string/menu_react_hooray"/>
             <item
-                android:id="@+id/menu_confused"
                 android:title="@string/menu_react_confused"/>
             <item
-                android:id="@+id/menu_heart"
                 android:title="@string/menu_react_heart"/>
         </menu>
 

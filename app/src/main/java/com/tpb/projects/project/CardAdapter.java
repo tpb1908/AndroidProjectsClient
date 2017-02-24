@@ -59,7 +59,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     private static final Handler mParseHandler = new Handler(parseThread.getLooper());
     private Repository.AccessLevel mAccessLevel;
-    private ProjectActivity.NavigationDragListener mNavListener;
+    private final ProjectActivity.NavigationDragListener mNavListener;
 
     CardAdapter(ColumnFragment parent, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
         mParent = parent;

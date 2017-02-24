@@ -274,10 +274,6 @@ public class CardEditor extends ImageLoadingActivity {
         onBackPressed();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 
     @Override
     public void finish() {

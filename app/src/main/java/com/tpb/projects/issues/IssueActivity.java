@@ -524,28 +524,22 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_state_change_comment);
-        builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
+        builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
 
-                startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
-                if(mIssue.isClosed()) {
-                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                }
-
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            if(mIssue.isClosed()) {
+                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
+
         });
-        builder.setNeutralButton(R.string.action_no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(mIssue.isClosed()) {
-                    mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                } else {
-                    mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
-                }
+        builder.setNeutralButton(R.string.action_no, (dialog, which) -> {
+            if(mIssue.isClosed()) {
+                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);

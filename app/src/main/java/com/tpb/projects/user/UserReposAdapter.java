@@ -42,8 +42,8 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private final Loader mLoader;
     private final SwipeRefreshLayout mRefresher;
     private final AnimatingRecycler mRecycler;
-    private ArrayList<Repository> mRepos = new ArrayList<>();
-    private String mAuthenticatedUser;
+    private final ArrayList<Repository> mRepos = new ArrayList<>();
+    private final String mAuthenticatedUser;
     private String mUser;
     private final RepoPinChecker mPinChecker;
     private final RepositoriesManager mManager;
@@ -243,7 +243,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         private static final String PREFS_KEY = "PINS";
         private String KEY;
         private final ArrayList<String> pins = new ArrayList<>();
-        private ArrayList<String> mInitialPositions = new ArrayList<>();
+        private final ArrayList<String> mInitialPositions = new ArrayList<>();
 
         RepoPinChecker(Context context) {
             prefs = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE);
