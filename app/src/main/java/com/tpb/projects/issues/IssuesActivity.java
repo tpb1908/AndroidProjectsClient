@@ -5,12 +5,14 @@ import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -349,11 +352,18 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         startActivity(i);
     }
 
-    void openUser(HtmlTextView view, String user) {
+    void openUser(ANImageView view, String user) {
         final Intent i = new Intent(IssuesActivity.this, UserActivity.class);
         i.putExtra(getString(R.string.intent_username), user);
-        UI.setClickPositionForIntent(this, i, view.getLastClickPosition());
-        startActivity(i);
+        if(view.getDrawable() != null) {
+            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) (view.getDrawable())).getBitmap());
+        }
+        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                view,
+                getString(R.string.transition_user_image)
+                ).toBundle()
+        );
     }
 
     void openMenu(View view, final Issue issue) {

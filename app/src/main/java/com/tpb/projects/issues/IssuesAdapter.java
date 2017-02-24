@@ -99,10 +99,13 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         final Issue issue = mIssues.get(pos);
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
+        holder.mUserAvatar.setOnClickListener((v) -> {
+            mParent.openUser(holder.mUserAvatar, issue.getOpenedBy().getLogin());
+        });
         holder.mContent.setLinkClickHandler(url -> {
             Log.i(TAG, "bindIssueCard: URL is " + url);
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                mParent.openUser(holder.mContent, issue.getOpenedBy().getLogin());
+                mParent.openUser(holder.mUserAvatar, issue.getOpenedBy().getLogin());
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
                 mParent.openIssue(holder.mContent, issue);
             } else {
