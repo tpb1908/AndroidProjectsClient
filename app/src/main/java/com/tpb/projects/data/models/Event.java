@@ -56,6 +56,8 @@ public class Event extends DataModel implements Parcelable {
     private String renameFrom;
     private String renameTo;
 
+    private Milestone milestone;
+
     public int getId() {
         return id;
     }

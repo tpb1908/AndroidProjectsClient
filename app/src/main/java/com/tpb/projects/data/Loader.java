@@ -19,6 +19,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
 
@@ -392,14 +393,14 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName) {
-        loadIssues(loader, repoFullName, Issue.IssueState.OPEN, null, null, 1);
+        loadIssues(loader, repoFullName, State.OPEN, null, null, 1);
     }
 
-    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels) {
+    public void loadIssues(IssuesLoader loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels) {
         loadIssues(loader, repoFullName, state, assignee, labels, 1);
     }
 
-    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels, int page) {
+    public void loadIssues(IssuesLoader loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {

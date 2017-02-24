@@ -31,7 +31,8 @@ public class Issue extends DataModel implements Parcelable {
     private int number;
 
     private static final String STATE = "state";
-    private String state;
+    private String stateString;
+    private State state;
 
     private static final String TITLE = "title";
     private String title;
@@ -73,8 +74,8 @@ public class Issue extends DataModel implements Parcelable {
         return number;
     }
 
-    public String getState() {
-        return state;
+    public String getStateString() {
+        return stateString;
     }
 
     public String getTitle() {
@@ -142,7 +143,8 @@ public class Issue extends DataModel implements Parcelable {
         try {
             i.id = obj.getInt(ID);
             i.number = obj.getInt(NUMBER);
-            i.state = obj.getString(STATE);
+            i.stateString = obj.getString(STATE);
+            i.state = State.fromString(i.stateString);
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
             i.comments = obj.getInt(COMMENTS);
@@ -197,7 +199,7 @@ public class Issue extends DataModel implements Parcelable {
         try {
             obj.put(ID, issue.id);
             obj.put(NUMBER, issue.number);
-            obj.put(STATE, issue.state);
+            obj.put(STATE, issue.stateString);
             obj.put(TITLE, issue.title);
             obj.put(BODY, issue.body);
             if(issue.closedAt != 0) obj.put(CLOSED_AT, issue.closedAt);
@@ -207,18 +209,13 @@ public class Issue extends DataModel implements Parcelable {
         return obj;
     }
 
-    public enum IssueState {
-
-        OPEN, CLOSED, ALL
-
-    }
-
     @Override
     public String toString() {
         return "Issue{" +
                 "id=" + id +
                 ", number=" + number +
-                ", state='" + state + '\'' +
+                ", stateString='" + stateString + '\'' +
+                ", state=" + state +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
@@ -238,6 +235,7 @@ public class Issue extends DataModel implements Parcelable {
         return obj instanceof Issue && ((Issue) obj).id == id;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -247,7 +245,8 @@ public class Issue extends DataModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeInt(this.number);
-        dest.writeString(this.state);
+        dest.writeString(this.stateString);
+        dest.writeInt(this.state == null ? -1 : this.state.ordinal());
         dest.writeString(this.title);
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
@@ -259,13 +258,14 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeInt(this.comments);
         dest.writeString(this.repoPath);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
-        dest.writeLong(this.createdAt);
     }
 
-    Issue(Parcel in) {
+    protected Issue(Parcel in) {
         this.id = in.readInt();
         this.number = in.readInt();
-        this.state = in.readString();
+        this.stateString = in.readString();
+        int tmpState = in.readInt();
+        this.state = tmpState == -1 ? null : State.values()[tmpState];
         this.title = in.readString();
         this.body = in.readString();
         this.closedAt = in.readLong();
@@ -277,7 +277,6 @@ public class Issue extends DataModel implements Parcelable {
         this.comments = in.readInt();
         this.repoPath = in.readString();
         this.isLocked = in.readByte() != 0;
-        this.createdAt = in.readLong();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {
