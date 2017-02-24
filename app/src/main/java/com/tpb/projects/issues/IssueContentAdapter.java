@@ -290,6 +290,18 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 //Duplicate close events seem to happen
                 bindEvent(eventHolder, me.getEvents().get(0));
                 return;
+            case REFERENCED:
+                final StringBuilder commits = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    Log.i(TAG, "bindMergedEvent: \n\n\nCommit id " + e.getCommitId());
+                    commits.append("<br>");
+                    commits.append(String.format(res.getString(R.string.text_href),
+                            "https://github.com/" + mIssue.getRepoPath() + "/commit/" + e.getCommitId(),
+                            String.format(res.getString(R.string.text_commit), e.getShortCommitId())));
+                }
+                commits.append("<br>");
+                text = String.format(res.getString(R.string.text_event_referenced_multiple), commits.toString());
+                break;
             default:
                 Log.e(TAG, "bindMergedEvent: Should be binding merging event " + me.toString(), new Exception());
                 bindEvent(eventHolder, me.getEvents().get(0));
@@ -338,14 +350,14 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                                 event.getActor().getLogin()),
                         String.format(res.getString(R.string.text_href),
                                 "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
-                                res.getString(R.string.text_commit))
+                                String.format(res.getString(R.string.text_commit), event.getShortCommitId()))
                 );
                 break;
             case REFERENCED:
                 text = String.format(res.getString(R.string.text_event_referenced),
                         String.format(res.getString(R.string.text_href),
                                 "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
-                                res.getString(R.string.text_commit)));
+                                String.format(res.getString(R.string.text_commit), event.getShortCommitId())));
                 break;
             case MENTIONED:
                 text = String.format(res.getString(R.string.text_event_mentioned),

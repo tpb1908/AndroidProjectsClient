@@ -74,6 +74,10 @@ public class Event extends DataModel implements Parcelable {
         return commitId;
     }
 
+    public String getShortCommitId() {
+        return commitId == null ? "" : commitId.substring(0, 7);
+    }
+
     public String getCommitUrl() {
         return commitUrl;
     }

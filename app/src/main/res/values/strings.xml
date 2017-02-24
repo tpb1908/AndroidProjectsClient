@@ -64,7 +64,7 @@
     <string name="text_unwatch">Unwatch</string>
     <string name="text_clear">Clear</string>
     <string name="text_show_files">Show files</string>
-    <string name="text_commit">commit</string>
+
 
     <!-- Content activity -->
     <string name="text_ribbon_root">Root</string>
@@ -84,6 +84,7 @@
     <string name="text_event_subscribed">%1$s subscribed</string>
     <string name="text_event_merged">Merged by %1$s in %2$s</string>
     <string name="text_event_referenced">Referenced in %1$s</string>
+    <string name="text_event_referenced_multiple">Referenced in multiple commits %1$s</string>
     <string name="text_event_mentioned">%1$s was mentioned</string>
     <string name="text_event_assigned">%1$s was assigned </string>
     <string name="text_event_assigned_themselves">%1$s self-assigned this</string>
@@ -109,6 +110,7 @@
     <string name="text_event_labels_removed">%1$s removed labels %2$s</string>
     <string name="text_event_added_to_project">%1$s added this issue to a project</string>
     <string name="text_event_removed_from_project">%1$s removed this issue from a project</string>
+    <string name="text_commit">commit %1$s</string>
 
     <!--Issues activity -->
     <string name="text_assignee_all">All</string>
