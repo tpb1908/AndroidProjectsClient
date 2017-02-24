@@ -1,8 +1,6 @@
 package com.tpb.projects.issues;
 
-import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -20,8 +18,7 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
-import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
@@ -198,6 +195,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
             commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText));
         }
+        IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mAvatar, ((Comment) mData.get(pos).first).getUser().getLogin());
     }
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
@@ -302,6 +300,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
+            IntentHandler.addGitHubIntentHandler(
+                    mParent,
+                    eventHolder.mAvatar, me.getEvents().get(0).getActor().getLogin());
+            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar);
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
@@ -488,25 +490,12 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
+            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mAvatar, event.getActor().getLogin());
+            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar);
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
     }
-
-    private void onAvatarClick(ANImageView view, int pos) {
-        final User user;
-        if(getItemViewType(pos) == 1) {
-            user = ((Comment) mData.get(pos).first).getUser();
-        } else {
-            if(mData.get(pos).first instanceof Event) {
-                user = ((Event) mData.get(pos).first).getActor();
-            } else {
-                user = ((MergedEvent) mData.get(pos).first).getEvents().get(0).getActor();
-            }
-        }
-        mParent.openUser(view, user);
-    }
-
     private void displayMenu(View view, int pos) {
         mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
     }
@@ -526,16 +515,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             mText.setShowUnderLines(false);
             mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
-            mText.setLinkClickHandler(url -> {
-                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                    mAvatar.callOnClick();
-                } else {
-                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    mParent.startActivity(i);
-                }
-            });
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-            mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
@@ -549,15 +529,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             super(view);
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
-            mAvatar.setOnClickListener((v) -> onAvatarClick(mAvatar, getAdapterPosition()));
-            mText.setLinkClickHandler(url -> {
-                if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                    mAvatar.callOnClick();
-                } else {
-                    final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    mParent.startActivity(i);
-                }
-            });
         }
 
     }

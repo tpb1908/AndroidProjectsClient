@@ -8,11 +8,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -46,8 +43,6 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
-import com.tpb.projects.issues.IssueActivity;
-import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
 
@@ -781,43 +776,6 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
                 copyToClipboard(card.getNote());
                 break;
         }
-    }
-
-    void openUser(View view, String login) {
-        final Intent i = new Intent(getContext(), UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), login);
-        if(view instanceof ANImageView) {
-            if(((ANImageView) view).getDrawable() != null) {
-                Log.i(TAG, "openUser: Putting bitmap");
-                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) ((ANImageView) view).getDrawable()).getBitmap());
-            }
-            startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    getActivity(),
-                    view,
-                    getString(R.string.transition_user_image)
-                    ).toBundle()
-            );
-        } else {
-            if(view instanceof HtmlTextView) {
-                UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
-            } else {
-                UI.setViewPositionForIntent(i, view);
-            }
-            startActivity(i);
-        }
-    }
-
-    void openIssue(View view, String url) {
-        final int number = Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
-        final Intent i = new Intent(getContext(), IssueActivity.class);
-        i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
-        i.putExtra(getString(R.string.intent_issue_number), number);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
-        } else {
-            UI.setViewPositionForIntent(i, view);
-        }
-        startActivity(i);
     }
 
     void scrollUp() {

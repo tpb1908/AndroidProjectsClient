@@ -374,22 +374,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         menu.show();
     }
 
-    void openUser(ANImageView imageView, User user) {
-        final Intent i = new Intent(IssueActivity.this, UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), user.getLogin());
-        if(imageView.getDrawable() != null) {
-            Log.i(TAG, "openUser: Putting bitmap");
-            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-        }
-        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
-                imageView,
-                getString(R.string.transition_user_image)
-                ).toBundle()
-        );
-
-    }
-
 
     @OnClick(R.id.issue_header_card)
     void onHeaderClick(View view) {

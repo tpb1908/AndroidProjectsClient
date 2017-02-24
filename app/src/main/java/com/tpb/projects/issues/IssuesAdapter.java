@@ -1,11 +1,8 @@
 package com.tpb.projects.issues;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +14,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -100,20 +97,9 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         final Issue issue = mIssues.get(pos);
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
-        holder.mUserAvatar.setOnClickListener((v) -> {
-            mParent.openUser(holder.mUserAvatar, issue.getOpenedBy().getLogin());
-        });
-        holder.mContent.setLinkClickHandler(url -> {
-            Log.i(TAG, "bindIssueCard: URL is " + url);
-            if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                mParent.openUser(holder.mUserAvatar, issue.getOpenedBy().getLogin());
-            } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
-                mParent.openIssue(holder.mContent, issue);
-            } else {
-                final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mParent.startActivity(i);
-            }
-        });
+        IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
+        IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, issue);
+
         if(mParseCache.get(pos) == null) {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();
@@ -176,7 +162,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     private void openIssue(View view, int pos) {
-        mParent.openIssue(view, mIssues.get(pos));
+        IntentHandler.openIssue(mParent, view, mIssues.get(pos));
     }
 
     private void openMenu(View view, int pos) {

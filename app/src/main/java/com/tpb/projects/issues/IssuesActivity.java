@@ -5,14 +5,12 @@ import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -45,7 +42,6 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
-import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
@@ -339,31 +335,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
-    }
-
-    void openIssue(View view, Issue issue) {
-        final Intent i = new Intent(IssuesActivity.this, IssueActivity.class);
-        i.putExtra(getString(R.string.parcel_issue), issue);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(this, i, ((HtmlTextView) view).getLastClickPosition());
-        } else {
-            UI.setViewPositionForIntent(i, view);
-        }
-        startActivity(i);
-    }
-
-    void openUser(ANImageView view, String user) {
-        final Intent i = new Intent(IssuesActivity.this, UserActivity.class);
-        i.putExtra(getString(R.string.intent_username), user);
-        if(view.getDrawable() != null) {
-            i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) (view.getDrawable())).getBitmap());
-        }
-        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
-                view,
-                getString(R.string.transition_user_image)
-                ).toBundle()
-        );
     }
 
     void openMenu(View view, final Issue issue) {
