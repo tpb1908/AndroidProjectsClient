@@ -178,6 +178,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
+
+        // The title and body are formatted separately, because the title shouldn't be formatted
+        String html = MDParser.formatMD(builder.toString(), null, false);
+        builder.setLength(0); // Clear the builder to reuse it
+
         if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
             builder.append(mIssue.getBody().replaceFirst("\\s++$", ""));
             builder.append("\n");
@@ -185,9 +190,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
-        final String html = MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
-        Log.i(TAG, "bindIssue: HTML " + html);
+
+        html += MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
+
         mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
+
         builder.setLength(0);
         builder.append(
                 String.format(
