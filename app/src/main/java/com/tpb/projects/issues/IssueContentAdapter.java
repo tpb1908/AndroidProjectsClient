@@ -315,7 +315,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             IntentHandler.addGitHubIntentHandler(
                     mParent,
                     eventHolder.mAvatar, me.getEvents().get(0).getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar);
+            IntentHandler.addGitHubIntentHandler(mParent,
+                    eventHolder.mText,
+                    eventHolder.mAvatar,
+                    me.getEvents().get(0).getActor().getLogin());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
@@ -513,7 +516,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
             IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mAvatar, event.getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar);
+            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar, event.getActor().getLogin());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }

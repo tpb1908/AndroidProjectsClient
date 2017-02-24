@@ -52,7 +52,7 @@ public class IntentHandler {
         });
     }
 
-    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv) {
+    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
                 openUser(activity, iv, url.substring(url.lastIndexOf('/') + 1));
