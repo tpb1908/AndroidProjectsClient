@@ -143,6 +143,9 @@
     <string name="text_show_files">Show files</string>
     <string name="text_ribbon_root">Root</string>
     <string name="text_interceptor_open_with">Open with</string>
+    <string name="text_take_a_picture">Take a picture</string>
+    <string name="text_choose_from_gallery">Choose from gallery</string>
+    <string name="text_upload_an_image">Upload an image</string>
 
     <plurals name="text_issue_comment_count">
         <item quantity="one">%d comment</item>

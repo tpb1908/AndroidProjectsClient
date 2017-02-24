@@ -31,8 +31,7 @@ import java.util.Date;
 public abstract class ImageLoadingActivity extends CircularRevealActivity {
     private static final String TAG = ImageLoadingActivity.class.getSimpleName();
 
-
-    private static final int REQUEST_CAMERA = 9403;
+    private static final int REQUEST_CAMERA = 9403; //Random request codes
     private static final int SELECT_FILE = 6113;
     private String mCurrentFilePath;
     protected ProgressDialog mUploadDialog;
@@ -42,9 +41,9 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
     abstract void imageLoadException(IOException ioe);
 
     void showImageUploadDialog() {
-        final CharSequence[] items = {"Take a picture", "Choose from gallery", "Cancel"};
+        final CharSequence[] items = {getString(R.string.text_take_a_picture), getString(R.string.text_choose_from_gallery), getString(R.string.action_cancel)};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Upload an image");
+        builder.setTitle(getString(R.string.text_upload_an_image));
         builder.setItems(items, (dialog, which) -> {
             if(mUploadDialog == null) {
                 mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);

@@ -138,9 +138,9 @@ public class CommentEditor extends ImageLoadingActivity {
 
             @Override
             public void uploadError(ANError error) {
-
+                //TODO Error message
             }
-        }, image64, (bytesUploaded, totalBytes) -> mUploadDialog.setProgress(Math.round((100 * bytesUploaded) / totalBytes)));
+        }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)));
     }
 
     @Override

@@ -50,8 +50,6 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
             } else {
                 new Loader(getContext()).renderMarkDown(loader, markdown);
             }
-
-
         }
 
 
