@@ -92,6 +92,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
+        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_issues);
         ButterKnife.bind(this);
         mAnalytics = FirebaseAnalytics.getInstance(this);
