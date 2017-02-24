@@ -88,71 +88,7 @@ public class CardEditor extends ImageLoadingActivity {
             mEditor.setText(mCard.getNote());
         } else {
             mCard = new Card();
-            final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
-            final ArrayList<Integer> invalidIds = launchIntent.getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
-
-            mIssueButton.setVisibility(View.VISIBLE);
-            mIssueButton.setOnClickListener(view1 -> {
-                final ProgressDialog pd = new ProgressDialog(CardEditor.this);
-                pd.setTitle(R.string.text_loading_issues);
-                pd.setCancelable(false);
-                pd.show();
-                new Loader(CardEditor.this).loadOpenIssues(new Loader.IssuesLoader() {
-                    private int selectedIssuePosition = 0;
-
-                    @Override
-                    public void issuesLoaded(Issue[] loadedIssues) {
-                        if(isClosing()) return;;
-                        pd.dismiss();
-                        final ArrayList<Issue> validIssues = new ArrayList<>();
-                        for(Issue i : loadedIssues) {
-                            if(invalidIds.indexOf(i.getId()) == -1) validIssues.add(i);
-                        }
-                        if(validIssues.isEmpty()) {
-                            Toast.makeText(CardEditor.this, R.string.error_no_issues, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        final String[] texts = new String[validIssues.size()];
-                        for(int i = 0; i < validIssues.size(); i++) {
-                            texts[i] = String.format(getString(R.string.text_issue_single_line),
-                                    validIssues.get(i).getNumber(), validIssues.get(i).getTitle());
-                        }
-
-                        final AlertDialog.Builder scBuilder = new AlertDialog.Builder(CardEditor.this);
-                        scBuilder.setTitle(R.string.title_choose_issue);
-                        scBuilder.setSingleChoiceItems(texts, 0, (dialogInterface, i) -> {
-                            selectedIssuePosition = i;
-                        });
-                        scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
-                            Log.i(TAG, "issuesLoaded: Issue selected: " + validIssues.get(selectedIssuePosition));
-                            mCard.setFromIssue(validIssues.get(selectedIssuePosition));
-                            mEditor.setFilters(new InputFilter[] {});
-                            bindIssue(mCard.getIssue());
-                            mEditor.setEnabled(false);
-                            mEditorWrapper.setCounterEnabled(false);
-                            mClearButton.setVisibility(View.VISIBLE);
-                        }));
-                        scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
-                        scBuilder.create().show();
-                    }
-
-                    @Override
-                    public void issuesLoadError(APIHandler.APIError error) {
-                        if(isClosing()) return;
-                        pd.dismiss();
-                        Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();
-                    }
-                }, fullRepoName);
-            });
-
-            mClearButton.setOnClickListener((v) -> {
-                mEditor.setText("");
-                mEditor.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)});
-                mEditorWrapper.setCounterEnabled(true);
-                mCard = new Card();
-                mClearButton.setVisibility(View.GONE);
-            });
+            addFromIssueButtonListeners(launchIntent);
         }
 
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
@@ -232,6 +168,73 @@ public class CardEditor extends ImageLoadingActivity {
                 )
         );
         mEditor.setText(Html.fromHtml(MDParser.parseMD(builder.toString(), issue.getRepoPath())));
+    }
+
+    private void addFromIssueButtonListeners(Intent launchIntent) {
+        final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        final ArrayList<Integer> invalidIds = launchIntent.getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
+
+        mIssueButton.setVisibility(View.VISIBLE);
+        mIssueButton.setOnClickListener(v -> {
+            final ProgressDialog pd = new ProgressDialog(CardEditor.this);
+            pd.setTitle(R.string.text_loading_issues);
+            pd.setCancelable(false);
+            pd.show();
+            new Loader(CardEditor.this).loadOpenIssues(new Loader.IssuesLoader() {
+                private int selectedIssuePosition = 0;
+
+                @Override
+                public void issuesLoaded(Issue[] loadedIssues) {
+                    if(isClosing()) return; // There is no window to attach to
+                    pd.dismiss();
+                    final ArrayList<Issue> validIssues = new ArrayList<>();
+                    for(Issue i : loadedIssues) {
+                        if(invalidIds.indexOf(i.getId()) == -1) validIssues.add(i);
+                    }
+                    if(validIssues.isEmpty()) {
+                        Toast.makeText(CardEditor.this, R.string.error_no_issues, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    final String[] texts = new String[validIssues.size()];
+                    for(int i = 0; i < validIssues.size(); i++) {
+                        texts[i] = String.format(getString(R.string.text_issue_single_line),
+                                validIssues.get(i).getNumber(), validIssues.get(i).getTitle());
+                    }
+
+                    final AlertDialog.Builder scBuilder = new AlertDialog.Builder(CardEditor.this);
+                    scBuilder.setTitle(R.string.title_choose_issue);
+                    scBuilder.setSingleChoiceItems(texts, 0, (dialogInterface, i) -> {
+                        selectedIssuePosition = i;
+                    });
+                    scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
+                        mCard.setFromIssue(validIssues.get(selectedIssuePosition));
+                        mEditor.setFilters(new InputFilter[] {});
+                        bindIssue(mCard.getIssue());
+                        mEditor.setEnabled(false);
+                        mEditorWrapper.setCounterEnabled(false);
+                        mClearButton.setVisibility(View.VISIBLE);
+                    }));
+                    scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+                    scBuilder.create().show();
+                }
+
+                @Override
+                public void issuesLoadError(APIHandler.APIError error) {
+                    if(isClosing()) return;
+                    pd.dismiss();
+                    Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();
+                }
+            }, fullRepoName);
+        });
+
+        mClearButton.setOnClickListener((v) -> {
+            mEditor.setText("");
+            mEditor.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)});
+            mEditorWrapper.setCounterEnabled(true);
+            mCard = new Card();
+            mClearButton.setVisibility(View.GONE);
+        });
     }
 
     @Override

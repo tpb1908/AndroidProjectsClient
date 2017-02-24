@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.TypedValue;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Transformation;
@@ -121,12 +118,6 @@ public class UI {
             s += "-";
         }
         return l;
-    }
-
-    public static Point getTouchPositionFromDragEvent(View item, DragEvent event) {
-        final Rect rItem = new Rect();
-        item.getGlobalVisibleRect(rItem);
-        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
     }
 
     private static boolean willTextFit(TextView tv, String s) {
