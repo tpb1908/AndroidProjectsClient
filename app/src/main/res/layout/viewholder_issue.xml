@@ -19,21 +19,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/issue_drawable"
+        <LinearLayout
+            android:id="@+id/issue_drawable_wrapper"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_centerVertical="true"
+            android:orientation="vertical"
             android:layout_alignParentStart="true"
-            android:visibility="gone"/>
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/issue_drawable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.androidnetworking.widget.ANImageView
+                android:id="@+id/issue_user_avatar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+
 
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/issue_content_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:layout_toEndOf="@+id/issue_drawable"
+            android:layout_toEndOf="@+id/issue_drawable_wrapper"
             android:layout_toStartOf="@+id/issue_menu_button"
             android:layout_centerVertical="true">
         </org.sufficientlysecure.htmltextview.HtmlTextView>
