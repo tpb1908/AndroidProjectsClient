@@ -73,7 +73,6 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
-        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_user);
         ButterKnife.bind(this);
         AndroidNetworking.initialize(this);
