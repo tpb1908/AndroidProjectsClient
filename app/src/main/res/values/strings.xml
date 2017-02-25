@@ -126,10 +126,16 @@
     <string name="text_loading_labels">Loading labels</string>
     <string name="text_assigned_to">Assigned to </string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s) %3$s</string>
-    <string name="text_opened_by">%1$s opened by %2$s %3$s</string>
+    <string name="text_issue_opened_by">%1$s opened by %2$s %3$s</string>
     <string name="text_opened_this_issue">%1$s opened this issue %2$s</string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
+
+    <!--Milestone -->
+    <string name="text_milestone_completion">%1$d open %2$d closed %3$d%% complete</string>
+    <string name="text_milestone_opened_by">Opened by %1$s  %2$s</string>
+    <string name="text_milestone_closed_at">Closed %1$s</string>
+    <string name="text_milestone_due_on">Due %1$s</string>
 
     <!-- Settings activity -->
     <string name="text_version">Version</string>

@@ -195,6 +195,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
             commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText));
         }
+        IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mText);
         IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mAvatar, ((Comment) mData.get(pos).first).getUser().getLogin());
     }
 

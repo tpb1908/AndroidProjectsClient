@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.androidnetworking.widget.ANImageView;
@@ -20,10 +21,11 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
  */
 
 public class IntentHandler {
-
+    private static final String TAG = IntentHandler.class.getSimpleName();
 
     public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv) {
         tv.setLinkClickHandler(url -> {
+            Log.i(TAG, "addGitHubIntentHandler: \n\n\nURL " + url);
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
                 openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
@@ -42,7 +44,11 @@ public class IntentHandler {
     public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, Issue issue) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                openUser(activity, iv, issue.getOpenedBy().getLogin());
+                if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
+                    openUser(activity, iv, issue.getOpenedBy().getLogin());
+                } else {
+                    openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
+                }
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
                 openIssue(activity, tv, issue);
             } else {
@@ -55,7 +61,7 @@ public class IntentHandler {
     public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Data.instancesOf(url, "/") == 3) {
-                openUser(activity, iv, url.substring(url.lastIndexOf('/') + 1));
+                openUser(activity, iv, login);
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
                 openIssue(activity, tv, url);
             } else {

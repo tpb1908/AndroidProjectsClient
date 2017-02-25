@@ -236,7 +236,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mUserAvatar.setVisibility(View.VISIBLE);
         final Card card = mCards.get(pos).first;
-        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, card.getIssue());
@@ -251,7 +251,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append(" \n\n ");
             }
 
-            builder.append(String.format(mParent.getString(R.string.text_opened_by),
+            builder.append(String.format(mParent.getString(R.string.text_issue_opened_by),
                     String.format(mParent.getString(R.string.text_md_link),
                             "#" + Integer.toString(card.getIssue().getNumber()),
                             "https://github.com/" + mParent.mParent.mProject.getRepoPath() + "/issues/" + Integer.toString(card.getIssue().getNumber())

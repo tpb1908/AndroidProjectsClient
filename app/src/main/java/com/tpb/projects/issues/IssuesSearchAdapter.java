@@ -84,7 +84,7 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
         }
 
         ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(
-                data.get(dataPos).isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open, 0, 0, 0);
+                data.get(dataPos).isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open, 0, 0, 0);
         ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
 
     }

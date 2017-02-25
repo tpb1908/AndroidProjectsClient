@@ -65,6 +65,9 @@ public class Issue extends DataModel implements Parcelable {
     private static final String LOCKED = "locked";
     private boolean isLocked;
 
+    private static final String MILESTONE = "milestone";
+    private Milestone milestone;
+
     public int getId() {
         return id;
     }
@@ -122,6 +125,14 @@ public class Issue extends DataModel implements Parcelable {
         return isLocked;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public Milestone getMilestone() {
+        return milestone;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -176,7 +187,6 @@ public class Issue extends DataModel implements Parcelable {
             i.openedBy = User.parse(obj.getJSONObject(USER));
             if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject(CLOSED_BY));
-                Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
             }
             try {
                 final JSONArray lbs = obj.getJSONArray(LABELS);
@@ -186,6 +196,9 @@ public class Issue extends DataModel implements Parcelable {
                 }
             } catch(JSONException jse) {
                 Log.e(TAG, "parse: Labels: ", jse);
+            }
+            if(obj.has(MILESTONE) && !obj.getString(MILESTONE).equals(JSON_NULL)) {
+                i.milestone = Milestone.parse(obj.getJSONObject(MILESTONE));
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -226,6 +239,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", comments=" + comments +
                 ", repoPath='" + repoPath + '\'' +
                 ", isLocked=" + isLocked +
+                ", milestone=" + milestone +
                 '}';
     }
 
@@ -257,6 +271,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeInt(this.comments);
         dest.writeString(this.repoPath);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.milestone, flags);
     }
 
     protected Issue(Parcel in) {
@@ -276,6 +291,7 @@ public class Issue extends DataModel implements Parcelable {
         this.comments = in.readInt();
         this.repoPath = in.readString();
         this.isLocked = in.readByte() != 0;
+        this.milestone = in.readParcelable(Milestone.class.getClassLoader());
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

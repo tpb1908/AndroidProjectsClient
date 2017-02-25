@@ -95,7 +95,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     public void onBindViewHolder(IssueHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Issue issue = mIssues.get(pos);
-        holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+        holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
         IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, issue);
@@ -107,7 +107,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             builder.append(issue.getTitle());
             builder.append("</b><br><br>");
 
-            builder.append(String.format(context.getString(R.string.text_opened_by),
+            builder.append(String.format(context.getString(R.string.text_issue_opened_by),
                     String.format(context.getString(R.string.text_md_link),
                             "#" + Integer.toString(issue.getNumber()),
                             "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
@@ -147,6 +147,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 builder.append("<br>");
                 builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
             }
+            //Log.i(TAG, "onBindViewHolder: " + builder.toString());
             final String parsed = MDParser.parseMD(builder.toString());
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);

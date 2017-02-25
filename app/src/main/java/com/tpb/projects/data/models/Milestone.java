@@ -63,20 +63,24 @@ public class Milestone extends DataModel implements Parcelable {
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
-            try {
-                m.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
+            if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
+                try {
+                    m.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                } catch(ParseException pe) {
+                    Log.e(TAG, "parse: ", pe);
+                }
             }
-            try {
-                m.dueOn = Data.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
+            if(!obj.getString(DUE_ON).equals(JSON_NULL)) {
+                try {
+                    m.dueOn = Data.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
+                } catch(ParseException pe) {
+                    Log.e(TAG, "parse: ", pe);
+                }
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
-        return new Milestone();
+        return m;
     }
 
     @Override
