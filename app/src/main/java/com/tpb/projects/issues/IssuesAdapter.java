@@ -1,6 +1,7 @@
 package com.tpb.projects.issues;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
@@ -147,7 +149,58 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                 builder.append("<br>");
                 builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
             }
-            //Log.i(TAG, "onBindViewHolder: " + builder.toString());
+            if(issue.getMilestone() != null) {
+                final Milestone milestone = issue.getMilestone();
+                builder.append("<br>");
+                if(milestone.getClosedAt() == 0) {
+                    final StringBuilder dueStringBuilder = new StringBuilder();
+                    if(System.currentTimeMillis() < milestone.getDueOn() ||
+                            (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {
+                        dueStringBuilder.append(
+                                String.format(
+                                        context.getString(R.string.text_milestone_due_on),
+                                        DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
+                                )
+                        );
+                    } else {
+                        dueStringBuilder.append("<font color=\"");
+                        dueStringBuilder.append(String.format("#%06X", (0xFFFFFF & Color.RED)));
+                        dueStringBuilder.append("\">");
+                        dueStringBuilder.append(
+                                String.format(
+                                        context.getString(R.string.text_milestone_due_on),
+                                        DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
+                                )
+                        );
+                        dueStringBuilder.append("</font>");
+                    }
+
+                    builder.append(
+                            String.format(
+                                    context.getString(R.string.text_milestone_short),
+                                    String.format(
+                                            context.getString(R.string.text_href),
+                                            milestone.getHtmlUrl(),
+                                            milestone.getTitle()),
+                                    dueStringBuilder.toString()
+                            )
+                    );
+                } else {
+                    builder.append(
+                            String.format(
+                                    context.getString(R.string.text_milestone_short),
+                                    String.format(
+                                            context.getString(R.string.text_href),
+                                            milestone.getHtmlUrl(),
+                                            milestone.getTitle()),
+                                    String.format(
+                                            context.getString(R.string.text_milestone_closed_at),
+                                            DateUtils.getRelativeTimeSpanString(milestone.getClosedAt())
+                                    )
+                            )
+                    );
+                }
+            }
             final String parsed = MDParser.parseMD(builder.toString());
             mParseCache.set(pos, parsed);
             holder.mContent.setHtml(parsed);

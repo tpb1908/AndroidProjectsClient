@@ -21,6 +21,9 @@ public class Milestone extends DataModel implements Parcelable {
     private int id;
     private static final String NUMBER = "number";
     private int number;
+    private String url;
+    private static final String HTML_URL = "html_url";
+    private String htmlUrl;
     private static final String STATE = "state";
     private String stateString;
     private State state;
@@ -46,6 +49,8 @@ public class Milestone extends DataModel implements Parcelable {
         try {
             m.id = obj.getInt(ID);
             m.number = obj.getInt(NUMBER);
+            m.url = obj.getString(URL);
+            m.htmlUrl = obj.getString(HTML_URL);
             m.stateString = obj.getString(STATE);
             m.state = State.fromString(m.stateString);
             m.title = obj.getString(TITLE);
@@ -136,11 +141,21 @@ public class Milestone extends DataModel implements Parcelable {
         return description;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getHtmlUrl() {
+        return htmlUrl;
+    }
+
     @Override
     public String toString() {
         return "Milestone{" +
                 "id=" + id +
                 ", number=" + number +
+                ", url='" + url + '\'' +
+                ", htmlUrl='" + htmlUrl + '\'' +
                 ", stateString='" + stateString + '\'' +
                 ", state=" + state +
                 ", title='" + title + '\'' +
@@ -155,7 +170,6 @@ public class Milestone extends DataModel implements Parcelable {
                 '}';
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -165,6 +179,8 @@ public class Milestone extends DataModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeInt(this.number);
+        dest.writeString(this.url);
+        dest.writeString(this.htmlUrl);
         dest.writeString(this.stateString);
         dest.writeInt(this.state == null ? -1 : this.state.ordinal());
         dest.writeString(this.title);
@@ -184,6 +200,8 @@ public class Milestone extends DataModel implements Parcelable {
     protected Milestone(Parcel in) {
         this.id = in.readInt();
         this.number = in.readInt();
+        this.url = in.readString();
+        this.htmlUrl = in.readString();
         this.stateString = in.readString();
         int tmpState = in.readInt();
         this.state = tmpState == -1 ? null : State.values()[tmpState];
@@ -198,7 +216,7 @@ public class Milestone extends DataModel implements Parcelable {
         this.dueOn = in.readLong();
     }
 
-    public static final Parcelable.Creator<Milestone> CREATOR = new Parcelable.Creator<Milestone>() {
+    public static final Creator<Milestone> CREATOR = new Creator<Milestone>() {
         @Override
         public Milestone createFromParcel(Parcel source) {
             return new Milestone(source);
