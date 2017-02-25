@@ -301,7 +301,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                 builder.append(String.format(getString(R.string.text_milestone_completion),
                         milestone.getOpenIssues(),
                         milestone.getClosedIssues(),
-                        Math.round((float)milestone.getClosedIssues()/(milestone.getOpenIssues() + milestone.getClosedIssues())))
+                        Math.round(100f * milestone.getClosedIssues()/(milestone.getOpenIssues() + milestone.getClosedIssues())))
                 );
             }
             builder.append("<br>");
@@ -472,7 +472,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         menu.show();
     }
 
-
     @OnClick(R.id.issue_header_card)
     void onHeaderClick(View view) {
         if(mIssue != null) editIssue(view);
@@ -594,9 +593,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
+
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
             @Override
             public void issueStateChanged(Issue issue) {
+                mAdapter.clear();
                 mLoader.loadEvents(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
                 mIssue = issue;
                 mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
@@ -623,16 +624,16 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
             final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
-
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
                 mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             } else {
                 mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
-
         });
         builder.setNeutralButton(R.string.action_no, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
                 mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             } else {

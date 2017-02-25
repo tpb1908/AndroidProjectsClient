@@ -93,6 +93,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
     }
 
+    //TODO Move some of this binding to methods for use throughout the app
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
