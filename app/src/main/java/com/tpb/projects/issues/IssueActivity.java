@@ -56,6 +56,7 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
@@ -285,6 +286,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             tv.setShowUnderLines(false);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
             final ANImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
+            IntentHandler.addGitHubIntentHandler(this, tv, user, milestone.getCreator().getLogin());
+            IntentHandler.addGitHubIntentHandler(this, user, milestone.getCreator().getLogin());
             status.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
             user.setImageUrl(milestone.getCreator().getAvatarUrl());
 
