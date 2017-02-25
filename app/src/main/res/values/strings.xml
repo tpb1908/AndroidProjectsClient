@@ -183,6 +183,8 @@
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_user_or_repo">Username or user/repo</string>
 
+    <string name="hint_milestone_title">Title</string>
+    <string name="hint_milestone_description">Description</string>
 
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_user">Repositories</string>
