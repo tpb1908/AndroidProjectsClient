@@ -75,6 +75,9 @@
         <activity android:name=".editors.CommentEditor"
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 
+        <activity android:name=".editors.MilestoneEditor"
+                  android:theme="@style/AppTheme.Transparent.Dark"/>
+
         <activity android:name=".data.SettingsActivity"/>
 
         <activity android:name=".repo.content.FileActivity"/>
