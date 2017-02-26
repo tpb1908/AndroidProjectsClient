@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
+class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITLoader<Repository> {
     private static final String TAG = UserReposAdapter.class.getSimpleName();
 
     private final Loader mLoader;
@@ -147,15 +147,14 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     }
 
     @Override
-    public void repositoriesLoaded(Repository[] repos) {
-
+    public void loadComplete(Repository... repos) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(repos.length > 0) {
             int oldLength = mRepos.size();
 
             if(mPage == 1) {
-               // mRecycler.enableAnimation();
+                // mRecycler.enableAnimation();
                 Log.i(TAG, "repositoriesLoaded: Setting repositories");
                 mRepos.clear();
                 for(Repository r : repos) {
@@ -184,32 +183,32 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         }
     }
 
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
+    }
+
     private void ensureLoadOfPinnedRepos() {
         Log.i(TAG, "ensureLoadOfPinnedRepos: Ensuring that repos are loaded ");
         for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
             Log.i(TAG, "ensureLoadOfPinnedRepos: Loading " + repo);
-            mLoader.loadRepository(new Loader.RepositoryLoader() {
+            mLoader.loadRepository(new Loader.GITLoader<Repository>() {
                 @Override
-                public void repoLoaded(Repository repo) {
-                    if(!mRepos.contains(repo)) {
-                        mRepos.add(0, repo);
+                public void loadComplete(Repository... data) {
+                    if(!mRepos.contains(data[0])) {
+                        mRepos.add(0, data[0]);
                         mRecycler.disableAnimation();
-                        mPinChecker.appendPinnedPosition(repo.getFullName());
+                        mPinChecker.appendPinnedPosition(data[0].getFullName());
                         notifyItemInserted(0);
                     }
                 }
 
                 @Override
-                public void repoLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
             }, repo);
         }
-    }
-
-    @Override
-    public void repositoryLoadError(APIHandler.APIError error) {
-
     }
 
     private void openItem(View view, int pos) {

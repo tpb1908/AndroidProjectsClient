@@ -56,9 +56,6 @@ import static android.view.View.GONE;
  */
 
 public class RepoActivity extends AppCompatActivity implements
-        Loader.RepositoryLoader,
-        Loader.ReadMeLoader,
-        Loader.ProjectsLoader,
         ProjectAdapter.ProjectEditor,
         ProjectDialog.ProjectListener,
         Editor.ProjectCreationListener {
@@ -135,16 +132,16 @@ public class RepoActivity extends AppCompatActivity implements
                 mDescription.setText(null);
                 mUserName.setText(null);
                 mUserImage.setImageDrawable(null);
-                mLoader.loadRepository(this, mRepo.getFullName());
+                mLoader.loadRepository(mRepoLoader, mRepo.getFullName());
             }
         });
         mAdapter = new ProjectAdapter(this, mRecycler);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
-            repoLoaded(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
+            mRepoLoader.loadComplete(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
         } else {
-            mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
+            mLoader.loadRepository(mRepoLoader, launchIntent.getStringExtra(getString(R.string.intent_repo)));
         }
     }
 
@@ -236,75 +233,119 @@ public class RepoActivity extends AppCompatActivity implements
         }
 
     }
-
-    @Override
-    public void repoLoaded(Repository repo) {
-        mRepo = repo;
-        mName.setText(repo.getName());
-        if(Constants.JSON_NULL.equals(repo.getDescription())) {
-            mDescription.setVisibility(GONE);
-        } else {
-            mDescription.setText(repo.getDescription());
-        }
-        mUserName.setText(repo.getUserLogin());
-        mUserImage.setImageUrl(repo.getUserAvatarUrl());
-        mSize.setText(Data.formatKB(repo.getSize()));
-        mIssues.setText(Integer.toString(repo.getIssues()));
-        mForks.setText(Integer.toString(repo.getForks()));
-        mWatchers.setText(Integer.toString(repo.getWatchers()));
-        mStars.setText(Integer.toString(repo.getStarGazers()));
-        mRefresher.setRefreshing(true);
-        mLoader.loadProjects(this, mRepo.getFullName());
-        mLoader.loadReadMe(this, mRepo.getFullName());
-        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUserLogin())) {
-            mAdapter.enableEditAccess();
-            mAccessLevel = Repository.AccessLevel.ADMIN;
-            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
-        } else {
-            mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+    
+    private Loader.GITLoader<Repository> mRepoLoader = new Loader.GITLoader<Repository>() {
+        @Override
+        public void loadComplete(Repository... data) {
+            mRepo = data[0];
+            mName.setText(mRepo.getName());
+            if(Constants.JSON_NULL.equals(mRepo.getDescription())) {
+                mDescription.setVisibility(GONE);
+            } else {
+                mDescription.setText(mRepo.getDescription());
+            }
+            mUserName.setText(mRepo.getUserLogin());
+            mUserImage.setImageUrl(mRepo.getUserAvatarUrl());
+            mSize.setText(Data.formatKB(mRepo.getSize()));
+            mIssues.setText(Integer.toString(mRepo.getIssues()));
+            mForks.setText(Integer.toString(mRepo.getForks()));
+            mWatchers.setText(Integer.toString(mRepo.getWatchers()));
+            mStars.setText(Integer.toString(mRepo.getStarGazers()));
+            mRefresher.setRefreshing(true);
+            mLoader.loadProjects(mProjectsLoader, mRepo.getFullName());
+            mLoader.loadReadMe(new Loader.GITLoader<String>() {
                 @Override
-                public void accessCheckComplete(Repository.AccessLevel level) {
-                    Log.i(TAG, "accessCheckComplete: Access " + level);
-                    mAccessLevel = level;
-                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                        mAdapter.enableEditAccess();
-                        findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+                public void loadComplete(String... data) {
+                    Log.i(TAG, "readMeLoaded: ");
+                    mReadmeButton.setVisibility(View.VISIBLE);
+                    mReadme.setMDText(data[0]);
+                    mReadme.reload();
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+
+                }
+            }, mRepo.getFullName());
+            if(mRepo.getUserLogin().equals(GitHubSession.getSession(RepoActivity.this).getUserLogin())) {
+                mAdapter.enableEditAccess();
+                mAccessLevel = Repository.AccessLevel.ADMIN;
+                findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+            } else {
+                mLoader.checkAccessToRepository(new Loader.GITLoader<Repository.AccessLevel>() {
+                    @Override
+                    public void loadComplete(Repository.AccessLevel... data) {
+                        mAccessLevel = data[0];
+                        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                            mAdapter.enableEditAccess();
+                            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+                        }
                     }
-//                    if(canAccess) mAdapter.enableEditAccess();
-//                    Toast.makeText(RepoActivity.this,
-//                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
-//                            Toast.LENGTH_SHORT)
-//                            .show();
+
+                    @Override
+                    public void loadError(APIHandler.APIError error) {
+                        mAccessLevel = Repository.AccessLevel.NONE;
+                    }
+                }, GitHubSession.getSession(RepoActivity.this).getUserLogin(), mRepo.getFullName());
+            }
+            mLoader.checkIfStarred(new Loader.GITLoader<Boolean>() {
+                @Override
+                public void loadComplete(Boolean... data) {
+                    mHasStarredRepo = data[0];
+                    if(mHasStarredRepo) {
+                        ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                    } else {
+                        ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                    }
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
-                    mAccessLevel = Repository.AccessLevel.NONE;
+                public void loadError(APIHandler.APIError error) {
+                    mHasStarredRepo =  false;
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
                 }
-            }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
+            }, mRepo.getFullName());
+            mLoader.checkIfWatched(new Loader.GITLoader<Boolean>() {
+                @Override
+                public void loadComplete(Boolean... data) {
+                    mIsWatchingRepo = data[0];
+                    if(mIsWatchingRepo) {
+                        ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                    } else {
+                        ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+                    }
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+                    mIsWatchingRepo = false;
+                    ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+                }
+            }, mRepo.getFullName());
         }
-        mLoader.checkIfStarred(isStarred -> {
-            mHasStarredRepo = isStarred;
-            if(isStarred) {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
-            }
-        }, mRepo.getFullName());
-        mLoader.checkIfWatched(isWatching -> {
-            mIsWatchingRepo = isWatching;
-            if(isWatching) {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
-            } else {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
-            }
-        }, mRepo.getFullName());
-    }
 
-    @Override
-    public void repoLoadError(APIHandler.APIError error) {
+        @Override
+        public void loadError(APIHandler.APIError error) {
 
-    }
+        }
+    };
+
+    private Loader.GITLoader<Project> mProjectsLoader = new Loader.GITLoader<Project>() {
+        @Override
+        public void loadComplete(Project... data) {
+            mRefresher.setRefreshing(false);
+            mAdapter.projectsLoaded(data);
+
+            final Bundle bundle = new Bundle();
+            bundle.putInt(Analytics.KEY_PROJECT_COUNT, data.length);
+            mAnalytics.logEvent(Analytics.TAG_REPO_ACTIVITY, bundle);
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @Override
     public void openProject(Project project, View name) {
@@ -406,35 +447,6 @@ public class RepoActivity extends AppCompatActivity implements
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-    }
-
-    @Override
-    public void projectsLoaded(Project[] projects) {
-        mRefresher.setRefreshing(false);
-        mAdapter.projectsLoaded(projects);
-
-        final Bundle bundle = new Bundle();
-        bundle.putInt(Analytics.KEY_PROJECT_COUNT, projects.length);
-        mAnalytics.logEvent(Analytics.TAG_REPO_ACTIVITY, bundle);
-    }
-
-    @Override
-    public void projectsLoadError(APIHandler.APIError error) {
-
-    }
-
-    @Override
-    public void readMeLoaded(String readMe) {
-        Log.i(TAG, "readMeLoaded: ");
-        mReadmeButton.setVisibility(View.VISIBLE);
-        mReadme.setMDText(readMe);
-        mReadme.reload();
-
-    }
-
-    @Override
-    public void readmeLoadError(APIHandler.APIError error) {
-
     }
 
     public void onToolbarBackPressed(View view) {

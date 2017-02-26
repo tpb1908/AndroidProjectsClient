@@ -184,14 +184,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
-
-            mParent.loadIssue(new Loader.IssueLoader() {
+            mParent.loadIssue(new Loader.GITLoader<Issue>() {
                 int loadCount = 0;
 
                 @Override
-                public void issueLoaded(Issue issue) {
+                public void loadComplete(Issue... data) {
                     if(mParent.isAdded() && !mParent.isRemoving()) {
-                        card.setFromIssue(issue);
+                        card.setFromIssue(data[0]);
                         bindIssueCard(holder, pos);
                     }
                     // notifyItemChanged(pos);
@@ -202,7 +201,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
 
                 @Override
-                public void issueLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
                     if(error != APIHandler.APIError.NO_CONNECTION) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);

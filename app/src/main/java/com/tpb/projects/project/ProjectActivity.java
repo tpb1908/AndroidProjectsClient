@@ -68,7 +68,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
+public class ProjectActivity extends AppCompatActivity implements Loader.GITLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
@@ -114,7 +114,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
-            projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
+            loadComplete(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
             mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
             if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                 new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
@@ -172,14 +172,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
-        mLoader.loadProjects(new Loader.ProjectsLoader() {
+        mLoader.loadProjects(new Loader.GITLoader<Project>() {
             int projectLoadAttempts = 0;
 
             @Override
-            public void projectsLoaded(Project[] projects) {
-                for(Project p : projects) {
+            public void loadComplete(Project... data) {
+                for(Project p : data) {
                     if(number == p.getNumber()) {
-                        projectLoaded(p);
+                        loadComplete(p);
                         checkAccess(p);
                         return;
                     }
@@ -189,7 +189,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void projectsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -208,13 +208,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+        mLoader.checkAccessToRepository(new Loader.GITLoader<Repository.AccessLevel>() {
             int accessCheckAttempts = 0;
 
             @Override
-            public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                Log.i(TAG, "accessCheckComplete: " + accessLevel);
-                mAccessLevel = accessLevel;
+            public void loadComplete(Repository.AccessLevel... data) {
+                mAccessLevel = data[0];
                 if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                     mMenu.showMenuButton(true);
                 } else {
@@ -228,7 +227,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void accessCheckError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -255,19 +254,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     @Override
-    public void projectLoaded(Project project) {
-        Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
-        mProject = project;
+    public void loadComplete(Project... project) {
+        mProject = project[0];
         mLoader.loadLabels(null, mProject.getRepoPath());
-        mName.setText(project.getName());
+        mName.setText(mProject.getName());
 
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
-        mLoader.loadColumns(new Loader.ColumnsLoader() {
+        mLoader.loadColumns(new Loader.GITLoader<Column>() {
             @Override
-            public void columnsLoaded(Column[] columns) {
+            public void loadComplete(Column... columns) {
                 if(columns.length > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
@@ -306,22 +304,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void columnsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
-        }, project.getId());
+        }, mProject.getId());
+
     }
 
     @Override
-    public void projectLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.IssueLoader loader, int issueId, Column column) {
+    void loadIssue(Loader.GITLoader<Issue> loader, int issueId, Column column) {
         mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 
