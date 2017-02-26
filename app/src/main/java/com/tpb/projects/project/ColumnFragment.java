@@ -59,7 +59,7 @@ import static com.tpb.projects.data.SettingsActivity.Preferences.CardAction.COPY
  * Created by theo on 19/12/16.
  */
 
-public class ColumnFragment extends Fragment implements Loader.CardsLoader {
+public class ColumnFragment extends Fragment implements Loader.GITLoader<Card> {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     FirebaseAnalytics mAnalytics;
@@ -241,12 +241,12 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
         mParent.deleteColumn(mColumn);
     }
 
-    void loadIssue(Loader.IssueLoader loader, int issueId) {
+    void loadIssue(Loader.GITLoader<Issue> loader, int issueId) {
         mParent.loadIssue(loader, issueId, mColumn);
     }
 
     @Override
-    public void cardsLoaded(Card[] cards) {
+    public void loadComplete(Card... cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
             if(mShouldAnimate) {
@@ -262,7 +262,7 @@ public class ColumnFragment extends Fragment implements Loader.CardsLoader {
     }
 
     @Override
-    public void cardsLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
         if(error != APIHandler.APIError.NO_CONNECTION) {
             final Bundle bundle = new Bundle();
             bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);

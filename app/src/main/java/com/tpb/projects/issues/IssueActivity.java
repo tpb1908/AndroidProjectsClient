@@ -73,7 +73,7 @@ import butterknife.OnClick;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
+public class IssueActivity extends CircularRevealActivity implements Loader.GITLoader<Issue> {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -134,7 +134,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
             mNumber.setText(String.format("#%1$d", mIssue.getNumber()));
-            issueLoaded(mIssue);
+            loadComplete(mIssue);
         } else {
             final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
             final String fullRepoName = getIntent().getStringExtra(getString(R.string.intent_repo));
@@ -143,40 +143,41 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         }
     }
 
+
+
     @Override
-    public void issueLoaded(Issue issue) {
-        mIssue = issue;
+    public void loadComplete(Issue... issue) {
+        mIssue = issue[0];
         mAdapter.setIssue(mIssue);
         displayAssignees();
         displayMilestone();
-        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadComments(mCommentLoader, mIssue.getRepoPath(), mIssue.getNumber());
 
         bindIssue();
 
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
-        if(issue.getOpenedBy().getLogin().equals(login)) {
+        if(mIssue.getOpenedBy().getLogin().equals(login)) {
             mAccessLevel = Repository.AccessLevel.ADMIN;
             enableAccess();
             mFab.postDelayed(mFab::show, 300);
             mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
-            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
-
-                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                    mAccessLevel = accessLevel;
+            mLoader.checkIfCollaborator(new Loader.GITLoader<Repository.AccessLevel>() {
+                @Override
+                public void loadComplete(Repository.AccessLevel... data) {
+                    mAccessLevel = data[0];
                     if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                         enableAccess();
                     }
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
-
             }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadEvents(mEventLoader, mIssue.getRepoPath(), mIssue.getNumber());
     }
 
     private void bindIssue() {
@@ -237,7 +238,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     }
 
     @Override
-    public void issueLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 
@@ -363,19 +364,21 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void commentsLoaded(Comment[] comments) {
-        Log.i(TAG, "commentsLoaded: " + comments.length);
-        mRecycler.enableAnimation();
-        mAdapter.loadComments(comments);
-        mCount.setText(Integer.toString(mAdapter.getItemCount()));
-    }
+    private Loader.GITLoader<Comment> mCommentLoader = new Loader.GITLoader<Comment>() {
 
-    @Override
-    public void commentsLoadError(APIHandler.APIError error) {
-        Log.i(TAG, "commentsLoadError: " + error);
-    }
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void loadComplete(Comment... comments) {
+            mRecycler.enableAnimation();
+            mAdapter.loadComments(comments);
+            mCount.setText(Integer.toString(mAdapter.getItemCount()));
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
@@ -576,7 +579,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                 mEditor.createComment(new Editor.CommentCreationListener() {
                     @Override
                     public void commentCreated(Comment comment) {
-                        mLoader.loadComments(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                        mLoader.loadComments(mCommentLoader, mIssue.getRepoPath(), mIssue.getNumber());
                     }
 
                     @Override
@@ -598,7 +601,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             @Override
             public void issueStateChanged(Issue issue) {
                 mAdapter.clear();
-                mLoader.loadEvents(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                mLoader.loadEvents(mEventLoader, mIssue.getRepoPath(), mIssue.getNumber());
                 mIssue = issue;
                 mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
                 final Bundle bundle = new Bundle();
@@ -644,19 +647,21 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.create().show();
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void eventsLoaded(Event[] events) {
-        Log.i(TAG, "eventsLoaded: " + events.length);
-        mRecycler.enableAnimation();
-        mAdapter.loadEvents(events);
-        mCount.setText(Integer.toString(mAdapter.getItemCount()));
-    }
+    private Loader.GITLoader<Event> mEventLoader = new Loader.GITLoader<Event>() {
 
-    @Override
-    public void eventsLoadError(APIHandler.APIError error) {
-        Log.i(TAG, "eventsLoadError: " + error);
-    }
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void loadComplete(Event... data) {
+            mRecycler.enableAnimation();
+            mAdapter.loadEvents(data);
+            mCount.setText(Integer.toString(mAdapter.getItemCount()));
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -56,7 +56,7 @@ import butterknife.OnClick;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLoader {
+public class IssuesActivity extends AppCompatActivity implements Loader.GITLoader<Issue> {
     private static final String TAG = IssuesActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssuesActivity.java";
 
@@ -114,10 +114,10 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             mRefresher.setRefreshing(true);
 
             //Check if we have access to edit the Issue
-            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
+            mLoader.checkIfCollaborator(new Loader.GITLoader<Repository.AccessLevel>() {
                 @Override
-                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                    mAccessLevel = accessLevel;
+                public void loadComplete(Repository.AccessLevel... data) {
+                    mAccessLevel = data[0];
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
                         mFab.postDelayed(mFab::show, 300);
                         enableScrollListener(mRecycler, layoutManager);
@@ -125,7 +125,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
             }, GitHubSession.getSession(this).getUserLogin(), mRepoPath);
@@ -180,7 +180,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     @Override
-    public void issuesLoaded(Issue[] issues) {
+    public void loadComplete(Issue... issues) {
         if(mPage == 1) {
             mAdapter.loadIssues(issues);
         } else {
@@ -195,7 +195,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     @Override
-    public void issuesLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 
@@ -246,9 +246,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadLabels(new Loader.LabelsLoader() {
+        mLoader.loadLabels(new Loader.GITLoader<Label>() {
             @Override
-            public void labelsLoaded(Label[] labels) {
+            public void loadComplete(Label... labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -289,10 +289,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
 
             @Override
-            public void labelLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
+
     }
 
     private void showAssigneesDialog() {
@@ -300,10 +301,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
+        mLoader.loadCollaborators(new Loader.GITLoader<User>() {
             @Override
-            public void collaboratorsLoaded(User[] collaborators) {
-
+            public void loadComplete(User... collaborators) {
                 final String[] collabNames = new String[collaborators.length + 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
@@ -327,7 +327,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
 
             @Override
-            public void collaboratorsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
