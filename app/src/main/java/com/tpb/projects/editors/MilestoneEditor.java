@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -12,7 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.UI;
@@ -27,7 +31,8 @@ import butterknife.ButterKnife;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends ImageLoadingActivity {
+public class MilestoneEditor extends ImageLoadingActivity implements Loader.MilestoneLoader {
+    private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.milestone_date_layout) View mDateLayout;
@@ -54,6 +59,18 @@ public class MilestoneEditor extends ImageLoadingActivity {
         ButterKnife.bind(this);
 
         final Intent launchIntent = getIntent();
+        if(launchIntent.hasExtra(getString(R.string.parcel_milestone))) {
+            final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
+            milestoneLoaded(m);
+        } else if(launchIntent.hasExtra(getString(R.string.intent_repo)) && launchIntent.hasExtra(getString(R.string.intent_milestone_number))) {
+            final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+            final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
+            Log.i(TAG, "onCreate: Loading milestone "+ number);
+            new Loader(this).loadMilestone(this, repo, number);
+        } else {
+            finish();
+        }
+
 
         mDueDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
@@ -107,6 +124,16 @@ public class MilestoneEditor extends ImageLoadingActivity {
                 mHasBeenEdited = true;
             }
         });
+    }
+
+    @Override
+    public void milestoneLoaded(Milestone milestone) {
+        Log.i(TAG, "milestoneLoaded: " + milestone);
+    }
+
+    @Override
+    public void milestoneLoadError(APIHandler.APIError error) {
+
     }
 
     @Override

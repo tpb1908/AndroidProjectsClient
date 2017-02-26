@@ -103,6 +103,8 @@ public class Interceptor extends Activity {
                         finish();
                     } else if("milestone".equals(segments.get(2))) {
                         final Intent i = new Intent(Interceptor.this, MilestoneEditor.class);
+                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        i.putExtra(getString(R.string.intent_milestone_number), Integer.parseInt(segments.get(3)));
                         startActivity(i);
                         finish();
                     } else {
