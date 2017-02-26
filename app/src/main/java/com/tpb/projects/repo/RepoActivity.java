@@ -334,7 +334,7 @@ public class RepoActivity extends AppCompatActivity implements
         @Override
         public void loadComplete(Project... data) {
             mRefresher.setRefreshing(false);
-            mAdapter.projectsLoaded(data);
+            mAdapter.loadComplete(data);
 
             final Bundle bundle = new Bundle();
             bundle.putInt(Analytics.KEY_PROJECT_COUNT, data.length);
