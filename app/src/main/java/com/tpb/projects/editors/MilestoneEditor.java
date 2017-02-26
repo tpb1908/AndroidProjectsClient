@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends ImageLoadingActivity implements Loader.MilestoneLoader {
+public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -61,7 +61,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_milestone))) {
             final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
-            milestoneLoaded(m);
+            loadComplete(m);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo)) && launchIntent.hasExtra(getString(R.string.intent_milestone_number))) {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
@@ -127,12 +127,12 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
     }
 
     @Override
-    public void milestoneLoaded(Milestone milestone) {
-        Log.i(TAG, "milestoneLoaded: " + milestone);
+    public void loadComplete(Milestone... milestone) {
+        Log.i(TAG, "milestoneLoaded: " + milestone[0]);
     }
 
     @Override
-    public void milestoneLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 

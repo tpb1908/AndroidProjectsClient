@@ -71,7 +71,7 @@ public class IssueEditor extends ImageLoadingActivity {
     private Card mLaunchCard;
     private Issue mLaunchIssue;
 
-    private String repoFullName;
+    private String mRepo;
 
     private boolean mHasBeenEdited = false;
 
@@ -91,7 +91,7 @@ public class IssueEditor extends ImageLoadingActivity {
         mAssigneesText.setShowUnderLines(false);
 
         final Intent launchIntent = getIntent();
-        repoFullName = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        mRepo = launchIntent.getStringExtra(getString(R.string.intent_repo));
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
             mLaunchIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
             mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
@@ -183,9 +183,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.CollaboratorsLoader() {
+        new Loader(this).loadCollaborators(new Loader.GITLoader<User>() {
             @Override
-            public void collaboratorsLoaded(User[] collaborators) {
+            public void loadComplete(User... collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
@@ -222,12 +222,12 @@ public class IssueEditor extends ImageLoadingActivity {
             }
 
             @Override
-            public void collaboratorsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
             }
-        }, repoFullName);
+        }, mRepo);
     }
 
     @OnClick(R.id.issue_add_labels_button)
@@ -236,9 +236,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.LabelsLoader() {
+        new Loader(this).loadLabels(new Loader.GITLoader<Label>() {
             @Override
-            public void labelsLoaded(Label[] labels) {
+            public void loadComplete(Label... labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -284,11 +284,12 @@ public class IssueEditor extends ImageLoadingActivity {
             }
 
             @Override
-            public void labelLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
+                if(isClosing()) return;;
+                pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
-                pd.cancel();
             }
-        }, repoFullName);
+        }, mRepo);
     }
 
     private void setAssigneesText() {

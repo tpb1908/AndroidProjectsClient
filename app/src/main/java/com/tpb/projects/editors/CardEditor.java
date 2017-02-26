@@ -180,11 +180,11 @@ public class CardEditor extends ImageLoadingActivity {
             pd.setTitle(R.string.text_loading_issues);
             pd.setCancelable(false);
             pd.show();
-            new Loader(CardEditor.this).loadOpenIssues(new Loader.IssuesLoader() {
+            new Loader(CardEditor.this).loadOpenIssues(new Loader.GITLoader<Issue>() {
                 private int selectedIssuePosition = 0;
 
                 @Override
-                public void issuesLoaded(Issue[] loadedIssues) {
+                public void loadComplete(Issue... loadedIssues) {
                     if(isClosing()) return; // There is no window to attach to
                     pd.dismiss();
 
@@ -222,7 +222,7 @@ public class CardEditor extends ImageLoadingActivity {
                 }
 
                 @Override
-                public void issuesLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
                     if(isClosing()) return;
                     pd.dismiss();
                     Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();
