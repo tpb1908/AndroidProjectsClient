@@ -1,8 +1,11 @@
 package com.tpb.projects.editors;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -12,10 +15,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
@@ -41,6 +46,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
     @BindView(R.id.milestone_title_edit) EditText mTitleEditor;
     @BindView(R.id.milestone_due_date) TextView mDueDate;
 
+    private ProgressDialog mLoadingDialog;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
 
     private boolean mHasBeenEdited = false;
@@ -58,6 +64,8 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
         stub.inflate();
         ButterKnife.bind(this);
 
+        mLoadingDialog = new ProgressDialog(this);
+
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_milestone))) {
             final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
@@ -66,6 +74,9 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
             Log.i(TAG, "onCreate: Loading milestone "+ number);
+            mLoadingDialog.setTitle(R.string.text_milestone_loading);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+            mLoadingDialog.show();
             new Loader(this).loadMilestone(this, repo, number);
         } else {
             finish();
@@ -129,6 +140,9 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
     @Override
     public void milestoneLoaded(Milestone milestone) {
         Log.i(TAG, "milestoneLoaded: " + milestone);
+        mTitleEditor.setText(milestone.getTitle());
+        mDescriptionEditor.setText(milestone.getDescription());
+        mLoadingDialog.hide();
     }
 
     @Override
@@ -138,7 +152,23 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
 
     @Override
     void imageLoadComplete(String image64) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
+        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
+            @Override
+            public void imageUploaded(String link) {
+                Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                mUploadDialog.cancel();
+                final String snippet = String.format(getString(R.string.text_image_link), link);
+                final int start = Math.max(mDescriptionEditor.getSelectionStart(), 0);
+                mDescriptionEditor.getText().insert(start, snippet);
+                mDescriptionEditor.setSelection(start + snippet.indexOf("]"));
+            }
 
+            @Override
+            public void uploadError(ANError error) {
+
+            }
+        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
     }
 
     @Override
