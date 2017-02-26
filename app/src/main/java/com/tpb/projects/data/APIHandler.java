@@ -46,7 +46,7 @@ public abstract class APIHandler {
     static final String SEGMENT_EVENTS = "/events";
     static final String SEGMENT_STARRED = "/starred";
     static final String SEGMENT_SUBSCRIPTION = "/subscription";
-
+    static final String SEGMENT_MILESTONES = "/milestones";
 
     protected APIHandler(Context context) {
         if(mSession == null) {

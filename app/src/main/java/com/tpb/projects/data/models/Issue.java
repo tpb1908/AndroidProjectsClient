@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONArray;
@@ -31,7 +30,8 @@ public class Issue extends DataModel implements Parcelable {
     private int number;
 
     private static final String STATE = "state";
-    private String state;
+    private String stateString;
+    private State state;
 
     private static final String TITLE = "title";
     private String title;
@@ -65,6 +65,9 @@ public class Issue extends DataModel implements Parcelable {
     private static final String LOCKED = "locked";
     private boolean isLocked;
 
+    private static final String MILESTONE = "milestone";
+    private Milestone milestone;
+
     public int getId() {
         return id;
     }
@@ -73,8 +76,8 @@ public class Issue extends DataModel implements Parcelable {
         return number;
     }
 
-    public String getState() {
-        return state;
+    public String getStateString() {
+        return stateString;
     }
 
     public String getTitle() {
@@ -122,6 +125,14 @@ public class Issue extends DataModel implements Parcelable {
         return isLocked;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public Milestone getMilestone() {
+        return milestone;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -142,14 +153,15 @@ public class Issue extends DataModel implements Parcelable {
         try {
             i.id = obj.getInt(ID);
             i.number = obj.getInt(NUMBER);
-            i.state = obj.getString(STATE);
+            i.stateString = obj.getString(STATE);
+            i.state = State.fromString(i.stateString);
             i.title = obj.getString(TITLE);
             i.body = obj.getString(BODY);
             i.comments = obj.getInt(COMMENTS);
             i.isLocked = obj.getBoolean(LOCKED);
             //https://api.github.com/repos/user/repo
             i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
-            if(!obj.getString(CLOSED_AT).equals(Constants.JSON_NULL)) {
+            if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
                     i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                     i.closed = true;
@@ -162,7 +174,7 @@ public class Issue extends DataModel implements Parcelable {
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
-            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(Constants.JSON_NULL)) {
+            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(JSON_NULL)) {
                 i.assignees = new User[] {User.parse(obj.getJSONObject(ASSIGNEE))};
             }
             if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
@@ -173,9 +185,8 @@ public class Issue extends DataModel implements Parcelable {
                 }
             }
             i.openedBy = User.parse(obj.getJSONObject(USER));
-            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(Constants.JSON_NULL)) {
+            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(JSON_NULL)) {
                 i.closedBy = User.parse(obj.getJSONObject(CLOSED_BY));
-                Log.i(TAG, "parse: Parsed issue closed_by " + i.closedBy.toString());
             }
             try {
                 final JSONArray lbs = obj.getJSONArray(LABELS);
@@ -185,6 +196,9 @@ public class Issue extends DataModel implements Parcelable {
                 }
             } catch(JSONException jse) {
                 Log.e(TAG, "parse: Labels: ", jse);
+            }
+            if(obj.has(MILESTONE) && !obj.getString(MILESTONE).equals(JSON_NULL)) {
+                i.milestone = Milestone.parse(obj.getJSONObject(MILESTONE));
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -197,7 +211,7 @@ public class Issue extends DataModel implements Parcelable {
         try {
             obj.put(ID, issue.id);
             obj.put(NUMBER, issue.number);
-            obj.put(STATE, issue.state);
+            obj.put(STATE, issue.stateString);
             obj.put(TITLE, issue.title);
             obj.put(BODY, issue.body);
             if(issue.closedAt != 0) obj.put(CLOSED_AT, issue.closedAt);
@@ -207,18 +221,13 @@ public class Issue extends DataModel implements Parcelable {
         return obj;
     }
 
-    public enum IssueState {
-
-        OPEN, CLOSED, ALL
-
-    }
-
     @Override
     public String toString() {
         return "Issue{" +
                 "id=" + id +
                 ", number=" + number +
-                ", state='" + state + '\'' +
+                ", stateString='" + stateString + '\'' +
+                ", state=" + state +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", closedAt=" + closedAt +
@@ -230,6 +239,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", comments=" + comments +
                 ", repoPath='" + repoPath + '\'' +
                 ", isLocked=" + isLocked +
+                ", milestone=" + milestone +
                 '}';
     }
 
@@ -237,6 +247,7 @@ public class Issue extends DataModel implements Parcelable {
     public boolean equals(Object obj) {
         return obj instanceof Issue && ((Issue) obj).id == id;
     }
+
 
     @Override
     public int describeContents() {
@@ -247,7 +258,8 @@ public class Issue extends DataModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeInt(this.number);
-        dest.writeString(this.state);
+        dest.writeString(this.stateString);
+        dest.writeInt(this.state == null ? -1 : this.state.ordinal());
         dest.writeString(this.title);
         dest.writeString(this.body);
         dest.writeLong(this.closedAt);
@@ -259,13 +271,15 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeInt(this.comments);
         dest.writeString(this.repoPath);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
-        dest.writeLong(this.createdAt);
+        dest.writeParcelable(this.milestone, flags);
     }
 
-    Issue(Parcel in) {
+    protected Issue(Parcel in) {
         this.id = in.readInt();
         this.number = in.readInt();
-        this.state = in.readString();
+        this.stateString = in.readString();
+        int tmpState = in.readInt();
+        this.state = tmpState == -1 ? null : State.values()[tmpState];
         this.title = in.readString();
         this.body = in.readString();
         this.closedAt = in.readLong();
@@ -277,7 +291,7 @@ public class Issue extends DataModel implements Parcelable {
         this.comments = in.readInt();
         this.repoPath = in.readString();
         this.isLocked = in.readByte() != 0;
-        this.createdAt = in.readLong();
+        this.milestone = in.readParcelable(Milestone.class.getClassLoader());
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {

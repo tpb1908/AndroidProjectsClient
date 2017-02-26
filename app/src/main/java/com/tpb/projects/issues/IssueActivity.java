@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -44,7 +46,9 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.editors.CommentEditor;
@@ -52,6 +56,7 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
@@ -85,7 +90,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     @BindView(R.id.issue_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issue_comments_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
-    @BindView(R.id.issue_assignees) LinearLayout mAssignees; //http://stackoverflow.com/a/29430226/4191572
+    @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout; //http://stackoverflow.com/a/29430226/4191572
+    @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
 
     private Editor mEditor;
@@ -142,6 +148,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         mIssue = issue;
         mAdapter.setIssue(mIssue);
         displayAssignees();
+        displayMilestone();
         mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
 
         bindIssue();
@@ -209,9 +216,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
 
         if(mIssue.isClosed()) {
-            mImageState.setImageResource(R.drawable.ic_issue_closed);
+            mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {
-            mImageState.setImageResource(R.drawable.ic_issue_open);
+            mImageState.setImageResource(R.drawable.ic_state_open);
         }
     }
 
@@ -235,14 +242,14 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     }
 
     private void displayAssignees() {
-        mAssignees.removeAllViews();
+        mAssigneesLayout.removeAllViews();
         if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
-            mAssignees.setVisibility(View.VISIBLE);
+            mAssigneesLayout.setVisibility(View.VISIBLE);
             for(int i = 0; i < mIssue.getAssignees().length; i++) {
                 final User u = mIssue.getAssignees()[i];
                 final LinearLayout user = (LinearLayout) getLayoutInflater().inflate(R.layout.shard_user, null);
                 user.setId(i);
-                mAssignees.addView(user);
+                mAssigneesLayout.addView(user);
                 final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
                 imageView.setId(10 * i);
                 imageView.setImageUrl(u.getAvatarUrl());
@@ -266,7 +273,93 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                 });
             }
         } else {
-            mAssignees.setVisibility(View.GONE);
+            mAssigneesLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void displayMilestone() {
+        Log.i(TAG, "displayMilestone: \n\n\nMilestone is: " + mIssue.getMilestone());
+        if(mIssue.getMilestone() != null) {
+            mMilestoneCard.setVisibility(View.VISIBLE);
+            final Milestone milestone = mIssue.getMilestone();
+            final HtmlTextView tv = ButterKnife.findById(mMilestoneCard, R.id.milestone_content_markdown);
+            tv.setShowUnderLines(false);
+            final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
+            final ANImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
+            IntentHandler.addGitHubIntentHandler(this, tv, user, milestone.getCreator().getLogin());
+            IntentHandler.addGitHubIntentHandler(this, user, milestone.getCreator().getLogin());
+            status.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
+            user.setImageUrl(milestone.getCreator().getAvatarUrl());
+
+            final StringBuilder builder = new StringBuilder();
+
+            builder.append("<b>");
+            builder.append(milestone.getTitle());
+            builder.append("</b>");
+            builder.append("<br><br>");
+            if(milestone.getOpenIssues() > 0 || milestone.getClosedIssues() > 0) {
+                builder.append(String.format(getString(R.string.text_milestone_completion),
+                        milestone.getOpenIssues(),
+                        milestone.getClosedIssues(),
+                        Math.round(100f * milestone.getClosedIssues()/(milestone.getOpenIssues() + milestone.getClosedIssues())))
+                );
+            }
+            builder.append("<br>");
+            builder.append(
+                    String.format(
+                            getString(R.string.text_milestone_opened_by),
+                            String.format(getString(R.string.text_href),
+                                    "https://github.com/" + mIssue.getOpenedBy().getLogin(),
+                                    mIssue.getOpenedBy().getLogin()
+                            ),
+                            DateUtils.getRelativeTimeSpanString(milestone.getCreatedAt())
+                            )
+            );
+            if(milestone.getUpdatedAt() != milestone.getCreatedAt()) {
+                builder.append("<br>");
+                builder.append(
+                        String.format(
+                                getString(R.string.text_last_updated),
+                                DateUtils.getRelativeTimeSpanString(milestone.getUpdatedAt())
+                        )
+                );
+            }
+            if(milestone.getClosedAt() != 0) {
+                builder.append("<br>");
+                builder.append(
+                        String.format(
+                                getString(R.string.text_milestone_closed_at),
+                                DateUtils.getRelativeTimeSpanString(milestone.getClosedAt())
+                        )
+                );
+            }
+            if(milestone.getDueOn() != 0) {
+                builder.append("<br>");
+                if(System.currentTimeMillis() < milestone.getDueOn() ||
+                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {
+                    builder.append(
+                            String.format(
+                                getString(R.string.text_milestone_due_on),
+                                DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
+                            )
+                    );
+                } else {
+                    builder.append("<font color=\"");
+                    builder.append(String.format("#%06X", (0xFFFFFF & Color.RED)));
+                    builder.append("\">");
+                    builder.append(
+                            String.format(
+                                    getString(R.string.text_milestone_due_on),
+                                    DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
+                            )
+                    );
+                    builder.append("</font>");
+                }
+            }
+            tv.setHtml(MDParser.formatMD(builder.toString(), mIssue.getRepoPath()));
+
+        } else {
+            mMilestoneCard.setVisibility(View.GONE);
         }
     }
 
@@ -378,7 +471,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         });
         menu.show();
     }
-
 
     @OnClick(R.id.issue_header_card)
     void onHeaderClick(View view) {
@@ -501,12 +593,14 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
+
         final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
             @Override
             public void issueStateChanged(Issue issue) {
+                mAdapter.clear();
                 mLoader.loadEvents(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
                 mIssue = issue;
-                mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_issue_closed : R.drawable.ic_issue_open);
+                mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                 mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
@@ -530,16 +624,16 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
             final Intent i = new Intent(IssueActivity.this, CommentEditor.class);
-
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
                 mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             } else {
                 mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             }
-
         });
         builder.setNeutralButton(R.string.action_no, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
                 mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
             } else {

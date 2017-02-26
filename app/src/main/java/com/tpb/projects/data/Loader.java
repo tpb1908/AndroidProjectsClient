@@ -17,8 +17,10 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Data;
 
@@ -392,14 +394,14 @@ public class Loader extends APIHandler {
     }
 
     public void loadIssues(IssuesLoader loader, String repoFullName) {
-        loadIssues(loader, repoFullName, Issue.IssueState.OPEN, null, null, 1);
+        loadIssues(loader, repoFullName, State.OPEN, null, null, 1);
     }
 
-    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels) {
+    public void loadIssues(IssuesLoader loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels) {
         loadIssues(loader, repoFullName, state, assignee, labels, 1);
     }
 
-    public void loadIssues(IssuesLoader loader, String repoFullName, Issue.IssueState state, @Nullable String assignee, @Nullable List<String> labels, int page) {
+    public void loadIssues(IssuesLoader loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {
@@ -523,6 +525,50 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         if(loader != null) loader.eventsLoadError(parseError(anError));
+                    }
+                });
+    }
+
+    public void loadMilestone(MilestoneLoader loader, String repoFullName, int number) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + "/" + number)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(loader != null) {
+                            loader.milestoneLoaded(Milestone.parse(response));
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) {
+                            loader.milestoneLoadError(parseError(anError));
+                        }
+                    }
+                });
+    }
+
+    public void loadMilestones(MilestonesLoader loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Milestone[] milestones = new Milestone[response.length()];
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                milestones[i] = Milestone.parse(response.getJSONObject(i));
+                            } catch(JSONException ignored) {}
+                        }
+                        if(loader != null) loader.milestonesLoaded(milestones);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) loader.milestonesLoadError(parseError(anError));
                     }
                 });
     }
@@ -815,6 +861,22 @@ public class Loader extends APIHandler {
         void eventsLoaded(Event[] events);
 
         void eventsLoadError(APIError error);
+
+    }
+
+    public interface MilestoneLoader {
+
+        void milestoneLoaded(Milestone milestone);
+
+        void milestoneLoadError(APIError error);
+
+    }
+
+    public interface MilestonesLoader {
+
+        void milestonesLoaded(Milestone[] milestones);
+
+        void milestonesLoadError(APIError error);
 
     }
 

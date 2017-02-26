@@ -64,7 +64,7 @@
     <string name="text_unwatch">Unwatch</string>
     <string name="text_clear">Clear</string>
     <string name="text_show_files">Show files</string>
-    <string name="text_commit">commit</string>
+
 
     <!-- Content activity -->
     <string name="text_ribbon_root">Root</string>
@@ -80,10 +80,12 @@
     <string name="text_comment_edited">Edited</string>
     <string name="text_comment_by">%1$s commented %2$s</string>
     <string name="text_event_closed">Closed by %1$s</string>
+    <string name="text_event_closed_in">Closed by %1$s in %2$s</string>
     <string name="text_event_reopened">Reopened by %1$s</string>
     <string name="text_event_subscribed">%1$s subscribed</string>
     <string name="text_event_merged">Merged by %1$s in %2$s</string>
     <string name="text_event_referenced">Referenced in %1$s</string>
+    <string name="text_event_referenced_multiple">Referenced in multiple commits %1$s</string>
     <string name="text_event_mentioned">%1$s was mentioned</string>
     <string name="text_event_assigned">%1$s was assigned </string>
     <string name="text_event_assigned_themselves">%1$s self-assigned this</string>
@@ -109,6 +111,7 @@
     <string name="text_event_labels_removed">%1$s removed labels %2$s</string>
     <string name="text_event_added_to_project">%1$s added this issue to a project</string>
     <string name="text_event_removed_from_project">%1$s removed this issue from a project</string>
+    <string name="text_commit">commit %1$s</string>
 
     <!--Issues activity -->
     <string name="text_assignee_all">All</string>
@@ -123,10 +126,18 @@
     <string name="text_loading_labels">Loading labels</string>
     <string name="text_assigned_to">Assigned to </string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s) %3$s</string>
-    <string name="text_opened_by">%1$s opened by %2$s %3$s</string>
+    <string name="text_issue_opened_by">%1$s opened by %2$s %3$s</string>
     <string name="text_opened_this_issue">%1$s opened this issue %2$s</string>
     <string name="text_issue_single_line">#%1$d %2$s</string>
     <string name="text_loading_issues">Loading issues</string>
+
+    <!--Milestone -->
+    <string name="text_milestone_completion">%1$d open %2$d closed %3$d%% complete</string>
+    <string name="text_milestone_opened_by">Opened by %1$s  %2$s</string>
+    <string name="text_milestone_closed_at">Closed %1$s</string>
+    <string name="text_milestone_due_on">Due %1$s</string>
+    <string name="text_milestone_short">%1$s • %2$s</string>
+    <string name="text_milestone_clear_date">Clear date</string>
 
     <!-- Settings activity -->
     <string name="text_version">Version</string>
@@ -173,6 +184,10 @@
     <string name="hint_shortcut_name">Name</string>
     <string name="hint_user_or_repo">Username or user/repo</string>
 
+    <string name="hint_milestone_title">Title</string>
+    <string name="hint_milestone_description">Description</string>
+
+    <string name="hint_due_date">Due </string>
 
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_user">Repositories</string>
@@ -275,6 +290,7 @@
     <string name="intent_position_x" translatable="false">pos_x</string>
     <string name="intent_position_y" translatable="false">pos_y</string>
     <string name="intent_blob_path" translatable="false">blob_path</string>
+    <string name="intent_milestone_number" translatable="false">milestone_number</string>
 
     <!-- Constants for models passed as parcels -->
     <string name="parcel_project" translatable="false">project</string>
@@ -282,6 +298,7 @@
     <string name="parcel_card" translatable="false">card</string>
     <string name="parcel_issue" translatable="false">issue</string>
     <string name="parcel_comment" translatable="false">comment</string>
+    <string name="parcel_milestone" translatable="false">milestone</string>
 
     <!--Constants for shared element transitions -->
     <string name="transition_name" translatable="false">card</string>

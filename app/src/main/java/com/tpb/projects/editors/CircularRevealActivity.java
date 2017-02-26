@@ -13,6 +13,7 @@ import android.view.WindowManager;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.util.UI;
 
 /**
  * Created by theo on 20/02/17.
@@ -98,6 +99,7 @@ public abstract class CircularRevealActivity extends AppCompatActivity {
                 frame(s) between the animation ending and finish being called
                  */
                 findViewById(android.R.id.content).setVisibility(View.GONE);
+                UI.setStatusBarColor(getWindow(), getResources().getColor(android.R.color.transparent));
                 super.onAnimationEnd(animation);
                 CircularRevealActivity.super.finish();
             }

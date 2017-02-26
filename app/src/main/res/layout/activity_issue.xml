@@ -133,6 +133,8 @@
 
                 </HorizontalScrollView>
 
+                <include layout="@layout/viewholder_milestone" />
+
                 <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/issue_comments_recycler"
                     android:layout_width="match_parent"

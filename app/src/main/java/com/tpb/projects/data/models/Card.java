@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.Data;
 
 import org.json.JSONException;
@@ -128,7 +127,7 @@ public class Card extends DataModel implements Parcelable {
 
             }
             c.note = object.getString(NOTE);
-            if(Constants.JSON_NULL.equals(c.note)) {
+            if(JSON_NULL.equals(c.note)) {
                 c.note = "";
                 c.requiresLoadingFromIssue = true;
             }

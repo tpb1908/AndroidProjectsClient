@@ -35,6 +35,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
@@ -72,7 +73,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     private Editor mEditor;
 
     private IssuesAdapter mAdapter;
-    private Issue.IssueState mFilter = Issue.IssueState.OPEN;
+    private State mFilter = State.OPEN;
     private String mAssigneeFilter;
     private final ArrayList<String> mLabelsFilter = new ArrayList<>();
     private SearchView mSearchView;
@@ -223,15 +224,15 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     showLabelsDialog();
                     break;
                 case R.id.menu_filter_all:
-                    mFilter = Issue.IssueState.ALL;
+                    mFilter = State.ALL;
                     refresh();
                     break;
                 case R.id.menu_filter_closed:
-                    mFilter = Issue.IssueState.CLOSED;
+                    mFilter = State.CLOSED;
                     refresh();
                     break;
                 case R.id.menu_filter_open:
-                    mFilter = Issue.IssueState.OPEN;
+                    mFilter = State.OPEN;
                     refresh();
                     break;
             }
