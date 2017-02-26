@@ -50,7 +50,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-
 public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepositoriesManager {
     private static final String TAG = UserActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
@@ -118,25 +117,16 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
-                loader.loadUser(new Loader.UserLoader() {
-                    int errorCount = 0;
-
+                loader.loadUser(new Loader.GITLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
-                        mUserName.setText(user.getLogin());
-                        mUserImage.setImageUrl(user.getAvatarUrl());
+                    public void loadComplete(User... data) {
+                        mUserName.setText(data[0].getLogin());
+                        mUserImage.setImageUrl(data[0].getAvatarUrl());
                     }
 
                     @Override
-                    public void userLoadError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        } else if(errorCount < 5) {
-                            errorCount++;
-                            loader.loadUser(this, user);
-                        } else {
-                            //TODO Handle multiple rrors
-                        }
+                    public void loadError(APIHandler.APIError error) {
+
                     }
                 }, user);
 
@@ -146,19 +136,20 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 if(isTaskRoot()) {
                     findViewById(R.id.back_button).setVisibility(View.GONE);
                 }
-                loader.loadAuthenticatedUser(new Loader.AuthenticatedUserLoader() {
+                loader.loadAuthenticatedUser(new Loader.GITLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
-                        mUserName.setText(user.getLogin());
-                        mUserImage.setImageUrl(user.getAvatarUrl());
-                        GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
+                    public void loadComplete(User... data) {
+                        mUserName.setText(data[0].getLogin());
+                        mUserImage.setImageUrl(data[0].getAvatarUrl());
+                        GitHubSession.getSession(UserActivity.this).updateUserLogin(data[0].getLogin());
                     }
 
                     @Override
-                    public void authenticatedUserLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
 
                     }
                 });
+
             }
 
             mUserName.setText(user);
@@ -215,17 +206,17 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
         });
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(input.getText().toString().contains("/")) {
-                new Loader(UserActivity.this).loadRepository(new Loader.RepositoryLoader() {
+                new Loader(UserActivity.this).loadRepository(new Loader.GITLoader<Repository>() {
                     @Override
-                    public void repoLoaded(Repository repo) {
+                    public void loadComplete(Repository... data) {
                         final Intent r = new Intent(UserActivity.this, RepoActivity.class);
-                        r.putExtra(getString(R.string.intent_repo), repo.getFullName());
+                        r.putExtra(getString(R.string.intent_repo), data[0].getFullName());
                         startActivity(r);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                     }
 
                     @Override
-                    public void repoLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NOT_FOUND) {
                             Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
                         } else {
@@ -233,18 +224,19 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                         }
                     }
                 }, input.getText().toString());
+
             } else {
-                new Loader(UserActivity.this).loadUser(new Loader.UserLoader() {
+                new Loader(UserActivity.this).loadUser(new Loader.GITLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
+                    public void loadComplete(User... data) {
                         final Intent u = new Intent(UserActivity.this, UserActivity.class);
-                        u.putExtra(getString(R.string.intent_username), user.getLogin());
+                        u.putExtra(getString(R.string.intent_username), data[0].getLogin());
                         startActivity(u);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                     }
 
                     @Override
-                    public void userLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NOT_FOUND) {
                             Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
                         } else {
