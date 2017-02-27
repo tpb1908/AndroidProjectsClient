@@ -198,7 +198,7 @@ public class Card extends DataModel implements Parcelable {
         dest.writeLong(this.createdAt);
     }
 
-    private Card(Parcel in) {
+    protected Card(Parcel in) {
         this.columnUrl = in.readString();
         this.contentUrl = in.readString();
         this.issueId = in.readInt();

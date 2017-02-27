@@ -243,11 +243,6 @@ public class Issue extends DataModel implements Parcelable {
                 '}';
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Issue && ((Issue) obj).id == id;
-    }
-
 
     @Override
     public int describeContents() {
@@ -272,6 +267,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.repoPath);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.milestone, flags);
+        dest.writeLong(this.createdAt);
     }
 
     protected Issue(Parcel in) {
@@ -292,6 +288,7 @@ public class Issue extends DataModel implements Parcelable {
         this.repoPath = in.readString();
         this.isLocked = in.readByte() != 0;
         this.milestone = in.readParcelable(Milestone.class.getClassLoader());
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Issue> CREATOR = new Creator<Issue>() {
