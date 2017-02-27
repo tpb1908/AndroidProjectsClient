@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -15,19 +16,20 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
 import org.sufficientlysecure.htmltext.CleanURLSpan;
 import org.sufficientlysecure.htmltext.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.CodeSpan;
 import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
+import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
+import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
-import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -42,6 +44,11 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     public static final String TAG = HtmlEditText.class.getSimpleName();
     public static final boolean DEBUG = false;
+
+    private boolean mIsEditing = true;
+    private Editable mSavedText;
+    private Drawable mDefaultBackground;
+    private float mDefaultTextSize;
 
     public boolean linkHit;
     @Nullable
@@ -67,14 +74,17 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     public HtmlEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setPadding(0, 0, 0, 0);
     }
 
     public HtmlEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setPadding(0, 0, 0, 0);
     }
 
     public HtmlEditText(Context context) {
         super(context);
+        setPadding(0, 0, 0, 0);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {
@@ -259,6 +269,31 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     }
 
 
+    public void enableEditing() {
+        if(mIsEditing) return;
+        setBackground(mDefaultBackground);
+        setTextSize(mDefaultTextSize);
+        setFocusable(true);
+        setCursorVisible(true);
+    }
+
+    public void disableEditing(boolean shouldSaveText) {
+        if(!mIsEditing) return;
+        if(shouldSaveText) mSavedText = getText();
+        mDefaultBackground = getBackground();
+        mDefaultTextSize = getTextSize();
+        setBackground(null);
+        setFocusable(false);
+        setCursorVisible(false);
+        //setEnabled(false);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+    }
+
+    public void restoreText() {
+        setText(mSavedText);
+    }
+
+
     /**
      * Note that this must be called before setting text for it to work
      */
@@ -322,8 +357,8 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
             mLastClickPosition[1] = event.getRawY();
         }
         linkHit = false;
-        boolean res = super.onTouchEvent(event);
-
+        final boolean res = super.onTouchEvent(event);
+        if(mIsEditing) return res;
         if(dontConsumeNonUrlClicks) {
             return linkHit;
         }

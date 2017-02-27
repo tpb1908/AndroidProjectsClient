@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -34,6 +33,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
+
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class CardEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_NEW_CARD = 1606;
     public static final int REQUEST_CODE_EDIT_CARD = 7180;
 
-    @BindView(R.id.card_note_edit) EditText mEditor;
+    @BindView(R.id.card_note_edit) HtmlEditText mEditor;
     @BindView(R.id.card_from_issue_button) Button mIssueButton;
     @BindView(R.id.card_clear_issue_button) Button mClearButton;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;

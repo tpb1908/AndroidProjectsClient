@@ -35,6 +35,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class IssueEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
-    @BindView(R.id.issue_body_edit) EditText mBodyEdit;
+    @BindView(R.id.issue_body_edit) HtmlEditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;

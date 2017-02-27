@@ -21,6 +21,8 @@ import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.UI;
 
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -37,7 +39,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITL
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.milestone_date_layout) View mDateLayout;
     @BindView(R.id.milestone_clear_date_button) Button mClearDateButton;
-    @BindView(R.id.milestone_description_edit) EditText mDescriptionEditor;
+    @BindView(R.id.milestone_description_edit) HtmlEditText mDescriptionEditor;
     @BindView(R.id.milestone_title_edit) EditText mTitleEditor;
     @BindView(R.id.milestone_due_date) TextView mDueDate;
 
@@ -129,6 +131,11 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITL
     @Override
     public void loadComplete(Milestone... milestone) {
         Log.i(TAG, "milestoneLoaded: " + milestone[0]);
+        mTitleEditor.setText(milestone[0].getTitle());
+        mDescriptionEditor.setFocusable(true);
+        mDescriptionEditor.setFocusableInTouchMode(true);
+        mDescriptionEditor.setEnabled(true);
+        mDescriptionEditor.setText(milestone[0].getDescription());
     }
 
     @Override
