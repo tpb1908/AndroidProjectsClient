@@ -1,6 +1,5 @@
 package com.tpb.projects.editors;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -33,13 +32,7 @@ public class MarkdownButtonAdapter {
         ImageButton preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
         preview.setImageResource(R.drawable.ic_preview);
         preview.setOnClickListener((v) -> {
-            if(mListener != null) {
-                final FullScreenDialog dialog = new FullScreenDialog();
-                final Bundle bundle = new Bundle();
-                bundle.putString(mParent.getString(R.string.intent_markdown), mListener.getText());
-                dialog.setArguments(bundle);
-                dialog.show(mParent.getSupportFragmentManager(), TAG);
-            }
+            if(mListener != null) mListener.previewCalled();
         });
         mScrollView.addView(preview);
 
@@ -144,6 +137,8 @@ public class MarkdownButtonAdapter {
         void snippetEntered(String snippet, int relativePosition);
 
         String getText();
+
+        void previewCalled();
 
     }
 

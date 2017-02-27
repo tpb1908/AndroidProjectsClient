@@ -34,7 +34,9 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -172,6 +174,20 @@ public class IssueEditor extends ImageLoadingActivity {
             @Override
             public String getText() {
                 return mBodyEdit.getText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mBodyEdit.isEditing()) {
+                    mBodyEdit.saveText();
+                    String repo = null;
+                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
+                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mBodyEdit.disableEditing();
+                } else {
+                    mBodyEdit.restoreText();
+                    mBodyEdit.enableEditing();
+                }
             }
         });
 

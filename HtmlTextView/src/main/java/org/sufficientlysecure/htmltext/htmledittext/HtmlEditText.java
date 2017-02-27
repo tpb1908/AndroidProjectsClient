@@ -16,7 +16,6 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -48,7 +47,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     private boolean mIsEditing = true;
     private Editable mSavedText;
     private Drawable mDefaultBackground;
-    private float mDefaultTextSize;
 
     public boolean linkHit;
     @Nullable
@@ -59,7 +57,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
-    private boolean showUnderLines = true;
+    private boolean showUnderLines = false;
 
     private LinkClickHandler mLinkHandler;
 
@@ -268,31 +266,40 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
         }
     }
 
+    public boolean isEditing() {
+        return mIsEditing;
+    }
 
     public void enableEditing() {
         if(mIsEditing) return;
         setBackground(mDefaultBackground);
-        setTextSize(mDefaultTextSize);
         setFocusable(true);
         setCursorVisible(true);
+        mIsEditing = true;
     }
 
-    public void disableEditing(boolean shouldSaveText) {
+    public void disableEditing() {
         if(!mIsEditing) return;
-        if(shouldSaveText) mSavedText = getText();
         mDefaultBackground = getBackground();
-        mDefaultTextSize = getTextSize();
         setBackground(null);
         setFocusable(false);
         setCursorVisible(false);
         //setEnabled(false);
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        mIsEditing = false;
+    }
+
+    public void saveText() {
+        mSavedText = getText();
     }
 
     public void restoreText() {
         setText(mSavedText);
     }
 
+    @Override
+    public boolean isSuggestionsEnabled() {
+        return mIsEditing;
+    }
 
     /**
      * Note that this must be called before setting text for it to work

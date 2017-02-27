@@ -63,7 +63,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
-    private boolean showUnderLines = true;
+    private boolean showUnderLines = false;
 
     private LinkClickHandler mLinkHandler;
 

@@ -34,6 +34,7 @@ import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
 
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
@@ -61,7 +62,6 @@ public class CardEditor extends ImageLoadingActivity {
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.card_note_wrapper) TextInputLayout mEditorWrapper;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
-
 
     private Card mCard;
 
@@ -104,6 +104,18 @@ public class CardEditor extends ImageLoadingActivity {
             @Override
             public String getText() {
                 return mEditor.getText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mEditor.isEditing()) {
+                    mEditor.saveText();
+                    mEditor.setHtml(MDParser.parseMD(mEditor.getText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.disableEditing();
+                } else {
+                    mEditor.restoreText();
+                    mEditor.enableEditing();
+                }
             }
         });
 

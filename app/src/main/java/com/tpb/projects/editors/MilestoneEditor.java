@@ -19,8 +19,10 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.UI;
 
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
@@ -96,6 +98,20 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITL
                 if(mTitleEditor.isFocused()) return mTitleEditor.getText().toString();
                 if(mDescriptionEditor.isFocused()) mDescriptionEditor.getText().toString();
                 return "";
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mDescriptionEditor.isEditing()) {
+                    mDescriptionEditor.saveText();
+                    mDescriptionEditor.setHtml(
+                            MDParser.parseMD(mDescriptionEditor.getText().toString(), null),
+                            new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor));
+                    mDescriptionEditor.disableEditing();
+                } else {
+                    mDescriptionEditor.restoreText();
+                    mDescriptionEditor.enableEditing();
+                }
             }
         });
 
