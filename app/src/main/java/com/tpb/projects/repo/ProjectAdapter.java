@@ -18,8 +18,8 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +89,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
                     MDParser.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
-                    new HtmlHttpImageGetter(holder.mBody)
+                    new HtmlHttpImageGetter(holder.mBody, holder.mBody)
             );
         }
     }

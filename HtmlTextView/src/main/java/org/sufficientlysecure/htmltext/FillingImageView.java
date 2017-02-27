@@ -15,7 +15,7 @@
  *
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.annotation.TargetApi;
 import android.content.Context;

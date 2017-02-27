@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext.htmltextview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

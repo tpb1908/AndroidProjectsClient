@@ -21,8 +21,10 @@ import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -190,10 +192,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             builder.append(MDParser.formatMD(comment.getBody(), mIssue.getRepoPath()));
             final String parsed = MDParser.parseMD(builder.toString());
             mData.set(pos, new Pair<>(comment, parsed));
-            commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText));
+            commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText));
         } else {
             commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
-            commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText));
+            commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText));
         }
         IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mText);
         IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mAvatar, ((Comment) mData.get(pos).first).getUser().getLogin());
@@ -309,7 +311,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
-        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText));
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
@@ -512,7 +514,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
-        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText));
+        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText));
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
@@ -540,8 +542,8 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             super(view);
             ButterKnife.bind(this, view);
             mText.setShowUnderLines(false);
-            mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
-            mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
+            mText.setImageHandler(new ImageDialog(mText.getContext()));
+            mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
             view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }

@@ -14,7 +14,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 /**
  * Created by theo on 24/02/17.

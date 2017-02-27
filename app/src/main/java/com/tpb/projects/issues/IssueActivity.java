@@ -61,8 +61,10 @@ import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -128,8 +130,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
 
         mOpenInfo.setShowUnderLines(false);
         mInfo.setShowUnderLines(false);
-        mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
-        mInfo.setCodeClickHandler(new HtmlTextView.CodeDialog(this));
+        mInfo.setImageHandler(new ImageDialog(this));
+        mInfo.setCodeClickHandler(new CodeDialog(this));
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
@@ -201,7 +203,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
 
         html += MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
 
-        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo));
 
         builder.setLength(0);
         builder.append(

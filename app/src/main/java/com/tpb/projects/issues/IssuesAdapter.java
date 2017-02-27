@@ -19,7 +19,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 

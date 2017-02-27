@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

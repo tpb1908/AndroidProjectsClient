@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -31,6 +31,7 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.xml.sax.XMLReader;
 
 import java.util.Stack;
@@ -38,7 +39,7 @@ import java.util.Stack;
 /**
  * Some parts of this code are based on android.text.Html
  */
-class HtmlTagHandler implements Html.TagHandler {
+public class HtmlTagHandler implements Html.TagHandler {
 
     private static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
     private static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
@@ -54,7 +55,7 @@ class HtmlTagHandler implements Html.TagHandler {
      * @return html with replaced <ul> and <li> tags
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
-    String overrideTags(@Nullable String html) {
+    public String overrideTags(@Nullable String html) {
 
         if(html == null) return null;
 
@@ -242,7 +243,7 @@ class HtmlTagHandler implements Html.TagHandler {
                 output.removeSpan(obj);
 
                 output.replace(where, len, "Click to view code");
-                output.setSpan(new HtmlTextView.CodeSpan(), where, where + "Click to view code".length(), 0);
+                output.setSpan(new CodeSpan(), where, where + "Click to view code".length(), 0);
 
 
             } else if(tag.equalsIgnoreCase("center")) {

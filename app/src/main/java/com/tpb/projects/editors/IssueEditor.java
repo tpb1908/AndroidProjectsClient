@@ -35,7 +35,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.text.Layout;
 import android.text.Selection;
@@ -24,6 +24,9 @@ import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
+
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 /**
  * Copied from http://stackoverflow.com/questions/8558732
@@ -69,6 +72,8 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
 
                 if(widget instanceof HtmlTextView) {
                     ((HtmlTextView) widget).linkHit = true;
+                } else if(widget instanceof HtmlEditText) {
+                    ((HtmlEditText) widget).linkHit = true;
                 }
                 return true;
             } else {
