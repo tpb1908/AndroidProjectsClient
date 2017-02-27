@@ -76,7 +76,7 @@
                             android:layout_alignParentStart="true"
                             android:layout_marginEnd="8dp"/>
 
-                        <org.sufficientlysecure.htmltextview.HtmlTextView
+                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
                             android:id="@+id/issue_info"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                             android:layout_toStartOf="@+id/issue_menu_button"
                             android:layout_marginBottom="8dp"/>
 
-                        <org.sufficientlysecure.htmltextview.HtmlTextView
+                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
                             android:id="@+id/issue_open_info"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

@@ -25,7 +25,7 @@
             android:visibility="gone"
             android:layout_marginEnd="8dp"/>
 
-        <org.sufficientlysecure.htmltextview.HtmlTextView
+        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
             android:id="@+id/event_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

@@ -34,8 +34,11 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +59,7 @@ public class IssueEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
-    @BindView(R.id.issue_body_edit) EditText mBodyEdit;
+    @BindView(R.id.issue_body_edit) HtmlEditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
@@ -171,6 +174,20 @@ public class IssueEditor extends ImageLoadingActivity {
             @Override
             public String getText() {
                 return mBodyEdit.getText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mBodyEdit.isEditing()) {
+                    mBodyEdit.saveText();
+                    String repo = null;
+                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
+                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mBodyEdit.disableEditing();
+                } else {
+                    mBodyEdit.restoreText();
+                    mBodyEdit.enableEditing();
+                }
             }
         });
 

@@ -1,63 +1,54 @@
-/*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package org.sufficientlysecure.htmltext.htmledittext;
 
-package org.sufficientlysecure.htmltextview;
-
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
-import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
-import com.pddstudio.highlightjs.HighlightJsView;
-import com.pddstudio.highlightjs.models.Theme;
+import org.sufficientlysecure.htmltext.CleanURLSpan;
+import org.sufficientlysecure.htmltext.ClickableTableSpan;
+import org.sufficientlysecure.htmltext.CodeSpan;
+import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.HtmlTagHandler;
+import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
+import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
+import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
+import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class HtmlTextView extends JellyBeanSpanFixTextView {
 
-    public static final String TAG = "HtmlTextView";
+/**
+ * Created by theo on 27/02/17.
+ */
+
+public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpImageGetter.DrawableCacheHandler {
+
+    public static final String TAG = HtmlEditText.class.getSimpleName();
     public static final boolean DEBUG = false;
 
-    boolean linkHit;
+    private boolean mIsEditing = true;
+    private Editable mSavedText;
+    private Drawable mDefaultBackground;
+
+    public boolean linkHit;
     @Nullable
     private ClickableTableSpan clickableTableSpan;
     @Nullable
@@ -66,7 +57,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
-    private boolean showUnderLines = true;
+    private boolean showUnderLines = false;
 
     private LinkClickHandler mLinkHandler;
 
@@ -79,16 +70,19 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     private float[] mLastClickPosition = new float[] { -1, -1};
 
-    public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
+    public HtmlEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setPadding(0, 0, 0, 0);
     }
 
-    public HtmlTextView(Context context, AttributeSet attrs) {
+    public HtmlEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setPadding(0, 0, 0, 0);
     }
 
-    public HtmlTextView(Context context) {
+    public HtmlEditText(Context context) {
         super(context);
+        setPadding(0, 0, 0, 0);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {
@@ -107,16 +101,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         mCodeHandler = handler;
     }
 
-    /**
-     * @see org.sufficientlysecure.htmltextview.HtmlTextView#setHtml(int)
-     */
     public void setHtml(@RawRes int resId) {
         setHtml(resId, null);
     }
 
-    /**
-     * @see org.sufficientlysecure.htmltextview.HtmlTextView#setHtml(String)
-     */
     public void setHtml(@NonNull String html) {
         setHtml(html, null);
     }
@@ -193,7 +181,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
                 }
 
                 //Post back on UI thread
-                HtmlTextView.this.post(new Runnable() {
+                HtmlEditText.this.post(new Runnable() {
                     @Override
                     public void run() {
                         setText(buffer);
@@ -212,8 +200,9 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
 
     }
 
-    void addDrawable(Drawable drawable, String source) {
-        mDrawables.put(source, drawable);
+    @Override
+    public void drawableLoaded(Drawable d, String source) {
+        mDrawables.put(source, d);
     }
 
     private void stripUnderLines(Spannable s) {
@@ -223,9 +212,9 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             final int end = s.getSpanEnd(span);
             s.removeSpan(span);
             if(mLinkHandler == null) {
-                span = new URLSpanWithoutUnderline(span.getURL());
+                span = new CleanURLSpan(span.getURL());
             } else {
-                span = new URLSpanWithoutUnderline(span.getURL(), mLinkHandler);
+                span = new CleanURLSpan(span.getURL(), mLinkHandler);
             }
             s.setSpan(span, start, end, 0);
         }
@@ -277,172 +266,39 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         }
     }
 
-    private static class URLSpanWithoutUnderline extends URLSpan {
-        private LinkClickHandler mHandler;
-
-        URLSpanWithoutUnderline(String url) {
-            super(url);
-        }
-
-        URLSpanWithoutUnderline(String url, LinkClickHandler handler) {
-            super(url);
-            mHandler = handler;
-        }
-
-        @Override
-        public void onClick(View widget) {
-            if(mHandler == null) {
-                super.onClick(widget);
-            } else {
-                mHandler.onClick(getURL());
-            }
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            // Links are bold without underline
-            ds.setUnderlineText(false);
-            ds.setTypeface(Typeface.DEFAULT_BOLD);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-        }
-
-        URLSpanWithoutUnderline(Parcel in) {
-            super(in);
-        }
-
-        public static final Creator<URLSpanWithoutUnderline> CREATOR = new Creator<URLSpanWithoutUnderline>() {
-            @Override
-            public URLSpanWithoutUnderline createFromParcel(Parcel source) {
-                return new URLSpanWithoutUnderline(source);
-            }
-
-            @Override
-            public URLSpanWithoutUnderline[] newArray(int size) {
-                return new URLSpanWithoutUnderline[size];
-            }
-        };
+    public boolean isEditing() {
+        return mIsEditing;
     }
 
-    public static class CodeSpan extends ClickableSpan {
-        private CodeClickHandler mHandler;
-        private String mCode;
-
-
-        void setHandler(CodeClickHandler handler) {
-            mHandler = handler;
-        }
-
-        void setCode(String code) {
-            mCode = code;
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-            ds.setTypeface(Typeface.DEFAULT_BOLD);
-        }
-
-        @Override
-        public void onClick(View widget) {
-            if(mHandler != null) {
-                mHandler.codeClicked(mCode);
-            }
-        }
-
-
+    public void enableEditing() {
+        if(mIsEditing) return;
+        setBackground(mDefaultBackground);
+        setFocusable(true);
+        setCursorVisible(true);
+        mIsEditing = true;
     }
 
-    public interface LinkClickHandler {
-
-        void onClick(String url);
-
+    public void disableEditing() {
+        if(!mIsEditing) return;
+        mDefaultBackground = getBackground();
+        setBackground(null);
+        setFocusable(false);
+        setCursorVisible(false);
+        //setEnabled(false);
+        mIsEditing = false;
     }
 
-    public interface ImageClickHandler {
-
-        void imageClicked(Drawable drawable);
-
+    public void saveText() {
+        mSavedText = getText();
     }
 
-    public interface CodeClickHandler {
-
-        void codeClicked(String code);
-
+    public void restoreText() {
+        setText(mSavedText);
     }
 
-    public static class ImageDialog implements ImageClickHandler {
-
-        private final Context mContext;
-
-        public ImageDialog(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public void imageClicked(Drawable drawable) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            final LayoutInflater inflater = LayoutInflater.from(mContext);
-            final View view = inflater.inflate(R.layout.dialog_image, null);
-
-            builder.setView(view);
-
-            final FillingImageView fiv = (FillingImageView) view.findViewById(R.id.dialog_imageview);
-            fiv.setImageDrawable(drawable);
-
-            final Dialog dialog = builder.create();
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT);
-
-            fiv.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-
-                }
-            });
-
-            dialog.show();
-
-        }
-    }
-
-    public static class CodeDialog implements CodeClickHandler {
-
-        private Context mContext;
-
-        public CodeDialog(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public void codeClicked(String code) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            final LayoutInflater inflater = LayoutInflater.from(mContext);
-            final View view = inflater.inflate(R.layout.dialog_code, null);
-
-            builder.setView(view);
-
-            final HighlightJsView wv = (HighlightJsView) view.findViewById(R.id.dialog_highlight_view);
-            wv.setTheme(Theme.ANDROID_STUDIO);
-            wv.setSource(code);
-            final Dialog dialog = builder.create();
-
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.show();
-        }
+    @Override
+    public boolean isSuggestionsEnabled() {
+        return mIsEditing;
     }
 
     /**
@@ -508,12 +364,12 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
             mLastClickPosition[1] = event.getRawY();
         }
         linkHit = false;
-        boolean res = super.onTouchEvent(event);
-
+        final boolean res = super.onTouchEvent(event);
+        if(mIsEditing) return res;
         if(dontConsumeNonUrlClicks) {
             return linkHit;
         }
         return res;
     }
-
+    
 }

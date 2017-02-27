@@ -59,7 +59,7 @@
             android:background="@android:color/transparent"
             android:layout_alignParentEnd="true"/>
 
-        <org.sufficientlysecure.htmltextview.HtmlTextView
+        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
             android:id="@+id/project_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

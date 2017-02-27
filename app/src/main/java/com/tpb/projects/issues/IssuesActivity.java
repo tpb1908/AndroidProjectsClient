@@ -44,7 +44,7 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 

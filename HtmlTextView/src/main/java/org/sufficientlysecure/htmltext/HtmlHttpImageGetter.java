@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,16 +37,19 @@ import java.net.URI;
 import java.net.URL;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    private final HtmlTextView container;
+    private final TextView container;
+    private DrawableCacheHandler cacheHandler;
     private URI baseUri;
     private boolean matchParentWidth = true;
 
-    public HtmlHttpImageGetter(HtmlTextView textView) {
-        this.container = textView;
+    public HtmlHttpImageGetter(TextView container, @Nullable DrawableCacheHandler cacheHandler) {
+        this.container = container;
+        this.cacheHandler = cacheHandler;
     }
 
-    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl) {
-        this.container = textView;
+    public HtmlHttpImageGetter(TextView container, String baseUrl, @Nullable DrawableCacheHandler cacheHandler) {
+        this.container = container;
+        this.cacheHandler = cacheHandler;
         if(baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
@@ -123,7 +130,12 @@ public class HtmlHttpImageGetter implements ImageGetter {
             }
 
             //We add the drawable to the image view so that it can get it on click
-            imageGetter.container.addDrawable(urlDrawable.drawable.getConstantState().newDrawable(), source);
+            if(imageGetter.cacheHandler != null) {
+                imageGetter.cacheHandler.drawableLoaded(
+                        urlDrawable.drawable.getConstantState().newDrawable(),
+                        source
+                );
+            }
 
             // redraw the image by invalidating the container
             imageGetter.container.invalidate();
@@ -170,6 +182,12 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
             return (InputStream) url.getContent();
         }
+    }
+
+    public interface DrawableCacheHandler {
+
+        void drawableLoaded(Drawable d, String source);
+
     }
 
     @SuppressWarnings("deprecation")

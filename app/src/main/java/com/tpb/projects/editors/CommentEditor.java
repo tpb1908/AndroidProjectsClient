@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.androidnetworking.error.ANError;
@@ -23,6 +22,10 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
+
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
 
@@ -41,7 +44,7 @@ public class CommentEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_EDIT_COMMENT = 5734;
     public static final int REQUEST_CODE_COMMENT_FOR_STATE = 1400;
 
-    @BindView(R.id.comment_body_edit) EditText mEditor;
+    @BindView(R.id.comment_body_edit) HtmlEditText mEditor;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
@@ -92,6 +95,20 @@ public class CommentEditor extends ImageLoadingActivity {
             @Override
             public String getText() {
                 return mEditor.getText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mEditor.isEditing()) {
+                    mEditor.saveText();
+                    String repo = null;
+                    if(mIssue != null) repo = mIssue.getRepoPath();
+                    mEditor.setHtml(MDParser.parseMD(mEditor.getText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.disableEditing();
+                } else {
+                    mEditor.restoreText();
+                    mEditor.enableEditing();
+                }
             }
         });
 
