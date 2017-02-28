@@ -435,6 +435,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITLoade
     public void createNewIssue() {
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        UI.setViewPositionForIntent(intent, mFab);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
