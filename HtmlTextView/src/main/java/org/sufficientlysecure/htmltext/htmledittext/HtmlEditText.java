@@ -274,7 +274,9 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
         if(mIsEditing) return;
         setBackground(mDefaultBackground);
         setFocusable(true);
+        setFocusableInTouchMode(true);
         setCursorVisible(true);
+        setEnabled(true);
         mIsEditing = true;
     }
 
