@@ -104,15 +104,15 @@ public class MarkdownButtonAdapter {
         wrapper.setPaddingRelative(UI.pxFromDp(16), 0, UI.pxFromDp(16), 0);
 
         final EditText text = new EditText(mParent);
-        text.setHint("Text to show");
+        text.setHint(R.string.hint_url_description);
         wrapper.addView(text);
 
         final EditText url = new EditText(mParent);
-        url.setHint("URL");
+        url.setHint(R.string.hint_url_url);
         wrapper.addView(url);
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
-        builder.setTitle("Insert link");
+        builder.setTitle(R.string.title_insert_link);
         builder.setView(wrapper);
 
         builder.setPositiveButton(R.string.action_insert, (v, di) -> {
