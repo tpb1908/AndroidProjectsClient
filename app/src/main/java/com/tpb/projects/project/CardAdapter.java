@@ -186,13 +186,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
-            mParent.loadIssue(new Loader.GITLoader<Issue>() {
+            mParent.loadIssue(new Loader.GITModelLoader<Issue>() {
                 int loadCount = 0;
 
                 @Override
-                public void loadComplete(Issue... data) {
+                public void loadComplete(Issue data) {
                     if(mParent.isAdded() && !mParent.isRemoving()) {
-                        card.setFromIssue(data[0]);
+                        card.setFromIssue(data);
                         bindIssueCard(holder, pos);
                     }
                     // notifyItemChanged(pos);

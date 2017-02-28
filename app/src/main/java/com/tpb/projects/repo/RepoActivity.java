@@ -234,10 +234,10 @@ public class RepoActivity extends AppCompatActivity implements
 
     }
     
-    private Loader.GITLoader<Repository> mRepoLoader = new Loader.GITLoader<Repository>() {
+    private Loader.GITModelLoader<Repository> mRepoLoader = new Loader.GITModelLoader<Repository>() {
         @Override
-        public void loadComplete(Repository... data) {
-            mRepo = data[0];
+        public void loadComplete(Repository data) {
+            mRepo = data;
             mName.setText(mRepo.getName());
             if(Constants.JSON_NULL.equals(mRepo.getDescription())) {
                 mDescription.setVisibility(GONE);
@@ -253,12 +253,12 @@ public class RepoActivity extends AppCompatActivity implements
             mStars.setText(Integer.toString(mRepo.getStarGazers()));
             mRefresher.setRefreshing(true);
             mLoader.loadProjects(mProjectsLoader, mRepo.getFullName());
-            mLoader.loadReadMe(new Loader.GITLoader<String>() {
+            mLoader.loadReadMe(new Loader.GITModelLoader<String>() {
                 @Override
-                public void loadComplete(String... data) {
+                public void loadComplete(String data) {
                     Log.i(TAG, "readMeLoaded: ");
                     mReadmeButton.setVisibility(View.VISIBLE);
-                    mReadme.setMDText(data[0]);
+                    mReadme.setMDText(data);
                     mReadme.reload();
                 }
 
@@ -272,10 +272,10 @@ public class RepoActivity extends AppCompatActivity implements
                 mAccessLevel = Repository.AccessLevel.ADMIN;
                 findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
             } else {
-                mLoader.checkAccessToRepository(new Loader.GITLoader<Repository.AccessLevel>() {
+                mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
                     @Override
-                    public void loadComplete(Repository.AccessLevel... data) {
-                        mAccessLevel = data[0];
+                    public void loadComplete(Repository.AccessLevel data) {
+                        mAccessLevel = data;
                         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                             mAdapter.enableEditAccess();
                             findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
@@ -288,10 +288,10 @@ public class RepoActivity extends AppCompatActivity implements
                     }
                 }, GitHubSession.getSession(RepoActivity.this).getUserLogin(), mRepo.getFullName());
             }
-            mLoader.checkIfStarred(new Loader.GITLoader<Boolean>() {
+            mLoader.checkIfStarred(new Loader.GITModelLoader<Boolean>() {
                 @Override
-                public void loadComplete(Boolean... data) {
-                    mHasStarredRepo = data[0];
+                public void loadComplete(Boolean data) {
+                    mHasStarredRepo = data;
                     if(mHasStarredRepo) {
                         ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
                     } else {
@@ -305,10 +305,10 @@ public class RepoActivity extends AppCompatActivity implements
                     ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
                 }
             }, mRepo.getFullName());
-            mLoader.checkIfWatched(new Loader.GITLoader<Boolean>() {
+            mLoader.checkIfWatched(new Loader.GITModelLoader<Boolean>() {
                 @Override
-                public void loadComplete(Boolean... data) {
-                    mIsWatchingRepo = data[0];
+                public void loadComplete(Boolean data) {
+                    mIsWatchingRepo = data;
                     if(mIsWatchingRepo) {
                         ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
                     } else {
@@ -330,9 +330,9 @@ public class RepoActivity extends AppCompatActivity implements
         }
     };
 
-    private Loader.GITLoader<Project> mProjectsLoader = new Loader.GITLoader<Project>() {
+    private Loader.GITModelsLoader<Project> mProjectsLoader = new Loader.GITModelsLoader<Project>() {
         @Override
-        public void loadComplete(Project... data) {
+        public void loadComplete(Project[] data) {
             mRefresher.setRefreshing(false);
             mAdapter.loadComplete(data);
 

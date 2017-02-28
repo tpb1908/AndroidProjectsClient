@@ -206,9 +206,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.GITLoader<User>() {
+        new Loader(this).loadCollaborators(new Loader.GITModelsLoader<User>() {
             @Override
-            public void loadComplete(User... collaborators) {
+            public void loadComplete(User[] collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
@@ -259,9 +259,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.GITLoader<Label>() {
+        new Loader(this).loadLabels(new Loader.GITModelsLoader<Label>() {
             @Override
-            public void loadComplete(Label... labels) {
+            public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();

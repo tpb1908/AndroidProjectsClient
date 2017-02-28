@@ -198,11 +198,11 @@ public class CardEditor extends ImageLoadingActivity {
             pd.setTitle(R.string.text_loading_issues);
             pd.setCancelable(false);
             pd.show();
-            new Loader(CardEditor.this).loadOpenIssues(new Loader.GITLoader<Issue>() {
+            new Loader(CardEditor.this).loadOpenIssues(new Loader.GITModelsLoader<Issue>() {
                 private int selectedIssuePosition = 0;
 
                 @Override
-                public void loadComplete(Issue... loadedIssues) {
+                public void loadComplete(Issue[] loadedIssues) {
                     if(isClosing()) return; // There is no window to attach to
                     pd.dismiss();
 

@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by theo on 17/12/16.
  */
 
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.GITLoader<Project> {
+public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.GITModelsLoader<Project> {
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private ArrayList<Project> mProjects = new ArrayList<>();
@@ -105,7 +105,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public void loadComplete(Project... projects) {
+    public void loadComplete(Project[] projects) {
         Log.i(TAG, "projectsLoaded: " + Arrays.toString(projects));
         mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();

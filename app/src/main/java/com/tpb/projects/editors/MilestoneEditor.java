@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITLoader<Milestone> {
+public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITModelLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -149,13 +149,13 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITL
     }
 
     @Override
-    public void loadComplete(Milestone... milestone) {
-        Log.i(TAG, "milestoneLoaded: " + milestone[0]);
-        mTitleEditor.setText(milestone[0].getTitle());
+    public void loadComplete(Milestone milestone) {
+        Log.i(TAG, "milestoneLoaded: " + milestone);
+        mTitleEditor.setText(milestone.getTitle());
         mDescriptionEditor.setFocusable(true);
         mDescriptionEditor.setFocusableInTouchMode(true);
         mDescriptionEditor.setEnabled(true);
-        mDescriptionEditor.setText(milestone[0].getDescription());
+        mDescriptionEditor.setText(milestone.getDescription());
     }
 
     @Override

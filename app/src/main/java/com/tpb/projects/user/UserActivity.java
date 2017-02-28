@@ -117,11 +117,11 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
-                loader.loadUser(new Loader.GITLoader<User>() {
+                loader.loadUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void loadComplete(User... data) {
-                        mUserName.setText(data[0].getLogin());
-                        mUserImage.setImageUrl(data[0].getAvatarUrl());
+                    public void loadComplete(User u) {
+                        mUserName.setText(u.getLogin());
+                        mUserImage.setImageUrl(u.getAvatarUrl());
                     }
 
                     @Override
@@ -136,12 +136,12 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 if(isTaskRoot()) {
                     findViewById(R.id.back_button).setVisibility(View.GONE);
                 }
-                loader.loadAuthenticatedUser(new Loader.GITLoader<User>() {
+                loader.loadAuthenticatedUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void loadComplete(User... data) {
-                        mUserName.setText(data[0].getLogin());
-                        mUserImage.setImageUrl(data[0].getAvatarUrl());
-                        GitHubSession.getSession(UserActivity.this).updateUserLogin(data[0].getLogin());
+                    public void loadComplete(User user) {
+                        mUserName.setText(user.getLogin());
+                        mUserImage.setImageUrl(user.getAvatarUrl());
+                        GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
                     }
 
                     @Override
@@ -206,11 +206,11 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
         });
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(input.getText().toString().contains("/")) {
-                new Loader(UserActivity.this).loadRepository(new Loader.GITLoader<Repository>() {
+                new Loader(UserActivity.this).loadRepository(new Loader.GITModelLoader<Repository>() {
                     @Override
-                    public void loadComplete(Repository... data) {
+                    public void loadComplete(Repository repo) {
                         final Intent r = new Intent(UserActivity.this, RepoActivity.class);
-                        r.putExtra(getString(R.string.intent_repo), data[0].getFullName());
+                        r.putExtra(getString(R.string.intent_repo), repo.getFullName());
                         startActivity(r);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                     }
@@ -226,11 +226,11 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 }, input.getText().toString());
 
             } else {
-                new Loader(UserActivity.this).loadUser(new Loader.GITLoader<User>() {
+                new Loader(UserActivity.this).loadUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void loadComplete(User... data) {
+                    public void loadComplete(User user) {
                         final Intent u = new Intent(UserActivity.this, UserActivity.class);
-                        u.putExtra(getString(R.string.intent_username), data[0].getLogin());
+                        u.putExtra(getString(R.string.intent_username), user.getLogin());
                         startActivity(u);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                     }
