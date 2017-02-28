@@ -35,6 +35,8 @@ import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
@@ -142,6 +144,9 @@ public class CardEditor extends ImageLoadingActivity {
                 mHasBeenEdited = true;
             }
         });
+
+        mEditor.setCodeClickHandler(new CodeDialog(this));
+        mEditor.setImageHandler(new ImageDialog(this));
     }
 
     private void bindIssue(Issue issue) {

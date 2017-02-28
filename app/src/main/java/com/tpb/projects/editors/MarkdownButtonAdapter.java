@@ -123,7 +123,7 @@ public class MarkdownButtonAdapter {
                                 text.getText().toString(),
                                 url.getText().toString()
                         ),
-                        -1);
+                        0);
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);

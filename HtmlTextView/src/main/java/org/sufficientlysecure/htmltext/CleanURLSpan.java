@@ -1,7 +1,10 @@
 package org.sufficientlysecure.htmltext;
 
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Parcel;
+import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.URLSpan;
 import android.view.View;
@@ -16,21 +19,31 @@ public class CleanURLSpan extends URLSpan {
     private LinkClickHandler mHandler;
 
     public CleanURLSpan(String url) {
-        super(url);
+        super(ensureValidUrl(url));
     }
 
     public CleanURLSpan(String url, LinkClickHandler handler) {
-        super(url);
+        super(ensureValidUrl(url));
         mHandler = handler;
     }
 
     @Override
     public void onClick(View widget) {
         if(mHandler == null) {
-            super.onClick(widget);
+            final Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(getURL()));
+            widget.getContext().startActivity(i);
         } else {
             mHandler.onClick(getURL());
         }
+    }
+
+    private static String ensureValidUrl(@Nullable String url) {
+        if(url == null) return null;
+        if(!url.startsWith("https://") && !url.startsWith("http://")) {
+            return "http://" + url;
+        }
+        return url;
     }
 
     @Override

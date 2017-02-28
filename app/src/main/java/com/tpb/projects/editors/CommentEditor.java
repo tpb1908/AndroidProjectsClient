@@ -25,6 +25,8 @@ import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
@@ -111,7 +113,8 @@ public class CommentEditor extends ImageLoadingActivity {
                 }
             }
         });
-
+        mEditor.setImageHandler(new ImageDialog(this));
+        mEditor.setCodeClickHandler(new CodeDialog(this));
         mKeyBoardChecker = new KeyBoardVisibilityChecker(findViewById(android.R.id.content));
 
     }
