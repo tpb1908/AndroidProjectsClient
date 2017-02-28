@@ -75,7 +75,7 @@ import butterknife.OnClick;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.GITLoader<Issue> {
+public class IssueActivity extends CircularRevealActivity implements Loader.GITModelLoader<Issue> {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -148,8 +148,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
 
 
     @Override
-    public void loadComplete(Issue... issue) {
-        mIssue = issue[0];
+    public void loadComplete(Issue issue) {
+        mIssue = issue;
         mAdapter.setIssue(mIssue);
         displayAssignees();
         displayMilestone();
@@ -164,10 +164,10 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
             mFab.postDelayed(mFab::show, 300);
             mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
-            mLoader.checkIfCollaborator(new Loader.GITLoader<Repository.AccessLevel>() {
+            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
                 @Override
-                public void loadComplete(Repository.AccessLevel... data) {
-                    mAccessLevel = data[0];
+                public void loadComplete(Repository.AccessLevel data) {
+                    mAccessLevel = data;
                     if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                         enableAccess();
                     }
@@ -366,11 +366,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
         }
     }
 
-    private Loader.GITLoader<Comment> mCommentLoader = new Loader.GITLoader<Comment>() {
+    private Loader.GITModelsLoader<Comment> mCommentLoader = new Loader.GITModelsLoader<Comment>() {
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void loadComplete(Comment... comments) {
+        public void loadComplete(Comment[] comments) {
             mRecycler.enableAnimation();
             mAdapter.loadComments(comments);
             mCount.setText(Integer.toString(mAdapter.getItemCount()));
@@ -649,11 +649,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITL
         builder.create().show();
     }
 
-    private Loader.GITLoader<Event> mEventLoader = new Loader.GITLoader<Event>() {
+    private Loader.GITModelsLoader<Event> mEventLoader = new Loader.GITModelsLoader<Event>() {
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void loadComplete(Event... data) {
+        public void loadComplete(Event[] data) {
             mRecycler.enableAnimation();
             mAdapter.loadEvents(data);
             mCount.setText(Integer.toString(mAdapter.getItemCount()));

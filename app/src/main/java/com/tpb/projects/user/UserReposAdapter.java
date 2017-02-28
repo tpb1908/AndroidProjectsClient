@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITLoader<Repository> {
+class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
     private static final String TAG = UserReposAdapter.class.getSimpleName();
 
     private final Loader mLoader;
@@ -147,7 +147,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     }
 
     @Override
-    public void loadComplete(Repository... repos) {
+    public void loadComplete(Repository[] repos) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(repos.length > 0) {
@@ -192,13 +192,13 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         Log.i(TAG, "ensureLoadOfPinnedRepos: Ensuring that repos are loaded ");
         for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
             Log.i(TAG, "ensureLoadOfPinnedRepos: Loading " + repo);
-            mLoader.loadRepository(new Loader.GITLoader<Repository>() {
+            mLoader.loadRepository(new Loader.GITModelLoader<Repository>() {
                 @Override
-                public void loadComplete(Repository... data) {
-                    if(!mRepos.contains(data[0])) {
-                        mRepos.add(0, data[0]);
+                public void loadComplete(Repository data) {
+                    if(!mRepos.contains(data)) {
+                        mRepos.add(0, data);
                         mRecycler.disableAnimation();
-                        mPinChecker.appendPinnedPosition(data[0].getFullName());
+                        mPinChecker.appendPinnedPosition(data.getFullName());
                         notifyItemInserted(0);
                     }
                 }

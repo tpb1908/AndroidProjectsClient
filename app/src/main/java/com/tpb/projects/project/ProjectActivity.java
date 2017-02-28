@@ -68,7 +68,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends AppCompatActivity implements Loader.GITLoader<Project> {
+public class ProjectActivity extends AppCompatActivity implements Loader.GITModelLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
@@ -172,14 +172,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITLoad
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
-        mLoader.loadProjects(new Loader.GITLoader<Project>() {
+        mLoader.loadProjects(new Loader.GITModelsLoader<Project>() {
             int projectLoadAttempts = 0;
 
             @Override
-            public void loadComplete(Project... data) {
+            public void loadComplete(Project[] data) {
                 for(Project p : data) {
                     if(number == p.getNumber()) {
-                        loadComplete(p);
+                        ProjectActivity.this.loadComplete(p);
                         checkAccess(p);
                         return;
                     }
@@ -208,12 +208,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITLoad
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccessToRepository(new Loader.GITLoader<Repository.AccessLevel>() {
+        mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
             int accessCheckAttempts = 0;
 
             @Override
-            public void loadComplete(Repository.AccessLevel... data) {
-                mAccessLevel = data[0];
+            public void loadComplete(Repository.AccessLevel data) {
+                mAccessLevel = data;
                 if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                     mMenu.showMenuButton(true);
                 } else {
@@ -254,8 +254,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITLoad
     }
 
     @Override
-    public void loadComplete(Project... project) {
-        mProject = project[0];
+    public void loadComplete(Project project) {
+        mProject = project;
         mLoader.loadLabels(null, mProject.getRepoPath());
         mName.setText(mProject.getName());
 
@@ -263,9 +263,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITLoad
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
-        mLoader.loadColumns(new Loader.GITLoader<Column>() {
+        mLoader.loadColumns(new Loader.GITModelsLoader<Column>() {
             @Override
-            public void loadComplete(Column... columns) {
+            public void loadComplete(Column[] columns) {
                 if(columns.length > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
@@ -320,7 +320,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITLoad
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.GITLoader<Issue> loader, int issueId, Column column) {
+    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId, Column column) {
         mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 

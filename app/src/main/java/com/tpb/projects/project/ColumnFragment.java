@@ -59,7 +59,7 @@ import static com.tpb.projects.data.SettingsActivity.Preferences.CardAction.COPY
  * Created by theo on 19/12/16.
  */
 
-public class ColumnFragment extends Fragment implements Loader.GITLoader<Card> {
+public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<Card> {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     FirebaseAnalytics mAnalytics;
@@ -241,12 +241,12 @@ public class ColumnFragment extends Fragment implements Loader.GITLoader<Card> {
         mParent.deleteColumn(mColumn);
     }
 
-    void loadIssue(Loader.GITLoader<Issue> loader, int issueId) {
+    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId) {
         mParent.loadIssue(loader, issueId, mColumn);
     }
 
     @Override
-    public void loadComplete(Card... cards) {
+    public void loadComplete(Card[] cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
             if(mShouldAnimate) {

@@ -54,7 +54,7 @@ public class Loader extends APIHandler {
         super(context);
     }
 
-    public void loadAuthenticatedUser(GITLoader<User> loader) {
+    public void loadAuthenticatedUser(GITModelLoader<User> loader) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -74,7 +74,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadUser(GITLoader<User> loader, String username) {
+    public void loadUser(GITModelLoader<User> loader, String username) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + username)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -94,7 +94,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadRepositories(GITLoader<Repository> loader, String user, int page) {
+    public void loadRepositories(GITModelsLoader<Repository> loader, String user, int page) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -122,7 +122,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadRepositories(GITLoader<Repository> loader, int page) {
+    public void loadRepositories(GITModelsLoader<Repository> loader, int page) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -150,7 +150,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadRepository(GITLoader<Repository> loader, String repoFullName) {
+    public void loadRepository(GITModelLoader<Repository> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -169,7 +169,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadReadMe(GITLoader<String> loader, String repoFullName) {
+    public void loadReadMe(GITModelLoader<String> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_README)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -192,7 +192,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadCollaborators(GITLoader<User> loader, String repoFullName) {
+    public void loadCollaborators(GITModelsLoader<User> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -218,7 +218,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadLabels(GITLoader<Label> loader, String repoFullName) {
+    public void loadLabels(GITModelsLoader<Label> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_LABELS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -244,7 +244,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadProject(GITLoader<Project> loader, int id) {
+    public void loadProject(GITModelLoader<Project> loader, int id) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
@@ -261,7 +261,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadProjects(GITLoader<Project> loader, String repoFullName) {
+    public void loadProjects(GITModelsLoader<Project> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
@@ -286,7 +286,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadColumns(GITLoader<Column> loader, int projectId) {
+    public void loadColumns(GITModelsLoader<Column> loader, int projectId) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
@@ -312,7 +312,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadCards(GITLoader<Card> loader, int columnId) {
+    public void loadCards(GITModelsLoader<Card> loader, int columnId) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
@@ -338,7 +338,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadIssue(GITLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
+    public void loadIssue(GITModelLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .setPriority(highPriority ? Priority.HIGH : Priority.MEDIUM)
@@ -357,7 +357,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadOpenIssues(GITLoader<Issue> loader, String repoFullName) {
+    public void loadOpenIssues(GITModelsLoader<Issue> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -385,7 +385,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadIssues(GITLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
+    public void loadIssues(GITModelsLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {
@@ -431,7 +431,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadComments(GITLoader<Comment> loader, String fullRepoName, int issueNumber) {
+    public void loadComments(GITModelsLoader<Comment> loader, String fullRepoName, int issueNumber) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -456,7 +456,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadEvents(GITLoader<Event> loader, String repoFullName, int issueNumber) {
+    public void loadEvents(GITModelsLoader<Event> loader, String repoFullName, int issueNumber) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -483,7 +483,7 @@ public class Loader extends APIHandler {
 
     }
     
-    public void loadMilestone(GITLoader<Milestone> loader, String repoFullName, int number) {
+    public void loadMilestone(GITModelLoader<Milestone> loader, String repoFullName, int number) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + "/" + number)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -502,7 +502,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadMilestones(GITLoader<Milestone> loader, String repoFullName) {
+    public void loadMilestones(GITModelsLoader<Milestone> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -525,7 +525,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkAccessToRepository(GITLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public void checkAccessToRepository(GITModelLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS)
                 .build()
@@ -572,7 +572,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfCollaborator(GITLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public void checkIfCollaborator(GITModelLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -598,7 +598,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfStarred(GITLoader<Boolean> listener, String fullRepoName) {
+    public void checkIfStarred(GITModelLoader<Boolean> listener, String fullRepoName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -621,7 +621,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfWatched(GITLoader<Boolean> listener, String fullRepoName) {
+    public void checkIfWatched(GITModelLoader<Boolean> listener, String fullRepoName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -649,7 +649,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void renderMarkDown(GITLoader<String> loader, String markdown) {
+    public void renderMarkDown(GITModelLoader<String> loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -673,7 +673,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void renderMarkDown(GITLoader<String> loader, String markdown, String context) {
+    public void renderMarkDown(GITModelLoader<String> loader, String markdown, String context) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -698,13 +698,23 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public interface GITLoader<T> {
+    public interface GITModelsLoader<T> {
 
-        void loadComplete(T... data);
+        void loadComplete(T[] data);
 
         void loadError(APIError error);
 
     }
+
+    public interface GITModelLoader<T> {
+
+        void loadComplete(T data);
+
+        void loadError(APIError error);
+
+    }
+
+
 
 
 }

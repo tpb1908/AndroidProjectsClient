@@ -56,7 +56,7 @@ import butterknife.OnClick;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesActivity extends AppCompatActivity implements Loader.GITLoader<Issue> {
+public class IssuesActivity extends AppCompatActivity implements Loader.GITModelsLoader<Issue> {
     private static final String TAG = IssuesActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssuesActivity.java";
 
@@ -114,10 +114,10 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITLoade
             mRefresher.setRefreshing(true);
 
             //Check if we have access to edit the Issue
-            mLoader.checkIfCollaborator(new Loader.GITLoader<Repository.AccessLevel>() {
+            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
                 @Override
-                public void loadComplete(Repository.AccessLevel... data) {
-                    mAccessLevel = data[0];
+                public void loadComplete(Repository.AccessLevel data) {
+                    mAccessLevel = data;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
                         mFab.postDelayed(mFab::show, 300);
                         enableScrollListener(mRecycler, layoutManager);
@@ -180,7 +180,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITLoade
     }
 
     @Override
-    public void loadComplete(Issue... issues) {
+    public void loadComplete(Issue[] issues) {
         if(mPage == 1) {
             mAdapter.loadIssues(issues);
         } else {
@@ -246,9 +246,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITLoade
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadLabels(new Loader.GITLoader<Label>() {
+        mLoader.loadLabels(new Loader.GITModelsLoader<Label>() {
             @Override
-            public void loadComplete(Label... labels) {
+            public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -301,9 +301,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITLoade
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadCollaborators(new Loader.GITLoader<User>() {
+        mLoader.loadCollaborators(new Loader.GITModelsLoader<User>() {
             @Override
-            public void loadComplete(User... collaborators) {
+            public void loadComplete(User[] collaborators) {
                 final String[] collabNames = new String[collaborators.length + 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
