@@ -37,6 +37,8 @@ import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -141,6 +143,8 @@ public class IssueEditor extends ImageLoadingActivity {
 
         mTitleEdit.addTextChangedListener(editWatcher);
         mBodyEdit.addTextChangedListener(editWatcher);
+        mBodyEdit.setCodeClickHandler(new CodeDialog(this));
+        mBodyEdit.setImageHandler(new ImageDialog(this));
 
         final View content = findViewById(android.R.id.content);
 
@@ -168,6 +172,7 @@ public class IssueEditor extends ImageLoadingActivity {
                 } else if(mBodyEdit.hasFocus()) {
                     final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
                     mBodyEdit.getText().insert(start, snippet);
+                    Log.i(TAG, "snippetEntered: Setting selection " + (start + relativePosition));
                     mBodyEdit.setSelection(start + relativePosition);
                 }
             }

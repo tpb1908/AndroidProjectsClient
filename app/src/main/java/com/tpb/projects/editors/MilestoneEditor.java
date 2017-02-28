@@ -23,6 +23,8 @@ import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
@@ -142,6 +144,8 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITL
                 mHasBeenEdited = true;
             }
         });
+        mDescriptionEditor.setCodeClickHandler(new CodeDialog(this));
+        mDescriptionEditor.setImageHandler(new ImageDialog(this));
     }
 
     @Override
