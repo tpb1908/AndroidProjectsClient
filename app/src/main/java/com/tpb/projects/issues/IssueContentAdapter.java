@@ -21,8 +21,8 @@ import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -305,6 +305,33 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 commits.append("<br>");
                 text = String.format(res.getString(R.string.text_event_referenced_multiple), commits.toString());
                 break;
+            case MENTIONED:
+                final StringBuilder mentioned = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    mentioned.append("<br>");
+                    mentioned.append(String.format(res.getString(R.string.text_href),
+                            e.getActor().getHtmlUrl(),
+                            e.getActor().getLogin()));
+                }
+                text = String.format(res.getString(R.string.text_event_mentioned_multiple),
+                      mentioned.toString());
+                break;
+            case RENAMED:
+                final StringBuilder named = new StringBuilder();
+                for(Event e : me.getEvents()) {
+                    named.append("<br>");
+                    named.append(
+                            String.format(
+                                    res.getString(R.string.text_event_rename_multiple),
+                                    e.getRenameFrom(),
+                                    e.getRenameTo())
+                    );
+                }
+                text = String.format(res.getString(R.string.text_event_renamed_multiple), named.toString());
+                break;
+            case MOVED_COLUMNS_IN_PROJECT:
+                text = res.getString(R.string.text_event_moved_columns_in_project_multiple);
+                break;
             default:
                 Log.e(TAG, "bindMergedEvent: Should be binding merging event " + me.toString(), new Exception());
                 bindEvent(eventHolder, me.getEvents().get(0));
@@ -508,6 +535,9 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                         String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()));
+                break;
+            case MOVED_COLUMNS_IN_PROJECT:
+                text = res.getString(R.string.text_event_moved_columns_in_project);
                 break;
             default:
                 text = "An event type hasn't been implemented " + event.getEvent();
