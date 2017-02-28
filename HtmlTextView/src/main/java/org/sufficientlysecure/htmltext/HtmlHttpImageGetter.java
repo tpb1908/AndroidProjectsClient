@@ -23,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
@@ -35,8 +36,14 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class HtmlHttpImageGetter implements ImageGetter {
+
+    private static final HashMap<String, Pair<Drawable, Long>> cache = new HashMap<>();
+
     private final TextView container;
     private DrawableCacheHandler cacheHandler;
     private URI baseUri;
@@ -100,6 +107,19 @@ public class HtmlHttpImageGetter implements ImageGetter {
         @Override
         protected Drawable doInBackground(String... params) {
             source = params[0];
+            synchronized(cache) {
+                Map.Entry<String, Pair<Drawable, Long>> entry;
+                for(Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet().iterator(); it.hasNext();) {
+                    entry = it.next();
+                    if(System.currentTimeMillis() > entry.getValue().second + 60000) {
+                        it.remove();
+                    }
+                }
+
+                if(cache.containsKey(source)) {
+                   return cache.get(source).first;
+                }
+            }
 
             if(resources.get() != null) {
                 return fetchDrawable(resources.get(), source);
@@ -115,15 +135,17 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 return;
             }
             final UrlDrawable urlDrawable = drawableReference.get();
-            if(urlDrawable == null) {
+            if(urlDrawable == null) { // We exist outside of the lifespan of the view
                 return;
             }
+            // Scale is set here as drawable may be cached and view may have changed
+            setDrawableScale(result);
+
             // set the correct bound according to the result from HTTP call
             urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * scale), (int) (result.getIntrinsicHeight() * scale));
 
             // change the reference of the current drawable to the result from the HTTP call
             urlDrawable.drawable = result;
-
             final HtmlHttpImageGetter imageGetter = imageGetterReference.get();
             if(imageGetter == null) {
                 return;
@@ -150,12 +172,22 @@ public class HtmlHttpImageGetter implements ImageGetter {
             try {
                 InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
-                scale = getScale(drawable);
-                drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
+                synchronized(cache) {
+                    if(!cache.containsKey(source)) {
+                        cache.put(source, new Pair<>(drawable, System.currentTimeMillis()));
+                    } else {
+                        Log.i(HtmlHttpImageGetter.class.getSimpleName(), "fetchDrawable: putting value in cache");
+                    }
+                }
                 return drawable;
             } catch(Exception e) {
                 return null;
             }
+        }
+
+        private void setDrawableScale(Drawable drawable) {
+            scale = getScale(drawable);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
         }
 
         private float getScale(Drawable drawable) {
