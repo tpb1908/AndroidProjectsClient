@@ -134,6 +134,7 @@ public class IssueEditor extends ImageLoadingActivity {
         final DumbTextChangeWatcher editWatcher = new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
+
                 mHasBeenEdited = true;
             }
         };
