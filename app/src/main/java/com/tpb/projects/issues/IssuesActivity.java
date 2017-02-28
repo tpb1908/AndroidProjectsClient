@@ -481,6 +481,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     public void createNewIssue() {
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        UI.setViewPositionForIntent(i, mFab);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
