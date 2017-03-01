@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -41,7 +40,6 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     private final Loader mLoader;
     private final SwipeRefreshLayout mRefresher;
-    private final AnimatingRecycler mRecycler;
     private final ArrayList<Repository> mRepos = new ArrayList<>();
     private final String mAuthenticatedUser;
     private String mUser;
@@ -52,10 +50,9 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
-    UserReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
+    UserReposAdapter(Context context, RepositoriesManager opener, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mManager = opener;
-        mRecycler = recycler;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {

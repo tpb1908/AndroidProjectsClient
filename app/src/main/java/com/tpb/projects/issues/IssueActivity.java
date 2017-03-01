@@ -84,6 +84,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
     @BindView(R.id.issue_number) TextView mNumber;
+    @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
     @BindView(R.id.issue_open_info) HtmlTextView mOpenInfo;
@@ -217,7 +218,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 )
         );
         mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
-
+        mUserAvatar.setImageUrl(mIssue.getOpenedBy().getAvatarUrl());
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {

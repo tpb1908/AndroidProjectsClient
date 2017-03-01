@@ -92,7 +92,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
 
             final LinearLayoutManager manager = new LinearLayoutManager(this);
             mRecycler.setLayoutManager(manager);
-            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
+            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRefresher);
             mRecycler.setAdapter(adapter);
 
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);

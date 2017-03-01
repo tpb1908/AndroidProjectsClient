@@ -68,19 +68,34 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp">
 
-                        <ImageView
-                            android:id="@+id/issue_state"
+                        <LinearLayout
+                            android:id="@+id/issue_drawable_wrapper"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="8dp"
+                            android:orientation="vertical"
                             android:layout_centerVertical="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginEnd="8dp"/>
+                            android:layout_alignParentStart="true">
+
+                            <ImageView
+                                android:id="@+id/issue_state"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <com.androidnetworking.widget.ANImageView
+                                android:id="@+id/issue_user_avatar"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginTop="8dp"/>
+
+                        </LinearLayout>
+
 
                         <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
                             android:id="@+id/issue_info"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toEndOf="@+id/issue_state"
+                            android:layout_toEndOf="@+id/issue_drawable_wrapper"
                             android:layout_toStartOf="@+id/issue_menu_button"
                             android:layout_marginBottom="8dp"/>
 
@@ -89,7 +104,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/issue_info"
-                            android:layout_toEndOf="@+id/issue_state"
+                            android:layout_toEndOf="@+id/issue_drawable_wrapper"
                             android:layout_toStartOf="@+id/issue_menu_button"
                             android:layout_marginEnd="8dp"/>
 
