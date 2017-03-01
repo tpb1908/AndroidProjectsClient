@@ -58,7 +58,7 @@ import static android.view.View.GONE;
 public class RepoActivity extends AppCompatActivity implements
         ProjectAdapter.ProjectEditor,
         ProjectDialog.ProjectListener,
-        Editor.ProjectCreationListener {
+        Editor.GITModelCreationListener<Project> {
     private static final String TAG = RepoActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/repo/RepoActivity.java";
 
@@ -181,14 +181,22 @@ public class RepoActivity extends AppCompatActivity implements
 
     @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
     void toggleStar() {
-        final Editor.StarChangeListener listener = isStarred -> {
-            mHasStarredRepo = isStarred;
-            if(isStarred) {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
-                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
-                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+        final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @Override
+            public void updated(Boolean isStarred) {
+                mHasStarredRepo = isStarred;
+                if(isStarred) {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                    mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
+                } else {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                    mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+                }
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+
             }
         };
 
@@ -201,16 +209,25 @@ public class RepoActivity extends AppCompatActivity implements
 
     @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
     void toggleWatch() {
-        final Editor.WatchChangeListener listener = isWatched -> {
-            mIsWatchingRepo = isWatched;
-            if(isWatched) {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
-                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
-                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+        final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @Override
+            public void updated(Boolean isWatched) {
+                mIsWatchingRepo = isWatched;
+                if(isWatched) {
+                    ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                    mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
+                } else {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
+                    mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+                }
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+
             }
         };
+
         if(mIsWatchingRepo) {
             mEditor.unwatchRepo(listener, mRepo.getFullName());
         } else {
@@ -372,22 +389,38 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
-        Log.i(TAG, "deleteProject: Deleting project");
+    public void created(Project project) {
+        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
+        mAdapter.addProject(project);
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+    }
+
+    @Override
+    public void creationError(APIHandler.APIError error) {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+    }
+
+    @Override
+    public void deleteProject(Project project, Editor.GITModelDeletionListener<Project> listener) {
         final Dialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.text_delete_project)
                 .setMessage(R.string.text_delete_project_warning)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.ProjectDeletionListener() {
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.GITModelDeletionListener<Project>() {
                     @Override
-                    public void projectDeleted(Project project1) {
+                    public void deleted(Project project) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-                        listener.projectDeleted(project1);
+                        listener.deleted(project);
                     }
 
                     @Override
-                    public void projectDeletionError(APIHandler.APIError error) {
+                    public void deletionError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
@@ -405,9 +438,9 @@ public class RepoActivity extends AppCompatActivity implements
         if(isNewProject) {
             mEditor.createProject(this, project, mRepo.getFullName());
         } else {
-            mEditor.editProject(new Editor.ProjectEditListener() {
+            mEditor.editProject(new Editor.GITModelUpdateListener<Project>() {
                 @Override
-                public void projectEdited(Project project) {
+                public void updated(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
                     mAdapter.updateProject(project);
 
@@ -417,36 +450,19 @@ public class RepoActivity extends AppCompatActivity implements
                 }
 
                 @Override
-                public void projectEditError(APIHandler.APIError error) {
+                public void updateError(APIHandler.APIError error) {
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                     mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
                 }
             }, project);
+
         }
     }
 
     @Override
     public void projectEditCancelled() {
 
-    }
-
-    @Override
-    public void projectCreated(Project project) {
-        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
-        mAdapter.addProject(project);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-
-    }
-
-    @Override
-    public void projectCreationError(APIHandler.APIError error) {
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
     }
 
     public void onToolbarBackPressed(View view) {

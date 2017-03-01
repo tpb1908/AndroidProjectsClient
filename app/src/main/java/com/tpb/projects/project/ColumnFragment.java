@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -136,11 +137,10 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                     Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
                     mName.setText(mColumn.getName());
                 } else {
-                    mEditor.updateColumnName(new Editor.ColumnNameChangeListener() {
+                    mEditor.updateColumnName(new Editor.GITModelUpdateListener<Column>() {
                         int loadCount = 0;
-
                         @Override
-                        public void columnNameChanged(Column column) {
+                        public void updated(Column column) {
                             if(mViewsValid) {
                                 mColumn.setName(mName.getText().toString());
                                 resetLastUpdate();
@@ -151,7 +151,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                         }
 
                         @Override
-                        public void columnNameChangeError(APIHandler.APIError error) {
+                        public void updateError(APIHandler.APIError error) {
                             if(error != APIHandler.APIError.NO_CONNECTION) {
                                 if(loadCount < 5) {
                                     loadCount++;
@@ -166,7 +166,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                             }
                         }
                     }, mColumn.getId(), mName.getText().toString());
-
                 }
                 return false;
             }
@@ -284,17 +283,17 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     void recreateCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.CardCreationListener() {
+        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
             int createAttempts = 0;
 
             @Override
-            public void cardCreated(int columnId, Card card) {
+            public void created(Pair<Integer, Card> integerCardPair) {
                 addCard(card);
                 mParent.mRefresher.setRefreshing(false);
             }
 
             @Override
-            public void cardCreationError(APIHandler.APIError error) {
+            public void creationError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -360,15 +359,14 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             case IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD:
                 final Card oldCard = data.getParcelableExtra(getString(R.string.parcel_card));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-
-                mEditor.createIssue(new Editor.IssueCreationListener() {
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
-                    public void issueCreated(Issue issue) {
+                    public void created(Issue issue) {
                         convertCardToIssue(oldCard, issue);
                     }
 
                     @Override
-                    public void issueCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
 
                     }
                 }, mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
@@ -450,11 +448,11 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     void newCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.CardCreationListener() {
+        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
             int createAttempts = 0;
 
             @Override
-            public void cardCreated(int columnId, Card card) {
+            public void created(Pair<Integer, Card> integerCardPair) {
                 addCard(card);
                 mParent.mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
@@ -463,7 +461,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void cardCreationError(APIHandler.APIError error) {
+            public void creationError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -486,11 +484,11 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     void editCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.updateCard(new Editor.CardUpdateListener() {
+        mEditor.updateCard(new Editor.GITModelUpdateListener<Card>() {
             int updateAttempts = 0;
 
             @Override
-            public void cardUpdated(Card card) {
+            public void updated(Card card) {
                 mAdapter.updateCard(card);
                 resetLastUpdate();
                 mParent.mRefresher.setRefreshing(false);
@@ -500,7 +498,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void cardUpdateError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -519,14 +517,15 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                 mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
             }
         }, card.getId(), card.getNote());
+
     }
 
     private void toggleIssueState(Card card) {
-        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             int stateChangeAttempts = 0;
 
             @Override
-            public void issueStateChanged(Issue issue) {
+            public void updated(Issue issue) {
                 card.setFromIssue(issue);
                 mAdapter.updateCard(card);
                 final Bundle bundle = new Bundle();
@@ -535,7 +534,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void issueStateChangeError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -559,7 +558,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                 mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
             }
         };
-
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.title_state_change_comment);
@@ -600,11 +598,11 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     private void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.editIssue(new Editor.IssueEditListener() {
+        mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
             int issueCreationAttempts = 0;
 
             @Override
-            public void issueEdited(Issue issue) {
+            public void updated(Issue issue) {
                 card.setFromIssue(issue);
                 mAdapter.updateCard(card);
                 mParent.mRefresher.setRefreshing(false);
@@ -615,7 +613,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void issueEditError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -637,11 +635,10 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {
-        mEditor.deleteCard(new Editor.CardDeletionListener() {
+        mEditor.deleteCard(new Editor.GITModelDeletionListener<Card>() {
             int cardDeletionAttempts = 0;
-
             @Override
-            public void cardDeleted(Card card) {
+            public void deleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
                 resetLastUpdate();
                 final Bundle bundle = new Bundle();
@@ -650,7 +647,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void cardDeletionError(APIHandler.APIError error) {
+            public void deletionError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -677,17 +674,16 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     private void createIssueCard(Issue issue, int oldCardId) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.CardCreationListener() {
+        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
             int issueCardCreationAttempts = 0;
 
             @Override
-            public void cardCreated(int columnId, Card card) {
-                Log.i(TAG, "cardCreated: Issue card created");
+            public void created(Pair<Integer, Card> val) {
                 mParent.mRefresher.setRefreshing(false);
                 if(oldCardId == -1) {
-                    mAdapter.addCard(card);
+                    mAdapter.addCard(val.second);
                 } else {
-                    mAdapter.updateCard(card, oldCardId);
+                    mAdapter.updateCard(val.second, oldCardId);
                 }
                 resetLastUpdate();
                 final Bundle bundle = new Bundle();
@@ -696,7 +692,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
 
             @Override
-            public void cardCreationError(APIHandler.APIError error) {
+            public void creationError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
