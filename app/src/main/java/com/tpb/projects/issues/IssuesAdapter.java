@@ -48,7 +48,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mIssues.add(i);
             mParseCache.add(null);
         }
-        notifyDataSetChanged();
+        notifyItemRangeInserted(0, issues.length);
     }
 
     void addIssue(Issue issue) {

@@ -169,13 +169,7 @@ public class RepoActivity extends AppCompatActivity implements
         if(mRepo != null) {
             final Intent i = new Intent(RepoActivity.this, IssuesActivity.class);
             i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
-            startActivity(i,
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            this,
-                            findViewById(R.id.repo_issues_text),
-                            getString(R.string.transition_title)
-                    ).toBundle()
-            );
+            startActivity(i);
         }
     }
 

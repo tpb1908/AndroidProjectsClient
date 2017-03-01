@@ -106,10 +106,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     @Override
     public void loadComplete(Project[] projects) {
-        Log.i(TAG, "projectsLoaded: " + Arrays.toString(projects));
         mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();
-        mRecycler.enableAnimation();
     }
 
     @Override
@@ -120,7 +118,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     void clearProjects() {
         mProjects.clear();
         notifyDataSetChanged();
-        mRecycler.enableAnimation();
     }
 
     void addProject(Project project) {

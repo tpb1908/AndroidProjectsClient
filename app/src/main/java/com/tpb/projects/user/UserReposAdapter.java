@@ -173,11 +173,9 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
                 }
                 mPinChecker.appendInitialPositions(repos);
             }
-            if(mPage == 1) {
-                notifyDataSetChanged();
-            } else {
-                notifyItemRangeInserted(oldLength, mRepos.size());
-            }
+            notifyItemRangeInserted(oldLength, mRepos.size());
+
+
         } else {
             mMaxPageReached = true;
         }
@@ -197,7 +195,6 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
                 public void loadComplete(Repository data) {
                     if(!mRepos.contains(data)) {
                         mRepos.add(0, data);
-                        mRecycler.disableAnimation();
                         mPinChecker.appendPinnedPosition(data.getFullName());
                         notifyItemInserted(0);
                     }

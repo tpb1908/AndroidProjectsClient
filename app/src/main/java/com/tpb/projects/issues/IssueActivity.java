@@ -371,7 +371,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         @SuppressLint("SetTextI18n")
         @Override
         public void loadComplete(Comment[] comments) {
-            mRecycler.enableAnimation();
             mAdapter.loadComments(comments);
             mCount.setText(Integer.toString(mAdapter.getItemCount()));
         }
@@ -652,7 +651,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         @SuppressLint("SetTextI18n")
         @Override
         public void loadComplete(Event[] data) {
-            mRecycler.enableAnimation();
             mAdapter.loadEvents(data);
             mCount.setText(Integer.toString(mAdapter.getItemCount()));
         }

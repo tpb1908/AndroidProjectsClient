@@ -81,17 +81,15 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
     private ProjectActivity.NavigationDragListener mNavListener;
     private Editor mEditor;
     private Repository.AccessLevel mAccessLevel;
-    private boolean mShouldAnimate;
 
     private CardAdapter mAdapter;
 
 
-    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel, boolean shouldAnimate) {
+    public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
         cf.mNavListener = navListener;
         cf.mAccessLevel = accessLevel;
-        cf.mShouldAnimate = shouldAnimate;
         return cf;
     }
 
@@ -109,8 +107,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
         mViewsValid = true;
         mAdapter = new CardAdapter(this, mNavListener, mAccessLevel);
         mRecycler.setAdapter(mAdapter);
-        mRecycler.disableAnimation();
-        if(!mShouldAnimate) mRecycler.disableAnimation();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             enableAccess(view);
@@ -248,10 +244,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
     public void loadComplete(Card[] cards) {
         if(mViewsValid) {
             mCardCount.setText(Integer.toString(cards.length));
-            if(mShouldAnimate) {
-                mRecycler.enableAnimation();
-            }
-            mRecycler.disableAnimation();
             mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
         }
         mParent.notifyFragmentLoaded();

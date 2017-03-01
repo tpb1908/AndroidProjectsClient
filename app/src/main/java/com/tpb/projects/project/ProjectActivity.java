@@ -823,10 +823,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
 
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
-            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
+            return ColumnFragment.getInstance(
+                    ((ColumnPageDescriptor) pageDescriptor).mColumn,
                     mNavListener,
-                    mAccessLevel,
-                    columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
+                    mAccessLevel
+            );
         }
 
     }

@@ -178,7 +178,6 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
     public void openRepo(Repository repo, View view) {
         final Intent i = new Intent(UserActivity.this, RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
-        mRecycler.disableAnimation();
         new Loader(this).loadProjects(null, repo.getFullName());
         new Loader(this).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
