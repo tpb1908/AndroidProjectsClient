@@ -358,6 +358,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
+        mLoader.loadLabels(null, issue.getRepoPath());
+        mLoader.loadCollaborators(null, issue.getRepoPath());
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(this, intent, ((HtmlTextView) view).getLastClickPosition());
         } else {

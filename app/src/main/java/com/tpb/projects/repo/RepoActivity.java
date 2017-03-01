@@ -56,7 +56,6 @@ import static android.view.View.GONE;
  */
 
 public class RepoActivity extends AppCompatActivity implements
-        Editor.GITModelDeletionListener<Project>,
         ProjectAdapter.ProjectEditor,
         ProjectDialog.ProjectListener,
         Editor.GITModelCreationListener<Project> {
@@ -404,16 +403,6 @@ public class RepoActivity extends AppCompatActivity implements
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-    }
-
-    @Override
-    public void deleted(Project project) {
-
-    }
-
-    @Override
-    public void deletionError(APIHandler.APIError error) {
-
     }
 
     @Override
