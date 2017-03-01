@@ -38,6 +38,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.login.LoginActivity;
@@ -178,6 +179,8 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
         final Intent i = new Intent(UserActivity.this, RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
         mRecycler.disableAnimation();
+        new Loader(this).loadProjects(null, repo.getFullName());
+        new Loader(this).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
                 view,
