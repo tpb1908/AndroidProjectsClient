@@ -52,15 +52,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 final int pos = viewHolder.getAdapterPosition();
-                editor.deleteProject(mProjects.get(pos), new Editor.ProjectDeletionListener() {
+                editor.deleteProject(mProjects.get(pos), new Editor.GITModelDeletionListener<Project>() {
                     @Override
-                    public void projectDeleted(Project project) {
+                    public void deleted(Project project) {
                         mProjects.remove(pos);
                         notifyItemRemoved(pos);
                     }
 
                     @Override
-                    public void projectDeletionError(APIHandler.APIError error) {
+                    public void deletionError(APIHandler.APIError error) {
 
                     }
                 });
@@ -160,7 +160,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         void editProject(Project project);
 
-        void deleteProject(Project project, Editor.ProjectDeletionListener listener);
+        void deleteProject(Project project, Editor.GITModelDeletionListener<Project> listener);
     }
 
 }

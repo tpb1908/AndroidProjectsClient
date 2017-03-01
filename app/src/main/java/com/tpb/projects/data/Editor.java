@@ -2,6 +2,7 @@ package com.tpb.projects.data;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
@@ -53,10 +54,8 @@ public class Editor extends APIHandler {
         super(context);
     }
 
-    public void createProject(final ProjectCreationListener listener, Project project, String repoFullName) {
-        Log.i(TAG, "createProject: Project " + project.toString());
+    public void createProject(final GITModelCreationListener<Project> listener, Project project, String repoFullName) {
         JSONObject obj = new JSONObject();
-        //Unsure why GitHub can't parse the JSON if I add these as body parameters
         try {
             obj.put(NAME, project.getName());
             obj.put(BODY, project.getBody());
@@ -71,20 +70,19 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
-                        if(listener != null) listener.projectCreated(Project.parse(response));
+                        if(listener != null) listener.created(Project.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.projectCreationError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void editProject(final ProjectEditListener listener, Project project) {
+    public void editProject(final GITModelUpdateListener<Project> listener, Project project) {
         final JSONObject obj = new JSONObject();
-        //Unsure why GitHub can't parse the JSON if I add these as body parameters
         try {
             obj.put(NAME, project.getName());
             obj.put(BODY, project.getBody());
@@ -99,18 +97,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
-                        if(listener != null) listener.projectEdited(Project.parse(response));
+                        if(listener != null) listener.updated(Project.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.projectEditError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void deleteProject(final ProjectDeletionListener listener, Project project) {
+    public void deleteProject(final GITModelDeletionListener<Project> listener, Project project) {
         /*
         It seems that on a successful deletion, this returns an error with null body
          */
@@ -121,23 +119,21 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
-                        listener.projectDeletionError(APIError.UNKNOWN);
+                        listener.deletionError(APIError.UNKNOWN);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorCode());
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
                         if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
-                            listener.projectDeleted(project);
+                            listener.deleted(project);
                         } else if(listener != null) {
-                            listener.projectDeletionError(parseError(anError));
+                            listener.deletionError(parseError(anError));
                         }
                     }
                 });
     }
 
-    public void updateColumnName(ColumnNameChangeListener listener, int columnId, String newName) {
+    public void updateColumnName(GITModelUpdateListener<Column> listener, int columnId, String newName) {
         final JSONObject obj = new JSONObject();
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
@@ -154,18 +150,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Column update: " + response.toString());
-                        if(listener != null) listener.columnNameChanged(Column.parse(response));
+                        if(listener != null) listener.updated(Column.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Column update: " + anError.getErrorBody());
-                        if(listener != null) listener.columnNameChangeError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void addColumn(ColumnAdditionListener listener, int projectId, String name) {
+    public void addColumn(GITModelCreationListener<Column> listener, int projectId, String name) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, name);
@@ -180,18 +176,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Column created " + response.toString());
-                        if(listener != null) listener.columnAdded(Column.parse(response));
+                        if(listener != null) listener.created(Column.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorBody());
-                        if(listener != null) listener.columnAdditionError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void moveColumn(ColumnMovementListener listener, int columnId, int dropPositionId, int position) {
+    public void moveColumn(GITModelUpdateListener<Integer> listener, int columnId, int dropPositionId, int position) {
         final JSONObject obj = new JSONObject();
         try {
             if(position == 0) {
@@ -209,19 +205,18 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Column moved: " + response.toString());
-                        if(listener != null) listener.columnMoved(columnId);
+                        if(listener != null) listener.updated(columnId);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Column not moved: " + anError.getErrorBody());
-                        if(listener != null) listener.columnMovementError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void deleteColumn(ColumnDeletionListener listener, int columnId) {
+    public void deleteColumn(GITModelDeletionListener<Integer> listener, int columnId) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
@@ -229,7 +224,7 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Column delete: " + response.toString());
-                        if(listener != null) listener.columnDeletionError(APIError.UNKNOWN);
+                        if(listener != null) listener.deletionError(APIError.UNKNOWN);
                     }
 
                     @Override
@@ -238,23 +233,16 @@ public class Editor extends APIHandler {
                         Log.i(TAG, "onError: Column delete: " + anError.getErrorCode());
                         if(listener != null) {
                             if(anError.getErrorCode() == 0) {
-                                listener.columnDeleted();
+                                listener.deleted(columnId);
                             } else {
-                                listener.columnDeletionError(parseError(anError));
+                                listener.deletionError(parseError(anError));
                             }
                         }
                     }
                 });
     }
 
-    public void createCard(CardCreationListener listener, int columnId, String note) {
-        /*
-        Process
-        * Show dialog for the issue title and body
-        * Delete the card
-        * Create the issue
-        * Create the new card with the issue id
-         */
+    public void createCard(GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -269,18 +257,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card: " + response.toString());
-                        if(listener != null) listener.cardCreated(columnId, Card.parse(response));
+                        if(listener != null) listener.created(new Pair<>(columnId, Card.parse(response)));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card: " + anError.getErrorBody());
-                        if(listener != null) listener.cardCreationError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void createCard(CardCreationListener listener, int columnId, int issueId) {
+    public void createCard(GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, int issueId) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(CONTENT_TYPE, CONTENT_TYPE_ISSUE);
@@ -296,18 +284,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card: " + response.toString());
-                        if(listener != null) listener.cardCreated(columnId, Card.parse(response));
+                        if(listener != null) listener.created(new Pair<>(columnId, Card.parse(response)));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card: " + anError.getErrorBody());
-                        if(listener != null) listener.cardCreationError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void updateCard(CardUpdateListener listener, int cardId, String note) {
+    public void updateCard(GITModelUpdateListener<Card> listener, int cardId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -322,18 +310,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card update: " + response.toString());
-                        if(listener != null) listener.cardUpdated(Card.parse(response));
+                        if(listener != null) listener.updated(Card.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Card update: " + anError.getErrorBody());
-                        if(listener != null) listener.cardUpdateError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void moveCard(CardMovementListener listener, int columnId, int cardId, int afterId) {
+    public void moveCard(GITModelUpdateListener<Integer> listener, int columnId, int cardId, int afterId) {
         final JSONObject obj = new JSONObject();
         try {
             if(afterId == -1) {
@@ -354,42 +342,38 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Card moved " + response.toString());
-                        if(listener != null) listener.cardMoved(cardId);
+                        if(listener != null) listener.updated(cardId);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Card move error " + anError.getErrorBody());
-                        if(listener != null) listener.cardMovementError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void deleteCard(CardDeletionListener listener, Card card) {
+    public void deleteCard(GITModelDeletionListener<Card> listener, Card card) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + card.getId())
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Card deleted: " + response.toString());
-                        if(listener != null) listener.cardDeletionError(APIError.UNKNOWN);
+                        if(listener != null) listener.deletionError(APIError.UNKNOWN);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         if(anError.getErrorCode() == 0 && listener != null) {
-                            listener.cardDeleted(card);
+                            listener.deleted(card);
                         } else if(listener != null) {
-                            listener.cardDeletionError(parseError(anError));
+                            listener.deletionError(parseError(anError));
                         }
-                        Log.i(TAG, "onError: Card deleted: " + anError.getErrorBody());
-                        Log.i(TAG, "onError: Card deleted: " + anError.getErrorCode());
                     }
                 });
     }
 
-    public void createIssue(IssueCreationListener listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void createIssue(GITModelCreationListener<Issue> listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -408,18 +392,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Issue created ");
-                        if(listener != null) listener.issueCreated(Issue.parse(response));
+                        if(listener != null) listener.created(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue not created " + anError.getErrorBody());
-                        if(listener != null) listener.issueCreationError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void closeIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
+    public void closeIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_CLOSED);
@@ -434,18 +418,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Issue closed " + response.toString());
-                        if(listener != null) listener.issueStateChanged(Issue.parse(response));
+                        if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue close error " + anError.getErrorBody());
-                        if(listener != null) listener.issueStateChangeError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void openIssue(IssueStateChangeListener listener, String fullRepoPath, int issueNumber) {
+    public void openIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_OPEN);
@@ -460,18 +444,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Issue opened " + response.toString());
-                        if(listener != null) listener.issueStateChanged(Issue.parse(response));
+                        if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue open error " + anError.getErrorBody());
-                        if(listener != null) listener.issueStateChangeError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void editIssue(IssueEditListener listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void editIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -489,18 +473,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Issue edited " + response.toString());
-                        if(listener != null) listener.issueEdited(Issue.parse(response));
+                        if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Issue not edited");
-                        if(listener != null) listener.issueEditError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void createComment(CommentCreationListener listener, String fullRepoPath, int issueNumber, String body) {
+    public void createComment(GITModelCreationListener<Comment> listener, String fullRepoPath, int issueNumber, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -515,18 +499,18 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: Comment created: " + response.toString());
-                        if(listener != null) listener.commentCreated(Comment.parse(response));
+                        if(listener != null) listener.created(Comment.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Comment not created: " + anError.getErrorBody());
-                        if(listener != null) listener.commentCreationError(parseError(anError));
+                        if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void editComment(CommentEditListener listener, String fullRepoPath, int commentId, String body) {
+    public void editComment(GITModelUpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -540,33 +524,33 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(listener != null) listener.commentEdited(Comment.parse(response));
+                        if(listener != null) listener.updated(Comment.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: Comment not edited " + anError.getErrorBody());
-                        if(listener != null) listener.commentEditError(parseError(anError));
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void deleteComment(CommentDeletionListener listener, String fullRepoPath, int commentId) {
+    public void deleteComment(GITModelDeletionListener<Integer> listener, String fullRepoPath, int commentId) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(listener != null) listener.commentDeletionError(APIError.UNKNOWN);
+                        if(listener != null) listener.deletionError(APIError.UNKNOWN);
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         if(anError.getErrorCode() == 0 && listener != null) {
-                            listener.commentDeleted();
+                            listener.deleted(commentId);
                         } else if(listener != null) {
-                            listener.commentDeletionError(parseError(anError));
+                            listener.deletionError(parseError(anError));
                         }
                         Log.i(TAG, "onError: Comment deletion error: " + anError.getErrorBody());
                     }
@@ -574,7 +558,7 @@ public class Editor extends APIHandler {
 
     }
 
-    public void starRepo(StarChangeListener listener, String fullRepoName) {
+    public void starRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .addHeaders("Content-Length", "0")
@@ -583,20 +567,20 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(Response response) {
                         if(response.code() == 204) {
-                            if(listener != null) listener.starStatusChanged(true);
+                            if(listener != null) listener.updated(true);
                         } else {
-                            if(listener != null) listener.starStatusChanged(false);
+                            if(listener != null) listener.updated(false);
                         }
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(listener != null) listener.starStatusChanged(false);
+                        if(listener != null) listener.updated(false);
                     }
                 });
     }
 
-    public void unstarRepo(StarChangeListener listener, String fullRepoName) {
+    public void unstarRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -604,20 +588,20 @@ public class Editor extends APIHandler {
                     @Override
                     public void onResponse(Response response) {
                         if(response.code() == 204) {
-                            if(listener != null) listener.starStatusChanged(false);
+                            if(listener != null) listener.updated(false);
                         } else {
-                            if(listener != null) listener.starStatusChanged(true);
+                            if(listener != null) listener.updated(true);
                         }
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(listener != null) listener.starStatusChanged(true);
+                        if(listener != null) listener.updated(true);
                     }
                 });
     }
 
-    public void watchRepo(WatchChangeListener listener, String fullRepoName) {
+    public void watchRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "true")
@@ -629,9 +613,9 @@ public class Editor extends APIHandler {
                         try {
                             if(response.has("subscribed")) {
                                 if(listener != null)
-                                    listener.watchStatusChanged(response.getBoolean("subscribed"));
+                                    listener.updated(response.getBoolean("subscribed"));
                             } else {
-                                if(listener != null) listener.watchStatusChanged(false);
+                                if(listener != null) listener.updated(false);
                             }
                         } catch(JSONException jse) {
                         }
@@ -639,12 +623,12 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        if(listener != null) listener.watchStatusChanged(false);
+                        if(listener != null) listener.updated(false);
                     }
                 });
     }
 
-    public void unwatchRepo(WatchChangeListener listener, String fullRepoName) {
+    public void unwatchRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "false")
@@ -656,9 +640,9 @@ public class Editor extends APIHandler {
                         try {
                             if(response.has("subscribed")) {
                                 if(listener != null)
-                                    listener.watchStatusChanged(response.getBoolean("subscribed"));
+                                    listener.updated(response.getBoolean("subscribed"));
                             } else {
-                                if(listener != null) listener.watchStatusChanged(true);
+                                if(listener != null) listener.updated(true);
                             }
                         } catch(JSONException jse) {
                         }
@@ -666,154 +650,34 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        if(listener != null) listener.watchStatusChanged(true);
+                        if(listener != null) listener.updated(true);
                     }
                 });
     }
 
-    public interface ProjectCreationListener {
+    public interface GITModelCreationListener<T> {
 
-        void projectCreated(Project project);
+        void created(T t);
 
-        void projectCreationError(APIError error);
-
-    }
-
-    public interface ProjectEditListener {
-
-        void projectEdited(Project project);
-
-        void projectEditError(APIError error);
+        void creationError(APIError error);
 
     }
 
-    public interface ProjectDeletionListener {
+    public interface GITModelDeletionListener<T> {
 
-        void projectDeleted(Project project);
+        void deleted(T t);
 
-        void projectDeletionError(APIError error);
-
-    }
-
-    public interface ColumnNameChangeListener {
-
-        void columnNameChanged(Column column);
-
-        void columnNameChangeError(APIError error);
+        void deletionError(APIError error);
 
     }
 
-    public interface ColumnAdditionListener {
+    public interface GITModelUpdateListener<T> {
 
-        void columnAdded(Column column);
+        void updated(T t);
 
-        void columnAdditionError(APIError error);
+        void updateError(APIError error);
 
-    }
 
-    public interface ColumnDeletionListener {
-
-        void columnDeleted();
-
-        void columnDeletionError(APIError error);
-
-    }
-
-    public interface ColumnMovementListener {
-
-        void columnMoved(int columnId);
-
-        void columnMovementError(APIError error);
-    }
-
-    public interface CardCreationListener {
-
-        void cardCreated(int columnId, Card card);
-
-        void cardCreationError(APIError error);
-
-    }
-
-    public interface CardUpdateListener {
-
-        void cardUpdated(Card card);
-
-        void cardUpdateError(APIError error);
-
-    }
-
-    public interface CardMovementListener {
-
-        void cardMoved(int cardId);
-
-        void cardMovementError(APIError error);
-
-    }
-
-    public interface CardDeletionListener {
-
-        void cardDeleted(Card card);
-
-        void cardDeletionError(APIError error);
-
-    }
-
-    public interface IssueCreationListener {
-
-        void issueCreated(Issue issue);
-
-        void issueCreationError(APIError error);
-
-    }
-
-    public interface IssueStateChangeListener {
-
-        void issueStateChanged(Issue issue);
-
-        void issueStateChangeError(APIError error);
-
-    }
-
-    public interface IssueEditListener {
-
-        void issueEdited(Issue issue);
-
-        void issueEditError(APIError error);
-    }
-
-    public interface CommentCreationListener {
-
-        void commentCreated(Comment comment);
-
-        void commentCreationError(APIError error);
-
-    }
-
-    public interface CommentEditListener {
-
-        void commentEdited(Comment comment);
-
-        void commentEditError(APIError error);
-
-    }
-
-    public interface CommentDeletionListener {
-
-        void commentDeleted();
-
-        void commentDeletionError(APIError error);
-
-    }
-
-    public interface StarChangeListener {
-
-        void starStatusChanged(boolean isStarred);
-
-    }
-
-    public interface WatchChangeListener {
-
-        void watchStatusChanged(boolean isWatched);
 
     }
 

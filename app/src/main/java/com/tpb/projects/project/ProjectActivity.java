@@ -345,11 +345,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
             }
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
-                mEditor.addColumn(new Editor.ColumnAdditionListener() {
+                mEditor.addColumn(new Editor.GITModelCreationListener<Column>() {
                     int addColumnAttempts = 0;
 
                     @Override
-                    public void columnAdded(Column column) {
+                    public void created(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
                         mAddIssue.setVisibility(View.INVISIBLE);
                         mAdapter.columns.add(column);
@@ -362,7 +362,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                     }
 
                     @Override
-                    public void columnAdditionError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -412,11 +412,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
-                    mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
+                    mEditor.deleteColumn(new Editor.GITModelDeletionListener<Integer>() {
                         int deleteColumnAttempts = 0;
 
                         @Override
-                        public void columnDeleted() {
+                        public void deleted(Integer integer) {
                             mAdapter.remove(mCurrentPosition);
                             mAdapter.columns.remove(mCurrentPosition);
                             mRefresher.setRefreshing(false);
@@ -430,7 +430,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                         }
 
                         @Override
-                        public void columnDeletionError(APIHandler.APIError error) {
+                        public void deletionError(APIHandler.APIError error) {
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -471,14 +471,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
-        mEditor.moveColumn(new Editor.ColumnMovementListener() {
+        mEditor.moveColumn(new Editor.GITModelUpdateListener<Integer>() {
             @Override
-            public void columnMoved(int columnId) {
+            public void updated(Integer integer) {
 
             }
 
             @Override
-            public void columnMovementError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
 
             }
         }, tag, dropTag, to);
@@ -502,9 +502,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
     }
 
     void deleteCard(Card card, boolean showWarning) {
-        final Editor.CardDeletionListener listener = new Editor.CardDeletionListener() {
+        final Editor.GITModelDeletionListener<Card> listener = new Editor.GITModelDeletionListener<Card>() {
             @Override
-            public void cardDeleted(Card card) {
+            public void deleted(Card card) {
                 mRefresher.setRefreshing(false);
                 mAdapter.getCurrentFragment().removeCard(card);
                 Snackbar.make(findViewById(R.id.project_coordinator),
@@ -514,7 +514,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
             }
 
             @Override
-            public void cardDeletionError(APIHandler.APIError error) {
+            public void deletionError(APIHandler.APIError error) {
 
             }
         };
@@ -670,9 +670,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                     labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
                 }
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.IssueCreationListener() {
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
-                    public void issueCreated(Issue issue) {
+                    public void created(Issue issue) {
                         mAdapter.getCurrentFragment().createIssueCard(issue);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
@@ -681,7 +681,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                     }
 
                     @Override
-                    public void issueCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
@@ -701,15 +701,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
                         mRefresher.setRefreshing(false);
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());

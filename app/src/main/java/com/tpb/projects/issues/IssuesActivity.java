@@ -368,9 +368,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     }
 
     private void toggleIssueState(Issue issue) {
-        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
-            public void issueStateChanged(Issue issue) {
+            public void updated(Issue issue) {
                 mAdapter.updateIssue(issue);
                 mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
@@ -379,7 +379,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
             }
 
             @Override
-            public void issueStateChangeError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -459,9 +459,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
 
                 mRefresher.setRefreshing(true);
-                mEditor.createIssue(new Editor.IssueCreationListener() {
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
-                    public void issueCreated(Issue issue) {
+                    public void created(Issue issue) {
                         mAdapter.addIssue(issue);
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
@@ -470,7 +470,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                     }
 
                     @Override
-                    public void issueCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -479,11 +479,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
+                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
-                    public void issueEdited(Issue issue) {
+                    public void updated(Issue issue) {
                         mAdapter.updateIssue(issue);
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
@@ -492,7 +492,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                     }
 
                     @Override
-                    public void issueEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -513,14 +513,14 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 }, mRepoPath, issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         mRefresher.setRefreshing(true);
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();

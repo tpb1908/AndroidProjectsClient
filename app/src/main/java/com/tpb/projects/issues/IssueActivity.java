@@ -402,15 +402,15 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         builder.setMessage(R.string.text_delete_comment_warning);
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             mRefresher.setRefreshing(true);
-            mEditor.deleteComment(new Editor.CommentDeletionListener() {
+            mEditor.deleteComment(new Editor.GITModelDeletionListener<Integer>() {
                 @Override
-                public void commentDeleted() {
+                public void deleted(Integer id) {
                     mRefresher.setRefreshing(false);
                     mAdapter.removeComment(comment);
                 }
 
                 @Override
-                public void commentDeletionError(APIHandler.APIError error) {
+                public void deletionError(APIHandler.APIError error) {
                     mRefresher.setRefreshing(false);
                 }
             }, mIssue.getRepoPath(), comment.getId());
@@ -510,11 +510,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 }
 
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
+                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
-                    public void issueEdited(Issue issue) {
+                    public void updated(Issue issue) {
                         mIssue = issue;
                         bindIssue();
                         mRefresher.setRefreshing(false);
@@ -524,7 +524,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                     }
 
                     @Override
-                    public void issueEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -546,46 +546,45 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             } else if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         mRefresher.setRefreshing(false);
                         mAdapter.addComment(comment);
                         mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
-                        // mRecycler.scrollToPosition(mAdapter.getItemCount());
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, mIssue.getRepoPath(), mIssue.getNumber(), comment.getBody());
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.editComment(new Editor.CommentEditListener() {
+                mEditor.editComment(new Editor.GITModelUpdateListener<Comment>() {
                     @Override
-                    public void commentEdited(Comment comment) {
+                    public void updated(Comment comment) {
                         mRefresher.setRefreshing(false);
                         mAdapter.updateComment(comment);
                     }
 
                     @Override
-                    public void commentEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         mLoader.loadComments(mCommentLoader, mIssue.getRepoPath(), mIssue.getNumber());
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -598,10 +597,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
 
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
-
-        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
-            public void issueStateChanged(Issue issue) {
+            public void updated(Issue issue) {
                 mAdapter.clear();
                 mLoader.loadEvents(mEventLoader, mIssue.getRepoPath(), mIssue.getNumber());
                 mIssue = issue;
@@ -612,7 +610,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             }
 
             @Override
-            public void issueStateChangeError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
