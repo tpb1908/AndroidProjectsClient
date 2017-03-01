@@ -227,6 +227,10 @@ public class Event extends DataModel implements Parcelable {
                     return MERGED;
                 case "referenced":
                     return REFERENCED;
+                case "labeled":
+                    return LABELED;
+                case "unlabeled":
+                    return UNLABELED;
                 case "mentioned":
                     return MENTIONED;
                 case "assigned":
