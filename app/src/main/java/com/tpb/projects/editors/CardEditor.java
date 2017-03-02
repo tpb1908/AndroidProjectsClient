@@ -96,7 +96,7 @@ public class CardEditor extends ImageLoadingActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus() && mEditor.isEnabled()) {
+                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
                     final int start = Math.max(mEditor.getSelectionStart(), 0);
                     mEditor.getText().insert(start, snippet);
                     mEditor.setSelection(start + relativePosition);
@@ -105,14 +105,14 @@ public class CardEditor extends ImageLoadingActivity {
 
             @Override
             public String getText() {
-                return mEditor.getText().toString();
+                return mEditor.getInputText().toString();
             }
 
             @Override
             public void previewCalled() {
                 if(mEditor.isEditing()) {
                     mEditor.saveText();
-                    mEditor.setHtml(MDParser.parseMD(mEditor.getText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.setHtml(MDParser.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
                 } else {
                     mEditor.restoreText();
@@ -288,7 +288,7 @@ public class CardEditor extends ImageLoadingActivity {
     void onDone() {
         final Intent done = new Intent();
 
-        mCard.setNote(mEditor.getText().toString());
+        mCard.setNote(mEditor.getInputText().toString());
         done.putExtra(getString(R.string.parcel_card), mCard);
 
         setResult(RESULT_OK, done);

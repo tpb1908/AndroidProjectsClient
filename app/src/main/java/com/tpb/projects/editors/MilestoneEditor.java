@@ -98,7 +98,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
             @Override
             public String getText() {
                 if(mTitleEditor.isFocused()) return mTitleEditor.getText().toString();
-                if(mDescriptionEditor.isFocused()) mDescriptionEditor.getText().toString();
+                if(mDescriptionEditor.isFocused()) return mDescriptionEditor.getInputText().toString();
                 return "";
             }
 
