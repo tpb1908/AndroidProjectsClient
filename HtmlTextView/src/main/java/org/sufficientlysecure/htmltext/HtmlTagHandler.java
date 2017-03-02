@@ -190,6 +190,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Td());
             } else if(tag.equalsIgnoreCase("bar")) {
                 start(output, new Bar());
+            } else {
+                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: " + tag);
             }
         } else {
             // closing tag
@@ -257,6 +259,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             } else if(tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
             } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
+                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: Ending strikethrough span");
                 end(output, Strike.class, false, new StrikethroughSpan());
             } else if(tag.equalsIgnoreCase("table")) {
                 tableTagLevel--;

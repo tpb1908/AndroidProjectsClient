@@ -11,7 +11,6 @@ import android.text.style.ReplacementSpan;
  */
 
 public class BarSpan extends ReplacementSpan {
-    private static final String TAG = BarSpan.class.getSimpleName();
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
