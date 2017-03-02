@@ -169,7 +169,7 @@ public class IssueEditor extends ImageLoadingActivity {
                     final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
                     mTitleEdit.getText().insert(start, snippet);
                     mTitleEdit.setSelection(start + relativePosition);
-                } else if(mBodyEdit.hasFocus()) {
+                } else if(mBodyEdit.hasFocus() && mBodyEdit.isEditing()) {
                     final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
                     mBodyEdit.getText().insert(start, snippet);
                     Log.i(TAG, "snippetEntered: Setting selection " + (start + relativePosition));
@@ -179,7 +179,7 @@ public class IssueEditor extends ImageLoadingActivity {
 
             @Override
             public String getText() {
-                return mBodyEdit.getText().toString();
+                return mBodyEdit.getInputText().toString();
             }
 
             @Override
@@ -188,7 +188,7 @@ public class IssueEditor extends ImageLoadingActivity {
                     mBodyEdit.saveText();
                     String repo = null;
                     if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
-                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
                     mBodyEdit.disableEditing();
                 } else {
                     mBodyEdit.restoreText();
@@ -382,7 +382,7 @@ public class IssueEditor extends ImageLoadingActivity {
             mLaunchIssue = new Issue();
         }
         mLaunchIssue.setTitle(mTitleEdit.getText().toString());
-        mLaunchIssue.setBody(mBodyEdit.getText().toString());
+        mLaunchIssue.setBody(mBodyEdit.getInputText().toString());
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
         if(mSelectedLabels.size() > 0)

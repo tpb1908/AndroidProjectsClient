@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.ImageSpan;
@@ -45,7 +46,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     public static final boolean DEBUG = false;
 
     private boolean mIsEditing = true;
-    private Editable mSavedText;
+    private Editable mSavedText = new SpannableStringBuilder();
     private Drawable mDefaultBackground;
 
     public boolean linkHit;
@@ -296,6 +297,10 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     public void restoreText() {
         setText(mSavedText);
+    }
+
+    public Editable getInputText() {
+        return mIsEditing ? getText() : mSavedText;
     }
 
     @Override

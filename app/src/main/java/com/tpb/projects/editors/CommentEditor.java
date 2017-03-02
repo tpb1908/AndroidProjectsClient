@@ -96,7 +96,7 @@ public class CommentEditor extends ImageLoadingActivity {
 
             @Override
             public String getText() {
-                return mEditor.getText().toString();
+                return mEditor.getInputText().toString();
             }
 
             @Override
@@ -105,7 +105,7 @@ public class CommentEditor extends ImageLoadingActivity {
                     mEditor.saveText();
                     String repo = null;
                     if(mIssue != null) repo = mIssue.getRepoPath();
-                    mEditor.setHtml(MDParser.parseMD(mEditor.getText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.setHtml(MDParser.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
                 } else {
                     mEditor.restoreText();
@@ -120,7 +120,7 @@ public class CommentEditor extends ImageLoadingActivity {
     }
 
     private void insertString(String snippet, int relativePosition) {
-        if(mEditor.hasFocus() && mEditor.isEnabled()) {
+        if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
             final int start = Math.max(mEditor.getSelectionStart(), 0);
             mEditor.getText().insert(start, snippet);
             mEditor.setSelection(start + relativePosition);
@@ -131,7 +131,7 @@ public class CommentEditor extends ImageLoadingActivity {
     void onDone() {
         final Intent done = new Intent();
         if(mComment == null) mComment = new Comment();
-        mComment.setBody(mEditor.getText().toString());
+        mComment.setBody(mEditor.getInputText().toString());
         done.putExtra(getString(R.string.parcel_comment), mComment);
         if(mIssue != null) done.putExtra(getString(R.string.parcel_issue), mIssue);
         setResult(RESULT_OK, done);
