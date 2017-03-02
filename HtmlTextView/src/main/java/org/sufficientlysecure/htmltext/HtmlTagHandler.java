@@ -134,6 +134,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static class Td {
     }
 
+    private static class Bar {}
+
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
         if(opening) {
@@ -186,6 +188,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Th());
             } else if(tag.equalsIgnoreCase("td")) {
                 start(output, new Td());
+            } else if(tag.equalsIgnoreCase("bar")) {
+                start(output, new Bar());
             }
         } else {
             // closing tag
@@ -233,7 +237,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }
             } else if(tag.equalsIgnoreCase("code")) {
-                Log.i("TagHandler", "handleTag: Handling code tag");
                 Object obj = getLast(output, Code.class);
                 // start of the tag
                 int where = output.getSpanStart(obj);
@@ -245,7 +248,12 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.replace(where, len, "Click to view code");
                 output.setSpan(new CodeSpan(), where, where + "Click to view code".length(), 0);
 
-
+            }  else if(tag.equals("bar")) {
+                final Object obj = getLast(output, Bar.class);
+                final int where = output.getSpanStart(obj);
+                output.removeSpan(obj); //Remove the old span
+                output.replace(where, output.length(), " "); //We need a non-empty span
+                output.setSpan(new BarSpan(), where, where + 1, 0); //Insert the bar span
             } else if(tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
             } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
@@ -306,7 +314,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     private void start(Editable output, Object mark) {
         int len = output.length();
         output.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
-
         if(HtmlTextView.DEBUG) {
             Log.d(HtmlTextView.TAG, "len: " + len);
         }

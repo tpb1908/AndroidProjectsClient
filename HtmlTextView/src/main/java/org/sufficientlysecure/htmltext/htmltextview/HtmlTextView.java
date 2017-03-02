@@ -36,14 +36,14 @@ import android.view.View;
 
 import org.sufficientlysecure.htmltext.CleanURLSpan;
 import org.sufficientlysecure.htmltext.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.CodeSpan;
 import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
+import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
+import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
-import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -188,7 +188,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                 if(mCodeHandler != null) {
                     enableCodeClicks(html, buffer);
                 }
-
                 //Post back on UI thread
                 HtmlTextView.this.post(new Runnable() {
                     @Override

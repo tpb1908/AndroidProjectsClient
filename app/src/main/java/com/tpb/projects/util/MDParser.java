@@ -87,7 +87,8 @@ public class MDParser {
                 //TODO Find out if there is a way of computing characters per line and filling the string
                 //I could try using the strike tag
                 builder.setLength(builder.length() - 2);
-                builder.append("──────────\n");
+                builder.append("<bar></bar>");
+//                builder.append("──────────\n");
 
             } else if(cs[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, cs, i, fullRepoPath);
