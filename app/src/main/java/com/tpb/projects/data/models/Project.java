@@ -149,7 +149,6 @@ public class Project extends DataModel implements Parcelable {
                 '}';
     }
 
-
     @Override
     public int describeContents() {
         return 0;

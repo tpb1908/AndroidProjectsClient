@@ -173,6 +173,10 @@ public class Milestone extends DataModel implements Parcelable {
     public Milestone() {
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Milestone && ((Milestone) obj).id == id;
+    }
 
     @Override
     public int describeContents() {
