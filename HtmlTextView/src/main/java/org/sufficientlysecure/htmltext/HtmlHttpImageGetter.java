@@ -117,7 +117,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 }
 
                 if(cache.containsKey(source)) {
-                   return cache.get(source).first;
+                   return cache.get(source).first.getConstantState().newDrawable();
                 }
             }
 
