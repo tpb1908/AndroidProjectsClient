@@ -414,10 +414,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
         });
         builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
-
-        final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
-        i.putExtra(getString(R.string.parcel_issue), issue);
-        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
     }
 
     private void moveTo(Issue issue) {
