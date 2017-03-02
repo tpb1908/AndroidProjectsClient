@@ -71,18 +71,18 @@ public class IntentHandler {
         });
     }
 
-   private static void openIssue(Activity activity, View view, String url) {
-       final int number = Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
-       final Intent i = new Intent(activity, IssueActivity.class);
-       final String repo = url.substring(url.indexOf("com/") + 4, url.indexOf("/issues"));
-       i.putExtra(activity.getString(R.string.intent_repo), repo);
-       i.putExtra(activity.getString(R.string.intent_issue_number), number);
-       if(view instanceof HtmlTextView) {
-           UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
-       } else {
-           UI.setViewPositionForIntent(i, view);
-       }
-       activity.startActivity(i);
+    private static void openIssue(Activity activity, View view, String url) {
+        final int number = Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
+        final Intent i = new Intent(activity, IssueActivity.class);
+        final String repo = url.substring(url.indexOf("com/") + 4, url.indexOf("/issues"));
+        i.putExtra(activity.getString(R.string.intent_repo), repo);
+        i.putExtra(activity.getString(R.string.intent_issue_number), number);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
+        activity.startActivity(i);
     }
 
     public static void openIssue(Activity activity, View view, Issue issue) {
@@ -107,7 +107,7 @@ public class IntentHandler {
         activity.startActivity(i);
     }
 
-    private static void openUser(Activity activity, ANImageView iv, String login) {
+    public static void openUser(Activity activity, ANImageView iv, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
         if(iv.getDrawable() != null) {

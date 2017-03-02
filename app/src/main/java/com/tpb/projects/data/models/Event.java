@@ -284,6 +284,10 @@ public class Event extends DataModel implements Parcelable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Event && ((Event) obj).id == id;
+    }
 
     @Override
     public int describeContents() {

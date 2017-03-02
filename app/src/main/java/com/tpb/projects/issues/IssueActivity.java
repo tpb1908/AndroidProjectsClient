@@ -218,6 +218,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 )
         );
         mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mUserAvatar.setOnClickListener(v -> {
+            IntentHandler.openUser(IssueActivity.this, mUserAvatar, mIssue.getOpenedBy().getLogin());
+        });
         mUserAvatar.setImageUrl(mIssue.getOpenedBy().getAvatarUrl());
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);

@@ -222,6 +222,11 @@ public class Issue extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Issue && ((Issue) obj).id == id;
+    }
+
+    @Override
     public String toString() {
         return "Issue{" +
                 "id=" + id +
@@ -242,7 +247,6 @@ public class Issue extends DataModel implements Parcelable {
                 ", milestone=" + milestone +
                 '}';
     }
-
 
     @Override
     public int describeContents() {

@@ -372,16 +372,18 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     private void toggleIssueState(Issue issue) {
         final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
-            public void updated(Issue issue) {
-                mAdapter.updateIssue(issue);
+            public void updated(Issue toggled) {
+                Log.i(TAG, "updated: Issue updated " + toggled.toString());
+                mAdapter.updateIssue(toggled);
                 mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+                mAnalytics.logEvent(toggled.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
             }
 
             @Override
             public void updateError(APIHandler.APIError error) {
+                Log.i(TAG, "updateError: Issue update error");
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -395,6 +397,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
             i.putExtra(getString(R.string.parcel_issue), issue);
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
@@ -406,6 +409,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
 
         });
         builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             if(issue.isClosed()) {
                 mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
             } else {
@@ -414,10 +418,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
         });
         builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
-
-        final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
-        i.putExtra(getString(R.string.parcel_issue), issue);
-        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
     }
 
     private void moveTo(Issue issue) {

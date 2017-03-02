@@ -97,6 +97,11 @@ public class Label extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Label && ((Label) obj).id == id;
+    }
+
+    @Override
     public String toString() {
         return "Label{" +
                 "id=" + id +
