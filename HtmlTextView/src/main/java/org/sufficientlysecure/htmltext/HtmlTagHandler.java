@@ -25,6 +25,7 @@ import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.AlignmentSpan;
 import android.text.style.BulletSpan;
 import android.text.style.LeadingMarginSpan;
@@ -106,6 +107,11 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final BulletSpan bullet = new BulletSpan(indent);
     private ClickableTableSpan clickableTableSpan;
     private DrawTableLinkSpan drawTableLinkSpan;
+    private final TextPaint mTextPaint;
+
+    public HtmlTagHandler(TextPaint paint) {
+        mTextPaint = paint;
+    }
 
     private static class Ul {
     }
@@ -190,8 +196,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Td());
             } else if(tag.equalsIgnoreCase("bar")) {
                 start(output, new Bar());
-            } else {
-                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: " + tag);
             }
         } else {
             // closing tag
@@ -207,33 +211,38 @@ public class HtmlTagHandler implements Html.TagHandler {
             } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
                 if(!lists.isEmpty()) {
                     if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
-                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                            output.append("\n");
-                        }
-                        // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
-                        int bulletMargin = indent;
-                        if(lists.size() > 1) {
-                            bulletMargin = indent - bullet.getLeadingMargin(true);
-                            if(lists.size() > 2) {
-                                // This get's more complicated when we add a LeadingMarginSpan into the same line:
-                                // we have also counter it's effect to BulletSpan
-                                bulletMargin -= (lists.size() - 2) * listItemIndent;
+                        if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
+                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                                output.append("\n");
                             }
+                            // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
+                            int bulletMargin = indent;
+                            if(lists.size() > 1) {
+                                bulletMargin = indent - bullet.getLeadingMargin(true);
+                                if(lists.size() > 2) {
+                                    // This get's more complicated when we add a LeadingMarginSpan into the same line:
+                                    // we have also counter it's effect to BulletSpan
+                                    bulletMargin -= (lists.size() - 2) * listItemIndent;
+                                }
+                            }
+                            BulletSpan newBullet = new BulletSpan(bulletMargin);
+                            end(output, Ul.class, false,
+                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
+                                    newBullet);
+                        } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
+                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                                output.append("\n");
+                            }
+                            int numberMargin = listItemIndent * (lists.size() - 1);
+                            if(lists.size() > 2) {
+                                // Same as in ordered lists: counter the effect of nested Spans
+                                numberMargin -= (lists.size() - 2) * listItemIndent;
+                            }
+                            NumberSpan numberSpan = new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1);
+                            end(output, Ol.class, false,
+                                    new LeadingMarginSpan.Standard(numberMargin),
+                                    numberSpan);
                         }
-                        BulletSpan newBullet = new BulletSpan(bulletMargin);
-                        end(output, Ul.class, false,
-                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                newBullet);
-                    } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
-                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                            output.append("\n");
-                        }
-                        int numberMargin = listItemIndent * (lists.size() - 1);
-                        if(lists.size() > 2) {
-                            // Same as in ordered lists: counter the effect of nested Spans
-                            numberMargin -= (lists.size() - 2) * listItemIndent;
-                        }
-                        end(output, Ol.class, false, new LeadingMarginSpan.Standard(numberMargin));
                     }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));

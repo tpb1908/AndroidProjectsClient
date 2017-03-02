@@ -121,7 +121,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
      */
     private void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
         InputStream inputStreamText = getContext().getResources().openRawResource(resId);
-
         setHtml(convertStreamToString(inputStreamText), imageGetter);
     }
 
@@ -140,7 +139,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler();
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint());
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
