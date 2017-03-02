@@ -464,8 +464,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
-                        mAdapter.addIssue(issue);
                         mRefresher.setRefreshing(false);
+                        mAdapter.addIssue(issue);
+                        mRecycler.scrollToPosition(0);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
