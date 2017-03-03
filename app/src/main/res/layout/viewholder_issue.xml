@@ -43,7 +43,7 @@
 
 
 
-        <org.sufficientlysecure.htmltextview.HtmlTextView
+        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
             android:id="@+id/issue_content_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             android:layout_toEndOf="@+id/issue_drawable_wrapper"
             android:layout_toStartOf="@+id/issue_menu_button"
             android:layout_centerVertical="true">
-        </org.sufficientlysecure.htmltextview.HtmlTextView>
+        </org.sufficientlysecure.htmltext.htmltextview.HtmlTextView>
 
 
         <ImageButton

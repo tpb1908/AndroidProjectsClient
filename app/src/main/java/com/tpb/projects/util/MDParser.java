@@ -1,8 +1,10 @@
 package com.tpb.projects.util;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArraySet;
 
 import org.commonmark.Extension;
+import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.FencedCodeBlock;
@@ -14,7 +16,6 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.renderer.html.HtmlWriter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -26,35 +27,58 @@ public class MDParser {
 
     private static final List<Extension> extensions = Arrays.asList(TablesExtension.create(), StrikethroughExtension.create());
     private static final HtmlRenderer renderer = HtmlRenderer.builder()
-            .nodeRendererFactory(IndentedCodeBlockNodeRenderer::new)
+            .nodeRendererFactory(CustomBlockRenderer::new)
             .extensions(extensions)
             .build();
     private static final Parser parser = Parser.builder().extensions(extensions).build();
 
-    private static class IndentedCodeBlockNodeRenderer implements NodeRenderer {
+    private static class CustomBlockRenderer implements NodeRenderer {
 
         private final HtmlWriter html;
+        private HtmlNodeRendererContext context;
+        private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
+        static {
+            nodeTypes.add(FencedCodeBlock.class);
+            nodeTypes.add(Strikethrough.class);
+        }
 
-        IndentedCodeBlockNodeRenderer(HtmlNodeRendererContext context) {
+        CustomBlockRenderer(HtmlNodeRendererContext context) {
+            this.context = context;
             this.html = context.getWriter();
+
         }
 
         @Override
         public Set<Class<? extends Node>> getNodeTypes() {
             // Return the node types we want to use this renderer for.
-            return Collections.singleton(FencedCodeBlock.class);
+            return nodeTypes;
         }
 
         @Override
         public void render(Node node) {
             // We only handle one type as per getNodeTypes, so we can just cast it here.
-            FencedCodeBlock codeBlock = (FencedCodeBlock) node;
-            html.line();
-            html.tag("code");
-            html.text(codeBlock.getLiteral());
-            html.tag("/code");
-            html.line();
+            if(node instanceof FencedCodeBlock) {
+                html.line();
+                html.tag("code");
+                html.text(((FencedCodeBlock) node).getLiteral());
+                html.tag("/code");
+                html.line();
+            } else if(node instanceof Strikethrough) {
+                html.line();
+                html.tag("s");
+                context.render(node.getFirstChild());
+                html.tag("/s");
+                html.line();
+            }
         }
+    }
+
+    public static String escape(String s) {
+        s = s.replace("#", "&#35;"); //Hashes must be escaped first
+        s = s.replace("@", "&#64;");
+        s = s.replace("<", "&#60;");
+        s = s.replace(">", "&#62;");
+        return s;
     }
 
     public static String parseMD(String s, String fullRepoName) {
@@ -87,7 +111,7 @@ public class MDParser {
                 //TODO Find out if there is a way of computing characters per line and filling the string
                 //I could try using the strike tag
                 builder.setLength(builder.length() - 2);
-                builder.append("──────────\n");
+                builder.append("<bar></bar>");
 
             } else if(cs[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, cs, i, fullRepoPath);

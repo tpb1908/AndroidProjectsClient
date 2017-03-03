@@ -24,7 +24,13 @@ import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.UI;
+
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -36,13 +42,13 @@ import butterknife.ButterKnife;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends ImageLoadingActivity implements Loader.MilestoneLoader {
+public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITModelLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.milestone_date_layout) View mDateLayout;
     @BindView(R.id.milestone_clear_date_button) Button mClearDateButton;
-    @BindView(R.id.milestone_description_edit) EditText mDescriptionEditor;
+    @BindView(R.id.milestone_description_edit) HtmlEditText mDescriptionEditor;
     @BindView(R.id.milestone_title_edit) EditText mTitleEditor;
     @BindView(R.id.milestone_due_date) TextView mDueDate;
 
@@ -69,11 +75,10 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_milestone))) {
             final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
-            milestoneLoaded(m);
+            loadComplete(m);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo)) && launchIntent.hasExtra(getString(R.string.intent_milestone_number))) {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
-            Log.i(TAG, "onCreate: Loading milestone "+ number);
             mLoadingDialog.setTitle(R.string.text_milestone_loading);
             mLoadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialog.show();
@@ -103,8 +108,22 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
             @Override
             public String getText() {
                 if(mTitleEditor.isFocused()) return mTitleEditor.getText().toString();
-                if(mDescriptionEditor.isFocused()) mDescriptionEditor.getText().toString();
+                if(mDescriptionEditor.isFocused()) return mDescriptionEditor.getInputText().toString();
                 return "";
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mDescriptionEditor.isEditing()) {
+                    mDescriptionEditor.saveText();
+                    mDescriptionEditor.setHtml(
+                            MDParser.parseMD(mDescriptionEditor.getText().toString(), null),
+                            new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor));
+                    mDescriptionEditor.disableEditing();
+                } else {
+                    mDescriptionEditor.restoreText();
+                    mDescriptionEditor.enableEditing();
+                }
             }
         });
 
@@ -135,18 +154,23 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.Mile
                 mHasBeenEdited = true;
             }
         });
+        mDescriptionEditor.setCodeClickHandler(new CodeDialog(this));
+        mDescriptionEditor.setImageHandler(new ImageDialog(this));
     }
 
     @Override
-    public void milestoneLoaded(Milestone milestone) {
+    public void loadComplete(Milestone milestone) {
         Log.i(TAG, "milestoneLoaded: " + milestone);
         mTitleEditor.setText(milestone.getTitle());
-        mDescriptionEditor.setText(milestone.getDescription());
         mLoadingDialog.hide();
+        mDescriptionEditor.setFocusable(true);
+        mDescriptionEditor.setFocusableInTouchMode(true);
+        mDescriptionEditor.setEnabled(true);
+        mDescriptionEditor.setText(milestone.getDescription());
     }
 
     @Override
-    public void milestoneLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 

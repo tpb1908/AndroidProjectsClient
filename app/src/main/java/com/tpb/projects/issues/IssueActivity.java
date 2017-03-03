@@ -61,8 +61,10 @@ import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,7 +75,7 @@ import butterknife.OnClick;
  * Created by theo on 06/01/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.IssueLoader, Loader.CommentsLoader, Loader.EventsLoader {
+public class IssueActivity extends CircularRevealActivity implements Loader.GITModelLoader<Issue> {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -82,6 +84,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
     @BindView(R.id.issue_number) TextView mNumber;
+    @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
     @BindView(R.id.issue_open_info) HtmlTextView mOpenInfo;
@@ -128,13 +131,13 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
         mOpenInfo.setShowUnderLines(false);
         mInfo.setShowUnderLines(false);
-        mInfo.setImageHandler(new HtmlTextView.ImageDialog(this));
-        mInfo.setCodeClickHandler(new HtmlTextView.CodeDialog(this));
+        mInfo.setImageHandler(new ImageDialog(this));
+        mInfo.setCodeClickHandler(new CodeDialog(this));
 
         if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
             mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
             mNumber.setText(String.format("#%1$d", mIssue.getNumber()));
-            issueLoaded(mIssue);
+            loadComplete(mIssue);
         } else {
             final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
             final String fullRepoName = getIntent().getStringExtra(getString(R.string.intent_repo));
@@ -143,46 +146,47 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         }
     }
 
+
+
     @Override
-    public void issueLoaded(Issue issue) {
+    public void loadComplete(Issue issue) {
         mIssue = issue;
         mAdapter.setIssue(mIssue);
         displayAssignees();
         displayMilestone();
-        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadComments(mCommentLoader, mIssue.getRepoPath(), mIssue.getNumber());
 
         bindIssue();
 
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
-        if(issue.getOpenedBy().getLogin().equals(login)) {
+        if(mIssue.getOpenedBy().getLogin().equals(login)) {
             mAccessLevel = Repository.AccessLevel.ADMIN;
             enableAccess();
             mFab.postDelayed(mFab::show, 300);
             mAccessLevel = Repository.AccessLevel.ADMIN;
         } else {
-            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
-
-                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                    mAccessLevel = accessLevel;
+            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
+                @Override
+                public void loadComplete(Repository.AccessLevel data) {
+                    mAccessLevel = data;
                     if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                         enableAccess();
                     }
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
-
             }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadEvents(mEventLoader, mIssue.getRepoPath(), mIssue.getNumber());
     }
 
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(MDParser.escape(mIssue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 
@@ -200,7 +204,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
         html += MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
 
-        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo));
+        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo));
 
         builder.setLength(0);
         builder.append(
@@ -214,7 +218,10 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                 )
         );
         mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
-
+        mUserAvatar.setOnClickListener(v -> {
+            IntentHandler.openUser(IssueActivity.this, mUserAvatar, mIssue.getOpenedBy().getLogin());
+        });
+        mUserAvatar.setImageUrl(mIssue.getOpenedBy().getAvatarUrl());
         if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {
@@ -237,7 +244,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
     }
 
     @Override
-    public void issueLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 
@@ -363,19 +370,20 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void commentsLoaded(Comment[] comments) {
-        Log.i(TAG, "commentsLoaded: " + comments.length);
-        mRecycler.enableAnimation();
-        mAdapter.loadComments(comments);
-        mCount.setText(Integer.toString(mAdapter.getItemCount()));
-    }
+    private Loader.GITModelsLoader<Comment> mCommentLoader = new Loader.GITModelsLoader<Comment>() {
 
-    @Override
-    public void commentsLoadError(APIHandler.APIError error) {
-        Log.i(TAG, "commentsLoadError: " + error);
-    }
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void loadComplete(Comment[] comments) {
+            mAdapter.loadComments(comments);
+            mCount.setText(Integer.toString(mAdapter.getItemCount()));
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @OnClick(R.id.issue_comment_fab)
     void newComment() {
@@ -397,15 +405,15 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.setMessage(R.string.text_delete_comment_warning);
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             mRefresher.setRefreshing(true);
-            mEditor.deleteComment(new Editor.CommentDeletionListener() {
+            mEditor.deleteComment(new Editor.GITModelDeletionListener<Integer>() {
                 @Override
-                public void commentDeleted() {
+                public void deleted(Integer id) {
                     mRefresher.setRefreshing(false);
                     mAdapter.removeComment(comment);
                 }
 
                 @Override
-                public void commentDeletionError(APIHandler.APIError error) {
+                public void deletionError(APIHandler.APIError error) {
                     mRefresher.setRefreshing(false);
                 }
             }, mIssue.getRepoPath(), comment.getId());
@@ -505,11 +513,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                 }
 
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
+                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
-                    public void issueEdited(Issue issue) {
+                    public void updated(Issue issue) {
                         mIssue = issue;
                         bindIssue();
                         mRefresher.setRefreshing(false);
@@ -519,7 +527,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
                     }
 
                     @Override
-                    public void issueEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -541,46 +549,45 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             } else if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         mRefresher.setRefreshing(false);
                         mAdapter.addComment(comment);
                         mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
-                        // mRecycler.scrollToPosition(mAdapter.getItemCount());
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, mIssue.getRepoPath(), mIssue.getNumber(), comment.getBody());
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.editComment(new Editor.CommentEditListener() {
+                mEditor.editComment(new Editor.GITModelUpdateListener<Comment>() {
                     @Override
-                    public void commentEdited(Comment comment) {
+                    public void updated(Comment comment) {
                         mRefresher.setRefreshing(false);
                         mAdapter.updateComment(comment);
                     }
 
                     @Override
-                    public void commentEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
-                        mLoader.loadComments(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                    public void created(Comment comment) {
+                        mLoader.loadComments(mCommentLoader, mIssue.getRepoPath(), mIssue.getNumber());
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -593,12 +600,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
 
     // TODO Diff events and comments rather than just clearing
     private void toggleIssueState() {
-
-        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
-            public void issueStateChanged(Issue issue) {
+            public void updated(Issue issue) {
                 mAdapter.clear();
-                mLoader.loadEvents(IssueActivity.this, mIssue.getRepoPath(), mIssue.getNumber());
+                mLoader.loadEvents(mEventLoader, mIssue.getRepoPath(), mIssue.getNumber());
                 mIssue = issue;
                 mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
                 final Bundle bundle = new Bundle();
@@ -607,7 +613,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
             }
 
             @Override
-            public void issueStateChangeError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
@@ -644,19 +650,20 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Issu
         builder.create().show();
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void eventsLoaded(Event[] events) {
-        Log.i(TAG, "eventsLoaded: " + events.length);
-        mRecycler.enableAnimation();
-        mAdapter.loadEvents(events);
-        mCount.setText(Integer.toString(mAdapter.getItemCount()));
-    }
+    private Loader.GITModelsLoader<Event> mEventLoader = new Loader.GITModelsLoader<Event>() {
 
-    @Override
-    public void eventsLoadError(APIHandler.APIError error) {
-        Log.i(TAG, "eventsLoadError: " + error);
-    }
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void loadComplete(Event[] data) {
+            mAdapter.loadEvents(data);
+            mCount.setText(Integer.toString(mAdapter.getItemCount()));
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

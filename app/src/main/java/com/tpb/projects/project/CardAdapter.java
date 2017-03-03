@@ -31,8 +31,10 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -184,14 +186,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
-
-            mParent.loadIssue(new Loader.IssueLoader() {
+            mParent.loadIssue(new Loader.GITModelLoader<Issue>() {
                 int loadCount = 0;
 
                 @Override
-                public void issueLoaded(Issue issue) {
+                public void loadComplete(Issue data) {
                     if(mParent.isAdded() && !mParent.isRemoving()) {
-                        card.setFromIssue(issue);
+                        card.setFromIssue(data);
                         bindIssueCard(holder, pos);
                     }
                     // notifyItemChanged(pos);
@@ -202,7 +203,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 }
 
                 @Override
-                public void issueLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
                     if(error != APIHandler.APIError.NO_CONNECTION) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
@@ -228,7 +229,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         if(mCards.get(pos).second == null) {
             mCards.set(pos, new Pair<>(mCards.get(pos).first, MDParser.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
         }
-        holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
+        holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText, holder.mText));
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText);
     }
 
@@ -244,7 +245,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
-            builder.append(card.getIssue().getTitle());
+            builder.append(MDParser.escape(card.getIssue().getTitle()));
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
                 builder.append(MDParser.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
@@ -295,9 +296,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             final String parsed = MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath());
 
             mCards.set(pos, new Pair<>(card, parsed));
-            holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText));
+            holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText, holder.mText));
         } else {
-            holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText));
+            holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText, holder.mText));
         }
         holder.mSpinner.setVisibility(View.INVISIBLE);
     }
@@ -327,8 +328,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
             view.setOnClickListener(v -> cardClick(this));
             mText.setShowUnderLines(false);
             mText.setParseHandler(mParseHandler);
-            mText.setImageHandler(new HtmlTextView.ImageDialog(mText.getContext()));
-            mText.setCodeClickHandler(new HtmlTextView.CodeDialog(mText.getContext()));
+            mText.setImageHandler(new ImageDialog(mText.getContext()));
+            mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
         }
 
     }

@@ -170,6 +170,14 @@ public class Milestone extends DataModel implements Parcelable {
                 '}';
     }
 
+    public Milestone() {
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Milestone && ((Milestone) obj).id == id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -192,9 +200,7 @@ public class Milestone extends DataModel implements Parcelable {
         dest.writeLong(this.updatedAt);
         dest.writeLong(this.closedAt);
         dest.writeLong(this.dueOn);
-    }
-
-    public Milestone() {
+        dest.writeLong(this.createdAt);
     }
 
     protected Milestone(Parcel in) {
@@ -214,6 +220,7 @@ public class Milestone extends DataModel implements Parcelable {
         this.updatedAt = in.readLong();
         this.closedAt = in.readLong();
         this.dueOn = in.readLong();
+        this.createdAt = in.readLong();
     }
 
     public static final Creator<Milestone> CREATOR = new Creator<Milestone>() {

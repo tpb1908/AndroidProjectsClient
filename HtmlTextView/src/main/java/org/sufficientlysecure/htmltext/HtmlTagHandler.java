@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -25,12 +25,14 @@ import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.AlignmentSpan;
 import android.text.style.BulletSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.xml.sax.XMLReader;
 
 import java.util.Stack;
@@ -38,7 +40,7 @@ import java.util.Stack;
 /**
  * Some parts of this code are based on android.text.Html
  */
-class HtmlTagHandler implements Html.TagHandler {
+public class HtmlTagHandler implements Html.TagHandler {
 
     private static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
     private static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
@@ -54,7 +56,7 @@ class HtmlTagHandler implements Html.TagHandler {
      * @return html with replaced <ul> and <li> tags
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
-    String overrideTags(@Nullable String html) {
+    public String overrideTags(@Nullable String html) {
 
         if(html == null) return null;
 
@@ -105,6 +107,11 @@ class HtmlTagHandler implements Html.TagHandler {
     private static final BulletSpan bullet = new BulletSpan(indent);
     private ClickableTableSpan clickableTableSpan;
     private DrawTableLinkSpan drawTableLinkSpan;
+    private final TextPaint mTextPaint;
+
+    public HtmlTagHandler(TextPaint paint) {
+        mTextPaint = paint;
+    }
 
     private static class Ul {
     }
@@ -132,6 +139,8 @@ class HtmlTagHandler implements Html.TagHandler {
 
     private static class Td {
     }
+
+    private static class Bar {}
 
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
@@ -185,6 +194,8 @@ class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Th());
             } else if(tag.equalsIgnoreCase("td")) {
                 start(output, new Td());
+            } else if(tag.equalsIgnoreCase("bar")) {
+                start(output, new Bar());
             }
         } else {
             // closing tag
@@ -200,39 +211,43 @@ class HtmlTagHandler implements Html.TagHandler {
             } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
                 if(!lists.isEmpty()) {
                     if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
-                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                            output.append("\n");
-                        }
-                        // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
-                        int bulletMargin = indent;
-                        if(lists.size() > 1) {
-                            bulletMargin = indent - bullet.getLeadingMargin(true);
-                            if(lists.size() > 2) {
-                                // This get's more complicated when we add a LeadingMarginSpan into the same line:
-                                // we have also counter it's effect to BulletSpan
-                                bulletMargin -= (lists.size() - 2) * listItemIndent;
+                        if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
+                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                                output.append("\n");
                             }
+                            // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
+                            int bulletMargin = indent;
+                            if(lists.size() > 1) {
+                                bulletMargin = indent - bullet.getLeadingMargin(true);
+                                if(lists.size() > 2) {
+                                    // This get's more complicated when we add a LeadingMarginSpan into the same line:
+                                    // we have also counter it's effect to BulletSpan
+                                    bulletMargin -= (lists.size() - 2) * listItemIndent;
+                                }
+                            }
+                            BulletSpan newBullet = new BulletSpan(bulletMargin);
+                            end(output, Ul.class, false,
+                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
+                                    newBullet);
+                        } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
+                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                                output.append("\n");
+                            }
+                            int numberMargin = listItemIndent * (lists.size() - 1);
+                            if(lists.size() > 2) {
+                                // Same as in ordered lists: counter the effect of nested Spans
+                                numberMargin -= (lists.size() - 2) * listItemIndent;
+                            }
+                            NumberSpan numberSpan = new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1);
+                            end(output, Ol.class, false,
+                                    new LeadingMarginSpan.Standard(numberMargin),
+                                    numberSpan);
                         }
-                        BulletSpan newBullet = new BulletSpan(bulletMargin);
-                        end(output, Ul.class, false,
-                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                newBullet);
-                    } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
-                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                            output.append("\n");
-                        }
-                        int numberMargin = listItemIndent * (lists.size() - 1);
-                        if(lists.size() > 2) {
-                            // Same as in ordered lists: counter the effect of nested Spans
-                            numberMargin -= (lists.size() - 2) * listItemIndent;
-                        }
-                        end(output, Ol.class, false, new LeadingMarginSpan.Standard(numberMargin));
                     }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }
             } else if(tag.equalsIgnoreCase("code")) {
-                Log.i("TagHandler", "handleTag: Handling code tag");
                 Object obj = getLast(output, Code.class);
                 // start of the tag
                 int where = output.getSpanStart(obj);
@@ -242,12 +257,18 @@ class HtmlTagHandler implements Html.TagHandler {
                 output.removeSpan(obj);
 
                 output.replace(where, len, "Click to view code");
-                output.setSpan(new HtmlTextView.CodeSpan(), where, where + "Click to view code".length(), 0);
+                output.setSpan(new CodeSpan(), where, where + "Click to view code".length(), 0);
 
-
+            }  else if(tag.equals("bar")) {
+                final Object obj = getLast(output, Bar.class);
+                final int where = output.getSpanStart(obj);
+                output.removeSpan(obj); //Remove the old span
+                output.replace(where, output.length(), " "); //We need a non-empty span
+                output.setSpan(new BarSpan(), where, where + 1, 0); //Insert the bar span
             } else if(tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
             } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
+                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: Ending strikethrough span");
                 end(output, Strike.class, false, new StrikethroughSpan());
             } else if(tag.equalsIgnoreCase("table")) {
                 tableTagLevel--;
@@ -305,7 +326,6 @@ class HtmlTagHandler implements Html.TagHandler {
     private void start(Editable output, Object mark) {
         int len = output.length();
         output.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
-
         if(HtmlTextView.DEBUG) {
             Log.d(HtmlTextView.TAG, "len: " + len);
         }

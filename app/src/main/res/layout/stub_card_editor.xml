@@ -15,7 +15,7 @@
         app:counterEnabled="true"
         app:counterMaxLength="250">
 
-        <android.support.design.widget.TextInputEditText
+        <org.sufficientlysecure.htmltext.htmledittext.HtmlEditText
             android:id="@+id/card_note_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

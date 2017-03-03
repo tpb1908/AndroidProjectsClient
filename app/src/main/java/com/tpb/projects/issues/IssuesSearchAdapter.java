@@ -80,7 +80,10 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
     private void bindView(int pos, View view) {
         final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
         if(parseCache[dataPos] == null) {
-            parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getNumber() + " " + MDParser.parseMD(data.get(dataPos).getTitle()));
+            parseCache[dataPos] = Html.fromHtml(
+                    " #" + data.get(dataPos).getNumber() + " " +
+                            MDParser.parseMD(MDParser.escape(data.get(dataPos).getTitle()))
+            );
         }
 
         ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(

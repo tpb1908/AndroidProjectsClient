@@ -15,34 +15,48 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltextview;
+package org.sufficientlysecure.htmltext;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class HtmlHttpImageGetter implements ImageGetter {
-    private final HtmlTextView container;
+
+    private static final HashMap<String, Pair<Drawable, Long>> cache = new HashMap<>();
+
+    private final TextView container;
+    private DrawableCacheHandler cacheHandler;
     private URI baseUri;
     private boolean matchParentWidth = true;
 
-    public HtmlHttpImageGetter(HtmlTextView textView) {
-        this.container = textView;
+    public HtmlHttpImageGetter(TextView container, @Nullable DrawableCacheHandler cacheHandler) {
+        this.container = container;
+        this.cacheHandler = cacheHandler;
     }
 
-    public HtmlHttpImageGetter(HtmlTextView textView, String baseUrl) {
-        this.container = textView;
+    public HtmlHttpImageGetter(TextView container, String baseUrl, @Nullable DrawableCacheHandler cacheHandler) {
+        this.container = container;
+        this.cacheHandler = cacheHandler;
         if(baseUrl != null) {
             this.baseUri = URI.create(baseUrl);
         }
@@ -93,6 +107,23 @@ public class HtmlHttpImageGetter implements ImageGetter {
         @Override
         protected Drawable doInBackground(String... params) {
             source = params[0];
+            synchronized(cache) {
+                Map.Entry<String, Pair<Drawable, Long>> entry;
+                for(Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet().iterator(); it.hasNext();) {
+                    entry = it.next();
+                    if(System.currentTimeMillis() > entry.getValue().second + 60000) {
+                        it.remove();
+                    }
+                }
+
+                if(cache.containsKey(source)) {
+                    if(System.currentTimeMillis() > cache.get(source).second + 30000) {
+                        // The drawable is still being accesses, so we update it
+                        fetchDrawable(resources.get(), source);
+                    }
+                   return cache.get(source).first.getConstantState().newDrawable();
+                }
+            }
 
             if(resources.get() != null) {
                 return fetchDrawable(resources.get(), source);
@@ -108,22 +139,29 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 return;
             }
             final UrlDrawable urlDrawable = drawableReference.get();
-            if(urlDrawable == null) {
+            if(urlDrawable == null) { // We exist outside of the lifespan of the view
                 return;
             }
+            // Scale is set here as drawable may be cached and view may have changed
+            setDrawableScale(result);
+
             // set the correct bound according to the result from HTTP call
             urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * scale), (int) (result.getIntrinsicHeight() * scale));
 
             // change the reference of the current drawable to the result from the HTTP call
             urlDrawable.drawable = result;
-
             final HtmlHttpImageGetter imageGetter = imageGetterReference.get();
             if(imageGetter == null) {
                 return;
             }
 
             //We add the drawable to the image view so that it can get it on click
-            imageGetter.container.addDrawable(urlDrawable.drawable.getConstantState().newDrawable(), source);
+            if(imageGetter.cacheHandler != null) {
+                imageGetter.cacheHandler.drawableLoaded(
+                        urlDrawable.drawable.getConstantState().newDrawable(),
+                        source
+                );
+            }
 
             // redraw the image by invalidating the container
             imageGetter.container.invalidate();
@@ -138,12 +176,18 @@ public class HtmlHttpImageGetter implements ImageGetter {
             try {
                 InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
-                scale = getScale(drawable);
-                drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
+                synchronized(cache) {
+                    cache.put(source, new Pair<>(drawable, System.currentTimeMillis()));
+                }
                 return drawable;
             } catch(Exception e) {
                 return null;
             }
+        }
+
+        private void setDrawableScale(Drawable drawable) {
+            scale = getScale(drawable);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
         }
 
         private float getScale(Drawable drawable) {
@@ -170,6 +214,12 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
             return (InputStream) url.getContent();
         }
+    }
+
+    public interface DrawableCacheHandler {
+
+        void drawableLoaded(Drawable d, String source);
+
     }
 
     @SuppressWarnings("deprecation")

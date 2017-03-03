@@ -56,12 +56,9 @@ import static android.view.View.GONE;
  */
 
 public class RepoActivity extends AppCompatActivity implements
-        Loader.RepositoryLoader,
-        Loader.ReadMeLoader,
-        Loader.ProjectsLoader,
         ProjectAdapter.ProjectEditor,
         ProjectDialog.ProjectListener,
-        Editor.ProjectCreationListener {
+        Editor.GITModelCreationListener<Project> {
     private static final String TAG = RepoActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/repo/RepoActivity.java";
 
@@ -135,16 +132,16 @@ public class RepoActivity extends AppCompatActivity implements
                 mDescription.setText(null);
                 mUserName.setText(null);
                 mUserImage.setImageDrawable(null);
-                mLoader.loadRepository(this, mRepo.getFullName());
+                mLoader.loadRepository(mRepoLoader, mRepo.getFullName());
             }
         });
         mAdapter = new ProjectAdapter(this, mRecycler);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
-            repoLoaded(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
+            mRepoLoader.loadComplete(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
         } else {
-            mLoader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
+            mLoader.loadRepository(mRepoLoader, launchIntent.getStringExtra(getString(R.string.intent_repo)));
         }
     }
 
@@ -172,26 +169,28 @@ public class RepoActivity extends AppCompatActivity implements
         if(mRepo != null) {
             final Intent i = new Intent(RepoActivity.this, IssuesActivity.class);
             i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
-            startActivity(i,
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            this,
-                            findViewById(R.id.repo_issues_text),
-                            getString(R.string.transition_title)
-                    ).toBundle()
-            );
+            startActivity(i);
         }
     }
 
     @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
     void toggleStar() {
-        final Editor.StarChangeListener listener = isStarred -> {
-            mHasStarredRepo = isStarred;
-            if(isStarred) {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
-                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
-                mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+        final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @Override
+            public void updated(Boolean isStarred) {
+                mHasStarredRepo = isStarred;
+                if(isStarred) {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                    mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) + 1));
+                } else {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                    mStars.setText(Integer.toString(Integer.parseInt(mStars.getText().toString()) - 1));
+                }
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+
             }
         };
 
@@ -204,16 +203,25 @@ public class RepoActivity extends AppCompatActivity implements
 
     @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
     void toggleWatch() {
-        final Editor.WatchChangeListener listener = isWatched -> {
-            mIsWatchingRepo = isWatched;
-            if(isWatched) {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
-                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
-                mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+        final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @Override
+            public void updated(Boolean isWatched) {
+                mIsWatchingRepo = isWatched;
+                if(isWatched) {
+                    ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                    mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) + 1));
+                } else {
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_watch);
+                    mWatchers.setText(Integer.toString(Integer.parseInt(mWatchers.getText().toString()) - 1));
+                }
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+
             }
         };
+
         if(mIsWatchingRepo) {
             mEditor.unwatchRepo(listener, mRepo.getFullName());
         } else {
@@ -236,75 +244,119 @@ public class RepoActivity extends AppCompatActivity implements
         }
 
     }
-
-    @Override
-    public void repoLoaded(Repository repo) {
-        mRepo = repo;
-        mName.setText(repo.getName());
-        if(Constants.JSON_NULL.equals(repo.getDescription())) {
-            mDescription.setVisibility(GONE);
-        } else {
-            mDescription.setText(repo.getDescription());
-        }
-        mUserName.setText(repo.getUserLogin());
-        mUserImage.setImageUrl(repo.getUserAvatarUrl());
-        mSize.setText(Data.formatKB(repo.getSize()));
-        mIssues.setText(Integer.toString(repo.getIssues()));
-        mForks.setText(Integer.toString(repo.getForks()));
-        mWatchers.setText(Integer.toString(repo.getWatchers()));
-        mStars.setText(Integer.toString(repo.getStarGazers()));
-        mRefresher.setRefreshing(true);
-        mLoader.loadProjects(this, mRepo.getFullName());
-        mLoader.loadReadMe(this, mRepo.getFullName());
-        if(mRepo.getUserLogin().equals(GitHubSession.getSession(this).getUserLogin())) {
-            mAdapter.enableEditAccess();
-            mAccessLevel = Repository.AccessLevel.ADMIN;
-            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
-        } else {
-            mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+    
+    private Loader.GITModelLoader<Repository> mRepoLoader = new Loader.GITModelLoader<Repository>() {
+        @Override
+        public void loadComplete(Repository data) {
+            mRepo = data;
+            mName.setText(mRepo.getName());
+            if(Constants.JSON_NULL.equals(mRepo.getDescription())) {
+                mDescription.setVisibility(GONE);
+            } else {
+                mDescription.setText(mRepo.getDescription());
+            }
+            mUserName.setText(mRepo.getUserLogin());
+            mUserImage.setImageUrl(mRepo.getUserAvatarUrl());
+            mSize.setText(Data.formatKB(mRepo.getSize()));
+            mIssues.setText(Integer.toString(mRepo.getIssues()));
+            mForks.setText(Integer.toString(mRepo.getForks()));
+            mWatchers.setText(Integer.toString(mRepo.getWatchers()));
+            mStars.setText(Integer.toString(mRepo.getStarGazers()));
+            mRefresher.setRefreshing(true);
+            mLoader.loadProjects(mProjectsLoader, mRepo.getFullName());
+            mLoader.loadReadMe(new Loader.GITModelLoader<String>() {
                 @Override
-                public void accessCheckComplete(Repository.AccessLevel level) {
-                    Log.i(TAG, "accessCheckComplete: Access " + level);
-                    mAccessLevel = level;
-                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                        mAdapter.enableEditAccess();
-                        findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+                public void loadComplete(String data) {
+                    Log.i(TAG, "readMeLoaded: ");
+                    mReadmeButton.setVisibility(View.VISIBLE);
+                    mReadme.setMDText(data);
+                    mReadme.reload();
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+
+                }
+            }, mRepo.getFullName());
+            if(mRepo.getUserLogin().equals(GitHubSession.getSession(RepoActivity.this).getUserLogin())) {
+                mAdapter.enableEditAccess();
+                mAccessLevel = Repository.AccessLevel.ADMIN;
+                findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+            } else {
+                mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
+                    @Override
+                    public void loadComplete(Repository.AccessLevel data) {
+                        mAccessLevel = data;
+                        if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                            mAdapter.enableEditAccess();
+                            findViewById(R.id.repo_new_project_card).setVisibility(View.VISIBLE);
+                        }
                     }
-//                    if(canAccess) mAdapter.enableEditAccess();
-//                    Toast.makeText(RepoActivity.this,
-//                            canAccess ? R.string.text_can_access_repo : R.string.text_cannot_access_repo,
-//                            Toast.LENGTH_SHORT)
-//                            .show();
+
+                    @Override
+                    public void loadError(APIHandler.APIError error) {
+                        mAccessLevel = Repository.AccessLevel.NONE;
+                    }
+                }, GitHubSession.getSession(RepoActivity.this).getUserLogin(), mRepo.getFullName());
+            }
+            mLoader.checkIfStarred(new Loader.GITModelLoader<Boolean>() {
+                @Override
+                public void loadComplete(Boolean data) {
+                    mHasStarredRepo = data;
+                    if(mHasStarredRepo) {
+                        ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
+                    } else {
+                        ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
+                    }
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
-                    mAccessLevel = Repository.AccessLevel.NONE;
+                public void loadError(APIHandler.APIError error) {
+                    mHasStarredRepo =  false;
+                    ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
                 }
-            }, GitHubSession.getSession(this).getUserLogin(), mRepo.getFullName());
+            }, mRepo.getFullName());
+            mLoader.checkIfWatched(new Loader.GITModelLoader<Boolean>() {
+                @Override
+                public void loadComplete(Boolean data) {
+                    mIsWatchingRepo = data;
+                    if(mIsWatchingRepo) {
+                        ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
+                    } else {
+                        ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+                    }
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+                    mIsWatchingRepo = false;
+                    ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
+                }
+            }, mRepo.getFullName());
         }
-        mLoader.checkIfStarred(isStarred -> {
-            mHasStarredRepo = isStarred;
-            if(isStarred) {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_unstar);
-            } else {
-                ((TextView) findViewById(R.id.repo_stars_text)).setText(R.string.text_star);
-            }
-        }, mRepo.getFullName());
-        mLoader.checkIfWatched(isWatching -> {
-            mIsWatchingRepo = isWatching;
-            if(isWatching) {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_unwatch);
-            } else {
-                ((TextView) findViewById(R.id.repo_watchers_text)).setText(R.string.text_watch);
-            }
-        }, mRepo.getFullName());
-    }
 
-    @Override
-    public void repoLoadError(APIHandler.APIError error) {
+        @Override
+        public void loadError(APIHandler.APIError error) {
 
-    }
+        }
+    };
+
+    private Loader.GITModelsLoader<Project> mProjectsLoader = new Loader.GITModelsLoader<Project>() {
+        @Override
+        public void loadComplete(Project[] data) {
+            mRefresher.setRefreshing(false);
+            mAdapter.loadComplete(data);
+
+            final Bundle bundle = new Bundle();
+            bundle.putInt(Analytics.KEY_PROJECT_COUNT, data.length);
+            mAnalytics.logEvent(Analytics.TAG_REPO_ACTIVITY, bundle);
+        }
+
+        @Override
+        public void loadError(APIHandler.APIError error) {
+
+        }
+    };
 
     @Override
     public void openProject(Project project, View name) {
@@ -331,22 +383,38 @@ public class RepoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteProject(final Project project, Editor.ProjectDeletionListener listener) {
-        Log.i(TAG, "deleteProject: Deleting project");
+    public void created(Project project) {
+        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
+        mAdapter.addProject(project);
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+    }
+
+    @Override
+    public void creationError(APIHandler.APIError error) {
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
+        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
+    }
+
+    @Override
+    public void deleteProject(Project project, Editor.GITModelDeletionListener<Project> listener) {
         final Dialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.text_delete_project)
                 .setMessage(R.string.text_delete_project_warning)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.ProjectDeletionListener() {
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> mEditor.deleteProject(new Editor.GITModelDeletionListener<Project>() {
                     @Override
-                    public void projectDeleted(Project project1) {
+                    public void deleted(Project project) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
-                        listener.projectDeleted(project1);
+                        listener.deleted(project);
                     }
 
                     @Override
-                    public void projectDeletionError(APIHandler.APIError error) {
+                    public void deletionError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_PROJECT_DELETION, bundle);
@@ -364,9 +432,9 @@ public class RepoActivity extends AppCompatActivity implements
         if(isNewProject) {
             mEditor.createProject(this, project, mRepo.getFullName());
         } else {
-            mEditor.editProject(new Editor.ProjectEditListener() {
+            mEditor.editProject(new Editor.GITModelUpdateListener<Project>() {
                 @Override
-                public void projectEdited(Project project) {
+                public void updated(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();
                     mAdapter.updateProject(project);
 
@@ -376,64 +444,18 @@ public class RepoActivity extends AppCompatActivity implements
                 }
 
                 @Override
-                public void projectEditError(APIHandler.APIError error) {
+                public void updateError(APIHandler.APIError error) {
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                     mAnalytics.logEvent(Analytics.TAG_PROJECT_EDIT, bundle);
                 }
             }, project);
+
         }
     }
 
     @Override
     public void projectEditCancelled() {
-
-    }
-
-    @Override
-    public void projectCreated(Project project) {
-        Toast.makeText(RepoActivity.this, R.string.text_project_created, Toast.LENGTH_LONG).show();
-        mAdapter.addProject(project);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-
-    }
-
-    @Override
-    public void projectCreationError(APIHandler.APIError error) {
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_CREATION, bundle);
-    }
-
-    @Override
-    public void projectsLoaded(Project[] projects) {
-        mRefresher.setRefreshing(false);
-        mAdapter.projectsLoaded(projects);
-
-        final Bundle bundle = new Bundle();
-        bundle.putInt(Analytics.KEY_PROJECT_COUNT, projects.length);
-        mAnalytics.logEvent(Analytics.TAG_REPO_ACTIVITY, bundle);
-    }
-
-    @Override
-    public void projectsLoadError(APIHandler.APIError error) {
-
-    }
-
-    @Override
-    public void readMeLoaded(String readMe) {
-        Log.i(TAG, "readMeLoaded: ");
-        mReadmeButton.setVisibility(View.VISIBLE);
-        mReadme.setMDText(readMe);
-        mReadme.reload();
-
-    }
-
-    @Override
-    public void readmeLoadError(APIHandler.APIError error) {
 
     }
 

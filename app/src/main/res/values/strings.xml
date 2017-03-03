@@ -111,6 +111,11 @@
     <string name="text_event_labels_removed">%1$s removed labels %2$s</string>
     <string name="text_event_added_to_project">%1$s added this issue to a project</string>
     <string name="text_event_removed_from_project">%1$s removed this issue from a project</string>
+    <string name="text_event_moved_columns_in_project">Moved columns in project</string>
+    <string name="text_event_mentioned_multiple">Multiple users were mentioned %1$s</string>
+    <string name="text_event_renamed_multiple">Renamed multiple times %1$s</string>
+    <string name="text_event_rename_multiple">![CDATA[from <b>\"%1$s\"</b> to <b>\"%2$s\"</b>]></string>
+    <string name="text_event_moved_columns_in_project_multiple">Moved columns in project multiple times</string>
     <string name="text_commit">commit %1$s</string>
 
     <!--Issues activity -->
@@ -177,6 +182,10 @@
     <string name="hint_issue_body">Body</string>
     <string name="hint_comment_new">Comment</string>
 
+    <string name="hint_url_description">Description</string>
+    <string name="hint_url_url">Link</string>
+
+
     <string name="hint_card_new">Enter a note</string>
     <string name="hint_choose_assignees">Assignees</string>
     <string name="hint_choose_labels">Labels</string>
@@ -220,6 +229,8 @@
     <string name="title_save_repository_shortcut">Save repository</string>
     <string name="title_save_project_shortcut">Save project</string>
     <string name="title_save_issue_shortcut">Save issue</string>
+
+    <string name="title_insert_link">Insert link</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>

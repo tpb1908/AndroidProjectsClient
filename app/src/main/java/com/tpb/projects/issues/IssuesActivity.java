@@ -44,7 +44,7 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -56,7 +56,7 @@ import butterknife.OnClick;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLoader {
+public class IssuesActivity extends AppCompatActivity implements Loader.GITModelsLoader<Issue> {
     private static final String TAG = IssuesActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssuesActivity.java";
 
@@ -114,10 +114,10 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             mRefresher.setRefreshing(true);
 
             //Check if we have access to edit the Issue
-            mLoader.checkIfCollaborator(new Loader.AccessCheckListener() {
+            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
                 @Override
-                public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                    mAccessLevel = accessLevel;
+                public void loadComplete(Repository.AccessLevel data) {
+                    mAccessLevel = data;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
                         mFab.postDelayed(mFab::show, 300);
                         enableScrollListener(mRecycler, layoutManager);
@@ -125,7 +125,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 }
 
                 @Override
-                public void accessCheckError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
             }, GitHubSession.getSession(this).getUserLogin(), mRepoPath);
@@ -180,7 +180,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     @Override
-    public void issuesLoaded(Issue[] issues) {
+    public void loadComplete(Issue[] issues) {
         if(mPage == 1) {
             mAdapter.loadIssues(issues);
         } else {
@@ -195,7 +195,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     @Override
-    public void issuesLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 
@@ -246,9 +246,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadLabels(new Loader.LabelsLoader() {
+        mLoader.loadLabels(new Loader.GITModelsLoader<Label>() {
             @Override
-            public void labelsLoaded(Label[] labels) {
+            public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -289,10 +289,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
 
             @Override
-            public void labelLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
+
     }
 
     private void showAssigneesDialog() {
@@ -300,10 +301,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        mLoader.loadCollaborators(new Loader.CollaboratorsLoader() {
+        mLoader.loadCollaborators(new Loader.GITModelsLoader<User>() {
             @Override
-            public void collaboratorsLoaded(User[] collaborators) {
-
+            public void loadComplete(User[] collaborators) {
                 final String[] collabNames = new String[collaborators.length + 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
@@ -327,7 +327,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             }
 
             @Override
-            public void collaboratorsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepoPath);
@@ -358,6 +358,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
         intent.putExtra(getString(R.string.parcel_issue), issue);
+        mLoader.loadLabels(null, issue.getRepoPath());
+        mLoader.loadCollaborators(null, issue.getRepoPath());
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(this, intent, ((HtmlTextView) view).getLastClickPosition());
         } else {
@@ -368,18 +370,20 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     }
 
     private void toggleIssueState(Issue issue) {
-        final Editor.IssueStateChangeListener listener = new Editor.IssueStateChangeListener() {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
-            public void issueStateChanged(Issue issue) {
-                mAdapter.updateIssue(issue);
+            public void updated(Issue toggled) {
+                Log.i(TAG, "updated: Issue updated " + toggled.toString());
+                mAdapter.updateIssue(toggled);
                 mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+                mAnalytics.logEvent(toggled.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
             }
 
             @Override
-            public void issueStateChangeError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
+                Log.i(TAG, "updateError: Issue update error");
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -393,6 +397,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
             i.putExtra(getString(R.string.parcel_issue), issue);
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
@@ -404,6 +409,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
 
         });
         builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
             if(issue.isClosed()) {
                 mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
             } else {
@@ -412,10 +418,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
         });
         builder.setNeutralButton(R.string.action_cancel, null);
         builder.create().show();
-
-        final Intent i = new Intent(IssuesActivity.this, CommentEditor.class);
-        i.putExtra(getString(R.string.parcel_issue), issue);
-        startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
     }
 
     private void moveTo(Issue issue) {
@@ -435,6 +437,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
     public void createNewIssue() {
         final Intent intent = new Intent(IssuesActivity.this, IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepoPath);
+        UI.setViewPositionForIntent(intent, mFab);
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
@@ -458,18 +461,19 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
 
                 mRefresher.setRefreshing(true);
-                mEditor.createIssue(new Editor.IssueCreationListener() {
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
-                    public void issueCreated(Issue issue) {
-                        mAdapter.addIssue(issue);
+                    public void created(Issue issue) {
                         mRefresher.setRefreshing(false);
+                        mAdapter.addIssue(issue);
+                        mRecycler.scrollToPosition(0);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
                     }
 
                     @Override
-                    public void issueCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
@@ -478,11 +482,11 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.IssueEditListener() {
+                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
-                    public void issueEdited(Issue issue) {
+                    public void updated(Issue issue) {
                         mAdapter.updateIssue(issue);
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
@@ -491,7 +495,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                     }
 
                     @Override
-                    public void issueEditError(APIHandler.APIError error) {
+                    public void updateError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -512,14 +516,14 @@ public class IssuesActivity extends AppCompatActivity implements Loader.IssuesLo
                 }, mRepoPath, issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         mRefresher.setRefreshing(true);
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();

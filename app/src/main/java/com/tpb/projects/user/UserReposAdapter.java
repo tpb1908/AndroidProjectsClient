@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -36,12 +35,11 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.RepositoriesLoader {
+class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
     private static final String TAG = UserReposAdapter.class.getSimpleName();
 
     private final Loader mLoader;
     private final SwipeRefreshLayout mRefresher;
-    private final AnimatingRecycler mRecycler;
     private final ArrayList<Repository> mRepos = new ArrayList<>();
     private final String mAuthenticatedUser;
     private String mUser;
@@ -52,10 +50,9 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
-    UserReposAdapter(Context context, RepositoriesManager opener, AnimatingRecycler recycler, SwipeRefreshLayout refresher) {
+    UserReposAdapter(Context context, RepositoriesManager opener, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mManager = opener;
-        mRecycler = recycler;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -147,15 +144,14 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     }
 
     @Override
-    public void repositoriesLoaded(Repository[] repos) {
-
+    public void loadComplete(Repository[] repos) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(repos.length > 0) {
             int oldLength = mRepos.size();
 
             if(mPage == 1) {
-               // mRecycler.enableAnimation();
+                // mRecycler.enableAnimation();
                 Log.i(TAG, "repositoriesLoaded: Setting repositories");
                 mRepos.clear();
                 for(Repository r : repos) {
@@ -174,42 +170,39 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
                 }
                 mPinChecker.appendInitialPositions(repos);
             }
-            if(mPage == 1) {
-                notifyDataSetChanged();
-            } else {
-                notifyItemRangeInserted(oldLength, mRepos.size());
-            }
+            notifyItemRangeInserted(oldLength, mRepos.size());
+
+
         } else {
             mMaxPageReached = true;
         }
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
     }
 
     private void ensureLoadOfPinnedRepos() {
         Log.i(TAG, "ensureLoadOfPinnedRepos: Ensuring that repos are loaded ");
         for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
             Log.i(TAG, "ensureLoadOfPinnedRepos: Loading " + repo);
-            mLoader.loadRepository(new Loader.RepositoryLoader() {
+            mLoader.loadRepository(new Loader.GITModelLoader<Repository>() {
                 @Override
-                public void repoLoaded(Repository repo) {
-                    if(!mRepos.contains(repo)) {
-                        mRepos.add(0, repo);
-                        mRecycler.disableAnimation();
-                        mPinChecker.appendPinnedPosition(repo.getFullName());
+                public void loadComplete(Repository data) {
+                    if(!mRepos.contains(data)) {
+                        mRepos.add(0, data);
+                        mPinChecker.appendPinnedPosition(data.getFullName());
                         notifyItemInserted(0);
                     }
                 }
 
                 @Override
-                public void repoLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
 
                 }
             }, repo);
         }
-    }
-
-    @Override
-    public void repositoryLoadError(APIHandler.APIError error) {
-
     }
 
     private void openItem(View view, int pos) {

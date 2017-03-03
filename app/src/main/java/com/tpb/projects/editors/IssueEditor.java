@@ -34,8 +34,13 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +61,7 @@ public class IssueEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
-    @BindView(R.id.issue_body_edit) EditText mBodyEdit;
+    @BindView(R.id.issue_body_edit) HtmlEditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.issue_labels_text) TextView mLabelsText;
@@ -71,7 +76,7 @@ public class IssueEditor extends ImageLoadingActivity {
     private Card mLaunchCard;
     private Issue mLaunchIssue;
 
-    private String repoFullName;
+    private String mRepo;
 
     private boolean mHasBeenEdited = false;
 
@@ -91,7 +96,7 @@ public class IssueEditor extends ImageLoadingActivity {
         mAssigneesText.setShowUnderLines(false);
 
         final Intent launchIntent = getIntent();
-        repoFullName = launchIntent.getStringExtra(getString(R.string.intent_repo));
+        mRepo = launchIntent.getStringExtra(getString(R.string.intent_repo));
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
             mLaunchIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
             mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
@@ -131,12 +136,15 @@ public class IssueEditor extends ImageLoadingActivity {
         final DumbTextChangeWatcher editWatcher = new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
+
                 mHasBeenEdited = true;
             }
         };
 
         mTitleEdit.addTextChangedListener(editWatcher);
         mBodyEdit.addTextChangedListener(editWatcher);
+        mBodyEdit.setCodeClickHandler(new CodeDialog(this));
+        mBodyEdit.setImageHandler(new ImageDialog(this));
 
         final View content = findViewById(android.R.id.content);
 
@@ -161,16 +169,31 @@ public class IssueEditor extends ImageLoadingActivity {
                     final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
                     mTitleEdit.getText().insert(start, snippet);
                     mTitleEdit.setSelection(start + relativePosition);
-                } else if(mBodyEdit.hasFocus()) {
+                } else if(mBodyEdit.hasFocus() && mBodyEdit.isEditing()) {
                     final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
                     mBodyEdit.getText().insert(start, snippet);
+                    Log.i(TAG, "snippetEntered: Setting selection " + (start + relativePosition));
                     mBodyEdit.setSelection(start + relativePosition);
                 }
             }
 
             @Override
             public String getText() {
-                return mBodyEdit.getText().toString();
+                return mBodyEdit.getInputText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mBodyEdit.isEditing()) {
+                    mBodyEdit.saveText();
+                    String repo = null;
+                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
+                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mBodyEdit.disableEditing();
+                } else {
+                    mBodyEdit.restoreText();
+                    mBodyEdit.enableEditing();
+                }
             }
         });
 
@@ -183,9 +206,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.CollaboratorsLoader() {
+        new Loader(this).loadCollaborators(new Loader.GITModelsLoader<User>() {
             @Override
-            public void collaboratorsLoaded(User[] collaborators) {
+            public void loadComplete(User[] collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
@@ -222,12 +245,12 @@ public class IssueEditor extends ImageLoadingActivity {
             }
 
             @Override
-            public void collaboratorsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
             }
-        }, repoFullName);
+        }, mRepo);
     }
 
     @OnClick(R.id.issue_add_labels_button)
@@ -236,9 +259,9 @@ public class IssueEditor extends ImageLoadingActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.LabelsLoader() {
+        new Loader(this).loadLabels(new Loader.GITModelsLoader<Label>() {
             @Override
-            public void labelsLoaded(Label[] labels) {
+            public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -284,11 +307,12 @@ public class IssueEditor extends ImageLoadingActivity {
             }
 
             @Override
-            public void labelLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
+                if(isClosing()) return;;
+                pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
-                pd.cancel();
             }
-        }, repoFullName);
+        }, mRepo);
     }
 
     private void setAssigneesText() {
@@ -358,7 +382,7 @@ public class IssueEditor extends ImageLoadingActivity {
             mLaunchIssue = new Issue();
         }
         mLaunchIssue.setTitle(mTitleEdit.getText().toString());
-        mLaunchIssue.setBody(mBodyEdit.getText().toString());
+        mLaunchIssue.setBody(mBodyEdit.getInputText().toString());
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
         if(mSelectedLabels.size() > 0)

@@ -18,8 +18,8 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by theo on 17/12/16.
  */
 
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.ProjectsLoader {
+public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.GITModelsLoader<Project> {
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private ArrayList<Project> mProjects = new ArrayList<>();
@@ -52,15 +52,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 final int pos = viewHolder.getAdapterPosition();
-                editor.deleteProject(mProjects.get(pos), new Editor.ProjectDeletionListener() {
+                editor.deleteProject(mProjects.get(pos), new Editor.GITModelDeletionListener<Project>() {
                     @Override
-                    public void projectDeleted(Project project) {
+                    public void deleted(Project project) {
                         mProjects.remove(pos);
                         notifyItemRemoved(pos);
                     }
 
                     @Override
-                    public void projectDeletionError(APIHandler.APIError error) {
+                    public void deletionError(APIHandler.APIError error) {
 
                     }
                 });
@@ -89,7 +89,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
                     MDParser.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
-                    new HtmlHttpImageGetter(holder.mBody)
+                    new HtmlHttpImageGetter(holder.mBody, holder.mBody)
             );
         }
     }
@@ -105,22 +105,19 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public void projectsLoaded(Project[] projects) {
-        Log.i(TAG, "projectsLoaded: " + Arrays.toString(projects));
+    public void loadComplete(Project[] projects) {
         mProjects = new ArrayList<>(Arrays.asList(projects));
         notifyDataSetChanged();
-        mRecycler.enableAnimation();
     }
 
     @Override
-    public void projectsLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
 
     }
 
     void clearProjects() {
         mProjects.clear();
         notifyDataSetChanged();
-        mRecycler.enableAnimation();
     }
 
     void addProject(Project project) {
@@ -160,7 +157,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         void editProject(Project project);
 
-        void deleteProject(Project project, Editor.ProjectDeletionListener listener);
+        void deleteProject(Project project, Editor.GITModelDeletionListener<Project> listener);
     }
 
 }

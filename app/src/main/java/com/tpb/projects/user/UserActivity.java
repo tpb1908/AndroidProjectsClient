@@ -38,6 +38,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.login.LoginActivity;
@@ -48,7 +49,6 @@ import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 
 public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepositoriesManager {
@@ -92,7 +92,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
 
             final LinearLayoutManager manager = new LinearLayoutManager(this);
             mRecycler.setLayoutManager(manager);
-            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRecycler, mRefresher);
+            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRefresher);
             mRecycler.setAdapter(adapter);
 
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
@@ -118,25 +118,16 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 user = getIntent().getStringExtra(getString(R.string.intent_username));
                 mUserName.setText(user);
                 ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
-                loader.loadUser(new Loader.UserLoader() {
-                    int errorCount = 0;
-
+                loader.loadUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
-                        mUserName.setText(user.getLogin());
-                        mUserImage.setImageUrl(user.getAvatarUrl());
+                    public void loadComplete(User u) {
+                        mUserName.setText(u.getLogin());
+                        mUserImage.setImageUrl(u.getAvatarUrl());
                     }
 
                     @Override
-                    public void userLoadError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            Toast.makeText(UserActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-                        } else if(errorCount < 5) {
-                            errorCount++;
-                            loader.loadUser(this, user);
-                        } else {
-                            //TODO Handle multiple rrors
-                        }
+                    public void loadError(APIHandler.APIError error) {
+
                     }
                 }, user);
 
@@ -146,19 +137,20 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 if(isTaskRoot()) {
                     findViewById(R.id.back_button).setVisibility(View.GONE);
                 }
-                loader.loadAuthenticatedUser(new Loader.AuthenticatedUserLoader() {
+                loader.loadAuthenticatedUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
+                    public void loadComplete(User user) {
                         mUserName.setText(user.getLogin());
                         mUserImage.setImageUrl(user.getAvatarUrl());
                         GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
                     }
 
                     @Override
-                    public void authenticatedUserLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
 
                     }
                 });
+
             }
 
             mUserName.setText(user);
@@ -186,7 +178,8 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
     public void openRepo(Repository repo, View view) {
         final Intent i = new Intent(UserActivity.this, RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
-        mRecycler.disableAnimation();
+        new Loader(this).loadProjects(null, repo.getFullName());
+        new Loader(this).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
         startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
                 view,
@@ -215,9 +208,9 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
         });
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(input.getText().toString().contains("/")) {
-                new Loader(UserActivity.this).loadRepository(new Loader.RepositoryLoader() {
+                new Loader(UserActivity.this).loadRepository(new Loader.GITModelLoader<Repository>() {
                     @Override
-                    public void repoLoaded(Repository repo) {
+                    public void loadComplete(Repository repo) {
                         final Intent r = new Intent(UserActivity.this, RepoActivity.class);
                         r.putExtra(getString(R.string.intent_repo), repo.getFullName());
                         startActivity(r);
@@ -225,7 +218,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                     }
 
                     @Override
-                    public void repoLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NOT_FOUND) {
                             Toast.makeText(UserActivity.this, R.string.error_repo_not_found, Toast.LENGTH_SHORT).show();
                         } else {
@@ -233,10 +226,11 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                         }
                     }
                 }, input.getText().toString());
+
             } else {
-                new Loader(UserActivity.this).loadUser(new Loader.UserLoader() {
+                new Loader(UserActivity.this).loadUser(new Loader.GITModelLoader<User>() {
                     @Override
-                    public void userLoaded(User user) {
+                    public void loadComplete(User user) {
                         final Intent u = new Intent(UserActivity.this, UserActivity.class);
                         u.putExtra(getString(R.string.intent_username), user.getLogin());
                         startActivity(u);
@@ -244,7 +238,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                     }
 
                     @Override
-                    public void userLoadError(APIHandler.APIError error) {
+                    public void loadError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NOT_FOUND) {
                             Toast.makeText(UserActivity.this, R.string.error_user_not_found, Toast.LENGTH_SHORT).show();
                         } else {

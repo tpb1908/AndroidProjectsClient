@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -34,6 +33,11 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
+
+import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
+import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
+import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +56,7 @@ public class CardEditor extends ImageLoadingActivity {
     public static final int REQUEST_CODE_NEW_CARD = 1606;
     public static final int REQUEST_CODE_EDIT_CARD = 7180;
 
-    @BindView(R.id.card_note_edit) EditText mEditor;
+    @BindView(R.id.card_note_edit) HtmlEditText mEditor;
     @BindView(R.id.card_from_issue_button) Button mIssueButton;
     @BindView(R.id.card_clear_issue_button) Button mClearButton;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -60,7 +64,6 @@ public class CardEditor extends ImageLoadingActivity {
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
     @BindView(R.id.card_note_wrapper) TextInputLayout mEditorWrapper;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
-
 
     private Card mCard;
 
@@ -93,7 +96,7 @@ public class CardEditor extends ImageLoadingActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus() && mEditor.isEnabled()) {
+                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
                     final int start = Math.max(mEditor.getSelectionStart(), 0);
                     mEditor.getText().insert(start, snippet);
                     mEditor.setSelection(start + relativePosition);
@@ -102,7 +105,19 @@ public class CardEditor extends ImageLoadingActivity {
 
             @Override
             public String getText() {
-                return mEditor.getText().toString();
+                return mEditor.getInputText().toString();
+            }
+
+            @Override
+            public void previewCalled() {
+                if(mEditor.isEditing()) {
+                    mEditor.saveText();
+                    mEditor.setHtml(MDParser.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.disableEditing();
+                } else {
+                    mEditor.restoreText();
+                    mEditor.enableEditing();
+                }
             }
         });
 
@@ -129,12 +144,15 @@ public class CardEditor extends ImageLoadingActivity {
                 mHasBeenEdited = true;
             }
         });
+
+        mEditor.setCodeClickHandler(new CodeDialog(this));
+        mEditor.setImageHandler(new ImageDialog(this));
     }
 
     private void bindIssue(Issue issue) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(issue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(MDParser.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 
@@ -180,11 +198,11 @@ public class CardEditor extends ImageLoadingActivity {
             pd.setTitle(R.string.text_loading_issues);
             pd.setCancelable(false);
             pd.show();
-            new Loader(CardEditor.this).loadOpenIssues(new Loader.IssuesLoader() {
+            new Loader(CardEditor.this).loadOpenIssues(new Loader.GITModelsLoader<Issue>() {
                 private int selectedIssuePosition = 0;
 
                 @Override
-                public void issuesLoaded(Issue[] loadedIssues) {
+                public void loadComplete(Issue[] loadedIssues) {
                     if(isClosing()) return; // There is no window to attach to
                     pd.dismiss();
 
@@ -222,7 +240,7 @@ public class CardEditor extends ImageLoadingActivity {
                 }
 
                 @Override
-                public void issuesLoadError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
                     if(isClosing()) return;
                     pd.dismiss();
                     Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -270,7 +288,7 @@ public class CardEditor extends ImageLoadingActivity {
     void onDone() {
         final Intent done = new Intent();
 
-        mCard.setNote(mEditor.getText().toString());
+        mCard.setNote(mEditor.getInputText().toString());
         done.putExtra(getString(R.string.parcel_card), mCard);
 
         setResult(RESULT_OK, done);

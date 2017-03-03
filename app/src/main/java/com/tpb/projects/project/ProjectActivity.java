@@ -68,7 +68,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends AppCompatActivity implements Loader.ProjectLoader {
+public class ProjectActivity extends AppCompatActivity implements Loader.GITModelLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
@@ -114,7 +114,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
-            projectLoaded(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
+            loadComplete(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
             mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
             if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                 new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
@@ -172,14 +172,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
-        mLoader.loadProjects(new Loader.ProjectsLoader() {
+        mLoader.loadProjects(new Loader.GITModelsLoader<Project>() {
             int projectLoadAttempts = 0;
 
             @Override
-            public void projectsLoaded(Project[] projects) {
-                for(Project p : projects) {
+            public void loadComplete(Project[] data) {
+                for(Project p : data) {
                     if(number == p.getNumber()) {
-                        projectLoaded(p);
+                        ProjectActivity.this.loadComplete(p);
                         checkAccess(p);
                         return;
                     }
@@ -189,7 +189,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void projectsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -208,13 +208,12 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccessToRepository(new Loader.AccessCheckListener() {
+        mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
             int accessCheckAttempts = 0;
 
             @Override
-            public void accessCheckComplete(Repository.AccessLevel accessLevel) {
-                Log.i(TAG, "accessCheckComplete: " + accessLevel);
-                mAccessLevel = accessLevel;
+            public void loadComplete(Repository.AccessLevel data) {
+                mAccessLevel = data;
                 if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                     mMenu.showMenuButton(true);
                 } else {
@@ -228,7 +227,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void accessCheckError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -255,19 +254,18 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     @Override
-    public void projectLoaded(Project project) {
-        Log.i(TAG, "projectLoaded: Owner url " + project.getOwnerUrl());
+    public void loadComplete(Project project) {
         mProject = project;
         mLoader.loadLabels(null, mProject.getRepoPath());
-        mName.setText(project.getName());
+        mName.setText(mProject.getName());
 
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
-        mLoader.loadColumns(new Loader.ColumnsLoader() {
+        mLoader.loadColumns(new Loader.GITModelsLoader<Column>() {
             @Override
-            public void columnsLoaded(Column[] columns) {
+            public void loadComplete(Column[] columns) {
                 if(columns.length > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
@@ -306,22 +304,23 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void columnsLoadError(APIHandler.APIError error) {
+            public void loadError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
-        }, project.getId());
+        }, mProject.getId());
+
     }
 
     @Override
-    public void projectLoadError(APIHandler.APIError error) {
+    public void loadError(APIHandler.APIError error) {
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.IssueLoader loader, int issueId, Column column) {
+    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId, Column column) {
         mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 
@@ -346,11 +345,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
-                mEditor.addColumn(new Editor.ColumnAdditionListener() {
+                mEditor.addColumn(new Editor.GITModelCreationListener<Column>() {
                     int addColumnAttempts = 0;
 
                     @Override
-                    public void columnAdded(Column column) {
+                    public void created(Column column) {
                         mAddCard.setVisibility(View.INVISIBLE);
                         mAddIssue.setVisibility(View.INVISIBLE);
                         mAdapter.columns.add(column);
@@ -363,7 +362,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
 
                     @Override
-                    public void columnAdditionError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
                             Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -413,11 +412,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
-                    mEditor.deleteColumn(new Editor.ColumnDeletionListener() {
+                    mEditor.deleteColumn(new Editor.GITModelDeletionListener<Integer>() {
                         int deleteColumnAttempts = 0;
 
                         @Override
-                        public void columnDeleted() {
+                        public void deleted(Integer integer) {
                             mAdapter.remove(mCurrentPosition);
                             mAdapter.columns.remove(mCurrentPosition);
                             mRefresher.setRefreshing(false);
@@ -431,7 +430,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                         }
 
                         @Override
-                        public void columnDeletionError(APIHandler.APIError error) {
+                        public void deletionError(APIHandler.APIError error) {
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
                                 Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -472,14 +471,14 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
-        mEditor.moveColumn(new Editor.ColumnMovementListener() {
+        mEditor.moveColumn(new Editor.GITModelUpdateListener<Integer>() {
             @Override
-            public void columnMoved(int columnId) {
+            public void updated(Integer integer) {
 
             }
 
             @Override
-            public void columnMovementError(APIHandler.APIError error) {
+            public void updateError(APIHandler.APIError error) {
 
             }
         }, tag, dropTag, to);
@@ -503,9 +502,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
     }
 
     void deleteCard(Card card, boolean showWarning) {
-        final Editor.CardDeletionListener listener = new Editor.CardDeletionListener() {
+        final Editor.GITModelDeletionListener<Card> listener = new Editor.GITModelDeletionListener<Card>() {
             @Override
-            public void cardDeleted(Card card) {
+            public void deleted(Card card) {
                 mRefresher.setRefreshing(false);
                 mAdapter.getCurrentFragment().removeCard(card);
                 Snackbar.make(findViewById(R.id.project_coordinator),
@@ -515,7 +514,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             }
 
             @Override
-            public void cardDeletionError(APIHandler.APIError error) {
+            public void deletionError(APIHandler.APIError error) {
 
             }
         };
@@ -671,9 +670,9 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
                 }
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.IssueCreationListener() {
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
                     @Override
-                    public void issueCreated(Issue issue) {
+                    public void created(Issue issue) {
                         mAdapter.getCurrentFragment().createIssueCard(issue);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
@@ -682,7 +681,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
                     }
 
                     @Override
-                    public void issueCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                         mAnalytics.logEvent(Analytics.TAG_ISSUE_CREATED, bundle);
@@ -702,15 +701,15 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createComment(new Editor.CommentCreationListener() {
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
-                    public void commentCreated(Comment comment) {
+                    public void created(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
                         mRefresher.setRefreshing(false);
                     }
 
                     @Override
-                    public void commentCreationError(APIHandler.APIError error) {
+                    public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
@@ -824,10 +823,11 @@ public class ProjectActivity extends AppCompatActivity implements Loader.Project
 
         @Override
         protected ColumnFragment createFragment(PageDescriptor pageDescriptor) {
-            return ColumnFragment.getInstance(((ColumnPageDescriptor) pageDescriptor).mColumn,
+            return ColumnFragment.getInstance(
+                    ((ColumnPageDescriptor) pageDescriptor).mColumn,
                     mNavListener,
-                    mAccessLevel,
-                    columns.indexOf(((ColumnPageDescriptor) pageDescriptor).mColumn) == mCurrentPosition);
+                    mAccessLevel
+            );
         }
 
     }

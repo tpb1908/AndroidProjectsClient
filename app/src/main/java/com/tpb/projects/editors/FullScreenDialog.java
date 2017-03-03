@@ -29,17 +29,17 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_markdown))) {
             final String markdown = getArguments().getString(getString(R.string.intent_markdown));
 
-            final Loader.MarkDownRenderLoader loader = new Loader.MarkDownRenderLoader() {
+            final Loader.GITModelLoader<String> loader = new Loader.GITModelLoader<String>() {
                 @Override
-                public void rendered(String html) {
+                public void loadComplete(String data) {
                     ad.setContentView(wv);
 
                     wv.getSettings().setJavaScriptEnabled(true);
-                    wv.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
+                    wv.loadDataWithBaseURL("", data, "text/html", "UTF-8", "");
                 }
 
                 @Override
-                public void renderError(APIHandler.APIError error) {
+                public void loadError(APIHandler.APIError error) {
                     ad.dismiss();
                 }
             };

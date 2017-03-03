@@ -124,10 +124,7 @@ public class Event extends DataModel implements Parcelable {
         try {
             e.id = obj.getInt(ID);
             e.actor = User.parse(obj.getJSONObject(ACTOR));
-            if(obj.has(EVENT)) e.event = GITEvent.valueOf(obj.getString(EVENT).toUpperCase());
-            if(e.event == GITEvent.ADDED_TO_PROJECT || e.event == GITEvent.REMOVED_FROM_PROJECT) {
-                Log.i(TAG, "parse: " + obj.toString());
-            }
+            if(obj.has(EVENT)) e.event = GITEvent.fromString(obj.getString(EVENT).toLowerCase());
 
             try {
                 e.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
@@ -188,35 +185,109 @@ public class Event extends DataModel implements Parcelable {
     }
 
     public enum GITEvent {
-        CLOSED("closed"),
-        REOPENED("reopened"),
-        SUBSCRIBED("subscribed"),
-        MERGED("merged"),
-        REFERENCED("referenced"),
-        MENTIONED("mentioned"),
-        ASSIGNED("assigned"),
-        UNASSIGNED("unassigned"),
-        LABELED("labeled"),
-        UNLABELED("unlabeled"),
-        MILESTONED("milestoned"),
-        DEMILESTONED("demilestoned"),
-        RENAMED("renamed"),
-        LOCKED("locked"),
-        UNLOCKED("unlocked"),
-        HEAD_REF_DELETED("head_ref_deleted"),
-        HEAD_REF_RESTORED("head_ref_restored"),
-        REVIEW_DISMISSED("review_dismissed"),
-        REVIEW_REQUESTED("review_requested"),
-        REVIEW_REQUEST_REMOVED("review_request_removed"),
-        ADDED_TO_PROJECT("added_to_project"),
-        REMOVED_FROM_PROJECT("removed_from_project");
+        CLOSED,
+        REOPENED,
+        SUBSCRIBED,
+        MERGED,
+        REFERENCED,
+        MENTIONED,
+        ASSIGNED,
+        UNASSIGNED,
+        LABELED,
+        UNLABELED,
+        MILESTONED,
+        DEMILESTONED,
+        RENAMED,
+        LOCKED,
+        UNLOCKED,
+        HEAD_REF_DELETED,
+        HEAD_REF_RESTORED,
+        REVIEW_DISMISSED,
+        REVIEW_REQUESTED,
+        REVIEW_REQUEST_REMOVED,
+        ADDED_TO_PROJECT,
+        REMOVED_FROM_PROJECT,
+        MOVED_COLUMNS_IN_PROJECT,
+        PROJECT_CARD_MOVED,
+        PROJECT_CARD_CREATED,
+        PROJECT_CARD_DELETED,
+        UNKNOWN;
 
+        String val;
 
-        GITEvent(String key) {
+        static GITEvent fromString(String val) {
+            switch(val) {
+                case "closed":
+                    return CLOSED;
+                case "reopened":
+                    return REOPENED;
+                case "subscribed":
+                    return SUBSCRIBED;
+                case "merged":
+                    return MERGED;
+                case "referenced":
+                    return REFERENCED;
+                case "labeled":
+                    return LABELED;
+                case "unlabeled":
+                    return UNLABELED;
+                case "mentioned":
+                    return MENTIONED;
+                case "assigned":
+                    return ASSIGNED;
+                case "unassigned":
+                    return UNASSIGNED;
+                case "milestoned":
+                    return MILESTONED;
+                case "demilstoned":
+                    return DEMILESTONED;
+                case "renamed":
+                    return RENAMED;
+                case "locked":
+                    return LOCKED;
+                case "unlocked":
+                    return UNLOCKED;
+                case "head_ref_deleted":
+                    return HEAD_REF_DELETED;
+                case "head_ref_restored":
+                    return HEAD_REF_RESTORED;
+                case "review_dismissed":
+                    return REVIEW_DISMISSED;
+                case "review_requested":
+                    return REVIEW_REQUESTED;
+                case "review_request_removed":
+                    return REVIEW_REQUEST_REMOVED;
+                case "added_to_project":
+                    return ADDED_TO_PROJECT;
+                case "removed_from_project":
+                    return REMOVED_FROM_PROJECT;
+                case "moved_columns_in_project":
+                    return MOVED_COLUMNS_IN_PROJECT;
+                case "project_card_moved":
+                    return PROJECT_CARD_MOVED;
+                case "project_card_created":
+                    return PROJECT_CARD_CREATED;
+                case "project_card_deleted":
+                    return PROJECT_CARD_DELETED;
+                default:
+                    final GITEvent ge = UNKNOWN;
+                    ge.val = val;
+                    return ge;
+
+            }
         }
 
+
+        @Override
+        public String toString() {
+            return val == null ? super.toString() : val;
+        }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Event && ((Event) obj).id == id;
+    }
 
     @Override
     public int describeContents() {
