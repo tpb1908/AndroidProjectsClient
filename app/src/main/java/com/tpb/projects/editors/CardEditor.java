@@ -152,7 +152,7 @@ public class CardEditor extends ImageLoadingActivity {
     private void bindIssue(Issue issue) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(issue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(MDParser.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 

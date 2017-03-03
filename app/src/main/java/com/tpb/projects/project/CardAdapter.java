@@ -245,7 +245,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
-            builder.append(card.getIssue().getTitle());
+            builder.append(MDParser.escape(card.getIssue().getTitle()));
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
                 builder.append(MDParser.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
