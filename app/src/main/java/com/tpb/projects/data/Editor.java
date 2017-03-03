@@ -84,7 +84,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editProject(final GITModelUpdateListener<Project> listener, Project project) {
+    public void updateProject(final GITModelUpdateListener<Project> listener, Project project) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, project.getName());
@@ -703,12 +703,13 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        if(listener != null) listener.updated(Milestone.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-
+                        Log.i(TAG, "onError: " + anError.getErrorDetail());
+                        if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
 
