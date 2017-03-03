@@ -686,10 +686,10 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateMilestone(GITModelUpdateListener<Milestone> listener, String fullRepoName, int number, @NonNull String title, @Nullable String description, @Nullable String dueOn, @NonNull State state) {
+    public void updateMilestone(GITModelUpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @NonNull State state) {
         final JSONObject obj =  new JSONObject();
         try {
-            obj.put(TITLE, title);
+            if(title != null) obj.put(TITLE, title);
             if(description != null) obj.put("description", description);
             if(dueOn != null) obj.put("due_on", dueOn);
             if(state != State.ALL) obj.put("state", state.toString().toLowerCase());
