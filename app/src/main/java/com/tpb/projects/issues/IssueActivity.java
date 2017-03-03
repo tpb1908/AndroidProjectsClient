@@ -513,7 +513,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 }
 
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -534,7 +534,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
+                                mEditor.updateIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
                             } else {
                                 Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);
@@ -565,7 +565,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.editComment(new Editor.GITModelUpdateListener<Comment>() {
+                mEditor.updateComment(new Editor.GITModelUpdateListener<Comment>() {
                     @Override
                     public void updated(Comment comment) {
                         mRefresher.setRefreshing(false);

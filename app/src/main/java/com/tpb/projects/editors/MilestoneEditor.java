@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
@@ -37,6 +38,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by theo on 25/02/17.
@@ -54,6 +56,9 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
 
     private ProgressDialog mLoadingDialog;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
+
+    private boolean mIsIndependent = false;
+    private String mFullRepoName;
 
     private boolean mHasBeenEdited = false;
 
@@ -77,12 +82,15 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
             final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
             loadComplete(m);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo)) && launchIntent.hasExtra(getString(R.string.intent_milestone_number))) {
-            final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
+            mFullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
             final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
             mLoadingDialog.setTitle(R.string.text_milestone_loading);
             mLoadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialog.show();
-            new Loader(this).loadMilestone(this, repo, number);
+            mIsIndependent = true;
+            new Loader(this).loadMilestone(this, mFullRepoName, number);
+        } else if(launchIntent.hasExtra(getString(R.string.intent_repo))) {
+            //TODO Create new milestone
         } else {
             finish();
         }
@@ -172,6 +180,30 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
     @Override
     public void loadError(APIHandler.APIError error) {
 
+    }
+
+    @OnClick(R.id.markdown_editor_done)
+    void onDone() {
+        new Editor(this).createMilestone(new Editor.GITModelCreationListener<Milestone>() {
+            @Override
+            public void created(Milestone milestone) {
+                Log.i(TAG, "created: Milestone created " + milestone.toString());
+            }
+
+            @Override
+            public void creationError(APIHandler.APIError error) {
+
+            }
+        }, mFullRepoName, mTitleEditor.getText().toString(), mDescriptionEditor.getInputText().toString(), null);
+
+        if(mIsIndependent) {
+
+        }
+    }
+
+    @OnClick(R.id.markdown_editor_discard)
+    void onDiscard() {
+        finish();
     }
 
     @Override

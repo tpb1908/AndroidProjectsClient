@@ -482,7 +482,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -502,7 +502,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mRepoPath, issue, assignees, labels);
+                                mEditor.updateIssue(this, mRepoPath, issue, assignees, labels);
                             } else {
                                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);
