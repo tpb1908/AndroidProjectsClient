@@ -14,7 +14,11 @@ import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 public class CodeSpan extends ClickableSpan {
     private CodeClickHandler mHandler;
     private String mCode;
+    private int mIndex;
 
+    public CodeSpan(int index) {
+        this.mIndex = index;
+    }
 
     public void setHandler(CodeClickHandler handler) {
         mHandler = handler;
@@ -22,6 +26,10 @@ public class CodeSpan extends ClickableSpan {
 
     public void setCode(String code) {
         mCode = code;
+    }
+
+    public int getIndex() {
+        return mIndex;
     }
 
     @Override

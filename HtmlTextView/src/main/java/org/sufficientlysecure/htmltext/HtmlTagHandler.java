@@ -109,6 +109,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
 
+    private int codeCount = 0;
+
     public HtmlTagHandler(TextPaint paint) {
         mTextPaint = paint;
     }
@@ -253,11 +255,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                 int where = output.getSpanStart(obj);
                 // end of the tag
                 int len = output.length();
-
                 output.removeSpan(obj);
-
                 output.replace(where, len, "Click to view code");
-                output.setSpan(new CodeSpan(), where, where + "Click to view code".length(), 0);
+                output.setSpan(new CodeSpan(codeCount++), where, where + "Click to view code".length(), 0);
 
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
