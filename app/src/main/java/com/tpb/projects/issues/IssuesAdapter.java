@@ -107,7 +107,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
-            builder.append(issue.getTitle());
+            builder.append(MDParser.escape(issue.getTitle()));
             builder.append("</b><br><br>");
 
             builder.append(String.format(context.getString(R.string.text_issue_opened_by),

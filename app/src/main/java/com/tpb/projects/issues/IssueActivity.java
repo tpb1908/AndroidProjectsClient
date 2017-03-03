@@ -186,7 +186,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(mIssue.getTitle().replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(MDParser.escape(mIssue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 

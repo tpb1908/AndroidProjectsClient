@@ -73,6 +73,14 @@ public class MDParser {
         }
     }
 
+    public static String escape(String s) {
+        s = s.replace("#", "&#35;"); //Hashes must be escaped first
+        s = s.replace("@", "&#64;");
+        s = s.replace("<", "&#60;");
+        s = s.replace(">", "&#62;");
+        return s;
+    }
+
     public static String parseMD(String s, String fullRepoName) {
         return renderer.render(parser.parse(formatMD(s, fullRepoName)));
     }
