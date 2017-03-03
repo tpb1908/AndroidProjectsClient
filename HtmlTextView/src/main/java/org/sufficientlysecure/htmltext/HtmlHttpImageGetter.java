@@ -117,6 +117,10 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 }
 
                 if(cache.containsKey(source)) {
+                    if(System.currentTimeMillis() > cache.get(source).second + 30000) {
+                        // The drawable is still being accesses, so we update it
+                        fetchDrawable(resources.get(), source);
+                    }
                    return cache.get(source).first.getConstantState().newDrawable();
                 }
             }
@@ -173,11 +177,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
                 InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
                 synchronized(cache) {
-                    if(!cache.containsKey(source)) {
-                        cache.put(source, new Pair<>(drawable, System.currentTimeMillis()));
-                    } else {
-                        Log.i(HtmlHttpImageGetter.class.getSimpleName(), "fetchDrawable: putting value in cache");
-                    }
+                    cache.put(source, new Pair<>(drawable, System.currentTimeMillis()));
                 }
                 return drawable;
             } catch(Exception e) {
