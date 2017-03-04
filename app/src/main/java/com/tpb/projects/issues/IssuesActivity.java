@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -67,7 +66,6 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issues_fab) FloatingActionButton mFab;
-    @BindView(R.id.issues_filter_button) ImageButton mFilterButton;
 
     private Loader mLoader;
     private Editor mEditor;
@@ -200,8 +198,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     }
 
     @OnClick(R.id.issues_filter_button)
-    void filter() {
-        final PopupMenu menu = new PopupMenu(this, mFilterButton);
+    void filter(View v) {
+        final PopupMenu menu = new PopupMenu(this, v);
         menu.inflate(R.menu.menu_issues_filter);
         switch(mFilter) {
             case ALL:

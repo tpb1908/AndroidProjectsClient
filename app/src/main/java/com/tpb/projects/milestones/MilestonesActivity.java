@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -23,6 +24,7 @@ import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by theo on 04/03/17.
@@ -119,6 +121,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             mPage = 1;
             mMaxPageReached = false;
         }
+        Log.i(TAG, "loadMilestones: Loading with filter " + mFilter);
         mLoader.loadMilestones(this, mRepo, mFilter, mPage);
     }
 
@@ -146,6 +149,41 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     @Override
     public void loadError(APIHandler.APIError error) {
         Log.i(TAG, "loadError: " + error.toString());
+    }
+
+    @OnClick(R.id.milestones_filter_button)
+    void filter(View v) {
+        final PopupMenu menu = new PopupMenu(this, v);
+        menu.inflate(R.menu.menu_milestones_filter);
+        switch(mFilter) {
+            case ALL:
+                menu.getMenu().getItem(2).setChecked(true);
+                break;
+            case OPEN:
+                menu.getMenu().getItem(0).setChecked(true);
+                break;
+            case CLOSED:
+                menu.getMenu().getItem(1).setChecked(true);
+                break;
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case R.id.menu_filter_all:
+                    mFilter = State.ALL;
+                    refresh();
+                    break;
+                case R.id.menu_filter_closed:
+                    mFilter = State.CLOSED;
+                    refresh();
+                    break;
+                case R.id.menu_filter_open:
+                    mFilter = State.OPEN;
+                    refresh();
+                    break;
+            }
+            return false;
+        });
+        menu.show();
     }
 
     public void onToolbarBackPressed(View v) {
