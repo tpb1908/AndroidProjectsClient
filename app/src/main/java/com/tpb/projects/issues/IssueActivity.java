@@ -145,8 +145,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         }
     }
 
-
-
     @Override
     public void loadComplete(Issue issue) {
         mIssue = issue;
