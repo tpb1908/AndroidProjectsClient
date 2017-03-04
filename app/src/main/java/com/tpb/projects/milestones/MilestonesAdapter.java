@@ -42,13 +42,28 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         mRepo = repo;
     }
 
-    void setMilestones(ArrayList<Milestone> milestones) {
+    void clear() {
+        mMilestones.clear();
+        notifyDataSetChanged();
+    }
+
+    void setMilestones(Milestone[] milestones) {
         mMilestones.clear();
         mParseCache.clear();
         for(Milestone m : milestones) {
             mMilestones.add(m);
             mParseCache.add(null);
         }
+        notifyItemRangeInserted(0, mMilestones.size());
+    }
+
+    void addMilestones(Milestone[] milestones) {
+        final int oldSize = mMilestones.size();
+        for(Milestone m : milestones) {
+            mMilestones.add(m);
+            mParseCache.add(null);
+        }
+        notifyItemRangeInserted(oldSize, mMilestones.size());
     }
 
     @Override
