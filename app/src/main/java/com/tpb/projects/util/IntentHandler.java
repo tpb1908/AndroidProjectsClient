@@ -69,6 +69,7 @@ public class IntentHandler {
                 activity.startActivity(i);
             }
         });
+        addGitHubIntentHandler(activity, iv, login);
     }
 
     private static void openIssue(Activity activity, View view, String url) {

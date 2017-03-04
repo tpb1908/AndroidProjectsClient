@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
 
@@ -16,6 +17,7 @@ import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -50,6 +52,10 @@ public class MilestonesActivity extends CircularRevealActivity {
                 @Override
                 public void loadComplete(Milestone[] data) {
                     Log.i(TAG, "loadComplete: Milestones loaded " + Arrays.toString(data));
+                    mRecycler.setLayoutManager(new LinearLayoutManager(MilestonesActivity.this));
+                    final MilestonesAdapter adapter = new MilestonesAdapter(MilestonesActivity.this, mRepo);
+                    adapter.setMilestones(new ArrayList<>(Arrays.asList(data)));
+                    mRecycler.setAdapter(adapter);
                 }
 
                 @Override
