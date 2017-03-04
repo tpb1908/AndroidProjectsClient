@@ -72,6 +72,15 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         notifyItemInserted(0);
     }
 
+    void updateMilestone(Milestone milestone) {
+        final int index = mMilestones.indexOf(milestone);
+        if(index != -1) {
+            mMilestones.set(index, milestone);
+            mParseCache.set(index, null);
+            notifyItemChanged(index);
+        }
+    }
+
     @Override
     public MilestoneHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MilestoneHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_milestone, parent, false));
@@ -163,6 +172,10 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         return mMilestones.size();
     }
 
+    private void openMilestone(View view, int pos) {
+        IntentHandler.openMilestone(mParent, view, mMilestones.get(pos));
+    }
+
     public class MilestoneHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.milestone_drawable) ImageView mState;
@@ -173,6 +186,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         public MilestoneHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(v -> openMilestone(v, getAdapterPosition()));
         }
 
 

@@ -93,7 +93,6 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             }, GitHubSession.getSession(this).getUserLogin(), mRepo);
 
             loadMilestones(false);
-
         } else {
             finish();
         }
@@ -209,6 +208,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             final String description = data.getStringExtra(getString(R.string.intent_milestone_description));
             final int number = data.getIntExtra(getString(R.string.intent_milestone_number), -1);
             final long dueOn = data.getLongExtra(getString(R.string.intent_milestone_due_on), -1);
+
             if(requestCode == MilestoneEditor.REQUEST_CODE_NEW_MILESTONE) {
                 mEditor.createMilestone(new Editor.GITModelCreationListener<Milestone>() {
                     @Override
@@ -224,6 +224,19 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                         mRefresher.setRefreshing(false);
                     }
                 }, mRepo, title, description, dueOn > 0 ? Data.toISO8061FromMilliseconds(dueOn) : null);
+            } else if(requestCode == MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE) {
+                mEditor.updateMilestone(new Editor.GITModelUpdateListener<Milestone>() {
+                    @Override
+                    public void updated(Milestone milestone) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.updateMilestone(milestone);
+                    }
+
+                    @Override
+                    public void updateError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mRepo, number, title, description, Data.toISO8061FromMilliseconds(dueOn), null);
             }
         }
     }

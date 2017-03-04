@@ -220,13 +220,11 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
         data.putExtra(getString(R.string.intent_milestone_due_on), mDueOn);
         if(mIsEditing) {
             //TODO Check valid state
-
             data.putExtra(getString(R.string.intent_milestone_number), mLaunchMilestone.getNumber());
-
-        } else {
-            setResult(RESULT_OK, data);
-            finish();
         }
+        setResult(RESULT_OK, data);
+        finish();
+
 
     }
 
