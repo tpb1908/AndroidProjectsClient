@@ -170,7 +170,14 @@ public class Milestone extends DataModel implements Parcelable {
                 '}';
     }
 
-    public Milestone() {
+    private Milestone() {
+
+    }
+
+    public Milestone(String title, String description, long dueOn) {
+        this.title = title;
+        this.description = description;
+        this.dueOn = dueOn;
     }
 
     @Override

@@ -304,6 +304,9 @@
     <string name="intent_position_y" translatable="false">pos_y</string>
     <string name="intent_blob_path" translatable="false">blob_path</string>
     <string name="intent_milestone_number" translatable="false">milestone_number</string>
+    <string name="intent_milestone_title" translatable="false">milestone_title</string>
+    <string name="intent_milestone_description" translatable="false">milestone_description</string>
+    <string name="intent_milestone_due_on" translatable="false">milestone_due_on</string>
 
     <!-- Constants for models passed as parcels -->
     <string name="parcel_project" translatable="false">project</string>

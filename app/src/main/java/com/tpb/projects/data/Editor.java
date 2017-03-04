@@ -681,6 +681,9 @@ public class Editor extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         Log.i(TAG, "onError: " + anError.getErrorDetail());
+                        Log.i(TAG, "onError: " + anError.toString());
+                        Log.i(TAG, "onError: " + anError.getErrorCode());
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
                         if(listener != null) listener.creationError(parseError(anError));
                     }
                 });

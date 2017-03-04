@@ -122,8 +122,8 @@ public class Project extends DataModel implements Parcelable {
             obj.put(NAME, project.name);
             obj.put(URL, project.url);
             obj.put(OWNER_URL, project.ownerUrl);
-            obj.put(CREATED_AT, Data.toISO8061(project.createdAt));
-            obj.put(UPDATED_AT, Data.toISO8061(project.updatedAt));
+            obj.put(CREATED_AT, Data.toISO8061FromSeconds(project.createdAt));
+            obj.put(UPDATED_AT, Data.toISO8061FromSeconds(project.updatedAt));
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }

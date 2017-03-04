@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -18,12 +19,10 @@ import android.widget.TextView;
 import com.androidnetworking.error.ANError;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.util.DumbTextChangeWatcher;
 import com.tpb.projects.util.KeyBoardVisibilityChecker;
 import com.tpb.projects.util.MDParser;
@@ -36,6 +35,7 @@ import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +48,9 @@ import butterknife.OnClick;
 public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITModelLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
+    public static final int REQUEST_CODE_NEW_MILESTONE = 810;
+    public static final int REQUEST_CODE_EDIT_MILESTONE = 369;
+
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.milestone_date_layout) View mDateLayout;
     @BindView(R.id.milestone_clear_date_button) Button mClearDateButton;
@@ -59,8 +62,10 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
     private KeyBoardVisibilityChecker mKeyBoardChecker;
 
     private boolean mIsEditing = false;
-    private int mNumber = -1;
+    private Milestone mLaunchMilestone;
     private String mFullRepoName;
+
+    private long mDueOn = 0;
 
     private boolean mHasBeenEdited = false;
 
@@ -81,18 +86,16 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
 
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_milestone))) {
-            final Milestone m = launchIntent.getParcelableExtra(getString(R.string.parcel_milestone));
             mIsEditing = true;
-            mNumber = m.getNumber();
-            loadComplete(m);
+            loadComplete(launchIntent.getParcelableExtra(getString(R.string.parcel_milestone)));
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo)) && launchIntent.hasExtra(getString(R.string.intent_milestone_number))) {
             mFullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
-            mNumber = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
+            final int number = launchIntent.getIntExtra(getString(R.string.intent_milestone_number), -1);
             mLoadingDialog.setTitle(R.string.text_milestone_loading);
             mLoadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialog.show();
             mIsEditing = true;
-            new Loader(this).loadMilestone(this, mFullRepoName, mNumber);
+            new Loader(this).loadMilestone(this, mFullRepoName, number);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo))) {
             //TODO Create new milestone
         } else {
@@ -103,7 +106,13 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
         mDueDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
             new DatePickerDialog(MilestoneEditor.this, (view, year, month, dayOfMonth) -> {
-
+                final Calendar chosen = Calendar.getInstance();
+                chosen.set(Calendar.YEAR, year);
+                chosen.set(Calendar.MONTH, month);
+                chosen.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                mDueOn = chosen.getTimeInMillis();
+                mClearDateButton.setVisibility(View.VISIBLE);
+                setDueDate();
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
@@ -172,13 +181,18 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
 
     @Override
     public void loadComplete(Milestone milestone) {
-        Log.i(TAG, "milestoneLoaded: " + milestone);
+        mLaunchMilestone = milestone;
         mTitleEditor.setText(milestone.getTitle());
         mLoadingDialog.hide();
         mDescriptionEditor.setFocusable(true);
         mDescriptionEditor.setFocusableInTouchMode(true);
         mDescriptionEditor.setEnabled(true);
         mDescriptionEditor.setText(milestone.getDescription());
+        if(milestone.getDueOn() != 0) {
+            mDueOn = milestone.getDueOn();
+            mClearDateButton.setVisibility(View.VISIBLE);
+            setDueDate();
+        }
     }
 
     @Override
@@ -186,33 +200,32 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
 
     }
 
+    @OnClick(R.id.milestone_clear_date_button)
+    void onClearDate() {
+        mDueDate.setText(null);
+        mClearDateButton.setVisibility(View.GONE);
+        mDueOn = 0;
+    }
+
+    private void setDueDate() {
+        final java.text.DateFormat df = DateFormat.getLongDateFormat(this);
+        mDueDate.setText(df.format(new Date(mDueOn)));
+    }
+
     @OnClick(R.id.markdown_editor_done)
     void onDone() {
+        final Intent data = new Intent();
+        data.putExtra(getString(R.string.intent_milestone_title), mTitleEditor.getText().toString());
+        data.putExtra(getString(R.string.intent_milestone_description), mDescriptionEditor.getInputText().toString());
+        data.putExtra(getString(R.string.intent_milestone_due_on), mDueOn);
         if(mIsEditing) {
-            new Editor(this).updateMilestone(new Editor.GITModelUpdateListener<Milestone>() {
-                @Override
-                public void updated(Milestone milestone) {
-                    Log.i(TAG, "updated: Milestone updated " + milestone.toString());
-                }
+            //TODO Check valid state
 
-                @Override
-                public void updateError(APIHandler.APIError error) {
-
-                }
-            }, mFullRepoName,  mNumber, mTitleEditor.getText().toString(), mDescriptionEditor.getInputText().toString(), null, State.ALL);
+            data.putExtra(getString(R.string.intent_milestone_number), mLaunchMilestone.getNumber());
 
         } else {
-            new Editor(this).createMilestone(new Editor.GITModelCreationListener<Milestone>() {
-                @Override
-                public void created(Milestone milestone) {
-                    Log.i(TAG, "created: Milestone created " + milestone.toString());
-                }
-
-                @Override
-                public void creationError(APIHandler.APIError error) {
-
-                }
-            }, mFullRepoName, mTitleEditor.getText().toString(), mDescriptionEditor.getInputText().toString(), null);
+            setResult(RESULT_OK, data);
+            finish();
         }
 
     }

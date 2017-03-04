@@ -1,5 +1,7 @@
 package com.tpb.projects.milestones;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +15,7 @@ import android.widget.PopupMenu;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
@@ -20,6 +23,8 @@ import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.CircularRevealActivity;
+import com.tpb.projects.editors.MilestoneEditor;
+import com.tpb.projects.util.Data;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -38,6 +43,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     @BindView(R.id.milestones_fab) FloatingActionButton mFab;
 
     private Loader mLoader;
+    private Editor mEditor;
     private State mFilter = State.OPEN;
 
     private String mRepo;
@@ -45,7 +51,6 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     private int mPage = 1;
     private boolean mMaxPageReached;
     private boolean mIsLoading;
-
 
     private MilestonesAdapter mAdapter;
 
@@ -61,6 +66,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
         if(getIntent().hasExtra(getString(R.string.intent_repo))) {
 
             mLoader = new Loader(this);
+            mEditor = new Editor(this);
             mRepo = getIntent().getStringExtra(getString(R.string.intent_repo));
 
             mRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -184,6 +190,42 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             return false;
         });
         menu.show();
+    }
+
+    @OnClick(R.id.milestones_fab)
+    void newMilestone() {
+        final Intent i = new Intent(MilestonesActivity.this, MilestoneEditor.class);
+        i.putExtra(getString(R.string.intent_repo), mRepo);
+        UI.setViewPositionForIntent(i, mFab);
+        startActivityForResult(i, MilestoneEditor.REQUEST_CODE_NEW_MILESTONE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK) {
+            mRefresher.setRefreshing(true);
+            final String title = data.getStringExtra(getString(R.string.intent_milestone_title));
+            final String description = data.getStringExtra(getString(R.string.intent_milestone_description));
+            final int number = data.getIntExtra(getString(R.string.intent_milestone_number), -1);
+            final long dueOn = data.getLongExtra(getString(R.string.intent_milestone_due_on), -1);
+            if(requestCode == MilestoneEditor.REQUEST_CODE_NEW_MILESTONE) {
+                mEditor.createMilestone(new Editor.GITModelCreationListener<Milestone>() {
+                    @Override
+                    public void created(Milestone milestone) {
+                        Log.i(TAG, "created: Milestone created");
+                        mRefresher.setRefreshing(false);
+                        mAdapter.addMilestone(milestone);
+                        mRecycler.scrollToPosition(0);
+                    }
+
+                    @Override
+                    public void creationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mRepo, title, description, dueOn > 0 ? Data.toISO8061FromMilliseconds(dueOn) : null);
+            }
+        }
     }
 
     public void onToolbarBackPressed(View v) {

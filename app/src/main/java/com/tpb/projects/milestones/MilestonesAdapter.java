@@ -66,6 +66,12 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         notifyItemRangeInserted(oldSize, mMilestones.size());
     }
 
+    void addMilestone(Milestone milestone) {
+        mMilestones.add(0, milestone);
+        mParseCache.add(0, null);
+        notifyItemInserted(0);
+    }
+
     @Override
     public MilestoneHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MilestoneHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_milestone, parent, false));

@@ -65,7 +65,8 @@
             android:layout_gravity="bottom"
             android:text="@string/text_milestone_clear_date"
             android:background="?android:attr/selectableItemBackground"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
