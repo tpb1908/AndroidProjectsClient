@@ -285,7 +285,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
         }
         //Set the correct code for each span
         for(CodeSpan span : spans) {
-            spans[i].setHandler(mCodeHandler);
+            span.setHandler(mCodeHandler);
             span.setCode(codes[span.getIndex()]);
         }
     }

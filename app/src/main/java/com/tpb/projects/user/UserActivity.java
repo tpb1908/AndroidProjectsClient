@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -95,14 +94,14 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
             final UserReposAdapter adapter = new UserReposAdapter(this, this, mRefresher);
             mRecycler.setAdapter(adapter);
 
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
+            final com.github.clans.fab.FloatingActionButton fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.user_open_fab);
             ((NestedScrollView) findViewById(R.id.user_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     if(scrollY - oldScrollY > 10) {
-                        fab.hide();
+                        fab.hide(true);
                     } else if(scrollY - oldScrollY < -10) {
-                        fab.show();
+                        fab.show(true);
                     }
                     if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
                         adapter.notifyBottomReached();
@@ -110,7 +109,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 }
             });
             fab.setOnClickListener(view -> showOpenDialog());
-            fab.postDelayed(fab::show, 300);
+            fab.postDelayed(() -> fab.show(true), 300);
 
             final String user;
             final Loader loader = new Loader(this);
