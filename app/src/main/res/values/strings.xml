@@ -137,6 +137,7 @@
     <string name="text_loading_issues">Loading issues</string>
 
     <!--Milestone -->
+    <string name="text_milestones">Milestones</string>
     <string name="text_milestone_completion">%1$d open %2$d closed %3$d%% complete</string>
     <string name="text_milestone_opened_by">Opened by %1$s  %2$s</string>
     <string name="text_milestone_closed_at">Closed %1$s</string>

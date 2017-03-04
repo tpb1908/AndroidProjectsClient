@@ -58,7 +58,6 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
     private ProgressDialog mLoadingDialog;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
 
-    private boolean mIsIndependent = false;
     private boolean mIsEditing = false;
     private int mNumber = -1;
     private String mFullRepoName;
@@ -93,7 +92,6 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
             mLoadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialog.show();
             mIsEditing = true;
-            mIsIndependent = true;
             new Loader(this).loadMilestone(this, mFullRepoName, mNumber);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo))) {
             //TODO Create new milestone
@@ -216,9 +214,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
                 }
             }, mFullRepoName, mTitleEditor.getText().toString(), mDescriptionEditor.getInputText().toString(), null);
         }
-        if(mIsIndependent) {
 
-        }
     }
 
     @OnClick(R.id.markdown_editor_discard)
