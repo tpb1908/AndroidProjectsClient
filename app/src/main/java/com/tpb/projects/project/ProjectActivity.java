@@ -405,6 +405,22 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
         startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
     }
 
+    @OnClick(R.id.project_add_card)
+    void addCard() {
+        final Intent intent = new Intent(this, CardEditor.class);
+
+        final ArrayList<Integer> ids = new ArrayList<>();
+        for(int i = 0; i < mAdapter.getCount(); i++) {
+            for(Card c : mAdapter.getExistingFragment(i).getCards()) {
+                if(c.hasIssue()) ids.add(c.getIssue().getId());
+            }
+        }
+        UI.setViewPositionForIntent(intent, mAddCard);
+        intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
+        intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
+        startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
+    }
+
     void deleteColumn(Column column) {
         new AlertDialog.Builder(this, R.style.DialogAnimation)
                 .setTitle(R.string.title_delete_column)
@@ -482,23 +498,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
 
             }
         }, tag, dropTag, to);
-    }
-
-    @OnClick(R.id.project_add_card)
-    void addCard() {
-        final Intent intent = new Intent(this, CardEditor.class);
-
-        final ArrayList<Integer> ids = new ArrayList<>();
-        for(int i = 0; i < mAdapter.getCount(); i++) {
-            for(Card c : mAdapter.getExistingFragment(i).getCards()) {
-                if(c.hasIssue()) ids.add(c.getIssue().getId());
-            }
-        }
-        UI.setViewPositionForIntent(intent, mAddCard);
-        intent.putExtra(getString(R.string.intent_repo), mProject.getRepoPath());
-        intent.putIntegerArrayListExtra(getString(R.string.intent_int_arraylist), ids);
-        startActivityForResult(intent, CardEditor.REQUEST_CODE_NEW_CARD);
-        //mAdapter.getCurrentFragment().showCardDialog(dialog);
     }
 
     void deleteCard(Card card, boolean showWarning) {

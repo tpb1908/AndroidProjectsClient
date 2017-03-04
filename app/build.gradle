@@ -18,24 +18,28 @@ android {
         applicationId "com.tpb.projects"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 2
+        versionCode gitInfo().commitCount
         versionName "1.1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         buildTypes.each {
-            it.buildConfigField('String', 'REPO_ADDRESS', REPO_ADDRESS)
-            it.buildConfigField('String', 'GITHUB_CLIENT_ID', GITHUB_CLIENT_ID)
-            it.buildConfigField('String', 'GITHUB_CLIENT_SECRET', GITHUB_CLIENT_SECRET)
-            it.buildConfigField('String', 'GITHUB_REDIRECT_URL', GITHUB_REDIRECT_URL)
-            it.buildConfigField('String', 'FEATURE_REQUEST_EMAIL', FEATURE_REQUEST_EMAIL)
-            it.buildConfigField('String', 'BUG_EMAIL', BUG_EMAIL)
-            it.buildConfigField('String', 'IMGUR_CLIENT_ID', IMGUR_CLIENT_ID)
-            it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', IMGUR_CLIENT_SECRET)
+            it.buildConfigField('String', 'REPO_ADDRESS', project.hasProperty('REPO_ADDRESS') ? REPO_ADDRESS : System.getenv('REPO_ADDRESS'))
+            it.buildConfigField('String', 'GITHUB_CLIENT_ID', project.hasProperty('GITHUB_CLIENT_ID') ? GITHUB_CLIENT_ID : System.getenv('GITHUB_CLIENT_ID'))
+            it.buildConfigField('String', 'GITHUB_CLIENT_SECRET', project.hasProperty('GITHUB_CLIENT_SECRET') ? GITHUB_CLIENT_SECRET : System.getenv('GITHUB_CLIENT_SECRET'))
+            it.buildConfigField('String', 'GITHUB_REDIRECT_URL', project.hasProperty('GITHUB_REDIRECT_URL') ? GITHUB_REDIRECT_URL : System.getenv('GITHUB_REDIRECT_URL'))
+            it.buildConfigField('String', 'FEATURE_REQUEST_EMAIL', project.hasProperty('FEATURE_REQUEST_EMAIL') ? FEATURE_REQUEST_EMAIL : System.getenv('FEATURE_REQUEST_EMAIL'))
+            it.buildConfigField('String', 'BUG_EMAIL', project.hasProperty('BUG_EMAIL') ? BUG_EMAIL : System.getenv('BUG_EMAIL'))
+            it.buildConfigField('String', 'IMGUR_CLIENT_ID', project.hasProperty('IMGUR_CLIENT_ID') ? IMGUR_CLIENT_ID : System.getenv('IMGUR_CLIENT_ID'))
+            it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', project.hasProperty('IMGUR_CLIENT_SECRET') ? IMGUR_CLIENT_SECRET : System.getenv('IMGUR_CLIENT_SECRET'))
         }
     }
 
@@ -55,31 +59,53 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile files('src/main/lib/cwac-pager-0.2.5.jar')
     compile project(':animatingrecycler')
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:support-compat:25.1.1'
-    compile 'com.android.support:design:25.1.1'
-    compile 'com.android.support:cardview-v7:25.1.1'
-    compile 'com.android.support:recyclerview-v7:25.1.1'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:support-compat:25.2.0'
+    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:cardview-v7:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.amitshekhar.android:android-networking:0.4.0'
     compile 'com.mittsu:markedview:1.0.4@aar'
-    compile 'com.github.clans:fab:1.6.4'
     compile 'com.getbase:floatingactionbutton:1.10.1'
-    compile 'com.jakewharton:butterknife:8.4.0'
-    compile 'com.google.firebase:firebase-core:10.0.1'
-    compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.google.firebase:firebase-core:10.2.0'
+    compile 'com.google.firebase:firebase-crash:10.2.0'
     compile 'com.atlassian.commonmark:commonmark:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
-    testCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.github.clans:fab:1.6.4'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
+    // compile project(':FloatingActionButton')
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
-apply plugin: 'com.google.gms.google-services'
+def gitInfo() {
+    def commitCount = 0
+    def revision = "(unknown revision)"
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', '--all', '--count'
+            standardOutput stdout
+        }
+        commitCount = stdout.toString().trim().toInteger()
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', 'HEAD', '-n', '1'
+            standardOutput stdout
+        }
+        revision = stdout.toString().trim()
+    }
+    catch (error) {
+        println "Error: ${error}"
+    }
+    return [commitCount: commitCount, revision: revision]
+}
+println(System.getenv("TRAVIS"))
+if(System.getenv("TRAVIS") != "true") {
+    apply plugin: 'com.google.gms.google-services'
+}
