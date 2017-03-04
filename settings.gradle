@@ -1,1 +1,1 @@
-include ':app', ':animatingrecycler', ':HtmlTextView', ':contributionsview'
+include ':app', ':animatingrecycler', ':HtmlTextView', ':contributionsview', ':library'
