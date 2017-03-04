@@ -268,7 +268,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
         }
         //Set the correct code for each span
         for(CodeSpan span : spans) {
-            spans[i].setHandler(mCodeHandler);
+            span.setHandler(mCodeHandler);
             span.setCode(codes[span.getIndex()]);
         }
     }
