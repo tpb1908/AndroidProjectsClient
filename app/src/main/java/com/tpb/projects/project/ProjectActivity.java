@@ -103,7 +103,6 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_project);
         ButterKnife.bind(this);
-
         mAnalytics = FirebaseAnalytics.getInstance(this);
         mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
         final Intent launchIntent = getIntent();

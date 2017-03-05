@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.util.TypedValue;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Transformation;
-import android.widget.TextView;
 
 import com.tpb.projects.R;
 
@@ -105,28 +103,6 @@ public class UI {
 
     public static int pxFromSp(final float sp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
-    }
-
-    public static int adjustAlpha(int color, float factor) {
-        int alpha = Math.round(Color.alpha(color) * factor);
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        return Color.argb(alpha, red, green, blue);
-    }
-
-    public static int computeCharactersInLine(TextView tv) {
-        int l = 1;
-        String s = "-";
-        while(willTextFit(tv, s)) {
-            l++;
-            s += "-";
-        }
-        return l;
-    }
-
-    private static boolean willTextFit(TextView tv, String s) {
-        return tv.getPaint().measureText(s) < tv.getMeasuredWidth();
     }
 
     public static void setStatusBarColor(Window window, @ColorInt int color) {
