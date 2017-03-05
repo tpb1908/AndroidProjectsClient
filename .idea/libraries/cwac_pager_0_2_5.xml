@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cwac-pager-0.2.5">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/src/main/lib/cwac-pager-0.2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
