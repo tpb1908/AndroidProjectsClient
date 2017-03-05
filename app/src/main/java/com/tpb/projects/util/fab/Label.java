@@ -284,14 +284,6 @@ public class Label extends TextView {
         mUsingStyle = usingStyle;
     }
 
-    void setHandleVisibilityChanges(boolean handle) {
-        mHandleVisibilityChanges = handle;
-    }
-
-    void setUsingRipple(boolean usingRipple) {
-        mUsingRipple = usingRipple;
-    }
-
     boolean isHandleVisibilityChanges() {
         return mHandleVisibilityChanges;
     }
