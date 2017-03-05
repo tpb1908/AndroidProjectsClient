@@ -18,6 +18,7 @@ package org.sufficientlysecure.htmltext.htmltextview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -157,9 +158,17 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
                 final Spanned text;
                 if(removeFromHtmlSpace) {
-                    text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        text = removeHtmlBottomPadding(Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter, htmlTagHandler));
+                    } else {
+                        text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+                    }
                 } else {
-                    text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        text = Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter, htmlTagHandler);
+                    } else {
+                        text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
+                    }
                 }
 
                 // Convert to a buffer to allow editing
@@ -256,21 +265,28 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     private void enableCodeClicks(String text, final Spannable s) {
         // Collect all of the CodeSpans
         final CodeSpan[] spans = s.getSpans(0, s.length(), CodeSpan.class);
+        final String[] codes = new String[spans.length];
+
         int startIndex = 0;
         int endIndex = 0;
         int i = 0; // Index in spans
+
         while(startIndex != -1 && i < spans.length) {
             // Search for the next code start after our previous position
             startIndex = text.indexOf("<code>", startIndex);
             if(startIndex == -1) break; // No more code tags
             endIndex = text.indexOf("</code>", startIndex);
+            
             if(endIndex != -1) { // Ignore tags which aren't closed
-                // Set the text on the span, and set the handler
-                spans[i].setCode(text.substring(startIndex + "<code>".length(), endIndex));
-                spans[i].setHandler(mCodeHandler);
+                codes[i] = text.substring(startIndex + "<code>".length(), endIndex);
             }
             i++;
             startIndex = endIndex; //Jump to end of current span
+        }
+        //Set the correct code for each span
+        for(CodeSpan span : spans) {
+            span.setHandler(mCodeHandler);
+            span.setCode(codes[span.getIndex()]);
         }
     }
 

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,9 +18,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecycler;
 import com.tpb.projects.R;
@@ -65,7 +66,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     @BindView(R.id.issues_toolbar) Toolbar mToolbar;
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issues_fab) FloatingActionButton mFab;
+    @BindView(R.id.issues_fab) com.github.clans.fab.FloatingActionButton mFab;
+    @BindView(R.id.issues_filter_button) ImageButton mFilterButton;
 
     private Loader mLoader;
     private Editor mEditor;
@@ -117,7 +119,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
-                        mFab.postDelayed(mFab::show, 300);
+                        mFab.postDelayed(() -> mFab.show(true), 300);
                         enableScrollListener(mRecycler, layoutManager);
                     }
                 }
@@ -140,9 +142,9 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if(dy > 10) {
-                    mFab.hide();
+                    mFab.hide(true);
                 } else if(dy < -10) {
-                    mFab.show();
+                    mFab.show(true);
                 }
                 if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
                     Log.i(TAG, "onScrolled: Scrolled to bottom");
