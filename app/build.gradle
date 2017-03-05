@@ -81,10 +81,10 @@ dependencies {
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
     testCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
     compile project(':library')
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
 
 def gitInfo() {
