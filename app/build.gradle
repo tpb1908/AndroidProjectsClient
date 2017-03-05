@@ -84,7 +84,7 @@ dependencies {
     compile project(':HtmlTextView')
     compile project(':contributionsview')
     compile project(':library')
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
 def gitInfo() {
