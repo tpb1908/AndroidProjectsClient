@@ -110,6 +110,6 @@ def gitInfo() {
     return [commitCount: commitCount, revision: revision]
 }
 println(System.getenv("TRAVIS"))
-if(System.getenv("TRAVIS") == "false" || System.getenv("TRAVIS") == null) {
+if(System.getenv("TRAVIS") != "true") {
     apply plugin: 'com.google.gms.google-services'
 }
