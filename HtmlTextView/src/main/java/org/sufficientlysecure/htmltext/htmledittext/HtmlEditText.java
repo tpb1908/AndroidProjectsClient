@@ -27,6 +27,7 @@ import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
 import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
+import org.sufficientlysecure.htmltext.URLPattern;
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
@@ -159,7 +160,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
                 final URLSpan[] spans = buffer.getSpans(0, buffer.length(), URLSpan.class);
 
                 //Add links for emails and web-urls
-                Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+                Linkify.addLinks(buffer, URLPattern.SPACED_URL_PATTERN, "");
 
                 //Copy back the spans from the original text
                 for(URLSpan us : spans) {

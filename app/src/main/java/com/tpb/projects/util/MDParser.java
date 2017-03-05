@@ -58,11 +58,26 @@ public class MDParser {
         public void render(Node node) {
             // We only handle one type as per getNodeTypes, so we can just cast it here.
             if(node instanceof FencedCodeBlock) {
-                html.line();
-                html.tag("code");
-                html.text(((FencedCodeBlock) node).getLiteral());
-                html.tag("/code");
-                html.line();
+                final FencedCodeBlock block = (FencedCodeBlock) node;
+
+                if(Data.instancesOf(block.getLiteral(), "\n") > 5) {
+                    html.line();
+                    html.tag("code");
+                    html.text(block.getLiteral());
+                    html.tag("/code");
+                    html.line();
+                } else {
+                    html.tag("small");
+                    html.line();
+                    for(String s : block.getLiteral().split("\n")) {
+                        html.text(s);
+                        html.tag("br");
+                        html.line();
+                    }
+                    html.tag("/small");
+                    html.line();
+
+                }
             } else if(node instanceof Strikethrough) {
                 html.line();
                 html.tag("s");
