@@ -11,7 +11,6 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -22,9 +21,6 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -39,6 +35,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.util.Data;
 import com.tpb.projects.util.UI;
+
 
 /**
  * Created by theo on 05/03/17.
@@ -58,9 +55,6 @@ public class FloatingActionButton extends ImageButton {
 
     private static final Xfermode PORTER_DUFF_CLEAR = new
             PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-    private static final long PAUSE_GROWING_TIME = 200;
-    private static final double BAR_SPIN_CYCLE_TIME = 500;
-    private static final int BAR_MAX_LENGTH = 270;
 
     private int mColorNormal;
     private int mColorPressed;
@@ -77,35 +71,10 @@ public class FloatingActionButton extends ImageButton {
     private boolean mUsingElevationCompat;
     private boolean mUsingRipple = false;
 
-    // Progress
-    private boolean mProgressBarEnabled;
-    private int mProgressWidth = UI.pxFromDp(6f);
-    private int mProgressColor;
-    private int mProgressBackgroundColor;
     private boolean mShouldUpdateButtonPosition;
     private float mOriginalX = -1;
     private float mOriginalY = -1;
     private boolean mButtonPositionSaved;
-    private RectF mProgressCircleBounds = new RectF();
-    private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private boolean mProgressIndeterminate;
-    private long mLastTimeAnimated;
-    private float mSpinSpeed = 195.0f; //The amount of degrees per second
-    private long mPausedTimeWithoutGrowing = 0;
-    private double mTimeStartGrowing;
-    private boolean mBarGrowingFromFront = true;
-    private int mBarLength = 16;
-    private float mBarExtraLength;
-    private float mCurrentProgress;
-    private float mTargetProgress;
-    private int mProgress;
-    private boolean mAnimateProgress;
-    private boolean mShouldProgressIndeterminate;
-    private boolean mShouldSetProgress;
-    private int mProgressMax = 100;
-    private boolean mShowProgressBackground;
-
     public FloatingActionButton(Context context) {
         this(context, null);
     }
@@ -150,21 +119,6 @@ public class FloatingActionButton extends ImageButton {
                         mShadowYOffset);
         mFabSize = attr.getInt(R.styleable.FloatingActionButton_fab_size, SIZE_NORMAL);
         mLabelText = attr.getString(R.styleable.FloatingActionButton_fab_label);
-        mShouldProgressIndeterminate =
-                attr.getBoolean(R.styleable.FloatingActionButton_fab_progress_indeterminate, false);
-        mProgressColor = attr.getColor(R.styleable.FloatingActionButton_fab_progress_color,
-                0xFF009688);
-        mProgressBackgroundColor =
-                attr.getColor(R.styleable.FloatingActionButton_fab_progress_backgroundColor, 0x4D000000);
-        mProgressMax = attr.getInt(R.styleable.FloatingActionButton_fab_progress_max,
-                mProgressMax);
-        mShowProgressBackground =
-                attr.getBoolean(R.styleable.FloatingActionButton_fab_progress_showBackground, true);
-
-        if (attr.hasValue(R.styleable.FloatingActionButton_fab_progress)) {
-            mProgress = attr.getInt(R.styleable.FloatingActionButton_fab_progress, 0);
-            mShouldSetProgress = true;
-        }
 
         if (attr.hasValue(R.styleable.FloatingActionButton_fab_elevationCompat)) {
             float elevation =
@@ -180,16 +134,6 @@ public class FloatingActionButton extends ImageButton {
         initHideAnimation(attr);
         attr.recycle();
 
-        if (isInEditMode()) {
-            if (mShouldProgressIndeterminate) {
-                setIndeterminate(true);
-            } else if (mShouldSetProgress) {
-                saveButtonOriginalPosition();
-                setProgress(mProgress, false);
-            }
-        }
-
-//        updateBackground();
         setClickable(true);
     }
 
@@ -211,19 +155,12 @@ public class FloatingActionButton extends ImageButton {
     }
 
     private int calculateMeasuredWidth() {
-        int width = getCircleSize() + calculateShadowWidth();
-        if (mProgressBarEnabled) {
-            width += mProgressWidth * 2;
-        }
-        return width;
+        return getCircleSize() + calculateShadowWidth();
     }
 
     private int calculateMeasuredHeight() {
-        int height = getCircleSize() + calculateShadowHeight();
-        if (mProgressBarEnabled) {
-            height += mProgressWidth * 2;
-        }
-        return height;
+        return getCircleSize() + calculateShadowHeight();
+
     }
 
     int calculateShadowWidth() {
@@ -256,111 +193,17 @@ public class FloatingActionButton extends ImageButton {
         setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
 
-        if (mProgressBarEnabled) {
-            if (mShowProgressBackground) {
-                canvas.drawArc(mProgressCircleBounds, 360, 360, false, mBackgroundPaint);
-            }
-
-            boolean shouldInvalidate = false;
-
-            if (mProgressIndeterminate) {
-                shouldInvalidate = true;
-
-                long deltaTime = SystemClock.uptimeMillis() - mLastTimeAnimated;
-                float deltaNormalized = deltaTime * mSpinSpeed / 1000.0f;
-
-                updateProgressLength(deltaTime);
-
-                mCurrentProgress += deltaNormalized;
-                if (mCurrentProgress > 360f) {
-                    mCurrentProgress -= 360f;
-                }
-
-                mLastTimeAnimated = SystemClock.uptimeMillis();
-                float from = mCurrentProgress - 90;
-                float to = mBarLength + mBarExtraLength;
-
-                if (isInEditMode()) {
-                    from = 0;
-                    to = 135;
-                }
-
-                canvas.drawArc(mProgressCircleBounds, from, to, false, mProgressPaint);
-            } else {
-                if (mCurrentProgress != mTargetProgress) {
-                    shouldInvalidate = true;
-                    float deltaTime = (float) (SystemClock.uptimeMillis() - mLastTimeAnimated)
-                            / 1000;
-                    float deltaNormalized = deltaTime * mSpinSpeed;
-
-                    if (mCurrentProgress > mTargetProgress) {
-                        mCurrentProgress = Math.max(mCurrentProgress - deltaNormalized,
-                                mTargetProgress);
-                    } else {
-                        mCurrentProgress = Math.min(mCurrentProgress + deltaNormalized,
-                                mTargetProgress);
-                    }
-                    mLastTimeAnimated = SystemClock.uptimeMillis();
-                }
-
-                canvas.drawArc(mProgressCircleBounds, -90, mCurrentProgress, false,
-                        mProgressPaint);
-            }
-
-            if (shouldInvalidate) {
-                invalidate();
-            }
-        }
-    }
-
-    private void updateProgressLength(long deltaTimeInMillis) {
-        if (mPausedTimeWithoutGrowing >= PAUSE_GROWING_TIME) {
-            mTimeStartGrowing += deltaTimeInMillis;
-
-            if (mTimeStartGrowing > BAR_SPIN_CYCLE_TIME) {
-                mTimeStartGrowing -= BAR_SPIN_CYCLE_TIME;
-                mPausedTimeWithoutGrowing = 0;
-                mBarGrowingFromFront = !mBarGrowingFromFront;
-            }
-
-            float distance = (float) Math.cos((mTimeStartGrowing / BAR_SPIN_CYCLE_TIME + 1) *
-                    Math.PI) / 2 + 0.5f;
-            float length = BAR_MAX_LENGTH - mBarLength;
-
-            if (mBarGrowingFromFront) {
-                mBarExtraLength = distance * length;
-            } else {
-                float newLength = length * (1 - distance);
-                mCurrentProgress += (mBarExtraLength - newLength);
-                mBarExtraLength = newLength;
-            }
-        } else {
-            mPausedTimeWithoutGrowing += deltaTimeInMillis;
-        }
-    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         saveButtonOriginalPosition();
-
-        if (mShouldProgressIndeterminate) {
-            setIndeterminate(true);
-            mShouldProgressIndeterminate = false;
-        } else if (mShouldSetProgress) {
-            setProgress(mProgress, mAnimateProgress);
-            mShouldSetProgress = false;
-        } else if (mShouldUpdateButtonPosition) {
+        if (mShouldUpdateButtonPosition) {
             updateButtonPosition();
             mShouldUpdateButtonPosition = false;
         }
         super.onSizeChanged(w, h, oldw, oldh);
 
-        setupProgressBounds();
-        setupProgressBarPaints();
         updateBackground();
     }
 
@@ -400,11 +243,6 @@ public class FloatingActionButton extends ImageButton {
         int circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) :
                 0;
         int circleInsetVertical = hasShadow() ? mShadowRadius + Math.abs(mShadowYOffset) : 0;
-
-        if (mProgressBarEnabled) {
-            circleInsetHorizontal += mProgressWidth;
-            circleInsetVertical += mProgressWidth;
-        }
 
         /*layerDrawable.setLayerInset(
                 mShowShadow ? 1 : 0,
@@ -490,46 +328,8 @@ public class FloatingActionButton extends ImageButton {
     }
 
     private void updateButtonPosition() {
-        float x;
-        float y;
-        if (mProgressBarEnabled) {
-            x = mOriginalX > getX() ? getX() + mProgressWidth : getX() - mProgressWidth;
-            y = mOriginalY > getY() ? getY() + mProgressWidth : getY() - mProgressWidth;
-        } else {
-            x = mOriginalX;
-            y = mOriginalY;
-        }
-        setX(x);
-        setY(y);
-    }
-
-    private void setupProgressBarPaints() {
-        mBackgroundPaint.setColor(mProgressBackgroundColor);
-        mBackgroundPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeWidth(mProgressWidth);
-
-        mProgressPaint.setColor(mProgressColor);
-        mProgressPaint.setStyle(Paint.Style.STROKE);
-        mProgressPaint.setStrokeWidth(mProgressWidth);
-    }
-
-    private void setupProgressBounds() {
-        int circleInsetHorizontal = hasShadow() ? getShadowX() : 0;
-        int circleInsetVertical = hasShadow() ? getShadowY() : 0;
-        mProgressCircleBounds = new RectF(
-                circleInsetHorizontal + mProgressWidth / 2,
-                circleInsetVertical + mProgressWidth / 2,
-                calculateMeasuredWidth() - circleInsetHorizontal - mProgressWidth / 2,
-                calculateMeasuredHeight() - circleInsetVertical - mProgressWidth / 2
-        );
-    }
-
-    Animation getShowAnimation() {
-        return mShowAnimation;
-    }
-
-    Animation getHideAnimation() {
-        return mHideAnimation;
+        setX(mOriginalX);
+        setY(mOriginalY);
     }
 
     void playShowAnimation() {
@@ -632,52 +432,7 @@ public class FloatingActionButton extends ImageButton {
                 }
             });
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
 
-        ProgressSavedState ss = new ProgressSavedState(superState);
-
-        ss.mCurrentProgress = this.mCurrentProgress;
-        ss.mTargetProgress = this.mTargetProgress;
-        ss.mSpinSpeed = this.mSpinSpeed;
-        ss.mProgressWidth = this.mProgressWidth;
-        ss.mProgressColor = this.mProgressColor;
-        ss.mProgressBackgroundColor = this.mProgressBackgroundColor;
-        ss.mShouldProgressIndeterminate = this.mProgressIndeterminate;
-        ss.mShouldSetProgress = this.mProgressBarEnabled && mProgress > 0 &&
-                !this.mProgressIndeterminate;
-        ss.mProgress = this.mProgress;
-        ss.mAnimateProgress = this.mAnimateProgress;
-        ss.mShowProgressBackground = this.mShowProgressBackground;
-
-        return ss;
-    }
-
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof ProgressSavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-
-        ProgressSavedState ss = (ProgressSavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-
-        this.mCurrentProgress = ss.mCurrentProgress;
-        this.mTargetProgress = ss.mTargetProgress;
-        this.mSpinSpeed = ss.mSpinSpeed;
-        this.mProgressWidth = ss.mProgressWidth;
-        this.mProgressColor = ss.mProgressColor;
-        this.mProgressBackgroundColor = ss.mProgressBackgroundColor;
-        this.mShouldProgressIndeterminate = ss.mShouldProgressIndeterminate;
-        this.mShouldSetProgress = ss.mShouldSetProgress;
-        this.mProgress = ss.mProgress;
-        this.mAnimateProgress = ss.mAnimateProgress;
-        this.mShowProgressBackground = ss.mShowProgressBackground;
-
-        this.mLastTimeAnimated = SystemClock.uptimeMillis();
-    }
 
     private class CircleDrawable extends ShapeDrawable {
 
@@ -692,11 +447,6 @@ public class FloatingActionButton extends ImageButton {
             circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) :
                     0;
             circleInsetVertical = hasShadow() ? mShadowRadius + Math.abs(mShadowYOffset) : 0;
-
-            if (mProgressBarEnabled) {
-                circleInsetHorizontal += mProgressWidth;
-                circleInsetVertical += mProgressWidth;
-            }
         }
 
         @Override
@@ -730,10 +480,6 @@ public class FloatingActionButton extends ImageButton {
             }
 
             mRadius = getCircleSize() / 2;
-
-            if (mProgressBarEnabled && mShowProgressBackground) {
-                mRadius += mProgressWidth;
-            }
         }
 
         @Override
@@ -758,75 +504,6 @@ public class FloatingActionButton extends ImageButton {
         }
     }
 
-    static class ProgressSavedState extends BaseSavedState {
-
-        float mCurrentProgress;
-        float mTargetProgress;
-        float mSpinSpeed;
-        int mProgress;
-        int mProgressWidth;
-        int mProgressColor;
-        int mProgressBackgroundColor;
-        boolean mProgressBarEnabled;
-        boolean mProgressBarVisibilityChanged;
-        boolean mProgressIndeterminate;
-        boolean mShouldProgressIndeterminate;
-        boolean mShouldSetProgress;
-        boolean mAnimateProgress;
-        boolean mShowProgressBackground;
-
-        ProgressSavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private ProgressSavedState(Parcel in) {
-            super(in);
-            this.mCurrentProgress = in.readFloat();
-            this.mTargetProgress = in.readFloat();
-            this.mProgressBarEnabled = in.readInt() != 0;
-            this.mSpinSpeed = in.readFloat();
-            this.mProgress = in.readInt();
-            this.mProgressWidth = in.readInt();
-            this.mProgressColor = in.readInt();
-            this.mProgressBackgroundColor = in.readInt();
-            this.mProgressBarVisibilityChanged = in.readInt() != 0;
-            this.mProgressIndeterminate = in.readInt() != 0;
-            this.mShouldProgressIndeterminate = in.readInt() != 0;
-            this.mShouldSetProgress = in.readInt() != 0;
-            this.mAnimateProgress = in.readInt() != 0;
-            this.mShowProgressBackground = in.readInt() != 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeFloat(this.mCurrentProgress);
-            out.writeFloat(this.mTargetProgress);
-            out.writeInt((mProgressBarEnabled ? 1 : 0));
-            out.writeFloat(this.mSpinSpeed);
-            out.writeInt(this.mProgress);
-            out.writeInt(this.mProgressWidth);
-            out.writeInt(this.mProgressColor);
-            out.writeInt(this.mProgressBackgroundColor);
-            out.writeInt(this.mProgressBarVisibilityChanged ? 1 : 0);
-            out.writeInt(this.mProgressIndeterminate ? 1 : 0);
-            out.writeInt(this.mShouldProgressIndeterminate ? 1 : 0);
-            out.writeInt(this.mShouldSetProgress ? 1 : 0);
-            out.writeInt(this.mAnimateProgress ? 1 : 0);
-            out.writeInt(this.mShowProgressBackground ? 1 : 0);
-        }
-
-        public static final Parcelable.Creator<ProgressSavedState> CREATOR =
-                new Parcelable.Creator<ProgressSavedState>() {
-                    public ProgressSavedState createFromParcel(Parcel in) {
-                        return new ProgressSavedState(in);
-                    }
-
-                    public ProgressSavedState[] newArray(int size) {
-                        return new ProgressSavedState[size];
-                    }
-                };
-    }
 
     /* ===== API methods ===== */
 
@@ -1021,76 +698,5 @@ public class FloatingActionButton extends ImageButton {
             updateBackground();
         }
     }
-
-    /**
-     * <p>Change the indeterminate mode for the progress bar. In indeterminate
-     * mode, the progress is ignored and the progress bar shows an infinite
-     * animation instead.</p>
-     *
-     * @param indeterminate true to enable the indeterminate mode
-     */
-    public synchronized void setIndeterminate(boolean indeterminate) {
-        if (!indeterminate) {
-            mCurrentProgress = 0.0f;
-        }
-
-        mProgressBarEnabled = indeterminate;
-        mShouldUpdateButtonPosition = true;
-        mProgressIndeterminate = indeterminate;
-        mLastTimeAnimated = SystemClock.uptimeMillis();
-        setupProgressBounds();
-//        saveButtonOriginalPosition();
-        updateBackground();
-    }
-
-    public synchronized void setMax(int max) {
-        mProgressMax = max;
-    }
-
-    public synchronized int getMax() {
-        return mProgressMax;
-    }
-
-    public synchronized void setProgress(int progress, boolean animate) {
-        if (mProgressIndeterminate) return;
-
-        mProgress = progress;
-        mAnimateProgress = animate;
-
-        if (!mButtonPositionSaved) {
-            mShouldSetProgress = true;
-            return;
-        }
-
-        mProgressBarEnabled = true;
-        mShouldUpdateButtonPosition = true;
-        setupProgressBounds();
-        saveButtonOriginalPosition();
-        updateBackground();
-
-        if (progress < 0) {
-            progress = 0;
-        } else if (progress > mProgressMax) {
-            progress = mProgressMax;
-        }
-
-        if (progress == mTargetProgress) {
-            return;
-        }
-
-        mTargetProgress = mProgressMax > 0 ? (progress / (float) mProgressMax) * 360 : 0;
-        mLastTimeAnimated = SystemClock.uptimeMillis();
-
-        if (!animate) {
-            mCurrentProgress = mTargetProgress;
-        }
-
-        invalidate();
-    }
-
-    public synchronized int getProgress() {
-        return mProgressIndeterminate ? 0 : mProgress;
-    }
-
 
 }
