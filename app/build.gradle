@@ -83,7 +83,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
-    compile project(':library')
+    compile project(':FloatingActionButton')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
