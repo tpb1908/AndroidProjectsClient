@@ -38,6 +38,10 @@ android:
         - 'google-gdk-license-.+'
         - ".+"
 
+env:
+  - SAMPLE=analytics
+  - SAMPLE=crash
+
 cache:
   directories:
     - $HOME/.gradle/caches/

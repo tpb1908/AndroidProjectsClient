@@ -32,7 +32,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        print "Property " + hasProperty("REPO_ADDRESS")
         buildTypes.each {
             it.buildConfigField('String', 'REPO_ADDRESS', project.hasProperty('REPO_ADDRESS') ? REPO_ADDRESS : System.getenv('REPO_ADDRESS'))
             it.buildConfigField('String', 'GITHUB_CLIENT_ID', project.hasProperty('GITHUB_CLIENT_ID') ? GITHUB_CLIENT_ID : System.getenv('GITHUB_CLIENT_ID'))
