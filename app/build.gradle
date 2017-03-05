@@ -59,6 +59,9 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     compile files('src/main/lib/cwac-pager-0.2.5.jar')
     compile project(':animatingrecycler')
     compile 'com.android.support:appcompat-v7:25.2.0'
@@ -78,7 +81,6 @@ dependencies {
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
-    // compile project(':FloatingActionButton')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
@@ -104,6 +106,8 @@ def gitInfo() {
     }
     return [commitCount: commitCount, revision: revision]
 }
+println(gitInfo())
+
 println(System.getenv("TRAVIS"))
 if(System.getenv("TRAVIS") != "true") {
     apply plugin: 'com.google.gms.google-services'
