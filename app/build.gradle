@@ -74,7 +74,7 @@ dependencies {
     compile 'com.amitshekhar.android:android-networking:0.4.0'
     compile 'com.mittsu:markedview:1.0.4@aar'
     compile 'com.getbase:floatingactionbutton:1.10.1'
-    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.google.firebase:firebase-core:10.2.0'
     compile 'com.google.firebase:firebase-crash:10.2.0'
     compile 'com.atlassian.commonmark:commonmark:0.8.0'
