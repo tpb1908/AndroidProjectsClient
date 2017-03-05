@@ -8,7 +8,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/FloatingActionButton" />
             <option value="$PROJECT_DIR$/HtmlTextView" />
             <option value="$PROJECT_DIR$/animatingrecycler" />
             <option value="$PROJECT_DIR$/app" />

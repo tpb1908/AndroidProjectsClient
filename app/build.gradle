@@ -80,10 +80,11 @@ dependencies {
     compile 'com.atlassian.commonmark:commonmark:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
+    compile 'com.github.clans:fab:1.6.4'
     testCompile 'junit:junit:4.12'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
-    compile project(':FloatingActionButton')
+    // compile project(':FloatingActionButton')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
