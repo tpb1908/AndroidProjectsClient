@@ -1,5 +1,6 @@
 package com.tpb.projects.util;
 
+import android.os.Build;
 import android.util.Base64;
 
 import com.tpb.projects.data.models.Repository;
@@ -119,4 +120,11 @@ public class Data {
         return count;
     }
 
+    public static boolean hasJellyBean() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    }
+
+    public static boolean hasLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
 }

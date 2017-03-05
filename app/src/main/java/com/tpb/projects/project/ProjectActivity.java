@@ -33,8 +33,6 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.pager.PageDescriptor;
 import com.commonsware.cwac.pager.v4.ArrayPagerAdapter;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -54,6 +52,8 @@ import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.util.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
