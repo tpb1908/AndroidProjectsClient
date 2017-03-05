@@ -1,15 +1,17 @@
 <component name="libraryTable">
   <library name="support-fragment-24.2.0">
     <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/HtmlTextView/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.0/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/1096eda5a00e0a26b09b2f390ad3b36062a9b222/output/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/1096eda5a00e0a26b09b2f390ad3b36062a9b222/output/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/HtmlTextView/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.0/res" />
-      <root url="jar://$PROJECT_DIR$/HtmlTextView/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.0/jars/libs/internal_impl-24.2.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/HtmlTextView/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/1096eda5a00e0a26b09b2f390ad3b36062a9b222/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/1096eda5a00e0a26b09b2f390ad3b36062a9b222/output/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/1096eda5a00e0a26b09b2f390ad3b36062a9b222/output/jars/libs/internal_impl-24.2.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="jar://$USER_HOME$/Android/Sdk/extras/android/m2repository/com/android/support/support-fragment/24.2.0/support-fragment-24.2.0-sources.jar!/" />
       <root url="jar://$USER_HOME$/Android/Sdk/extras/android/m2repository/com/android/support/support-fragment/24.2.0/support-fragment-24.2.0-sources.jar!/" />
     </SOURCES>
   </library>
