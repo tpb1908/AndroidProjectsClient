@@ -1,4 +1,4 @@
-# AndroidProjectsClient
+# AndroidProjectsClient  [![Build Status](https://travis-ci.org/tpb1908/AndroidProjectsClient.svg?branch=master)](https://travis-ci.org/tpb1908/AndroidProjectsClient)
 
 An Android client for [GitHub projects](https://github.com/blog/2256-a-whole-new-github-universe-announcing-new-tools-forums-and-features).
 
