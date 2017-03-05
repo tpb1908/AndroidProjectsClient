@@ -20,7 +20,6 @@ android {
         targetSdkVersion 25
         versionCode gitInfo().commitCount
         versionName "1.1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
@@ -60,9 +59,6 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile files('src/main/lib/cwac-pager-0.2.5.jar')
     compile project(':animatingrecycler')
     compile 'com.android.support:appcompat-v7:25.2.0'
@@ -81,7 +77,6 @@ dependencies {
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
     compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
     compile 'com.github.clans:fab:1.6.4'
-    testCompile 'junit:junit:4.12'
     compile project(':HtmlTextView')
     compile project(':contributionsview')
     // compile project(':FloatingActionButton')
