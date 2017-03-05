@@ -152,8 +152,8 @@ public class Card extends DataModel implements Parcelable {
                 obj.put(CONTENT_URL, card.contentUrl);
             }
             obj.put(NOTE, card.note);
-            obj.put(CREATED_AT, Data.toISO8061(card.createdAt));
-            obj.put(UPDATED_AT, Data.toISO8061(card.updatedAt));
+            obj.put(CREATED_AT, Data.toISO8061FromSeconds(card.createdAt));
+            obj.put(UPDATED_AT, Data.toISO8061FromSeconds(card.updatedAt));
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }

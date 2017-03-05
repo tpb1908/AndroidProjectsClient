@@ -45,6 +45,7 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,7 +95,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
             final UserReposAdapter adapter = new UserReposAdapter(this, this, mRefresher);
             mRecycler.setAdapter(adapter);
 
-            final com.github.clans.fab.FloatingActionButton fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.user_open_fab);
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
             ((NestedScrollView) findViewById(R.id.user_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {

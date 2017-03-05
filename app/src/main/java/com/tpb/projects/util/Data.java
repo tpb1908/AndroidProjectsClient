@@ -1,5 +1,6 @@
 package com.tpb.projects.util;
 
+import android.os.Build;
 import android.util.Base64;
 
 import com.tpb.projects.data.models.Repository;
@@ -79,8 +80,14 @@ public class Data {
     //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    public static String toISO8061(long t) {
+    public static String toISO8061FromSeconds(long t) {
         return ISO8601.format(new Date(t * 1000));
+    }
+
+    public static String toISO8061FromMilliseconds(long t) {
+        final String time = ISO8601.format(new Date(t));
+        int zoneIndex = Math.max(time.indexOf('+'), time.indexOf('-'));
+        return time.substring(0, zoneIndex) + 'Z';
     }
 
     /**
@@ -113,4 +120,11 @@ public class Data {
         return count;
     }
 
+    public static boolean hasJellyBean() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    }
+
+    public static boolean hasLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
 }

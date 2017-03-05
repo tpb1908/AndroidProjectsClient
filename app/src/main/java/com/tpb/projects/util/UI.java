@@ -93,8 +93,8 @@ public class UI {
         return px / Resources.getSystem().getDisplayMetrics().density;
     }
 
-    public static float pxFromDp(final float dp) {
-        return dp * Resources.getSystem().getDisplayMetrics().density;
+    public static int pxFromDp(final float dp) {
+        return Math.round(dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
     public static int pxFromDp(final int dp) {

@@ -432,7 +432,7 @@ public class RepoActivity extends AppCompatActivity implements
         if(isNewProject) {
             mEditor.createProject(this, project, mRepo.getFullName());
         } else {
-            mEditor.editProject(new Editor.GITModelUpdateListener<Project>() {
+            mEditor.updateProject(new Editor.GITModelUpdateListener<Project>() {
                 @Override
                 public void updated(Project project) {
                     Toast.makeText(RepoActivity.this, R.string.text_project_edited, Toast.LENGTH_LONG).show();

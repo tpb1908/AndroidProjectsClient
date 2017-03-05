@@ -11,6 +11,8 @@ import android.view.View;
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Milestone;
+import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
 
@@ -69,6 +71,7 @@ public class IntentHandler {
                 activity.startActivity(i);
             }
         });
+        addGitHubIntentHandler(activity, iv, login);
     }
 
     private static void openIssue(Activity activity, View view, String url) {
@@ -119,6 +122,17 @@ public class IntentHandler {
                 activity.getString(R.string.transition_user_image)
                 ).toBundle()
         );
+    }
+
+    public static void openMilestone(Activity activity, View view, Milestone milestone) {
+        final Intent i = new Intent(activity, MilestoneEditor.class);
+        i.putExtra(activity.getString(R.string.parcel_milestone), milestone);
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(i, view);
+        }
+        activity.startActivityForResult(i, MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE);
     }
 
 }

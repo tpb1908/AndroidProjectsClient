@@ -66,6 +66,19 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".milestones.MilestonesActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".milestones.MilestoneActivity"
+                  android:theme="@style/AppTheme.Transparent.Dark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".editors.IssueEditor"
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 

@@ -54,16 +54,17 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
+    <com.tpb.projects.util.fab.FloatingActionMenu
         android:id="@+id/project_fab_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        app:menu_icon="@drawable/ic_add"
         app:menu_colorNormal="@color/colorAccent"
         app:menu_colorPressed="@color/colorAccent">
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.tpb.projects.util.fab.FloatingActionButton
             android:id="@+id/project_add_column"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +75,7 @@
             app:fab_colorNormal="@color/colorAccent"
             app:fab_colorPressed="@color/colorAccent"/>
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.tpb.projects.util.fab.FloatingActionButton
             android:id="@+id/project_add_issue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,7 +88,7 @@
             app:fab_colorNormal="@color/colorAccent"
             app:fab_colorPressed="@color/colorAccent"/>
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.tpb.projects.util.fab.FloatingActionButton
             android:id="@+id/project_add_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,6 +101,6 @@
             app:fab_colorNormal="@color/colorAccent"
             app:fab_colorPressed="@color/colorAccent"/>
 
-    </com.github.clans.fab.FloatingActionMenu>
+    </com.tpb.projects.util.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

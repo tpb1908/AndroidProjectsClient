@@ -590,7 +590,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     private void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
+        mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
             int issueCreationAttempts = 0;
 
             @Override
@@ -612,7 +612,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
-                        mEditor.editIssue(this, issue.getRepoPath(), issue, assignees, labels);
+                        mEditor.updateIssue(this, issue.getRepoPath(), issue, assignees, labels);
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mParent.mRefresher.setRefreshing(false);

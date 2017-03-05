@@ -42,6 +42,7 @@ import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -65,7 +66,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     @BindView(R.id.issues_toolbar) Toolbar mToolbar;
     @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issues_fab) com.github.clans.fab.FloatingActionButton mFab;
+    @BindView(R.id.issues_fab) FloatingActionButton mFab;
     @BindView(R.id.issues_filter_button) ImageButton mFilterButton;
 
     private Loader mLoader;
@@ -199,8 +200,8 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
     }
 
     @OnClick(R.id.issues_filter_button)
-    void filter() {
-        final PopupMenu menu = new PopupMenu(this, mFilterButton);
+    void filter(View v) {
+        final PopupMenu menu = new PopupMenu(this, v);
         menu.inflate(R.menu.menu_issues_filter);
         switch(mFilter) {
             case ALL:
@@ -481,7 +482,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 }, mRepoPath, issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -501,7 +502,7 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mRepoPath, issue, assignees, labels);
+                                mEditor.updateIssue(this, mRepoPath, issue, assignees, labels);
                             } else {
                                 Toast.makeText(IssuesActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);

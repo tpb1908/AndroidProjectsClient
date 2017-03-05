@@ -10,9 +10,10 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.tpb.projects.R;
-import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssuesActivity;
+import com.tpb.projects.milestones.MilestoneActivity;
+import com.tpb.projects.milestones.MilestonesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
@@ -71,7 +72,11 @@ public class Interceptor extends Activity {
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("milestones".equals(segments.get(2))) {
-                        Log.i(TAG, "onCreate: \n\n\n\n\nMilestones\n\n\n\n");
+                        final Intent pr = new Intent(Interceptor.this, MilestonesActivity.class);
+                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        startActivity(pr);
+                        overridePendingTransition(R.anim.slide_up, R.anim.none);
+                        finish();
                     } else {
                         fail();
                     }
@@ -102,7 +107,7 @@ public class Interceptor extends Activity {
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                     } else if("milestone".equals(segments.get(2))) {
-                        final Intent i = new Intent(Interceptor.this, MilestoneEditor.class);
+                        final Intent i = new Intent(Interceptor.this, MilestoneActivity.class);
                         i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                         i.putExtra(getString(R.string.intent_milestone_number), Integer.parseInt(segments.get(3)));
                         startActivity(i);
@@ -142,7 +147,9 @@ public class Interceptor extends Activity {
                         finish();
                     } else if("milestone".equals(segments.get(2))) {
                         //TODO Deal with number and edit suffix
-                        final Intent i = new Intent(Interceptor.this, MilestoneEditor.class);
+                        final Intent i = new Intent(Interceptor.this, MilestoneActivity.class);
+                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                        i.putExtra(getString(R.string.intent_milestone_number), Integer.parseInt(segments.get(3)));
                         startActivity(i);
                         finish();
                     } else {

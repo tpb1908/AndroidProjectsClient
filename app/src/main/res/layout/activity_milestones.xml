@@ -7,12 +7,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/issues_appbar"
+        android:id="@+id/milestones_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/issues_toolbar"
+            android:id="@+id/milestones_toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             app:layout_scrollFlags="scroll|enterAlways">
@@ -22,7 +22,7 @@
                 android:layout_height="match_parent">
 
                 <ImageButton
-                    android:id="@+id/issue_back_button"
+                    android:id="@+id/milestone_back_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -35,17 +35,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/issue_back_button"
-                    android:layout_toStartOf="@+id/issues_filter_button"
+                    android:layout_toEndOf="@+id/milestone_back_button"
+                    android:layout_toStartOf="@+id/milestones_filter_button"
                     android:layout_marginStart="16dp"
-                    android:text="@string/text_issues"
+                    android:text="@string/text_milestones"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textAppearance="@android:style/TextAppearance.Material.Title"
                     android:transitionName="@string/transition_title"/>
 
                 <ImageButton
-                    android:id="@+id/issues_filter_button"
+                    android:id="@+id/milestones_filter_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -62,29 +62,27 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/issues_refresher"
+        android:id="@+id/milestones_refresher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:animateLayoutChanges="true">
 
         <com.tpb.animatingrecyclerview.AnimatingRecycler
-            android:id="@+id/issues_recycler"
+            android:id="@+id/milestones_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.tpb.projects.util.fab.FloatingActionButton
-        android:id="@+id/issues_fab"
+        android:id="@+id/milestones_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
-        app:fab_colorNormal="@color/colorAccent"
-        app:fab_colorPressed="@color/colorAccent"
         android:visibility="invisible"
-        app:layout_anchor="@id/issues_recycler"
+        app:layout_anchor="@id/milestones_recycler"
         app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

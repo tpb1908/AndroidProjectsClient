@@ -22,7 +22,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,8 +60,8 @@ import com.tpb.projects.util.MDParser;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -145,8 +144,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
     }
-
-
 
     @Override
     public void loadComplete(Issue issue) {
@@ -285,7 +282,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     }
 
     private void displayMilestone() {
-        Log.i(TAG, "displayMilestone: \n\n\nMilestone is: " + mIssue.getMilestone());
         if(mIssue.getMilestone() != null) {
             mMilestoneCard.setVisibility(View.VISIBLE);
             final Milestone milestone = mIssue.getMilestone();
@@ -301,10 +297,11 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             final StringBuilder builder = new StringBuilder();
 
             builder.append("<b>");
-            builder.append(milestone.getTitle());
+            builder.append(MDParser.escape(milestone.getTitle()));
             builder.append("</b>");
-            builder.append("<br><br>");
+            builder.append("<br>");
             if(milestone.getOpenIssues() > 0 || milestone.getClosedIssues() > 0) {
+                builder.append("<br>");
                 builder.append(String.format(getString(R.string.text_milestone_completion),
                         milestone.getOpenIssues(),
                         milestone.getClosedIssues(),
@@ -316,8 +313,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                     String.format(
                             getString(R.string.text_milestone_opened_by),
                             String.format(getString(R.string.text_href),
-                                    "https://github.com/" + mIssue.getOpenedBy().getLogin(),
-                                    mIssue.getOpenedBy().getLogin()
+                                    "https://github.com/" + mIssue.getMilestone().getCreator().getLogin(),
+                                    mIssue.getMilestone().getCreator().getLogin()
                             ),
                             DateUtils.getRelativeTimeSpanString(milestone.getCreatedAt())
                             )
@@ -513,7 +510,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 }
 
                 mRefresher.setRefreshing(true);
-                mEditor.editIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -534,7 +531,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.editIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
+                                mEditor.updateIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
                             } else {
                                 Toast.makeText(IssueActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                 mRefresher.setRefreshing(false);
@@ -565,7 +562,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
                 mRefresher.setRefreshing(true);
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.editComment(new Editor.GITModelUpdateListener<Comment>() {
+                mEditor.updateComment(new Editor.GITModelUpdateListener<Comment>() {
                     @Override
                     public void updated(Comment comment) {
                         mRefresher.setRefreshing(false);

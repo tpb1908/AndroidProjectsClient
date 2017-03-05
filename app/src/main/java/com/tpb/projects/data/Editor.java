@@ -1,6 +1,7 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.Log;
@@ -13,7 +14,9 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.data.models.State;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,7 +84,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editProject(final GITModelUpdateListener<Project> listener, Project project) {
+    public void updateProject(final GITModelUpdateListener<Project> listener, Project project) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, project.getName());
@@ -455,7 +458,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void updateIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -510,7 +513,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void editComment(GITModelUpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
+    public void updateComment(GITModelUpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -653,6 +656,66 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updated(true);
                     }
                 });
+    }
+
+    public void createMilestone(GITModelCreationListener<Milestone> listener, String fullRepoName, @NonNull String title, @Nullable String description, @Nullable String dueOn) {
+        final JSONObject obj =  new JSONObject();
+        try {
+            obj.put(TITLE, title);
+            if(description != null) obj.put("description", description);
+            if(dueOn != null) obj.put("due_on", dueOn);
+
+        } catch(JSONException jse) {
+            Log.e(TAG, "updateMilestone: ", jse);
+        }
+        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_MILESTONES)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.created(Milestone.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorDetail());
+                        Log.i(TAG, "onError: " + anError.toString());
+                        Log.i(TAG, "onError: " + anError.getErrorCode());
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        if(listener != null) listener.creationError(parseError(anError));
+                    }
+                });
+    }
+
+    public void updateMilestone(GITModelUpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @Nullable State state) {
+        final JSONObject obj =  new JSONObject();
+        try {
+            if(title != null) obj.put(TITLE, title);
+            if(description != null) obj.put("description", description);
+            if(dueOn != null) obj.put("due_on", dueOn);
+            if(state != null) obj.put("state", state.toString().toLowerCase());
+        } catch(JSONException jse) {
+            Log.e(TAG, "updateMilestone: ", jse);
+        }
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_MILESTONES + "/" + number)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.updated(Milestone.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorDetail());
+                        if(listener != null) listener.updateError(parseError(anError));
+                    }
+                });
+
     }
 
     public interface GITModelCreationListener<T> {
