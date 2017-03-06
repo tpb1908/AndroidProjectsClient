@@ -3,6 +3,7 @@ package com.tpb.projects.issues;
 import android.content.res.Resources;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +40,7 @@ import butterknife.ButterKnife;
 class IssueContentAdapter extends RecyclerView.Adapter {
     private static final String TAG = IssueContentAdapter.class.getSimpleName();
 
-    private final ArrayList<Pair<DataModel, String>> mData = new ArrayList<>();
+    private final ArrayList<Pair<DataModel, SpannableString>> mData = new ArrayList<>();
     private Issue mIssue;
     private final IssueActivity mParent;
     private boolean mHasOtherContentLoaded = false;
@@ -190,12 +191,13 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             }
             builder.append("<br><br>");
             builder.append(MDParser.formatMD(comment.getBody(), mIssue.getRepoPath()));
-            final String parsed = MDParser.parseMD(builder.toString());
-            mData.set(pos, new Pair<>(comment, parsed));
-            commentHolder.mText.setHtml(parsed, new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText));
+            commentHolder.mText.setHtml(
+                    MDParser.parseMD(builder.toString()),
+                    new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
+                    text -> mData.set(pos, new Pair<>(comment, text)));
         } else {
             commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
-            commentHolder.mText.setHtml(mData.get(pos).second, new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText));
+            commentHolder.mText.setText(mData.get(pos).second);
         }
         IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mText);
         IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mAvatar, ((Comment) mData.get(pos).first).getUser().getLogin());
@@ -338,7 +340,11 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
-        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText));
+        eventHolder.mText.setHtml(
+                MDParser.parseMD(text),
+                new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
+                null
+        );
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
@@ -544,7 +550,10 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
-        eventHolder.mText.setHtml(MDParser.parseMD(text), new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText));
+        eventHolder.mText.setHtml(
+                MDParser.parseMD(text),
+                new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
+                null);
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());

@@ -3,6 +3,7 @@ package com.tpb.projects.issues;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
 
     private final IssuesActivity mParent;
     private final ArrayList<Issue> mIssues = new ArrayList<>();
-    private final ArrayList<String> mParseCache = new ArrayList<>();
+    private final ArrayList<SpannableString> mParseCache = new ArrayList<>();
 
     IssuesAdapter(IssuesActivity parent) {
         mParent = parent;
@@ -202,12 +203,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                     );
                 }
             }
-            final String parsed = MDParser.parseMD(builder.toString());
-            mParseCache.set(pos, parsed);
-            holder.mContent.setHtml(parsed);
+            holder.mContent.setHtml(MDParser.parseMD(builder.toString()), null, text -> mParseCache.set(pos, text));
+
         } else {
             // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
-            holder.mContent.setHtml(mParseCache.get(pos));
+            holder.mContent.setText(mParseCache.get(pos));
         }
     }
 

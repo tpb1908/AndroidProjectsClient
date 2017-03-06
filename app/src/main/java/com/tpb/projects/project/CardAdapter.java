@@ -8,6 +8,7 @@ import android.os.HandlerThread;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,8 +32,8 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.IntentHandler;
 import com.tpb.projects.util.MDParser;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -49,7 +50,7 @@ import butterknife.OnClick;
 class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
-    private final ArrayList<Pair<Card, String>> mCards = new ArrayList<>();
+    private final ArrayList<Pair<Card, SpannableString>> mCards = new ArrayList<>();
 
     private final ColumnFragment mParent;
     private final Editor mEditor;
@@ -119,7 +120,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     }
 
     void moveCardFromDrag(int oldPos, int newPos) {
-        final Pair<Card, String> card = mCards.get(oldPos);
+        final Pair<Card, SpannableString> card = mCards.get(oldPos);
         mCards.remove(oldPos);
         mCards.add(newPos, card);
         notifyItemMoved(oldPos, newPos);
@@ -145,7 +146,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
     ArrayList<Card> getCards() {
         final ArrayList<Card> cards = new ArrayList<>();
-        for(Pair<Card, String> p : mCards) cards.add(p.first);
+        for(Pair<Card, SpannableString> p : mCards) cards.add(p.first);
         return cards;
     }
 
@@ -227,9 +228,18 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setVisibility(View.GONE);
         holder.mUserAvatar.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
-            mCards.set(pos, new Pair<>(mCards.get(pos).first, MDParser.parseMD(mCards.get(pos).first.getNote(), mParent.mParent.mProject.getRepoPath())));
+            final Card card = mCards.get(pos).first;
+            holder.mText.setHtml(
+                    MDParser.parseMD(
+                            card.getNote(),
+                            mParent.mParent.mProject.getRepoPath()
+                    ),
+                    new HtmlHttpImageGetter(holder.mText, holder.mText),
+                    text -> mCards.set(pos, new Pair<>(card, text))
+            );
+        } else {
+            holder.mText.setText(mCards.get(pos).second);
         }
-        holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText, holder.mText));
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText);
     }
 
@@ -292,13 +302,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
                 builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
             }
-
-            final String parsed = MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath());
-
-            mCards.set(pos, new Pair<>(card, parsed));
-            holder.mText.setHtml(parsed, new HtmlHttpImageGetter(holder.mText, holder.mText));
+            holder.mText.setHtml(MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath()),
+                    new HtmlHttpImageGetter(holder.mText, holder.mText),
+                    text -> mCards.set(pos, new Pair<>(card, text))
+            );
         } else {
-            holder.mText.setHtml(mCards.get(pos).second, new HtmlHttpImageGetter(holder.mText, holder.mText));
+            holder.mText.setText(mCards.get(pos).second);
         }
         holder.mSpinner.setVisibility(View.INVISIBLE);
     }

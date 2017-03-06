@@ -42,6 +42,7 @@ import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
 import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
+import org.sufficientlysecure.htmltext.SpanCacher;
 import org.sufficientlysecure.htmltext.URLPattern;
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
@@ -77,6 +78,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     private Handler mParseHandler;
 
     private float[] mLastClickPosition = new float[] { -1, -1};
+
+    private SpanCacher mSpanCacher;
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -117,7 +120,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
      * @see HtmlTextView#setHtml(String)
      */
     public void setHtml(@NonNull String html) {
-        setHtml(html, null);
+        setHtml(html, null, null);
     }
 
     /**
@@ -131,8 +134,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
      */
     private void setHtml(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
         InputStream inputStreamText = getContext().getResources().openRawResource(resId);
-
-        setHtml(convertStreamToString(inputStreamText), imageGetter);
+        setHtml(convertStreamToString(inputStreamText), imageGetter, null);
     }
 
     /**
@@ -144,7 +146,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
     //http://stackoverflow.com/a/17201376/4191572
-    public void setHtml(@NonNull final String html, @Nullable final Html.ImageGetter imageGetter) {
+    public void setHtml(@NonNull final String html, @Nullable final Html.ImageGetter imageGetter, @Nullable SpanCacher cacher) {
+        mSpanCacher = cacher;
         final Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -208,6 +211,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                         setText(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
+                        if(mSpanCacher != null) mSpanCacher.cache(buffer);
+                        mSpanCacher = null;
                     }
                 });
             }

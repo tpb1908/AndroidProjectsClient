@@ -72,6 +72,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     private float[] mLastClickPosition = new float[] { -1, -1};
 
+
     public HtmlEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setPadding(0, 0, 0, getPaddingBottom());

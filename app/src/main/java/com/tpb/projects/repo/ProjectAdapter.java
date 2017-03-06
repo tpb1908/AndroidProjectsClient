@@ -36,13 +36,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     private ArrayList<Project> mProjects = new ArrayList<>();
     private final ProjectEditor mEditor;
-    private final AnimatingRecycler mRecycler;
     private boolean canAccessRepo = false;
 
 
     public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
         mEditor = editor;
-        mRecycler = recycler;
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -89,7 +87,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
                     MDParser.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
-                    new HtmlHttpImageGetter(holder.mBody, holder.mBody)
+                    new HtmlHttpImageGetter(holder.mBody, holder.mBody),
+                    null
             );
         }
     }
