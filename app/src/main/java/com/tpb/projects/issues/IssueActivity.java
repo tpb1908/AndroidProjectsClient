@@ -517,6 +517,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                     public void updated(Issue issue) {
                         mIssue = issue;
                         bindIssue();
+                        displayAssignees();
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
