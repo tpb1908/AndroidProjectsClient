@@ -121,7 +121,7 @@ public class MDParser {
         char pp = ' ';
         final char[] cs = s.toCharArray();
         for(int i = 0; i < s.length(); i++) {
-            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1) {
+            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1 && cs[i + 1] != '\n') {
                 builder.append("\n");
             }
             if(linkUsernames && cs[i] == '@' && (p == ' ' || p == '\n')) {
@@ -165,6 +165,7 @@ public class MDParser {
                     builder.append(cs[j]);
                     if(pp == '`' && p == '`' && cs[j] == '`') {
                         i = j;
+                        p = ' ';
                         break;
                     } else {
                         pp = p;
