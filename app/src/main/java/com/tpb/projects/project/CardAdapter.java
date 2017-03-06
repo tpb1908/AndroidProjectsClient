@@ -196,7 +196,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                         card.setFromIssue(data);
                         bindIssueCard(holder, pos);
                     }
-                    // notifyItemChanged(pos);
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);

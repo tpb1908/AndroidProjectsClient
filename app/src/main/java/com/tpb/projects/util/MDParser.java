@@ -129,8 +129,6 @@ public class MDParser {
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
             } else if(cs[i] == '-' && p == '-' && pp == '-') {
-                //TODO Find out if there is a way of computing characters per line and filling the string
-                //I could try using the strike tag
                 builder.setLength(builder.length() - 2);
                 builder.append("<bar></bar>");
 
