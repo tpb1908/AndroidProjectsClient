@@ -28,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,9 +44,9 @@ class ContributionsLoader {
     // Format string for svg path
     private static final String IMAGE_BASE = "https://github.com/users/%s/contributions";
 
-    private final ContributionsRequestListener mListener;
+    private final WeakReference<ContributionsRequestListener> mListener;
 
-    ContributionsLoader(@NonNull ContributionsRequestListener listener) {
+    ContributionsLoader(@NonNull WeakReference<ContributionsRequestListener> listener) {
         mListener = listener;
     }
 
@@ -60,7 +61,7 @@ class ContributionsLoader {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                mListener.onError(error);
+                if(mListener.get() != null) mListener.get().onError(error);
             }
         });
         Volley.newRequestQueue(context).add(req);
@@ -76,7 +77,7 @@ class ContributionsLoader {
             contribs.add(new GitDay(response.substring(first, last)));
             first = response.indexOf("<rect", last);
         }
-        mListener.onResponse(contribs);
+        if(mListener.get() != null) mListener.get().onResponse(contribs);
 
     }
 
