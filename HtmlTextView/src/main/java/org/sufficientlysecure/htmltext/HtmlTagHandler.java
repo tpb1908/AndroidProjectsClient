@@ -263,6 +263,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.removeSpan(obj);
                 output.replace(where, len, " ");
                 final CodeSpan code = new CodeSpan(codeCount++);
+                output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 1, 0);
                 output.setSpan(code, where, where + 1, 0);
                 output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 1, 0);
             }  else if(tag.equals("bar")) {

@@ -3,12 +3,14 @@ package org.sufficientlysecure.htmltext.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
 import com.pddstudio.highlightjs.HighlightJsView;
+import com.pddstudio.highlightjs.models.Language;
 import com.pddstudio.highlightjs.models.Theme;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -27,7 +29,7 @@ public class CodeDialog implements CodeClickHandler {
     }
 
     @Override
-    public void codeClicked(String code) {
+    public void codeClicked(String code, @Nullable String language) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         final LayoutInflater inflater = LayoutInflater.from(mContext);
 
@@ -37,6 +39,8 @@ public class CodeDialog implements CodeClickHandler {
 
         final HighlightJsView wv = (HighlightJsView) view.findViewById(R.id.dialog_highlight_view);
         wv.setTheme(Theme.ANDROID_STUDIO);
+
+        if(language != null && !language.isEmpty()) wv.setHighlightLanguage(getLanguage(language));
         wv.setSource(code);
         final Dialog dialog = builder.create();
 
@@ -45,4 +49,11 @@ public class CodeDialog implements CodeClickHandler {
         dialog.show();
     }
 
+
+    private static Language getLanguage(String lang) {
+        for(Language l : Language.values()) {
+            if(l.toString().equalsIgnoreCase(lang)) return l;
+        }
+        return Language.AUTO_DETECT;
+    }
 }

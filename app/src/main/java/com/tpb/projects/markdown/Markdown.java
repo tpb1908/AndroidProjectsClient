@@ -2,7 +2,6 @@ package com.tpb.projects.markdown;
 
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
-import android.util.Log;
 
 import com.tpb.projects.util.Util;
 
@@ -21,8 +20,6 @@ import org.commonmark.renderer.html.HtmlWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import static com.tpb.projects.data.APIHandler.TAG;
 
 /**
  * Created by theo on 24/02/17.
@@ -68,13 +65,11 @@ public class Markdown {
                 if(Util.instancesOf(block.getLiteral(), "\n") > 7) {
                     html.line();
                     html.tag("code");
-                    html.text(block.getLiteral());
+                    html.text(String.format("[%1$s]\u0002%2$s", block.getInfo(), block.getLiteral()));
                     html.tag("/code");
-                    html.line();
                 } else {
                     html.tag("small");
                     html.line();
-                    Log.i(TAG, "render: Lang " + block.getInfo() + ", for " + block.getLiteral() );
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }

@@ -711,6 +711,8 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
                         mRefresher.setRefreshing(false);
                     }
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
+            } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
+                mAdapter.getCurrentFragment().onActivityResult(requestCode, resultCode, data);
             }
         }
     }

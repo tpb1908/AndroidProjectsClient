@@ -459,6 +459,7 @@ public class Editor extends APIHandler {
     }
 
     public void updateIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+        Log.i(TAG, "updateIssue: \n\n\n\n\nUpdating issue");
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());

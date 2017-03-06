@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
+import android.util.Log;
 import android.view.View;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -21,6 +22,7 @@ import java.lang.ref.WeakReference;
 public class CodeSpan extends ReplacementSpan {
     private WeakReference<CodeClickHandler> mHandler;
     private String mCode;
+    private String mLanguage;
     private int mIndex;
 
     public CodeSpan(int index) {
@@ -32,7 +34,15 @@ public class CodeSpan extends ReplacementSpan {
     }
 
     public void setCode(String code) {
-        mCode = code;
+        final int ls = code.indexOf('[');
+        final int le = code.indexOf(']');
+        if(ls != -1 && le != -1 && le - ls > 0 && le < code.indexOf('\u0002')) {
+            mLanguage = code.substring(ls+1, le);
+            Log.i(CodeSpan.class.getSimpleName(), "setCode:  Found language " + mLanguage);
+            mCode = code.substring(le + 1);
+        } else {
+            mCode = code;
+        }
     }
 
     public int getIndex() {
@@ -46,11 +56,15 @@ public class CodeSpan extends ReplacementSpan {
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-        canvas.drawRect(new RectF(x, top, x + canvas.getWidth(), bottom), paint);
+        paint.setTextSize(paint.getTextSize()-1);
+        canvas.drawText("Code", x + 5, y, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(4);
+        canvas.drawRoundRect(new RectF(x, top, x + canvas.getWidth(), bottom), 7, 7, paint);
     }
 
     private void onClick() {
-        if(mHandler.get() != null) mHandler.get().codeClicked(mCode);
+        if(mHandler.get() != null) mHandler.get().codeClicked(mCode, mLanguage);
     }
 
     public static class ClickableCodeSpan extends ClickableSpan {
