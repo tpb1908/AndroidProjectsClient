@@ -33,6 +33,11 @@ import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.spans.BarSpan;
+import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
+import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
+import org.sufficientlysecure.htmltext.spans.CodeSpan;
+import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.xml.sax.XMLReader;
 
 import java.util.Stack;
@@ -256,8 +261,10 @@ public class HtmlTagHandler implements Html.TagHandler {
                 // end of the tag
                 int len = output.length();
                 output.removeSpan(obj);
-                output.replace(where, len, "\nClick to view code\n");
-                output.setSpan(new CodeSpan(codeCount++), where, where + "\nClick to view code\n".length(), 0);
+                output.replace(where, len, " ");
+                final CodeSpan code = new CodeSpan(codeCount++);
+                output.setSpan(code, where, where + 1, 0);
+                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 1, 0);
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

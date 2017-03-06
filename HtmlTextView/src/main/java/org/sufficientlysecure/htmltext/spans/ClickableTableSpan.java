@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltext;
+package org.sufficientlysecure.htmltext.spans;
 
 import android.text.style.ClickableSpan;
 

@@ -21,7 +21,7 @@
               android:layout_height="match_parent">
 
 
-    <org.sufficientlysecure.htmltext.FillingImageView
+    <org.sufficientlysecure.htmltext.dialogs.FillingImageView
         android:id="@+id/dialog_imageview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

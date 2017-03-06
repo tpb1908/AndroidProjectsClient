@@ -18,7 +18,7 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.markdown.Markdown;
 
-import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;

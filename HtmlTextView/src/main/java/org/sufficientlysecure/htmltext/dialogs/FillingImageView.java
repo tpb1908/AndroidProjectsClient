@@ -15,7 +15,7 @@
  *
  */
 
-package org.sufficientlysecure.htmltext;
+package org.sufficientlysecure.htmltext.dialogs;
 
 import android.annotation.TargetApi;
 import android.content.Context;

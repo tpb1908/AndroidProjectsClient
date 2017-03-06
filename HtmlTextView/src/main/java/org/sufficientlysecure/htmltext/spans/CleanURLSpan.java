@@ -1,4 +1,4 @@
-package org.sufficientlysecure.htmltext;
+package org.sufficientlysecure.htmltext.spans;
 
 import android.content.Intent;
 import android.graphics.Typeface;

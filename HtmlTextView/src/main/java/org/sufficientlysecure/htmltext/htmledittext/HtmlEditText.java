@@ -20,17 +20,17 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.sufficientlysecure.htmltext.CleanURLSpan;
-import org.sufficientlysecure.htmltext.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.CodeSpan;
-import org.sufficientlysecure.htmltext.DrawTableLinkSpan;
-import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
 import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
 import org.sufficientlysecure.htmltext.URLPattern;
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
+import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
+import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
+import org.sufficientlysecure.htmltext.spans.CodeSpan;
 
 import java.io.InputStream;
 import java.util.HashMap;

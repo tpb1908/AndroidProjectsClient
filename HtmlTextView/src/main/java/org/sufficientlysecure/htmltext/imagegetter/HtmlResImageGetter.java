@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.htmltext;
+package org.sufficientlysecure.htmltext.imagegetter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
