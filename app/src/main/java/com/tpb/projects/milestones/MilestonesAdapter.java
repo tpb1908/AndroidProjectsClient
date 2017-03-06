@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
     private String mRepo;
 
     private ArrayList<Milestone> mMilestones = new ArrayList<>();
-    private ArrayList<String> mParseCache = new ArrayList<>();
+    private ArrayList<SpannableString> mParseCache = new ArrayList<>();
 
     MilestonesAdapter(Activity parent, String repo) {
         mParent = parent;
@@ -162,9 +163,12 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
                     builder.append("</font>");
                 }
             }
-            mParseCache.set(position, MDParser.formatMD(builder.toString(), null));
+            holder.mContent.setHtml(MDParser.formatMD(builder.toString(), null),
+                    null,
+                    text -> mParseCache.set(position, text));
+        } else {
+            holder.mContent.setText(mParseCache.get(position));
         }
-        holder.mContent.setHtml(mParseCache.get(position));
     }
 
     @Override

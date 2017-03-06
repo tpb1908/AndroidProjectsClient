@@ -201,7 +201,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
 
         html += MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
 
-        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo));
+        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo), null);
 
         builder.setLength(0);
         builder.append(
