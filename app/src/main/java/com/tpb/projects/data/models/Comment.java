@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,8 +78,8 @@ public class Comment extends DataModel implements Parcelable {
             c.body = obj.getString(BODY);
             c.user = User.parse(obj.getJSONObject(USER));
             try {
-                c.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-                c.updatedAt = Data.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+                c.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                c.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }

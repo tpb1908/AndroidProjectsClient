@@ -1,4 +1,4 @@
-package com.tpb.projects.util;
+package com.tpb.projects.util.input;
 
 import android.text.Editable;
 import android.text.TextWatcher;

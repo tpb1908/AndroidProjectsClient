@@ -29,8 +29,8 @@ import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -229,7 +229,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         if(mCards.get(pos).second == null) {
             final Card card = mCards.get(pos).first;
             holder.mText.setHtml(
-                    MDParser.parseMD(
+                    Markdown.parseMD(
                             card.getNote(),
                             mParent.mParent.mProject.getRepoPath()
                     ),
@@ -254,10 +254,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
 
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
-            builder.append(MDParser.escape(card.getIssue().getTitle()));
+            builder.append(Markdown.escape(card.getIssue().getTitle()));
             builder.append("</b><br><br>");
             if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(MDParser.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
+                builder.append(Markdown.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
                 builder.append(" \n\n ");
             }
 
@@ -301,7 +301,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
                 builder.append("<br>");
                 builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
             }
-            holder.mText.setHtml(MDParser.parseMD(builder.toString(), card.getIssue().getRepoPath()),
+            holder.mText.setHtml(Markdown.parseMD(builder.toString(), card.getIssue().getRepoPath()),
                     new HtmlHttpImageGetter(holder.mText, holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );

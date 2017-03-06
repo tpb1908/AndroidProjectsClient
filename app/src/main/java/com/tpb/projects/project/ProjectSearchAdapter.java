@@ -15,9 +15,9 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Label;
-import com.tpb.projects.util.ArrayFilter;
-import com.tpb.projects.util.FuzzyStringSearcher;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.search.ArrayFilter;
+import com.tpb.projects.util.search.FuzzyStringSearcher;
+import com.tpb.projects.markdown.Markdown;
 
 import java.util.ArrayList;
 
@@ -86,9 +86,9 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
         final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " " + MDParser.parseMD(data.get(dataPos).getIssue().getTitle()));
+                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " " + Markdown.parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
-                parseCache[dataPos] = Html.fromHtml(MDParser.formatMD(data.get(dataPos).getNote(), null));
+                parseCache[dataPos] = Html.fromHtml(Markdown.formatMD(data.get(dataPos).getNote(), null));
             }
         }
         if(data.get(dataPos).hasIssue()) {

@@ -1,9 +1,10 @@
-package com.tpb.projects.util;
+package com.tpb.projects.util.search;
 
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 
 import com.tpb.projects.data.models.Card;
+import com.tpb.projects.util.search.FuzzyStringSearcher;
 
 import java.util.ArrayList;
 

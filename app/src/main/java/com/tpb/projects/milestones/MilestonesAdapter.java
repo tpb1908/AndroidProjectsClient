@@ -16,8 +16,8 @@ import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.State;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -100,7 +100,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
             final StringBuilder builder = new StringBuilder();
 
             builder.append("<b>");
-            builder.append(MDParser.escape(milestone.getTitle()));
+            builder.append(Markdown.escape(milestone.getTitle()));
             builder.append("</b>");
             builder.append("<br>");
             if(milestone.getOpenIssues() > 0 || milestone.getClosedIssues() > 0) {
@@ -163,7 +163,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
                     builder.append("</font>");
                 }
             }
-            holder.mContent.setHtml(MDParser.formatMD(builder.toString(), null),
+            holder.mContent.setHtml(Markdown.formatMD(builder.toString(), null),
                     null,
                     text -> mParseCache.set(position, text));
         } else {

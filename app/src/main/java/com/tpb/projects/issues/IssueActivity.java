@@ -55,8 +55,8 @@ import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
@@ -183,12 +183,12 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     private void bindIssue() {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(MDParser.escape(mIssue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(Markdown.escape(mIssue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 
         // The title and body are formatted separately, because the title shouldn't be formatted
-        String html = MDParser.formatMD(builder.toString(), null, false);
+        String html = Markdown.formatMD(builder.toString(), null, false);
         builder.setLength(0); // Clear the builder to reuse it
 
         if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
@@ -199,7 +199,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             Label.appendLabels(builder, mIssue.getLabels(), "   ");
         }
 
-        html += MDParser.parseMD(builder.toString(), mIssue.getRepoPath());
+        html += Markdown.parseMD(builder.toString(), mIssue.getRepoPath());
 
         mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo), null);
 
@@ -214,7 +214,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                         DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
                 )
         );
-        mOpenInfo.setHtml(MDParser.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mOpenInfo.setHtml(Markdown.parseMD(builder.toString(), mIssue.getRepoPath()));
         mUserAvatar.setOnClickListener(v -> {
             IntentHandler.openUser(IssueActivity.this, mUserAvatar, mIssue.getOpenedBy().getLogin());
         });
@@ -297,7 +297,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             final StringBuilder builder = new StringBuilder();
 
             builder.append("<b>");
-            builder.append(MDParser.escape(milestone.getTitle()));
+            builder.append(Markdown.escape(milestone.getTitle()));
             builder.append("</b>");
             builder.append("<br>");
             if(milestone.getOpenIssues() > 0 || milestone.getClosedIssues() > 0) {
@@ -360,7 +360,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                     builder.append("</font>");
                 }
             }
-            tv.setHtml(MDParser.formatMD(builder.toString(), mIssue.getRepoPath()));
+            tv.setHtml(Markdown.formatMD(builder.toString(), mIssue.getRepoPath()));
 
         } else {
             mMilestoneCard.setVisibility(View.GONE);

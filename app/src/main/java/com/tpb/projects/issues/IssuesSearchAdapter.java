@@ -15,9 +15,9 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
-import com.tpb.projects.util.ArrayFilter;
-import com.tpb.projects.util.FuzzyStringSearcher;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.search.ArrayFilter;
+import com.tpb.projects.util.search.FuzzyStringSearcher;
+import com.tpb.projects.markdown.Markdown;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
         if(parseCache[dataPos] == null) {
             parseCache[dataPos] = Html.fromHtml(
                     " #" + data.get(dataPos).getNumber() + " " +
-                            MDParser.parseMD(MDParser.escape(data.get(dataPos).getTitle()))
+                            Markdown.parseMD(Markdown.escape(data.get(dataPos).getTitle()))
             );
         }
 

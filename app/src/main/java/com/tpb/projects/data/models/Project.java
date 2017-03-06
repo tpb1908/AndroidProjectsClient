@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,8 +102,8 @@ public class Project extends DataModel implements Parcelable {
             p.name = object.getString(NAME);
             p.url = object.getString(URL);
             p.ownerUrl = object.getString(OWNER_URL);
-            p.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
-            p.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
+            p.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
+            p.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
         } catch(Exception jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -122,8 +122,8 @@ public class Project extends DataModel implements Parcelable {
             obj.put(NAME, project.name);
             obj.put(URL, project.url);
             obj.put(OWNER_URL, project.ownerUrl);
-            obj.put(CREATED_AT, Data.toISO8061FromSeconds(project.createdAt));
-            obj.put(UPDATED_AT, Data.toISO8061FromSeconds(project.updatedAt));
+            obj.put(CREATED_AT, Util.toISO8061FromSeconds(project.createdAt));
+            obj.put(UPDATED_AT, Util.toISO8061FromSeconds(project.updatedAt));
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }

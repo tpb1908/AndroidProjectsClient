@@ -24,7 +24,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.editors.MilestoneEditor;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -223,7 +223,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                     public void creationError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
-                }, mRepo, title, description, dueOn > 0 ? Data.toISO8061FromMilliseconds(dueOn) : null);
+                }, mRepo, title, description, dueOn > 0 ? Util.toISO8061FromMilliseconds(dueOn) : null);
             } else if(requestCode == MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE) {
                 mEditor.updateMilestone(new Editor.GITModelUpdateListener<Milestone>() {
                     @Override
@@ -236,7 +236,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                     public void updateError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
-                }, mRepo, number, title, description, Data.toISO8061FromMilliseconds(dueOn), null);
+                }, mRepo, number, title, description, Util.toISO8061FromMilliseconds(dueOn), null);
             }
         }
     }

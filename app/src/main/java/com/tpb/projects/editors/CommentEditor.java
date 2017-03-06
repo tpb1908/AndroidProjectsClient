@@ -20,9 +20,9 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.util.DumbTextChangeWatcher;
-import com.tpb.projects.util.KeyBoardVisibilityChecker;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -105,7 +105,7 @@ public class CommentEditor extends ImageLoadingActivity {
                     mEditor.saveText();
                     String repo = null;
                     if(mIssue != null) repo = mIssue.getRepoPath();
-                    mEditor.setHtml(MDParser.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
                 } else {
                     mEditor.restoreText();

@@ -11,7 +11,7 @@ public abstract class DataModel {
     static final String CREATED_AT = "created_at";
     static final String UPDATED_AT = "updated_at";
     static final String URL = "url";
-    static final String JSON_NULL = "null";
+    public static final String JSON_NULL = "null";
 
     long createdAt;
 

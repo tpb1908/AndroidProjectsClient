@@ -17,8 +17,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -108,7 +108,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             final Context context = holder.itemView.getContext();
             final StringBuilder builder = new StringBuilder();
             builder.append("<b>");
-            builder.append(MDParser.escape(issue.getTitle()));
+            builder.append(Markdown.escape(issue.getTitle()));
             builder.append("</b><br><br>");
 
             builder.append(String.format(context.getString(R.string.text_issue_opened_by),
@@ -203,7 +203,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
                     );
                 }
             }
-            holder.mContent.setHtml(MDParser.parseMD(builder.toString()), null, text -> mParseCache.set(pos, text));
+            holder.mContent.setHtml(Markdown.parseMD(builder.toString()), null, text -> mParseCache.set(pos, text));
 
         } else {
             // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);

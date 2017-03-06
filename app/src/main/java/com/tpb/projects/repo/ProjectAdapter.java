@@ -14,9 +14,9 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
-import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -83,10 +83,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                         DateUtils.getRelativeTimeSpanString(mProjects.get(position).getUpdatedAt())
                 )
         );
-        if(!(Constants.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
+        if(!(DataModel.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
-                    MDParser.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
+                    Markdown.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
                     new HtmlHttpImageGetter(holder.mBody, holder.mBody),
                     null
             );

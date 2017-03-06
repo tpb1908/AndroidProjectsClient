@@ -24,10 +24,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.auth.OAuthHandler;
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Constants;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                 mName.setText(user.getName());
                 mId.setText(user.getLogin());
                 String details = "";
-                if(!user.getBio().equals(Constants.JSON_NULL)) details += user.getBio();
+                if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
                 mStats.setText(String.format(getString(R.string.text_user_info), details, user.getLocation(), user.getRepos(), user.getFollowers()));
 
                 final Bundle bundle = new Bundle();

@@ -2,11 +2,10 @@ package org.sufficientlysecure.htmltext.htmledittext;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.EditText;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -17,7 +16,7 @@ import java.util.List;
  * Created by theo on 27/02/17.
  */
 
-public class JellyBeanSpanFixEditText extends EditText {
+public class JellyBeanSpanFixEditText extends AppCompatEditText {
 
     private static class FixingResult {
         public final boolean fixed;
@@ -66,10 +65,9 @@ public class JellyBeanSpanFixEditText extends EditText {
      * If possible, fixes the Spanned text by adding spaces around spans when needed.
      */
     private void fixOnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        CharSequence text = getText();
-        if(text instanceof Spanned) {
-            SpannableStringBuilder builder = new SpannableStringBuilder(text);
-            fixSpannedWithSpaces(builder, widthMeasureSpec, heightMeasureSpec);
+        final CharSequence text = getText();
+        if(text != null) {
+            fixSpannedWithSpaces(new SpannableStringBuilder(text), widthMeasureSpec, heightMeasureSpec);
         } else {
             if(HtmlTextView.DEBUG) {
                 Log.d(HtmlTextView.TAG, "The text isn't a Spanned");
@@ -83,20 +81,14 @@ public class JellyBeanSpanFixEditText extends EditText {
      */
     private void fixSpannedWithSpaces(SpannableStringBuilder builder, int widthMeasureSpec,
                                       int heightMeasureSpec) {
-        long startFix = System.currentTimeMillis();
 
-        FixingResult result = addSpacesAroundSpansUntilFixed(builder, widthMeasureSpec,
+        final FixingResult result = addSpacesAroundSpansUntilFixed(builder, widthMeasureSpec,
                 heightMeasureSpec);
 
         if(result.fixed) {
             removeUnneededSpaces(widthMeasureSpec, heightMeasureSpec, builder, result);
         } else {
             fallbackToString(widthMeasureSpec, heightMeasureSpec);
-        }
-
-        if(HtmlTextView.DEBUG) {
-            long fixDuration = System.currentTimeMillis() - startFix;
-            Log.d(HtmlTextView.TAG, "fixSpannedWithSpaces() duration in ms: " + fixDuration);
         }
     }
 

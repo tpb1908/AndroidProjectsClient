@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,25 +59,25 @@ public class Milestone extends DataModel implements Parcelable {
             m.openIssues = obj.getInt(OPEN_ISSUES);
             m.closedIssues = obj.getInt(CLOSED_ISSUES);
             try {
-                m.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                m.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
             try {
-                m.updatedAt = Data.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+                m.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
             if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
-                    m.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                    m.closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
             }
             if(!obj.getString(DUE_ON).equals(JSON_NULL)) {
                 try {
-                    m.dueOn = Data.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
+                    m.dueOn = Util.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }

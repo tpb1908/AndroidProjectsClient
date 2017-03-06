@@ -21,6 +21,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -29,11 +30,10 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.UI;
 
 
@@ -41,7 +41,7 @@ import com.tpb.projects.util.UI;
  * Created by theo on 05/03/17.
  */
 
-public class FloatingActionButton extends ImageButton {
+public class FloatingActionButton extends AppCompatImageButton {
 
     public static final int SIZE_NORMAL = 0;
     public static final int SIZE_MINI = 1;
@@ -75,6 +75,7 @@ public class FloatingActionButton extends ImageButton {
     private float mOriginalX = -1;
     private float mOriginalY = -1;
     private boolean mButtonPositionSaved;
+
     public FloatingActionButton(Context context) {
         this(context, null);
     }
@@ -88,12 +89,6 @@ public class FloatingActionButton extends ImageButton {
         init(context, attrs, defStyleAttr);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int
-            defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context, attrs, defStyleAttr);
-    }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         TypedArray attr = context.obtainStyledAttributes(attrs,
@@ -279,7 +274,7 @@ public class FloatingActionButton extends ImageButton {
                 createCircleDrawable(mColorPressed));
         drawable.addState(new int[]{}, createCircleDrawable(mColorNormal));
 
-        if (Data.hasLollipop() && mUsingRipple) {
+        if (Util.hasLollipop() && mUsingRipple) {
             RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][]{{}},
                     new int[]{mColorRipple}), drawable, null);
             setOutlineProvider(new ViewOutlineProvider() {
@@ -306,7 +301,7 @@ public class FloatingActionButton extends ImageButton {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setBackgroundCompat(Drawable drawable) {
-        if (Data.hasJellyBean()) {
+        if (Util.hasJellyBean()) {
             setBackground(drawable);
         } else {
             setBackgroundDrawable(drawable);
@@ -363,7 +358,7 @@ public class FloatingActionButton extends ImageButton {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
             drawable.setState(new int[]{android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
-        } else if (Data.hasLollipop()) {
+        } else if (Util.hasLollipop()) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
             ripple.setState(new int[]{android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
@@ -378,7 +373,7 @@ public class FloatingActionButton extends ImageButton {
         if (mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
             drawable.setState(new int[]{android.R.attr.state_enabled});
-        } else if (Data.hasLollipop()) {
+        } else if (Util.hasLollipop()) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
             ripple.setState(new int[]{android.R.attr.state_enabled});
             ripple.setHotspot(calculateCenterX(), calculateCenterY());
@@ -659,7 +654,7 @@ public class FloatingActionButton extends ImageButton {
 
     @Override
     public void setElevation(float elevation) {
-        if (Data.hasLollipop() && elevation > 0) {
+        if (Util.hasLollipop() && elevation > 0) {
             super.setElevation(elevation);
             if (!isInEditMode()) {
                 mUsingElevation = true;
@@ -683,7 +678,7 @@ public class FloatingActionButton extends ImageButton {
         mShadowXOffset = 0;
         mShadowYOffset = Math.round(mFabSize == SIZE_NORMAL ? elevation : elevation / 2);
 
-        if (Data.hasLollipop()) {
+        if (Util.hasLollipop()) {
             super.setElevation(elevation);
             mUsingElevationCompat = true;
             mShowShadow = false;

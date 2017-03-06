@@ -19,21 +19,21 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
-import android.widget.TextView;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 /**
  * Created by theo on 05/03/17.
  */
 
-public class Label extends TextView {
+public class Label extends AppCompatTextView {
 
     private static final Xfermode PORTER_DUFF_CLEAR = new
             PorterDuffXfermode(PorterDuff.Mode.CLEAR);
@@ -133,7 +133,7 @@ public class Label extends TextView {
                 createRectDrawable(mColorPressed));
         drawable.addState(new int[]{}, createRectDrawable(mColorNormal));
 
-        if (Data.hasLollipop() && mUsingRipple) {
+        if (Util.hasLollipop() && mUsingRipple) {
             RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][]{{}},
                     new int[]{mColorRipple}), drawable, null);
             setOutlineProvider(new ViewOutlineProvider() {
@@ -181,7 +181,7 @@ public class Label extends TextView {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setBackgroundCompat(Drawable drawable) {
-        if (Data.hasJellyBean()) {
+        if (Util.hasJellyBean()) {
             setBackground(drawable);
         } else {
             setBackgroundDrawable(drawable);
@@ -211,7 +211,7 @@ public class Label extends TextView {
         if (mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
             drawable.setState(new int[]{android.R.attr.state_pressed});
-        } else if (Data.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
+        } else if (Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
             ripple.setState(new int[]{android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
@@ -230,7 +230,7 @@ public class Label extends TextView {
         if (mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
             drawable.setState(new int[]{});
-        } else if (Data.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
+        } else if (Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
             ripple.setState(new int[]{});
             ripple.setHotspot(getMeasuredWidth() / 2, getMeasuredHeight() / 2);

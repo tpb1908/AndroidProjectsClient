@@ -1,4 +1,4 @@
-package com.tpb.projects.util;
+package com.tpb.projects.util.search;
 
 import android.util.Log;
 

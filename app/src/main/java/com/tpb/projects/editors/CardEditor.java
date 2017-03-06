@@ -30,9 +30,9 @@ import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
-import com.tpb.projects.util.DumbTextChangeWatcher;
-import com.tpb.projects.util.KeyBoardVisibilityChecker;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -112,7 +112,7 @@ public class CardEditor extends ImageLoadingActivity {
             public void previewCalled() {
                 if(mEditor.isEditing()) {
                     mEditor.saveText();
-                    mEditor.setHtml(MDParser.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
+                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
                 } else {
                     mEditor.restoreText();
@@ -152,12 +152,12 @@ public class CardEditor extends ImageLoadingActivity {
     private void bindIssue(Issue issue) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(MDParser.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(Markdown.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 
         // The title and body are formatted separately, because the title shouldn't be formatted
-        String html = MDParser.formatMD(builder.toString(), null, false);
+        String html = Markdown.formatMD(builder.toString(), null, false);
         builder.setLength(0); // Clear the builder to reuse it
 
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
@@ -180,7 +180,7 @@ public class CardEditor extends ImageLoadingActivity {
                 )
         );
 
-        html += MDParser.parseMD(builder.toString(), issue.getRepoPath());
+        html += Markdown.parseMD(builder.toString(), issue.getRepoPath());
 
         mEditor.setText(Html.fromHtml(html));
     }

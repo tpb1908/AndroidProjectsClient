@@ -23,9 +23,9 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.util.DumbTextChangeWatcher;
-import com.tpb.projects.util.KeyBoardVisibilityChecker;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
@@ -138,7 +138,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
                 if(mDescriptionEditor.isEditing()) {
                     mDescriptionEditor.saveText();
                     mDescriptionEditor.setHtml(
-                            MDParser.parseMD(mDescriptionEditor.getText().toString(), null),
+                            Markdown.parseMD(mDescriptionEditor.getText().toString(), null),
                             new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor));
                     mDescriptionEditor.disableEditing();
                 } else {

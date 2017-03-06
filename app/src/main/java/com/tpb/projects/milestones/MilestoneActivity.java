@@ -18,8 +18,8 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.CircularRevealActivity;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -76,7 +76,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
         final StringBuilder builder = new StringBuilder();
 
         builder.append("<b>");
-        builder.append(MDParser.escape(milestone.getTitle()));
+        builder.append(Markdown.escape(milestone.getTitle()));
         builder.append("</b>");
         builder.append("<br>");
 
@@ -146,7 +146,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
                 builder.append("</font>");
             }
         }
-        mContent.setHtml(MDParser.formatMD(builder.toString(), mRepo, true));
+        mContent.setHtml(Markdown.formatMD(builder.toString(), mRepo, true));
     }
 
     @Override

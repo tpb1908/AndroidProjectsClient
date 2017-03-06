@@ -5,8 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +74,7 @@ public class Event extends DataModel implements Parcelable {
     }
 
     public String getShortCommitId() {
-        return (commitId == null || Constants.JSON_NULL.equals(commitId)) ? null : commitId.substring(0, 7);
+        return (commitId == null || DataModel.JSON_NULL.equals(commitId)) ? null : commitId.substring(0, 7);
     }
 
     public String getCommitUrl() {
@@ -127,7 +126,7 @@ public class Event extends DataModel implements Parcelable {
             if(obj.has(EVENT)) e.event = GITEvent.fromString(obj.getString(EVENT).toLowerCase());
 
             try {
-                e.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                e.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }

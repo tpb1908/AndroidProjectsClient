@@ -1,8 +1,10 @@
-package com.tpb.projects.util;
+package com.tpb.projects.markdown;
 
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
 import android.util.Log;
+
+import com.tpb.projects.util.Util;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -26,7 +28,9 @@ import static com.tpb.projects.data.APIHandler.TAG;
  * Created by theo on 24/02/17.
  */
 
-public class MDParser {
+public class Markdown {
+
+    private Markdown() {}
 
     private static final List<Extension> extensions = Arrays.asList(TablesExtension.create(), StrikethroughExtension.create());
     private static final HtmlRenderer renderer = HtmlRenderer.builder()
@@ -40,7 +44,7 @@ public class MDParser {
         private final HtmlWriter html;
         private HtmlNodeRendererContext context;
         private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
-        static {
+        static { //Nodes to capture
             nodeTypes.add(FencedCodeBlock.class);
             nodeTypes.add(Strikethrough.class);
         }
@@ -48,12 +52,10 @@ public class MDParser {
         CustomBlockRenderer(HtmlNodeRendererContext context) {
             this.context = context;
             this.html = context.getWriter();
-
         }
 
         @Override
         public Set<Class<? extends Node>> getNodeTypes() {
-            // Return the node types we want to use this renderer for.
             return nodeTypes;
         }
 
@@ -63,7 +65,7 @@ public class MDParser {
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
 
-                if(Data.instancesOf(block.getLiteral(), "\n") > 7) {
+                if(Util.instancesOf(block.getLiteral(), "\n") > 7) {
                     html.line();
                     html.tag("code");
                     html.text(block.getLiteral());
@@ -86,18 +88,19 @@ public class MDParser {
                 }
             } else if(node instanceof Strikethrough) {
                 html.line();
-                html.tag("s");
-                context.render(node.getFirstChild());
+                html.tag("s"); //Proper tag
+                context.render(node.getFirstChild()); //Fully render the children
                 html.tag("/s");
                 html.line();
             }
         }
     }
 
+
     public static String escape(String s) {
         s = s.replace("#", "&#35;"); //Hashes must be escaped first
-        s = s.replace("@", "&#64;");
-        s = s.replace("<", "&#60;");
+        s = s.replace("@", "&#64;"); //Ignore tags and email addresses
+        s = s.replace("<", "&#60;"); //Ignore html
         s = s.replace(">", "&#62;");
         return s;
     }
@@ -115,68 +118,71 @@ public class MDParser {
     }
 
     public static String formatMD(String s, @Nullable String fullRepoPath, boolean linkUsernames) {
-
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
-        final char[] cs = s.toCharArray();
+        final char[] chars = s.toCharArray();
         for(int i = 0; i < s.length(); i++) {
-            if(pp != '\n' && cs[i] == '\n' && i != cs.length - 1 && cs[i + 1] != '\n') {
+            //Ensure that lines are properly spaced
+            if(pp != '\n' && chars[i] == '\n' && i != chars.length - 1 && chars[i + 1] != '\n') {
                 builder.append("\n");
             }
-            if(linkUsernames && cs[i] == '@' && (p == ' ' || p == '\n')) {
+            if(linkUsernames && chars[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
-                i = parseUsername(builder, cs, i);
-            } else if(cs[i] == '-' && p == '-' && pp == '-') {
+                i = parseUsername(builder, chars, i);
+            } else if(chars[i] == '-' && p == '-' && pp == '-') {
+                //Full width bar
                 builder.setLength(builder.length() - 2);
                 builder.append("<bar></bar>");
 
-            } else if(cs[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
-                i = parseIssue(builder, cs, i, fullRepoPath);
-            } else if(pp == '[' && (p == 'x' || p == 'X') && cs[i] == ']') {
-                if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
+            } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
+                i = parseIssue(builder, chars, i, fullRepoPath);
+            } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
+                if(builder.length() - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
                     builder.setLength(builder.length() - 2);
                 }
-                builder.append("\u2611");
-            } else if(p == '[' && cs[i] == ']') {
-                if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
+                builder.append("\u2611"); //☑ ballot box with check
+            } else if(p == '[' && chars[i] == ']') { //Closed box
+                if(builder.length() - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 3);
                 } else {
                     builder.setLength(builder.length() - 2);
                 }
-                builder.append("\u2610");
-            } else if(pp == '[' && p == ' ' && cs[i] == ']') {
-                if(builder.length() - 4 >= 0 && cs[i - 4] == '-') {
+                builder.append("\u2610"); //☐ ballot box
+            } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
+
+                if(builder.length() - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
                     builder.setLength(builder.length() - 3);
                 }
                 builder.append("\u2610");
-            } else if(cs[i] == '(') {
+            } else if(chars[i] == '(') {
                 builder.append("(");
-                i = parseImageLink(builder, cs, i);
-            } else if(pp == '`' && p == '`' && cs[i] == '`') {
+                i = parseImageLink(builder, chars, i);
+            } else if(pp == '`' && p == '`' && chars[i] == '`') {
+                //We jump over the code block
                 pp = ' ';
                 p = ' ';
-                for(int j = i; j < cs.length; j++) {
-                    builder.append(cs[j]);
-                    if(pp == '`' && p == '`' && cs[j] == '`') {
+                for(int j = i; j < chars.length; j++) {
+                    builder.append(chars[j]);
+                    if(pp == '`' && p == '`' && chars[j] == '`') {
                         i = j;
                         p = ' ';
                         break;
                     } else {
                         pp = p;
-                        p = cs[j];
+                        p = chars[j];
                     }
                 }
             } else {
-                builder.append(cs[i]);
+                builder.append(chars[i]);
             }
             pp = p;
-            p = cs[i];
+            p = chars[i];
 
         }
         return builder.toString();

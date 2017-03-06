@@ -13,7 +13,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.models.files.Node;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         }
         if(mCurrentNodes.get(position).getType() == Node.NodeType.FILE) {
             holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
-            holder.mSize.setText(Data.formatBytes(mCurrentNodes.get(position).getSize()));
+            holder.mSize.setText(Util.formatBytes(mCurrentNodes.get(position).getSize()));
         } else {
             holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
             holder.mSize.setText("");

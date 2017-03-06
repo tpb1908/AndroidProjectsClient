@@ -20,9 +20,9 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,10 +106,10 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         final Repository r = mRepos.get(pos);
         holder.mName.setText(r.getFullName().contains(mUser) ? r.getName() : r.getFullName());
         final SpannableStringBuilder builder = new SpannableStringBuilder();
-        if(r.getDescription() != null && !r.getDescription().equals(Constants.JSON_NULL)) {
+        if(r.getDescription() != null && !DataModel.JSON_NULL.equals(r.getDescription())) {
             builder.append(r.getDescription());
         }
-        if(r.getLanguage() != null && !r.getLanguage().equals(Constants.JSON_NULL)) {
+        if(r.getLanguage() != null && !DataModel.JSON_NULL.equals(r.getLanguage())) {
             if(builder.length() > 0) builder.append("\n");
             builder.append(r.getLanguage(), new ForegroundColorSpan(Color.WHITE), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
@@ -244,7 +244,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
         void setKey(String key) {
             KEY = key;
-            final String[] savedPins = Data.stringArrayFromPrefs(prefs.getString(KEY, ""));
+            final String[] savedPins = Util.stringArrayFromPrefs(prefs.getString(KEY, ""));
             pins.clear();
             pins.addAll(Arrays.asList(savedPins));
             Log.i(TAG, "RepoPinChecker: Loaded pin positions " + pins.toString());
@@ -253,13 +253,13 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         void pin(String path) {
             if(!pins.contains(path)) {
                 pins.add(path);
-                prefs.edit().putString(KEY, Data.stringArrayForPrefs(pins)).apply();
+                prefs.edit().putString(KEY, Util.stringArrayForPrefs(pins)).apply();
             }
         }
 
         void unpin(String path) {
             pins.remove(path);
-            prefs.edit().putString(KEY, Data.stringArrayForPrefs(pins)).apply();
+            prefs.edit().putString(KEY, Util.stringArrayForPrefs(pins)).apply();
         }
 
         void setInitialPositions(Repository[] repos) {

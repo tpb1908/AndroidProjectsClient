@@ -23,7 +23,7 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -194,7 +194,7 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            final String readme = Data.base64Decode(response.getString(CONTENT));
+                            final String readme = Util.base64Decode(response.getString(CONTENT));
                             Log.i(TAG, "onResponse: " + readme);
                             if(loader != null) loader.loadComplete(readme);
                         } catch(JSONException jse) {

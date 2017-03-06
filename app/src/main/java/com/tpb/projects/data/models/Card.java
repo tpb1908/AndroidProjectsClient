@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,8 +132,8 @@ public class Card extends DataModel implements Parcelable {
                 c.requiresLoadingFromIssue = true;
             }
             try {
-                c.createdAt = Data.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
-                c.updatedAt = Data.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
+                c.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
+                c.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
@@ -152,8 +152,8 @@ public class Card extends DataModel implements Parcelable {
                 obj.put(CONTENT_URL, card.contentUrl);
             }
             obj.put(NOTE, card.note);
-            obj.put(CREATED_AT, Data.toISO8061FromSeconds(card.createdAt));
-            obj.put(UPDATED_AT, Data.toISO8061FromSeconds(card.updatedAt));
+            obj.put(CREATED_AT, Util.toISO8061FromSeconds(card.createdAt));
+            obj.put(UPDATED_AT, Util.toISO8061FromSeconds(card.updatedAt));
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }

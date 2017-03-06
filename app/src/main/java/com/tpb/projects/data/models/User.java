@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,7 +123,7 @@ public class User extends DataModel implements Parcelable {
 
             if(obj.has(CREATED_AT)) {
                 try {
-                    u.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                    u.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }

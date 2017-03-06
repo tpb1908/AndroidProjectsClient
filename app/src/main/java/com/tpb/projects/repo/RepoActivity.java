@@ -32,6 +32,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.ProjectDialog;
@@ -40,10 +41,9 @@ import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Constants;
-import com.tpb.projects.util.Data;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -250,14 +250,14 @@ public class RepoActivity extends AppCompatActivity implements
         public void loadComplete(Repository data) {
             mRepo = data;
             mName.setText(mRepo.getName());
-            if(Constants.JSON_NULL.equals(mRepo.getDescription())) {
+            if(DataModel.JSON_NULL.equals(mRepo.getDescription())) {
                 mDescription.setVisibility(GONE);
             } else {
                 mDescription.setText(mRepo.getDescription());
             }
             mUserName.setText(mRepo.getUserLogin());
             mUserImage.setImageUrl(mRepo.getUserAvatarUrl());
-            mSize.setText(Data.formatKB(mRepo.getSize()));
+            mSize.setText(Util.formatKB(mRepo.getSize()));
             mIssues.setText(Integer.toString(mRepo.getIssues()));
             mForks.setText(Integer.toString(mRepo.getForks()));
             mWatchers.setText(Integer.toString(mRepo.getWatchers()));

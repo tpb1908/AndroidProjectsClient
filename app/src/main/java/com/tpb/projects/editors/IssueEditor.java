@@ -32,9 +32,9 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.DumbTextChangeWatcher;
-import com.tpb.projects.util.KeyBoardVisibilityChecker;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -188,7 +188,7 @@ public class IssueEditor extends ImageLoadingActivity {
                     mBodyEdit.saveText();
                     String repo = null;
                     if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
-                    mBodyEdit.setHtml(MDParser.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
                     mBodyEdit.disableEditing();
                 } else {
                     mBodyEdit.restoreText();

@@ -14,7 +14,7 @@ import android.widget.EditText;
 import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Project;
-import com.tpb.projects.util.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.DumbTextChangeWatcher;
 
 /**
  * Created by theo on 17/12/16.

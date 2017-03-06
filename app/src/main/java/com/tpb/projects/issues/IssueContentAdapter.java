@@ -19,8 +19,8 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
-import com.tpb.projects.util.IntentHandler;
-import com.tpb.projects.util.MDParser;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -190,9 +190,9 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
-            builder.append(MDParser.formatMD(comment.getBody(), mIssue.getRepoPath()));
+            builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoPath()));
             commentHolder.mText.setHtml(
-                    MDParser.parseMD(builder.toString()),
+                    Markdown.parseMD(builder.toString()),
                     new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
                     text -> mData.set(pos, new Pair<>(comment, text)));
         } else {
@@ -341,7 +341,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
         eventHolder.mText.setHtml(
-                MDParser.parseMD(text),
+                Markdown.parseMD(text),
                 new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
                 null
         );
@@ -551,7 +551,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setHtml(
-                MDParser.parseMD(text),
+                Markdown.parseMD(text),
                 new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
                 null);
         if(event.getActor() != null) {

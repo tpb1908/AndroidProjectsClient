@@ -17,8 +17,8 @@ import java.util.List;
  * Created by theo on 16/12/16.
  */
 
-public class Data {
-    private static final String TAG = Data.class.getSimpleName();
+public class Util {
+    private static final String TAG = Util.class.getSimpleName();
 
     public static final Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName());
 

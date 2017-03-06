@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tpb.projects.util.Data;
+import com.tpb.projects.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,14 +163,14 @@ public class Issue extends DataModel implements Parcelable {
             i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
             if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
-                    i.closedAt = Data.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                    i.closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                     i.closed = true;
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
             }
             try {
-                i.createdAt = Data.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                i.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
