@@ -46,8 +46,8 @@ class ContributionsLoader {
 
     private final WeakReference<ContributionsRequestListener> mListener;
 
-    ContributionsLoader(@NonNull WeakReference<ContributionsRequestListener> listener) {
-        mListener = listener;
+    ContributionsLoader(@NonNull ContributionsRequestListener listener) {
+        mListener = new WeakReference<>(listener);
     }
 
     void beginRequest(Context context, String login) {
