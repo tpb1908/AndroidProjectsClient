@@ -255,18 +255,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                 int where = output.getSpanStart(obj);
                 // end of the tag
                 int len = output.length();
-                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: \n\n\n" + String.format("where %1$d len %2$d", where, len));
-                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: Removing span");
                 output.removeSpan(obj);
                 output.replace(where, len, "\nClick to view code\n");
                 output.setSpan(new CodeSpan(codeCount++), where, where + "\nClick to view code\n".length(), 0);
-//                if(len - where > 50) {
-//                    Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: Removing span");
-//                    output.removeSpan(obj);
-//                    output.replace(where, len, "\nClick to view code\n");
-//                    output.setSpan(new CodeSpan(codeCount++), where, where + "\nClick to view code\n".length(), 0);
-//                }
-
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

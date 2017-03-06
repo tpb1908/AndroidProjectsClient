@@ -45,4 +45,5 @@ public class CodeSpan extends ClickableSpan {
             mHandler.codeClicked(mCode);
         }
     }
+
 }

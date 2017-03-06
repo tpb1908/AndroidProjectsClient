@@ -2,6 +2,7 @@ package com.tpb.projects.util;
 
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
+import android.util.Log;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -18,6 +19,8 @@ import org.commonmark.renderer.html.HtmlWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import static com.tpb.projects.data.APIHandler.TAG;
 
 /**
  * Created by theo on 24/02/17.
@@ -60,7 +63,7 @@ public class MDParser {
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
 
-                if(Data.instancesOf(block.getLiteral(), "\n") > 5) {
+                if(Data.instancesOf(block.getLiteral(), "\n") > 7) {
                     html.line();
                     html.tag("code");
                     html.text(block.getLiteral());
@@ -69,10 +72,13 @@ public class MDParser {
                 } else {
                     html.tag("small");
                     html.line();
-                    for(String s : block.getLiteral().split("\n")) {
-                        html.text(s);
+                    Log.i(TAG, "render: Lang " + block.getInfo() + ", for " + block.getLiteral() );
+                    if(block.getInfo() != null && !block.getInfo().isEmpty()) {
+                        // TODO Highlight string
+                    }
+                    for(String s : block.getLiteral().replace("\n\n", "\n").split("\n")) {
+                        html.raw(s.replace(" ", "&nbsp;"));
                         html.tag("br");
-                        html.line();
                     }
                     html.tag("/small");
                     html.line();
@@ -123,8 +129,6 @@ public class MDParser {
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, cs, i);
             } else if(cs[i] == '-' && p == '-' && pp == '-') {
-                //TODO Find out if there is a way of computing characters per line and filling the string
-                //I could try using the strike tag
                 builder.setLength(builder.length() - 2);
                 builder.append("<bar></bar>");
 
