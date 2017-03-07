@@ -11,15 +11,20 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+
 android {
     signingConfigs {
+
+        def KA = project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : System.getenv("KEY_ALIAS")
+        def KP = project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : System.getenv("KEY_PASSWORD")
+        def SP = project.hasProperty('STORE_PASSWORD') ? KEY_STORE_PASSWORD : System.getenv("STORE_PASSWORD")
+        def KF = project.hasProperty('KEY_FILE') ? file(KEY_FILE) : file(System.getenv("KEY_FILE"))
         release {
-            if(System.getenv("TRAVIS") != "true") {
-                keyAlias project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : ""
-                keyPassword project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : ""
-                storePassword project.hasProperty('STORE_PASSWORD') ? KEY_STORE_PASSWORD : ""
-                storeFile project.hasProperty('KEY_FILE') ? file(KEY_FILE) : ""
-            }
+            keyAlias KA
+            keyPassword KP
+            storePassword SP
+            storeFile KF
+
         }
         debug {
             storeFile rootProject.file('debug_key.jks')
