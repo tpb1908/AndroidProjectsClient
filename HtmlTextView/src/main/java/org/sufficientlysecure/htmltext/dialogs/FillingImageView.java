@@ -17,19 +17,17 @@
 
 package org.sufficientlysecure.htmltext.dialogs;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by theo on 31/01/17.
  */
 
-public class FillingImageView extends ImageView {
+public class FillingImageView extends AppCompatImageView {
 
     public FillingImageView(Context context) {
         super(context);
@@ -42,11 +40,6 @@ public class FillingImageView extends ImageView {
 
     public FillingImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public FillingImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

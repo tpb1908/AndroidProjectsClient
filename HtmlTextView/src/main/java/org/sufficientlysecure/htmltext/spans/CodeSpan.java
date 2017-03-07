@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.util.Log;
 import android.view.View;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -38,7 +37,6 @@ public class CodeSpan extends ReplacementSpan {
         final int le = code.indexOf(']');
         if(ls != -1 && le != -1 && le - ls > 0 && le < code.indexOf('\u0002')) {
             mLanguage = code.substring(ls+1, le);
-            Log.i(CodeSpan.class.getSimpleName(), "setCode:  Found language " + mLanguage);
             mCode = code.substring(le + 1);
         } else {
             mCode = code;
@@ -57,7 +55,11 @@ public class CodeSpan extends ReplacementSpan {
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setTextSize(paint.getTextSize()-1);
-        canvas.drawText("Code", x + 5, y, paint);
+        if(mLanguage != null && !mLanguage.isEmpty()) {
+            canvas.drawText(mLanguage + " code", x + 5, y, paint);
+        } else {
+            canvas.drawText("Code", x + 5, y, paint);
+        }
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(4);
         canvas.drawRoundRect(new RectF(x, top, x + canvas.getWidth(), bottom), 7, 7, paint);
