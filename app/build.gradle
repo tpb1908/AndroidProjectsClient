@@ -13,12 +13,19 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     signingConfigs {
-        config {
+        release {
             keyAlias KEY_ALIAS
             keyPassword KEY_PASSWORD
             storePassword KEY_STORE_PASSWORD
             storeFile file(KEY_FILE)
         }
+        debug {
+            storeFile rootProject.file('debug_key.jks')
+            keyAlias 'debug_key'
+            keyPassword 'debugging'
+            storePassword 'debugging'
+        }
+
     }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -34,20 +41,24 @@ android {
         abortOnError false
     }
 
+    buildTypes.all {
+        it.buildConfigField('String', 'REPO_ADDRESS', project.hasProperty('REPO_ADDRESS') ? REPO_ADDRESS : System.getenv('REPO_ADDRESS'))
+        it.buildConfigField('String', 'GITHUB_CLIENT_ID', project.hasProperty('GITHUB_CLIENT_ID') ? GITHUB_CLIENT_ID : System.getenv('GITHUB_CLIENT_ID'))
+        it.buildConfigField('String', 'GITHUB_CLIENT_SECRET', project.hasProperty('GITHUB_CLIENT_SECRET') ? GITHUB_CLIENT_SECRET : System.getenv('GITHUB_CLIENT_SECRET'))
+        it.buildConfigField('String', 'GITHUB_REDIRECT_URL', project.hasProperty('GITHUB_REDIRECT_URL') ? GITHUB_REDIRECT_URL : System.getenv('GITHUB_REDIRECT_URL'))
+        it.buildConfigField('String', 'FEATURE_REQUEST_EMAIL', project.hasProperty('FEATURE_REQUEST_EMAIL') ? FEATURE_REQUEST_EMAIL : System.getenv('FEATURE_REQUEST_EMAIL'))
+        it.buildConfigField('String', 'BUG_EMAIL', project.hasProperty('BUG_EMAIL') ? BUG_EMAIL : System.getenv('BUG_EMAIL'))
+        it.buildConfigField('String', 'IMGUR_CLIENT_ID', project.hasProperty('IMGUR_CLIENT_ID') ? IMGUR_CLIENT_ID : System.getenv('IMGUR_CLIENT_ID'))
+        it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', project.hasProperty('IMGUR_CLIENT_SECRET') ? IMGUR_CLIENT_SECRET : System.getenv('IMGUR_CLIENT_SECRET'))
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        buildTypes.each {
-            it.buildConfigField('String', 'REPO_ADDRESS', project.hasProperty('REPO_ADDRESS') ? REPO_ADDRESS : System.getenv('REPO_ADDRESS'))
-            it.buildConfigField('String', 'GITHUB_CLIENT_ID', project.hasProperty('GITHUB_CLIENT_ID') ? GITHUB_CLIENT_ID : System.getenv('GITHUB_CLIENT_ID'))
-            it.buildConfigField('String', 'GITHUB_CLIENT_SECRET', project.hasProperty('GITHUB_CLIENT_SECRET') ? GITHUB_CLIENT_SECRET : System.getenv('GITHUB_CLIENT_SECRET'))
-            it.buildConfigField('String', 'GITHUB_REDIRECT_URL', project.hasProperty('GITHUB_REDIRECT_URL') ? GITHUB_REDIRECT_URL : System.getenv('GITHUB_REDIRECT_URL'))
-            it.buildConfigField('String', 'FEATURE_REQUEST_EMAIL', project.hasProperty('FEATURE_REQUEST_EMAIL') ? FEATURE_REQUEST_EMAIL : System.getenv('FEATURE_REQUEST_EMAIL'))
-            it.buildConfigField('String', 'BUG_EMAIL', project.hasProperty('BUG_EMAIL') ? BUG_EMAIL : System.getenv('BUG_EMAIL'))
-            it.buildConfigField('String', 'IMGUR_CLIENT_ID', project.hasProperty('IMGUR_CLIENT_ID') ? IMGUR_CLIENT_ID : System.getenv('IMGUR_CLIENT_ID'))
-            it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', project.hasProperty('IMGUR_CLIENT_SECRET') ? IMGUR_CLIENT_SECRET : System.getenv('IMGUR_CLIENT_SECRET'))
+        debug {
+
         }
     }
 
