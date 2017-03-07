@@ -14,10 +14,12 @@ apply plugin: 'me.tatarka.retrolambda'
 android {
     signingConfigs {
         release {
-            keyAlias project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : ""
-            keyPassword project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : ""
-            storePassword project.hasProperty('STORE_PASSWORD') ? KEY_STORE_PASSWORD : ""
-            storeFile project.hasProperty('KEY_FILE') ? file(KEY_FILE) : ""
+            if(System.getenv("TRAVIS") != "true") {
+                keyAlias project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : ""
+                keyPassword project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : ""
+                storePassword project.hasProperty('STORE_PASSWORD') ? KEY_STORE_PASSWORD : ""
+                storeFile project.hasProperty('KEY_FILE') ? file(KEY_FILE) : ""
+            }
         }
         debug {
             storeFile rootProject.file('debug_key.jks')
