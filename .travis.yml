@@ -38,7 +38,7 @@ android:
         - 'google-gdk-license-.+'
         - ".+"
 
-script: ./gradlew build connectedCheck
+script: ./gradlew build assembleDebug
 
 cache:
   directories:
