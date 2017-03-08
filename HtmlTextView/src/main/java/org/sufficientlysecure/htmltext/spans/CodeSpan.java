@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
@@ -65,15 +66,18 @@ public class CodeSpan extends ReplacementSpan {
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setTextSize(paint.getTextSize()-1);
+        final int textHeight = paint.getFontMetricsInt().descent - paint.getFontMetricsInt().ascent;
+
         int offset = 5;
         if(mCodeBM != null) offset += mCodeBM.getWidth();
 
+        final int textStart = top + textHeight/4;
+
         if(mLanguage != null && !mLanguage.isEmpty()) {
-            canvas.drawText(mLanguage + " code", x + offset, y + (top-bottom) / 2, paint);
+            canvas.drawText(mLanguage + " code", x + offset, textStart, paint);
         } else {
-            canvas.drawText("Code", x + offset, y + (top-bottom) / 2, paint);
+            canvas.drawText("Code", x + offset, textStart, paint);
         }
-        Log.i(CodeSpan.class.getSimpleName(), "draw: BM: " + mCodeBM);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(4);
@@ -82,7 +86,7 @@ public class CodeSpan extends ReplacementSpan {
         if(mCodeBM != null) {
             if(mBMFilter == null) mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
             paint.setColorFilter(mBMFilter);
-            canvas.drawBitmap(mCodeBM, x, (int) (y + 1.5 * (top-bottom)), paint);
+            canvas.drawBitmap(mCodeBM, x, textStart - textHeight, paint);
         }
     }
 
@@ -117,6 +121,12 @@ public class CodeSpan extends ReplacementSpan {
         @Override
         public void onClick(View widget) {
             mParent.onClick();
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            super.updateDrawState(ds);
+            ds.setUnderlineText(false);
         }
     }
 

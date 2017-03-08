@@ -48,7 +48,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     private boolean mIsEditing = true;
     private Editable mSavedText = new SpannableStringBuilder();
-    private Drawable mDefaultBackground;
 
     public boolean linkHit;
     @Nullable
@@ -284,7 +283,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     public void enableEditing() {
         if(mIsEditing) return;
-        setBackground(mDefaultBackground);
         setFocusable(true);
         setFocusableInTouchMode(true);
         setCursorVisible(true);
@@ -294,7 +292,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
     public void disableEditing() {
         if(!mIsEditing) return;
-        mDefaultBackground = getBackground();
         setBackground(null);
         setFocusable(false);
         setCursorVisible(false);
