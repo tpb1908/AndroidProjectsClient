@@ -299,7 +299,7 @@ public class CardEditor extends ImageLoadingActivity {
 
     @Override
     public void finish() {
-        if(mHasBeenEdited) {
+        if(mHasBeenEdited && !mEditor.getText().toString().isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {

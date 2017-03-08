@@ -407,7 +407,7 @@ public class IssueEditor extends ImageLoadingActivity {
 
     @Override
     public void finish() {
-        if(mHasBeenEdited) {
+        if(mHasBeenEdited && !mBodyEdit.getText().toString().isEmpty() && !mTitleEdit.getText().toString().isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
