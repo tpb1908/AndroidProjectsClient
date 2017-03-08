@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="code_span_language_format">%1$s code</string>
+    <string name="code_span_no_language">Code</string>
+
+</resources>
