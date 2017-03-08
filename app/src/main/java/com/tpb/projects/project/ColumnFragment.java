@@ -194,7 +194,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             // v.setVisibility(View.INVISIBLE);
             return true;
         });
-        final ColumnDragListener listener = new ColumnDragListener(mCard);
+        final ColumnDragListener listener = new ColumnDragListener((int) mCard.getTag());
         mName.setOnDragListener(listener);
         mLastUpdate.setOnDragListener(listener);
         mCard.setOnDragListener(listener);
@@ -788,21 +788,10 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
     }
 
     private class ColumnDragListener implements View.OnDragListener {
-        private View mActualTarget;
+        private int mTargetTag;
 
-        ColumnDragListener() {
-        }
-
-        ColumnDragListener(View actualTarget) {
-            mActualTarget = actualTarget;
-            /*
-            The problem with this listener is that the Card has numerous children.
-            This means that when we drop another card onto the card we are actually
-            dropping the view onto a child.
-            In order to have a drag listener which covers the entire layout, we
-            add modified drag listeners to each of the children, with a reference
-            to their parent.
-             */
+        ColumnDragListener(int targetTag) {
+            mTargetTag = targetTag;
         }
 
         @Override
@@ -812,10 +801,8 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                 view.setVisibility(View.VISIBLE);
 
                 final int sourceTag = (int) sourceView.getTag();
-                final int targetTag = (int) (mActualTarget == null ? view.getTag() : mActualTarget.getTag());
-                Log.i(TAG, "onDrop: Column drop " + sourceTag + ", " + targetTag + ", direction " + (event.getX() < view.getWidth() / 2));
-                if(sourceTag != targetTag && sourceView.getId() == R.id.column_card) {
-                    mParent.moveColumn(sourceTag, targetTag, event.getX() < view.getWidth() / 2);
+                if(sourceTag != mTargetTag && sourceView.getId() == R.id.column_card) {
+                    mParent.moveColumn(sourceTag, mTargetTag, event.getX() < view.getWidth() / 2);
                 }
             }
             return true;
