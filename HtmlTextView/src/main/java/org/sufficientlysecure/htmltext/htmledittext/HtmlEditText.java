@@ -76,16 +76,19 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     public HtmlEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setPadding(0, 0, 0, getPaddingBottom());
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public HtmlEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         setPadding(0, 0, 0, getPaddingBottom());
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public HtmlEditText(Context context) {
         super(context);
         setPadding(0, 0, 0, getPaddingBottom());
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {

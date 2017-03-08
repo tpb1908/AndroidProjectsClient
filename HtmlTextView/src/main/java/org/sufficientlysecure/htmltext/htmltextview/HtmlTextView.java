@@ -83,14 +83,17 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public HtmlTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public HtmlTextView(Context context) {
         super(context);
+        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {
