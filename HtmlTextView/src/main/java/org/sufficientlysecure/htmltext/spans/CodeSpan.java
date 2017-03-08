@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.util.Log;
 import android.view.View;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -31,7 +30,8 @@ public class CodeSpan extends ReplacementSpan {
     private String mCode;
     private String mLanguage;
     private int mIndex;
-    private static String mFormatString;
+    private static String mLanguageFormatString = "%1$s code";
+    private static String mNoLanguageString = "Code";
     private static Bitmap mCodeBM;
     private PorterDuffColorFilter mBMFilter;
 
@@ -74,9 +74,9 @@ public class CodeSpan extends ReplacementSpan {
         final int textStart = top + textHeight/4;
 
         if(mLanguage != null && !mLanguage.isEmpty()) {
-            canvas.drawText(mLanguage + " code", x + offset, textStart, paint);
+            canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + offset, textStart, paint);
         } else {
-            canvas.drawText("Code", x + offset, textStart, paint);
+            canvas.drawText(mNoLanguageString,  x + offset, textStart, paint);
         }
 
         paint.setStyle(Paint.Style.STROKE);
@@ -101,9 +101,9 @@ public class CodeSpan extends ReplacementSpan {
         final Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
-
         mCodeBM = bitmap;
-        Log.i(CodeSpan.class.getSimpleName(), "initialise: BM is " + mCodeBM);
+        mLanguageFormatString = context.getString(R.string.code_span_language_format);
+        mNoLanguageString = context.getString(R.string.code_span_no_language);
     }
 
     public static boolean isInitialised() {
