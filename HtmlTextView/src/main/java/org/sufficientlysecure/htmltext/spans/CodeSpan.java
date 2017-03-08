@@ -56,13 +56,13 @@ public class CodeSpan extends ReplacementSpan {
     public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setTextSize(paint.getTextSize()-1);
         if(mLanguage != null && !mLanguage.isEmpty()) {
-            canvas.drawText(mLanguage + " code", x + 5, y, paint);
+            canvas.drawText(mLanguage + " code", x + 5, y + (top-bottom) / 2, paint);
         } else {
-            canvas.drawText("Code", x + 5, y, paint);
+            canvas.drawText("Code", x + 5, y + (top-bottom) / 2, paint);
         }
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(4);
-        canvas.drawRoundRect(new RectF(x, top, x + canvas.getWidth(), bottom), 7, 7, paint);
+        canvas.drawRoundRect(new RectF(x, top + top - bottom, x + canvas.getWidth(), bottom), 7, 7, paint);
     }
 
     private void onClick() {

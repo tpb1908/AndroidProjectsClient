@@ -261,11 +261,12 @@ public class HtmlTagHandler implements Html.TagHandler {
                 // end of the tag
                 int len = output.length();
                 output.removeSpan(obj);
-                output.replace(where, len, " ");
+                output.insert(where, "\n"); // Another line for our CodeSpan to cover
+                output.replace(where+1, len, " ");
                 final CodeSpan code = new CodeSpan(codeCount++);
-                output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 1, 0);
-                output.setSpan(code, where, where + 1, 0);
-                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 1, 0);
+                output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 2, 0);
+                output.setSpan(code, where, where + 2, 0);
+                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 2, 0);
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);
@@ -412,4 +413,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     public void setDrawTableLinkSpan(DrawTableLinkSpan drawTableLinkSpan) {
         this.drawTableLinkSpan = drawTableLinkSpan;
     }
+
+
 } 
