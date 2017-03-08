@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.pddstudio.highlightjs.HighlightJsView;
+import com.pddstudio.highlightjs.models.Language;
 import com.pddstudio.highlightjs.models.Theme;
 import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
@@ -65,14 +66,29 @@ public class FileActivity extends AppCompatActivity {
             if(nameStart < blob.length()) {
                 mName.setText(blob.substring(nameStart));
             }
+            mWebView.setHighlightLanguage(getLanguage(getFileType(blob)));
             new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
         } else if(ContentActivity.mLaunchNode != null) {
             final Node node = ContentActivity.mLaunchNode;
             mName.setText(node.getName());
+            mWebView.setHighlightLanguage(getLanguage(getFileType(node.getUrl())));
             new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
         } else {
             finish();
         }
+    }
+
+    private static String getFileType(String path) {
+        final int qIndex = path.lastIndexOf('?');
+        return path.substring(path.lastIndexOf('.') + 1, qIndex > 0 ? qIndex : path.length());
+    }
+
+    private static Language getLanguage(String lang) {
+        Log.i(TAG, "getLanguage: Setting language from " + lang);
+        for(Language l : Language.values()) {
+            if(l.toString().equalsIgnoreCase(lang)) return l;
+        }
+        return Language.AUTO_DETECT;
     }
 
     public void onToolbarBackPressed(View view) {
