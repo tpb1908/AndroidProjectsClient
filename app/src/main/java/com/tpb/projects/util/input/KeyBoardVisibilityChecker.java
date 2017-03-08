@@ -7,6 +7,7 @@ import android.view.View;
 
 /**
  * Created by theo on 21/02/17.
+ * Utility for listening for keyboard state
  */
 
 public class KeyBoardVisibilityChecker {
@@ -30,7 +31,6 @@ public class KeyBoardVisibilityChecker {
             if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                 mIsKeyboardOpen = true;
                 if(listener != null) listener.keyboardShown();
-                // keyboard is opened
             } else {
                 mIsKeyboardOpen = false;
                 if(listener != null) listener.keyboardHidden();
@@ -42,6 +42,9 @@ public class KeyBoardVisibilityChecker {
         return mIsKeyboardOpen;
     }
 
+    /**
+     * Interface for listening to {@link KeyBoardVisibilityChecker}
+     */
     public interface KeyBoardVisibilityListener {
 
         void keyboardShown();

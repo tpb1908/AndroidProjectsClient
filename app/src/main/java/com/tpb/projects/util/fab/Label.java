@@ -181,11 +181,7 @@ public class Label extends AppCompatTextView {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setBackgroundCompat(Drawable drawable) {
-        if (Util.hasJellyBean()) {
-            setBackground(drawable);
-        } else {
-            setBackgroundDrawable(drawable);
-        }
+        setBackground(drawable);
     }
 
     private void playShowAnimation() {

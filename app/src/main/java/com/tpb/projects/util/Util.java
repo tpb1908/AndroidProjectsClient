@@ -1,6 +1,7 @@
 package com.tpb.projects.util;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import com.tpb.projects.data.models.Repository;
@@ -50,22 +51,42 @@ public class Util {
         return ints;
     }
 
+    /**
+     * @param values The set of values to search
+     * @param key The key to find
+     * @return The index of key in values. -1 if key not in values
+     */
     public static int indexOf(int[] values, int key) {
         for(int i = 0; i < values.length; i++) if(values[i] == key) return i;
         return -1;
     }
 
+    /**
+     * @param values The set of values to search
+     * @param key The key to find
+     * @return The index of key in values. -1 if key not in values
+     */
     public static int indexOf(String[] values, String key) {
         for(int i = 0; i < values.length; i++) if(values[i].equals(key)) return i;
         return -1;
     }
 
+    /**
+     * Formats a size in kilobytes to a 2 d.p value for the largest valid unit suffix
+     * @param kb The size in kilobytes
+     * @return The formatted size. E.g. 1024 -> "1 MB"
+     */
     public static String formatKB(int kb) {
         if(kb < 1024) return Integer.toString(kb) + " KB";
         if(kb < 1024 * 1024) return String.format("%.2f", kb / 1024f) + " MB";
         return String.format("%.2f", kb / (1024f * 1024f)) + " GB";
     }
 
+    /**
+     * Formats a size in bytes to a 2 d.p value for the largest valid unit suffix
+     * @param b The size in bytes
+     * @return The formatted size. E.g. 1024 -> "1 KB"
+     */
     public static String formatBytes(int b) {
         if(b < 1024) return Integer.toString(b) + " B";
         if(b < 1024 * 1024) return String.format("%.2f", b / 1024f) + " KB";
@@ -73,6 +94,10 @@ public class Util {
         return String.format("%.2f", b / (1024f * 1024f * 1024f)) + " GB";
     }
 
+    /**
+     * @param base64 A base64 encoded String
+     * @return The decoded value with Base64.DEFAULT
+     */
     public static String base64Decode(String base64) {
         return new String(Base64.decode(base64, Base64.DEFAULT));
     }
@@ -80,10 +105,20 @@ public class Util {
     //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
+    /**
+     * Converts a UNIX time value in seconds to an ISO8061 string
+     * @param t The time since 1970 in seconds
+     * @return Time formatted as yyyy-MM-dd'T'HH:mm:ssZ
+     */
     public static String toISO8061FromSeconds(long t) {
         return ISO8601.format(new Date(t * 1000));
     }
 
+    /**
+     * Converts a UNIX time value in milliseconds to an ISO8061 string
+     * @param t The time since 1970 in milliseconds
+     * @return Time formatted as yyyy-MM-dd'T'HH:mm:ssZ
+     */
     public static String toISO8061FromMilliseconds(long t) {
         final String time = ISO8601.format(new Date(t));
         int zoneIndex = Math.max(time.indexOf('+'), time.indexOf('-'));
@@ -107,23 +142,29 @@ public class Util {
         return calendar;
     }
 
-    public static int instancesOf(String s, String i) {
+    /**
+     * Counts the instances of a string within another string
+     * @param s1 The string to search
+     * @param s2 The string to count instances of
+     * @return The number of instances of s2 in s1
+     */
+    public static int instancesOf(@NonNull String s1, @NonNull String s2) {
         int last = 0;
         int count = 0;
         while(last != -1) {
-            last = s.indexOf(i, last);
+            last = s1.indexOf(s2, last);
             if(last != -1) {
                 count++;
-                last += i.length();
+                last += s2.length();
             }
         }
         return count;
     }
 
-    public static boolean hasJellyBean() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-    }
-
+    /**
+     *
+     * @return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+     */
     public static boolean hasLollipop() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }

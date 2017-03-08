@@ -5,6 +5,7 @@ import android.text.TextWatcher;
 
 /**
  * Created by theo on 24/02/17.
+ * Simplified TextWatcher which updates onTextChanged
  */
 
 public abstract class DumbTextChangeWatcher implements TextWatcher {
@@ -22,5 +23,8 @@ public abstract class DumbTextChangeWatcher implements TextWatcher {
         textChanged();
     }
 
+    /**
+     * Called onTextChanged
+     */
     public abstract void textChanged();
 }

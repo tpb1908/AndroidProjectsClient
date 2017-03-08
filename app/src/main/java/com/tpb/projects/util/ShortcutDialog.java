@@ -44,11 +44,11 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
                 }
             }
         });
-        builder.setNegativeButton(R.string.action_cancel, (d, i) -> {
-        });
+        builder.setNegativeButton(R.string.action_cancel, null);
 
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {
+            //Show keyboard
             final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(name, InputMethodManager.SHOW_IMPLICIT);
         });

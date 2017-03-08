@@ -40,7 +40,9 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
         String s;
         for(Issue i : data) {
             s = "#" + i.getNumber();
-            for(Label l : i.getLabels()) s += "\n" + l.getName();
+            if(i.getLabels() != null) {
+                for(Label l : i.getLabels()) s += "\n" + l.getName();
+            }
             s += i.getTitle() + "\n" + i.getBody();
             strings.add(s);
         }

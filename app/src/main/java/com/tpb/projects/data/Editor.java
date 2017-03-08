@@ -57,7 +57,7 @@ public class Editor extends APIHandler {
         super(context);
     }
 
-    public void createProject(final GITModelCreationListener<Project> listener, Project project, String repoFullName) {
+    public void createProject(final @Nullable GITModelCreationListener<Project> listener, Project project, String repoFullName) {
         JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, project.getName());
@@ -84,7 +84,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateProject(final GITModelUpdateListener<Project> listener, Project project) {
+    public void updateProject(final @Nullable GITModelUpdateListener<Project> listener, Project project) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, project.getName());
@@ -111,7 +111,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void deleteProject(final GITModelDeletionListener<Project> listener, Project project) {
+    public void deleteProject(final @Nullable GITModelDeletionListener<Project> listener, Project project) {
         /*
         It seems that on a successful deletion, this returns an error with null body
          */
@@ -136,7 +136,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateColumnName(GITModelUpdateListener<Column> listener, int columnId, String newName) {
+    public void updateColumnName(@Nullable GITModelUpdateListener<Column> listener, int columnId, String newName) {
         final JSONObject obj = new JSONObject();
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
@@ -164,7 +164,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void addColumn(GITModelCreationListener<Column> listener, int projectId, String name) {
+    public void addColumn(@Nullable GITModelCreationListener<Column> listener, int projectId, String name) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, name);
@@ -190,7 +190,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void moveColumn(GITModelUpdateListener<Integer> listener, int columnId, int dropPositionId, int position) {
+    public void moveColumn(@Nullable GITModelUpdateListener<Integer> listener, int columnId, int dropPositionId, int position) {
         final JSONObject obj = new JSONObject();
         try {
             if(position == 0) {
@@ -219,7 +219,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void deleteColumn(GITModelDeletionListener<Integer> listener, int columnId) {
+    public void deleteColumn(@Nullable GITModelDeletionListener<Integer> listener, int columnId) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
@@ -245,7 +245,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createCard(GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, String note) {
+    public void createCard(@Nullable GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -271,7 +271,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createCard(GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, int issueId) {
+    public void createCard(@Nullable GITModelCreationListener<Pair<Integer, Card>> listener, int columnId, int issueId) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(CONTENT_TYPE, CONTENT_TYPE_ISSUE);
@@ -298,7 +298,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateCard(GITModelUpdateListener<Card> listener, int cardId, String note) {
+    public void updateCard(@Nullable GITModelUpdateListener<Card> listener, int cardId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -324,7 +324,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void moveCard(GITModelUpdateListener<Integer> listener, int columnId, int cardId, int afterId) {
+    public void moveCard(@Nullable GITModelUpdateListener<Integer> listener, int columnId, int cardId, int afterId) {
         final JSONObject obj = new JSONObject();
         try {
             if(afterId == -1) {
@@ -355,7 +355,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void deleteCard(GITModelDeletionListener<Card> listener, Card card) {
+    public void deleteCard(@Nullable GITModelDeletionListener<Card> listener, Card card) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + card.getId())
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .build()
@@ -376,7 +376,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createIssue(GITModelCreationListener<Issue> listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void createIssue(@Nullable GITModelCreationListener<Issue> listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -406,7 +406,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void closeIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
+    public void closeIssue(@Nullable GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_CLOSED);
@@ -432,7 +432,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void openIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
+    public void openIssue(@Nullable GITModelUpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_OPEN);
@@ -458,7 +458,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateIssue(GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void updateIssue(@Nullable GITModelUpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -487,7 +487,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createComment(GITModelCreationListener<Comment> listener, String fullRepoPath, int issueNumber, String body) {
+    public void createComment(@Nullable GITModelCreationListener<Comment> listener, String fullRepoPath, int issueNumber, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -513,7 +513,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateComment(GITModelUpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
+    public void updateComment(@Nullable GITModelUpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -538,7 +538,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void deleteComment(GITModelDeletionListener<Integer> listener, String fullRepoPath, int commentId) {
+    public void deleteComment(@Nullable GITModelDeletionListener<Integer> listener, String fullRepoPath, int commentId) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -561,7 +561,7 @@ public class Editor extends APIHandler {
 
     }
 
-    public void starRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
+    public void starRepo(@Nullable GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .addHeaders("Content-Length", "0")
@@ -583,7 +583,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void unstarRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
+    public void unstarRepo(@Nullable GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.delete(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -604,7 +604,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void watchRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
+    public void watchRepo(@Nullable GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "true")
@@ -631,7 +631,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void unwatchRepo(GITModelUpdateListener<Boolean> listener, String fullRepoName) {
+    public void unwatchRepo(@Nullable GITModelUpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "false")
@@ -658,7 +658,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void createMilestone(GITModelCreationListener<Milestone> listener, String fullRepoName, @NonNull String title, @Nullable String description, @Nullable String dueOn) {
+    public void createMilestone(@Nullable GITModelCreationListener<Milestone> listener, String fullRepoName, @NonNull String title, @Nullable String description, @Nullable String dueOn) {
         final JSONObject obj =  new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -689,7 +689,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateMilestone(GITModelUpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @Nullable State state) {
+    public void updateMilestone(@Nullable GITModelUpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @Nullable State state) {
         final JSONObject obj =  new JSONObject();
         try {
             if(title != null) obj.put(TITLE, title);

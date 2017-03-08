@@ -22,6 +22,12 @@ import com.tpb.projects.R;
 public class UI {
     private static final String TAG = UI.class.getSimpleName();
 
+    /**
+     * Sets the expansion point for a {@link com.tpb.projects.editors.CircularRevealActivity} Intent
+     * to the midpoint of a View
+     * @param i The Intent to launch a {@link com.tpb.projects.editors.CircularRevealActivity} instance
+     * @param view The View instance which was clicked
+     */
     public static void setViewPositionForIntent(Intent i, View view) {
         final int[] pos = new int[2];
         view.getLocationOnScreen(pos);
@@ -31,6 +37,12 @@ public class UI {
         i.putExtra(view.getContext().getString(R.string.intent_position_y), pos[1]);
     }
 
+    /**
+     *
+     * @param context Required to get string resource values
+     * @param i The Intent to launch a {@link com.tpb.projects.editors.CircularRevealActivity} instance
+     * @param pos The x and y coordinates of the click
+     */
     public static void setClickPositionForIntent(Context context, Intent i, float[] pos) {
         i.putExtra(context.getString(R.string.intent_position_x), (int) pos[0]);
         i.putExtra(context.getString(R.string.intent_position_y), (int) pos[1]);
@@ -114,6 +126,12 @@ public class UI {
         window.setStatusBarColor(color);
     }
 
+    /**
+     * Fades the background color of a View from original to flash and back
+     * @param view The view to flash
+     * @param original The current background color
+     * @param flash The color to fade to
+     */
     public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
         final ObjectAnimator colorFade = ObjectAnimator.ofObject(
                 view,

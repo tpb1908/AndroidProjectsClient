@@ -301,11 +301,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setBackgroundCompat(Drawable drawable) {
-        if (Util.hasJellyBean()) {
-            setBackground(drawable);
-        } else {
-            setBackgroundDrawable(drawable);
-        }
+        setBackground(drawable);
     }
 
     private void saveButtonOriginalPosition() {

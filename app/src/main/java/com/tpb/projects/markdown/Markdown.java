@@ -1,5 +1,6 @@
 package com.tpb.projects.markdown;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
 
@@ -58,13 +59,14 @@ public class Markdown {
 
         @Override
         public void render(Node node) {
-            // We only handle one type as per getNodeTypes, so we can just cast it here.
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
 
+                // Greater than 5 lines of code
                 if(Util.instancesOf(block.getLiteral(), "\n") > 7) {
                     html.line();
                     html.tag("code");
+                    // \u0002 is start of text
                     html.text(String.format("[%1$s]\u0002%2$s", block.getInfo(), block.getLiteral()));
                     html.tag("/code");
                 } else {
@@ -74,7 +76,7 @@ public class Markdown {
                         // TODO Highlight string
                     }
                     for(String s : block.getLiteral().replace("\n\n", "\n").split("\n")) {
-                        html.raw(s.replace(" ", "&nbsp;"));
+                        html.raw(s.replace(" ", "&nbsp;")); //Preserve formatting
                         html.tag("br");
                     }
                     html.tag("/small");
@@ -91,8 +93,12 @@ public class Markdown {
         }
     }
 
-
-    public static String escape(String s) {
+    /**
+     * Escapes characters to stop parser mishandling them
+     * @param s The string to escape
+     * @return String with #, @, <, and > replaced with their HTML codes
+     */
+    public static String escape(@NonNull String s) {
         s = s.replace("#", "&#35;"); //Hashes must be escaped first
         s = s.replace("@", "&#64;"); //Ignore tags and email addresses
         s = s.replace("<", "&#60;"); //Ignore html
@@ -100,19 +106,19 @@ public class Markdown {
         return s;
     }
 
-    public static String parseMD(String s, String fullRepoName) {
+    public static String parseMD(@NonNull String s, @Nullable String fullRepoName) {
         return renderer.render(parser.parse(formatMD(s, fullRepoName)));
     }
 
-    public static String parseMD(String s) {
+    public static String parseMD(@NonNull String s) {
         return renderer.render(parser.parse(s));
     }
 
-    public static String formatMD(String s, @Nullable String fullRepoPath) {
+    public static String formatMD(@NonNull String s, @Nullable String fullRepoPath) {
         return formatMD(s, fullRepoPath, true);
     }
 
-    public static String formatMD(String s, @Nullable String fullRepoPath, boolean linkUsernames) {
+    public static String formatMD(@NonNull String s, @Nullable String fullRepoPath, boolean linkUsernames) {
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
@@ -183,6 +189,11 @@ public class Markdown {
         return builder.toString();
     }
 
+    /**
+     * Formats a username as a link, appends it to a StringBuilder, and returns the position
+     * after the username in cs
+     * @return The position after the username
+     */
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
         char p = ' ';
@@ -221,6 +232,11 @@ public class Markdown {
         return --pos;
     }
 
+    /**
+     * Formats an Issue reference as a link, appends it to a StringBuilder, and returns the
+     * position after the Issue reference in cs
+     * @return The position after the Issue number
+     */
     private static int parseIssue(StringBuilder builder, char[] cs, int pos, String fullRepoPath) {
         final StringBuilder numBuilder = new StringBuilder();
         for(int i = ++pos; i < cs.length; i++) {
