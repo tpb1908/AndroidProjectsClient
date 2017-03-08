@@ -84,7 +84,6 @@ public class FileActivity extends AppCompatActivity {
     }
 
     private static Language getLanguage(String lang) {
-        Log.i(TAG, "getLanguage: Setting language from " + lang);
         for(Language l : Language.values()) {
             if(l.toString().equalsIgnoreCase(lang)) return l;
         }

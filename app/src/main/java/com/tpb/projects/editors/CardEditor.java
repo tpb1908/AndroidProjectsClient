@@ -13,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
@@ -30,14 +29,14 @@ import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-import com.tpb.projects.markdown.Markdown;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,7 +67,6 @@ public class CardEditor extends ImageLoadingActivity {
     private Card mCard;
 
     private boolean mHasBeenEdited = false;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,8 +110,8 @@ public class CardEditor extends ImageLoadingActivity {
             public void previewCalled() {
                 if(mEditor.isEditing()) {
                     mEditor.saveText();
-                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
+                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
                 } else {
                     mEditor.restoreText();
                     mEditor.enableEditing();
@@ -141,7 +139,7 @@ public class CardEditor extends ImageLoadingActivity {
         mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = true;
+                mHasBeenEdited = mEditor.isEditing();
             }
         });
 
@@ -185,9 +183,6 @@ public class CardEditor extends ImageLoadingActivity {
         mEditor.setText(Html.fromHtml(html));
     }
 
-    /*
-    Adds the listeners for loading the Card from an Issue
-     */
     private void addFromIssueButtonListeners(Intent launchIntent) {
         final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
         final ArrayList<Integer> invalidIds = launchIntent.getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
@@ -304,7 +299,6 @@ public class CardEditor extends ImageLoadingActivity {
 
     @Override
     public void finish() {
-        Log.i(TAG, "finish: Card finish called");
         if(mHasBeenEdited) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);

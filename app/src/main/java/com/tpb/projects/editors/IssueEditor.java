@@ -137,7 +137,7 @@ public class IssueEditor extends ImageLoadingActivity {
             @Override
             public void textChanged() {
 
-                mHasBeenEdited = true;
+                mHasBeenEdited = mBodyEdit.isEditing();
             }
         };
 
@@ -188,8 +188,8 @@ public class IssueEditor extends ImageLoadingActivity {
                     mBodyEdit.saveText();
                     String repo = null;
                     if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
-                    mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
                     mBodyEdit.disableEditing();
+                    mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
                 } else {
                     mBodyEdit.restoreText();
                     mBodyEdit.enableEditing();

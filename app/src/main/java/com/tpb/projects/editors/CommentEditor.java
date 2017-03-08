@@ -84,7 +84,7 @@ public class CommentEditor extends ImageLoadingActivity {
         mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = true;
+                mHasBeenEdited = mEditor.isEditing();
             }
         });
 
@@ -105,8 +105,8 @@ public class CommentEditor extends ImageLoadingActivity {
                     mEditor.saveText();
                     String repo = null;
                     if(mIssue != null) repo = mIssue.getRepoPath();
-                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
                     mEditor.disableEditing();
+                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
                 } else {
                     mEditor.restoreText();
                     mEditor.enableEditing();

@@ -17,11 +17,6 @@ import com.tpb.projects.login.LoginActivity;
 
 import org.json.JSONObject;
 
-
-/**
- * @author Thiago Locatelli <thiago.locatelli@gmail.com>
- * @author Lorensius W. L T <lorenz@londatiga.net>
- */
 public class OAuthHandler extends APIHandler {
     private static final String TAG = OAuthHandler.class.getSimpleName();
 
@@ -31,10 +26,6 @@ public class OAuthHandler extends APIHandler {
     private final String mTokenUrl;
     private String mAccessToken;
 
-    /**
-     * Callback url, as set in 'Manage OAuth Costumers' page
-     * (https://developer.gitHub.com/)
-     */
 
     public static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
@@ -79,7 +70,6 @@ public class OAuthHandler extends APIHandler {
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                        Log.i(TAG, "onResponse: AccessToken: " + response);
                         mAccessToken = response.substring(
                                 response.indexOf("access_token=") + 13,
                                 response.indexOf("&scope"));
@@ -97,13 +87,13 @@ public class OAuthHandler extends APIHandler {
     }
 
     private void fetchUserName() {
+
         AndroidNetworking.get(GIT_BASE + "/user")
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: " + response.toString());
                         final User user = User.parse(response);
                         mSession.storeCredentials(mAccessToken, user.getId(), user.getLogin());
                         mListener.userLoaded(user);
@@ -137,7 +127,7 @@ public class OAuthHandler extends APIHandler {
     }
 
     //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization
-    public void validateKey(OAuthValidationListener listener) {
+    public static void validateKey(OAuthValidationListener listener) {
         AndroidNetworking.get(GIT_BASE + RATE_LIMIT)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
