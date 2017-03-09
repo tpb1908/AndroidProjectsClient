@@ -38,7 +38,6 @@ public class Card extends DataModel implements Parcelable {
 
     private boolean requiresLoadingFromIssue;
 
-
     private long updatedAt;
 
     public String getColumnUrl() {
@@ -103,15 +102,11 @@ public class Card extends DataModel implements Parcelable {
     }
 
     public boolean requiresLoadingFromIssue() {
-        return requiresLoadingFromIssue;
+        return requiresLoadingFromIssue && issue == null;
     }
 
-    public void setRequiresLoadingFromIssue(boolean requiresLoadingFromIssue) {
-        this.requiresLoadingFromIssue = requiresLoadingFromIssue;
-    }
 
     public void setFromIssue(Issue issue) {
-        requiresLoadingFromIssue = false;
         note = issue.getTitle() + "\n" + (issue.getBody() != null && !issue.getBody().isEmpty() ? '\n' + issue.getBody() : "");
         this.issue = issue;
     }
