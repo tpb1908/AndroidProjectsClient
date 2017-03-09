@@ -45,10 +45,11 @@ import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
+import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -79,7 +80,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
     private float[] mLastClickPosition = new float[] { -1, -1};
 
-    private SpanCacher mSpanCacher;
+    private WeakReference<SpanCacher> mSpanCacher;
 
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -150,7 +151,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
      */
     //http://stackoverflow.com/a/17201376/4191572
     public void setHtml(@NonNull final String html, @Nullable final Html.ImageGetter imageGetter, @Nullable SpanCacher cacher) {
-        mSpanCacher = cacher;
+        mSpanCacher = new WeakReference<>(cacher);
         final Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -214,7 +215,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                         setText(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
-                        if(mSpanCacher != null) mSpanCacher.cache(buffer);
+                        if(mSpanCacher.get() != null) mSpanCacher.get().cache(buffer);
                         mSpanCacher = null;
                     }
                 });
