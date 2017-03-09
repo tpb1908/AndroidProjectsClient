@@ -12,9 +12,9 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [Fast-Android-Networking](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
 
-* [Clans FloatingActionButton](https://github.com/Clans/FloatingActionButton)
+* [Clans FloatingActionButton](https://github.com/Clans/FloatingActionButton) Modified
 
-* CommonMark
+* [CommonMark-Java](https://github.com/atlassian/commonmark-java)
 
 * [HtmlTextView](https://github.com/SufficientlySecure/html-textview) Modified
 
@@ -27,6 +27,10 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * [Google Services](https://developers.google.com/android/guides/setup)
 
 * [FireBase core and crash](https://firebase.google.com/docs/android/setup)
+
+* [Leak Canary](https://github.com/square/leakcanary)
+
+
 
 
 ### Features
@@ -59,16 +63,17 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * Add the client ID and secret to gradle.properties
 
+```
+GITHUB_CLIENT_ID="GITHUB_ID"
+
+GITHUB_CLIENT_SECRET="GITHUB_SECRET"
+```
+
 **Register a new application on Imgur**
 
 This is not essential, but in app image uploading will not work otherwise
 
 ```
-GITHUB_CLIENT_ID="GITHUB_ID"
-
-GITHUB_CLIENT_SECRET="GITHUB_SECRET"
-
-
 IMGUR_CLIENT_ID="IMGUR_ID"
 
 IMGUR_CLIENT_SECRET="IMGUR_SECRET"
