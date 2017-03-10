@@ -1,6 +1,8 @@
 package com.tpb.projects.user.fragments;
 
 import android.animation.ObjectAnimator;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.Space;
@@ -9,6 +11,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -50,7 +53,19 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         final View view = inflater.inflate(R.layout.fragment_user_info, container, false);
         unbinder = ButterKnife.bind(this, view);
         mRefresher.setRefreshing(true);
-
+        mAvatar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
+                if(getActivity().getIntent() != null && getActivity().getIntent().hasExtra(getString(R.string.intent_drawable))) {
+                    final Bitmap bm = getActivity().getIntent().getParcelableExtra(getString(R.string.intent_drawable));
+                    mUserName.setText(getActivity().getIntent().getStringExtra(getString(R.string.intent_username)));
+                    mAvatar.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
+                }
+                getActivity().startPostponedEnterTransition();
+                return true;
+            }
+        });
         return view;
     }
 
@@ -58,6 +73,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     public void userLoaded(User user) {
         mUserName.setText(user.getLogin());
         mAvatar.setImageUrl(user.getAvatarUrl());
+
         mContributions.setListener(this);
         mContributions.loadUser(user.getLogin());
         listUserInfo(user);
@@ -121,6 +137,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void contributionsLoaded(List<ContributionsLoader.GitDay> contributions) {
+        if(isDetached()) return;
         mContributionsInfo.setText(null);
         int total = 0;
         int daysActive = 0;

@@ -51,6 +51,8 @@ public class UserActivity extends CircularRevealActivity {
         setContentView(R.layout.activity_user_viewpager);
         ButterKnife.bind(this);
 
+        postponeEnterTransition();
+
         final String user;
         final Loader loader = new Loader(this);
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
