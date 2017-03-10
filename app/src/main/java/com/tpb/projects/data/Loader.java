@@ -146,7 +146,37 @@ public class Loader extends APIHandler {
                         for(int i = 0; i < repos.length; i++) {
                             repos[i] = Repository.parse(jsa.getJSONObject(i));
                         }
-                        Log.i(TAG, "onResponse: successfully parsed repos");
+                        loader.loadComplete(repos);
+                    } catch(JSONException jse) {
+                        Log.i(TAG, "onResponse: " + jsa.toString());
+                        Log.e(TAG, "onResponse: ", jse);
+                    }
+                }
+
+                @Override
+                public void onError(ANError anError) {
+                    Log.i(TAG, "onError: User repos" + anError.getErrorBody());
+                    loader.loadError(parseError(anError));
+                }
+            });
+        }
+    }
+
+    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, int page) {
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + (page > 1 ? "?page=" + page : ""))
+                .addHeaders(API_AUTH_HEADERS)
+                .build();
+        if(loader == null) {
+            req.prefetch();
+        } else {
+            req.getAsJSONArray(new JSONArrayRequestListener() {
+                @Override
+                public void onResponse(JSONArray jsa) {
+                    try {
+                        final Repository[] repos = new Repository[jsa.length()];
+                        for(int i = 0; i < repos.length; i++) {
+                            repos[i] = Repository.parse(jsa.getJSONObject(i));
+                        }
                         loader.loadComplete(repos);
                     } catch(JSONException jse) {
                         Log.i(TAG, "onResponse: " + jsa.toString());

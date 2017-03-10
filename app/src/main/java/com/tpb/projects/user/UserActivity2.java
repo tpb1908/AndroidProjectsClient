@@ -87,6 +87,7 @@ public class UserActivity2 extends CircularRevealActivity {
         }
         mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         mPager.setAdapter(mAdapter);
+        mPager.setOffscreenPageLimit(5);
     }
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {

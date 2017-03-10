@@ -51,7 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepoOpener {
+public class UserActivity extends CircularRevealActivity implements RepositoriesAdapter.RepoOpener {
     private static final String TAG = UserActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 
@@ -92,7 +92,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
 
             final LinearLayoutManager manager = new LinearLayoutManager(this);
             mRecycler.setLayoutManager(manager);
-            final UserReposAdapter adapter = new UserReposAdapter(this, this, mRefresher);
+            final RepositoriesAdapter adapter = new RepositoriesAdapter(this, this, mRefresher);
             mRecycler.setAdapter(adapter);
 
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_open_fab);
@@ -162,7 +162,7 @@ public class UserActivity extends CircularRevealActivity implements UserReposAda
                 mUserImage.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
 
             }
-            adapter.setUser(user);
+            adapter.setUser(user, false);
             adapter.loadReposForUser(false);
 
             mApp.validateKey(isValid -> {

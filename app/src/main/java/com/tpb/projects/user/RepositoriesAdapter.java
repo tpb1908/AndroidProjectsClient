@@ -35,8 +35,8 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
-    private static final String TAG = UserReposAdapter.class.getSimpleName();
+public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
+    private static final String TAG = RepositoriesAdapter.class.getSimpleName();
 
     private final Loader mLoader;
     private final SwipeRefreshLayout mRefresher;
@@ -50,7 +50,9 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
-    public UserReposAdapter(Context context, RepoOpener opener, SwipeRefreshLayout refresher) {
+    private boolean mIsShowingStars = false;
+
+    public RepositoriesAdapter(Context context, RepoOpener opener, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mManager = opener;
         mRefresher = refresher;
@@ -66,8 +68,9 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
-    public void setUser(String user) {
+    public void setUser(String user, boolean isShowingStars) {
         mUser = user;
+        mIsShowingStars = isShowingStars;
         loadReposForUser(false);
     }
 
@@ -86,7 +89,9 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
             mPage = 1;
             mMaxPageReached = false;
         }
-        if(mUser.equals(mAuthenticatedUser)) { //The session user
+        if(mIsShowingStars) {
+            mLoader.loadStarredRepositories(this, mPage);
+        } else if(mUser.equals(mAuthenticatedUser)) { //The session user
             mLoader.loadRepositories(this, mPage);
         } else {
             mLoader.loadRepositories(this, mUser, mPage);
@@ -150,29 +155,28 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
         mIsLoading = false;
         if(repos.length > 0) {
             int oldLength = mRepos.size();
-
-            if(mPage == 1) {
-                // mRecycler.enableAnimation();
-                Log.i(TAG, "repositoriesLoaded: Setting repositories");
-                mRepos.clear();
-                for(Repository r : repos) {
-                    if(mPinChecker.isPinned(r.getFullName())) {
-                        mRepos.add(0, r);
-                    } else {
-                        mRepos.add(r);
-                    }
-                }
-                mPinChecker.setInitialPositions(mRepos.toArray(new Repository[0]));
-                ensureLoadOfPinnedRepos();
+            if(mPage == 1) mRepos.clear();
+            if(mIsShowingStars) {
+                mRepos.addAll(Arrays.asList(repos));
             } else {
-                Log.i(TAG, "repositoriesLoaded: Adding repositories");
-                for(Repository repo : repos) {
-                    if(!mRepos.contains(repo)) mRepos.add(repo);
+                if(mPage == 1) {
+                    for(Repository r : repos) {
+                        if(mPinChecker.isPinned(r.getFullName())) {
+                            mRepos.add(0, r);
+                        } else {
+                            mRepos.add(r);
+                        }
+                    }
+                    mPinChecker.setInitialPositions(mRepos.toArray(new Repository[0]));
+                    ensureLoadOfPinnedRepos();
+                } else {
+                    for(Repository repo : repos) {
+                        if(!mRepos.contains(repo)) mRepos.add(repo);
+                    }
+                    mPinChecker.appendInitialPositions(repos);
                 }
-                mPinChecker.appendInitialPositions(repos);
             }
             notifyItemRangeInserted(oldLength, mRepos.size());
-
 
         } else {
             mMaxPageReached = true;
@@ -185,9 +189,7 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
     }
 
     private void ensureLoadOfPinnedRepos() {
-        Log.i(TAG, "ensureLoadOfPinnedRepos: Ensuring that repos are loaded ");
         for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
-            Log.i(TAG, "ensureLoadOfPinnedRepos: Loading " + repo);
             mLoader.loadRepository(new Loader.GITModelLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
@@ -221,12 +223,16 @@ public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.Repo
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener((v) -> UserReposAdapter.this.openItem(mName, getAdapterPosition()));
-            mPin.setOnClickListener((v) -> {
-                togglePin(getAdapterPosition());
-                isPinned = !isPinned;
-                mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
-            });
+            view.setOnClickListener((v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
+            if(mIsShowingStars) {
+                mPin.setVisibility(View.GONE);
+            } else {
+                mPin.setOnClickListener((v) -> {
+                    togglePin(getAdapterPosition());
+                    isPinned = !isPinned;
+                    mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+                });
+            }
         }
 
     }

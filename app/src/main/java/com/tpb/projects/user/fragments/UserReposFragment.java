@@ -18,7 +18,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.user.UserReposAdapter;
+import com.tpb.projects.user.RepositoriesAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,13 +28,13 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserReposFragment extends UserFragment implements UserReposAdapter.RepoOpener{
+public class UserReposFragment extends UserFragment implements RepositoriesAdapter.RepoOpener{
 
     private Unbinder unbinder;
 
     @BindView(R.id.user_repos_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.user_repos_refresher) SwipeRefreshLayout mRefresher;
-    private UserReposAdapter mAdapter;
+    private RepositoriesAdapter mAdapter;
 
     @Nullable
     @Override
@@ -44,7 +44,7 @@ public class UserReposFragment extends UserFragment implements UserReposAdapter.
 
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(manager);
-        mAdapter = new UserReposAdapter(getContext(), this, mRefresher);
+        mAdapter = new RepositoriesAdapter(getContext(), this, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -62,7 +62,7 @@ public class UserReposFragment extends UserFragment implements UserReposAdapter.
 
     @Override
     public void userLoaded(User user) {
-        mAdapter.setUser(user.getLogin());
+        mAdapter.setUser(user.getLogin(), false);
     }
 
     @Override

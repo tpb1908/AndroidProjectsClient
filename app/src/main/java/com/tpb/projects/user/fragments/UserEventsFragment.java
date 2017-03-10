@@ -8,6 +8,7 @@ import com.tpb.projects.data.models.User;
 
 public class UserEventsFragment extends UserFragment {
 
+
     @Override
     public void userLoaded(User user) {
 
