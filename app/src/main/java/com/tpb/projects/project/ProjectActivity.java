@@ -105,6 +105,7 @@ public class ProjectActivity extends AppCompatActivity implements Loader.GITMode
         ButterKnife.bind(this);
         mAnalytics = FirebaseAnalytics.getInstance(this);
         mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
+
         final Intent launchIntent = getIntent();
         mLoader = new Loader(this);
         mEditor = new Editor(this);

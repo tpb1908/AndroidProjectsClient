@@ -479,7 +479,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
 
     @OnClick(R.id.issue_header_card)
     void onHeaderClick(View view) {
-        if(mIssue != null) editIssue(view);
+        if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(view);
     }
 
     private void editIssue(View view) {
