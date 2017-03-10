@@ -267,6 +267,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 2, 0);
                 output.setSpan(code, where, where + 2, 0);
                 output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, 0);
+                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: CodeSpan from " + where);
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

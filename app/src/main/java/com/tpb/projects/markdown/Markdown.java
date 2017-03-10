@@ -10,7 +10,9 @@ import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.node.Code;
 import org.commonmark.node.FencedCodeBlock;
+import org.commonmark.node.IndentedCodeBlock;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
@@ -44,6 +46,8 @@ public class Markdown {
         private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
         static { //Nodes to capture
             nodeTypes.add(FencedCodeBlock.class);
+            nodeTypes.add(IndentedCodeBlock.class);
+            nodeTypes.add(Code.class);
             nodeTypes.add(Strikethrough.class);
         }
 
@@ -81,8 +85,18 @@ public class Markdown {
                     }
                     html.tag("/small");
                     html.line();
-
                 }
+            } else if(node instanceof IndentedCodeBlock) {
+                html.tag("br");
+                html.tag("code");
+                final IndentedCodeBlock block = (IndentedCodeBlock) node;
+                html.text(String.format("[%1$s]\u0002%2$s", "", block.getLiteral()));
+                html.tag("/code");
+                html.tag("/br");
+            } else if(node instanceof Code) {
+                html.tag("small");
+                html.raw(((Code) node).getLiteral().replace(" ", "&nbsp;"));
+                html.tag("/small");
             } else if(node instanceof Strikethrough) {
                 html.line();
                 html.tag("s"); //Proper tag
