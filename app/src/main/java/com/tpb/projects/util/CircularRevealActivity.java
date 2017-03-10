@@ -1,11 +1,10 @@
-package com.tpb.projects.editors;
+package com.tpb.projects.util;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
@@ -13,13 +12,12 @@ import android.view.WindowManager;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.util.UI;
 
 /**
  * Created by theo on 20/02/17.
  */
 
-public abstract class CircularRevealActivity extends AppCompatActivity {
+public abstract class CircularRevealActivity extends BaseActivity {
 
     private int x = -1;
     private int y = -1;
@@ -109,7 +107,7 @@ public abstract class CircularRevealActivity extends AppCompatActivity {
         circularClose.start();
     }
 
-    boolean isClosing() {
+    public boolean isClosing() {
         return mIsClosing;
     }
 
@@ -121,4 +119,6 @@ public abstract class CircularRevealActivity extends AppCompatActivity {
             super.finish();
         }
     }
+
+
 }

@@ -22,7 +22,7 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
-import com.tpb.projects.editors.CircularRevealActivity;
+import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.UI;

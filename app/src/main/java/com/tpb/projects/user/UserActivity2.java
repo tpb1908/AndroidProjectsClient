@@ -2,10 +2,13 @@ package com.tpb.projects.user;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,13 +18,13 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.editors.CircularRevealActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
 import com.tpb.projects.user.fragments.UserStarredFragment;
+import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -33,7 +36,7 @@ import butterknife.ButterKnife;
 
 public class UserActivity2 extends CircularRevealActivity {
 
-
+    @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
     @BindView(R.id.user_fragment_viewpager) ViewPager mPager;
 
     private UserFragmentAdapter mAdapter;
@@ -86,6 +89,7 @@ public class UserActivity2 extends CircularRevealActivity {
 
         }
         mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
+        mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(5);
     }
@@ -134,13 +138,78 @@ public class UserActivity2 extends CircularRevealActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Title";
+            switch(position) {
+                case 0:
+                    return getString(R.string.title_user_info_fragment);
+                case 1:
+                    return getString(R.string.title_user_repos_fragment);
+                case 2:
+                    return getString(R.string.title_user_starred_fragment);
+                case 3:
+                    return getString(R.string.title_user_gists_fragment);
+                case 4:
+                    return getString(R.string.title_user_events_fragment);
+                default:
+                    return "Error";
+            }
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //TODO Pass to fragment
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()) {
+//            case R.id.menu_settings:
+//                startActivity(new Intent(UserActivity2.this, SettingsActivity.class));
+//                break;
+//            case R.id.menu_source:
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+//                break;
+//            case R.id.menu_share:
+//                final Intent share = new Intent();
+//                share.setAction(Intent.ACTION_SEND);
+//                share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mUser.getLogin());
+//                share.setType("text/plain");
+//                startActivity(share);
+//                break;
+//            case R.id.menu_save_to_homescreen:
+//                final ShortcutDialog dialog = new ShortcutDialog();
+//                final Bundle args = new Bundle();
+//                args.putInt(getString(R.string.intent_title_res), R.string.title_save_user_shortcut);
+//                args.putBoolean(getString(R.string.intent_drawable), mUserImage.getDrawable() != null);
+//                args.putString(getString(R.string.intent_name), mUserName.getText().toString());
+//
+//                dialog.setArguments(args);
+//                dialog.setListener((name, iconFlag) -> {
+//                    final Intent i = new Intent(getApplicationContext(), UserActivity.class);
+//                    i.putExtra(getString(R.string.intent_username), mUserName.getText().toString());
+//
+//                    final Intent add = new Intent();
+//                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+//                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+//                    add.putExtra("duplicate", false);
+//                    if(iconFlag) {
+//                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON, ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
+//                    } else {
+//                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+//                    }
+//                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+//                    getApplicationContext().sendBroadcast(add);
+//                });
+//                dialog.show(getSupportFragmentManager(), TAG);
+//                break;
+//        }
+        return true;
+    }
+
 
     public void onToolbarBackPressed(View view) {
         onBackPressed();
     }
-
-
 }

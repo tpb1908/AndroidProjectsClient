@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,6 +40,7 @@ import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -55,7 +55,7 @@ import static android.view.View.GONE;
  * Created by theo on 16/12/16.
  */
 
-public class RepoActivity extends AppCompatActivity implements
+public class RepoActivity extends BaseActivity implements
         ProjectAdapter.ProjectEditor,
         ProjectDialog.ProjectListener,
         Editor.GITModelCreationListener<Project> {
