@@ -1,7 +1,9 @@
 package com.tpb.projects.util;
 
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.format.DateFormat;
 import android.util.Base64;
 
 import com.tpb.projects.data.models.Repository;
@@ -140,6 +142,10 @@ public class Util {
         final Date date = ISO8601.parse(s);
         calendar.setTime(date);
         return calendar;
+    }
+
+    public static String formatDateLocally(Context context, Date date) {
+        return DateFormat.getDateFormat(context).format(date);
     }
 
     /**

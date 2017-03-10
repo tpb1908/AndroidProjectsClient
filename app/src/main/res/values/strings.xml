@@ -119,7 +119,8 @@
 
     <!-- User activity -->
 
-
+    <string name="text_user_activity">Activity</string>
+    <string name="text_user_created_at">Created %1$s</string>
     <string name="text_commit">commit %1$s</string>
     <string name="text_user_no_commits">No commits</string>
     <string name="text_user_commits">%1$d commits in %2$d days</string>

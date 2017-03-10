@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
+import android.support.annotation.Px;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,18 +103,22 @@ public class UI {
         v.startAnimation(a);
     }
 
+    @Dimension
     public static float dpFromPx(final float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
     }
 
+    @Px
     public static int pxFromDp(final float dp) {
         return Math.round(dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
+    @Px
     public static int pxFromDp(final int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
+    @Px
     public static int pxFromSp(final float sp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
     }

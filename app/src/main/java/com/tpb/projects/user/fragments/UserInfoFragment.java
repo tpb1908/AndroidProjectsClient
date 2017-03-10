@@ -3,6 +3,7 @@ package com.tpb.projects.user.fragments;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.Space;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -16,18 +17,23 @@ import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+
 /**
  * Created by theo on 10/03/17.
  */
 
 public class UserInfoFragment extends UserFragment implements ContributionsView.ContributionsLoadListener {
+    private static final String TAG = UserInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -60,37 +66,56 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     private void listUserInfo(User user) {
         mInfoList.removeAllViews();
+        TextView tv;
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, UI.pxFromDp(4), 0, UI.pxFromDp(4));
         if(user.getName() != null) {
-            final TextView tv = new TextView(getContext());
+            tv = new TextView(getContext());
             tv.setText(user.getName());
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_person, 0, 0, 0);
-            mInfoList.addView(tv);
+            mInfoList.addView(tv, params);
         }
+        tv = new TextView(getContext());
+        tv.setText(
+                String.format(
+                    getString(R.string.text_user_created_at),
+                    Util.formatDateLocally(
+                        getContext(),
+                        new Date(user.getCreatedAt())
+                )
+            )
+        );
+        tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_date, 0, 0, 0);
+        mInfoList.addView(tv, params);
+        mInfoList.addView(new Space(getContext()));
         if(user.getEmail() != null) {
-            final TextView tv = new TextView(getContext());
+            tv = new TextView(getContext());
             tv.setAutoLinkMask(Linkify.EMAIL_ADDRESSES);
             tv.setText(user.getEmail());
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_email, 0, 0, 0);
-            mInfoList.addView(tv);
+            mInfoList.addView(tv, params);
         }
         if(user.getBlog() != null) {
-            final TextView tv = new TextView(getContext());
+            tv = new TextView(getContext());
             tv.setAutoLinkMask(Linkify.WEB_URLS);
             tv.setText(user.getBlog());
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_blog, 0, 0, 0);
-            mInfoList.addView(tv);
+            mInfoList.addView(tv, params);
         }
         if(user.getCompany() != null) {
-            final TextView tv = new TextView(getContext());
+            tv = new TextView(getContext());
             tv.setText(user.getCompany());
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_company, 0, 0, 0);
-            mInfoList.addView(tv);
+            mInfoList.addView(tv, params);
         }
         if(user.getLocation() != null) {
-            final TextView tv = new TextView(getContext());
+            tv = new TextView(getContext());
             tv.setText(user.getLocation());
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_location, 0, 0, 0);
-            mInfoList.addView(tv);
+            mInfoList.addView(tv, params);
         }
     }
 

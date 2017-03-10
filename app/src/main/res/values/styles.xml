@@ -61,4 +61,9 @@
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
+    <style name="TextList">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
 </resources>

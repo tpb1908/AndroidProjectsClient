@@ -123,7 +123,7 @@ public class User extends DataModel implements Parcelable {
 
     @Override
     public long getCreatedAt() {
-        return 0;
+        return createdAt;
     }
 
     public static User parse(JSONObject obj) {
