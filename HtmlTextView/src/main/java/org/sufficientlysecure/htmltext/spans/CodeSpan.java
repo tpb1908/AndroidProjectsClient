@@ -74,6 +74,7 @@ public class CodeSpan extends ReplacementSpan {
         final int textStart = top + textHeight/4;
 
         if(mLanguage != null && !mLanguage.isEmpty()) {
+            mLanguage = mLanguage.substring(0, 1).toUpperCase() + mLanguage.substring(1);
             canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + offset, textStart, paint);
         } else {
             canvas.drawText(mNoLanguageString,  x + offset, textStart, paint);
