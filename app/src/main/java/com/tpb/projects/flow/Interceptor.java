@@ -18,7 +18,7 @@ import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.repo.content.FileActivity;
-import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.user.UserActivity2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class Interceptor extends Activity {
             Log.i(TAG, "onCreate: Path: " + segments.toString());
             switch(segments.size()) {
                 case 1: //User
-                    final Intent u = new Intent(Interceptor.this, UserActivity.class);
+                    final Intent u = new Intent(Interceptor.this, UserActivity2.class);
                     u.putExtra(getString(R.string.intent_username), segments.get(0));
                     startActivity(u);
                     overridePendingTransition(R.anim.slide_up, R.anim.none);

@@ -81,6 +81,16 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".user.UserActivity2"
+                  android:theme="@style/AppTheme.Transparent.Dark"
+                  android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+
+        </activity>
+
         <activity android:name=".editors.IssueEditor"
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 

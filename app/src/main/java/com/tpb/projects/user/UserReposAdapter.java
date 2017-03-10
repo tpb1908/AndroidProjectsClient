@@ -35,7 +35,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
+public class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
     private static final String TAG = UserReposAdapter.class.getSimpleName();
 
     private final Loader mLoader;
@@ -44,13 +44,13 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
     private final String mAuthenticatedUser;
     private String mUser;
     private final RepoPinChecker mPinChecker;
-    private final RepositoriesManager mManager;
+    private final RepoOpener mManager;
 
     private int mPage = 1;
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
-    UserReposAdapter(Context context, RepositoriesManager opener, SwipeRefreshLayout refresher) {
+    public UserReposAdapter(Context context, RepoOpener opener, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
         mManager = opener;
         mRefresher = refresher;
@@ -66,12 +66,13 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
-    void setUser(String user) {
+    public void setUser(String user) {
         mUser = user;
+        loadReposForUser(false);
     }
 
 
-    void notifyBottomReached() {
+    public void notifyBottomReached() {
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;
             loadReposForUser(false);
@@ -293,7 +294,7 @@ class UserReposAdapter extends RecyclerView.Adapter<UserReposAdapter.RepoHolder>
 
     }
 
-    interface RepositoriesManager {
+    public interface RepoOpener {
 
         void openRepo(Repository repo, View view);
 

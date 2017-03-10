@@ -51,7 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepositoriesManager {
+public class UserActivity extends CircularRevealActivity implements UserReposAdapter.RepoOpener {
     private static final String TAG = UserActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/feed/UserActivity.java";
 

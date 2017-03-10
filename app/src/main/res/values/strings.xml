@@ -116,6 +116,10 @@
     <string name="text_event_renamed_multiple">Renamed multiple times %1$s</string>
     <string name="text_event_rename_multiple">![CDATA[from <b>\"%1$s\"</b> to <b>\"%2$s\"</b>]></string>
     <string name="text_event_moved_columns_in_project_multiple">Moved columns in project multiple times</string>
+
+    <!-- User activity -->
+
+
     <string name="text_commit">commit %1$s</string>
 
     <!--Issues activity -->
