@@ -121,6 +121,12 @@
 
 
     <string name="text_commit">commit %1$s</string>
+    <string name="text_user_no_commits">No commits</string>
+    <string name="text_user_commits">%1$d commits in %2$d days</string>
+    <string name="text_user_average">Average commits per day: %1$.1f</string>
+    <string name="text_user_average_active">Average commits on active days: %1$.1f</string>
+    <string name="text_user_max_commits">Most commits in a day: %1$d</string>
+    <string name="text_user_streak">Longest streak: %1$d days</string>
 
     <!--Issues activity -->
     <string name="text_assignee_all">All</string>

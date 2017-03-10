@@ -38,7 +38,7 @@ import java.util.List;
  * Created by theo on 12/01/17.
  */
 
-class ContributionsLoader {
+public class ContributionsLoader {
     private static final String TAG = ContributionsLoader.class.getSimpleName();
 
     // Format string for svg path
@@ -81,11 +81,11 @@ class ContributionsLoader {
 
     }
 
-    static class GitDay {
+    public static class GitDay {
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         @ColorInt final int color;
         long date;
-        final int contributions;
+        public final int contributions;
 
         GitDay(String rect) {
             //rect is <rect class="day" width="10" height="10" x="" y="" fill="#FFFFF" data-count="n" data-date="yyyy-mm-dd"/>
