@@ -49,21 +49,21 @@ import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
-import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.Analytics;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
