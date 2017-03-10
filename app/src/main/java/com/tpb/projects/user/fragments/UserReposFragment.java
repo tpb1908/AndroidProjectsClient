@@ -56,7 +56,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
                 }
             }
         });
-
+        mAreViewsValid = true;
         return view;
     }
 

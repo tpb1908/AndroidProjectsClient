@@ -10,6 +10,14 @@ import com.tpb.projects.data.models.User;
 
 public abstract class UserFragment extends Fragment {
 
+    protected boolean mAreViewsValid;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mAreViewsValid = false;
+    }
+
     public abstract void userLoaded(User user);
 
 }

@@ -66,6 +66,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 return true;
             }
         });
+        mAreViewsValid = true;
         return view;
     }
 
@@ -137,7 +138,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void contributionsLoaded(List<ContributionsLoader.GitDay> contributions) {
-        if(isDetached()) return;
+        if(!mAreViewsValid) return;
         mContributionsInfo.setText(null);
         int total = 0;
         int daysActive = 0;
@@ -181,6 +182,8 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             mContributionsInfo.setText(getString(R.string.text_user_no_commits));
         }
     }
+
+
 
     @Override
     public void onDestroyView() {
