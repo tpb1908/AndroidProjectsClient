@@ -166,6 +166,7 @@
     <string name="text_milestone_opened_by">Opened by %1$s  %2$s</string>
     <string name="text_milestone_closed_at">Closed %1$s</string>
     <string name="text_milestone_due_on">Due %1$s</string>
+    <string name="text_milestone_opened">Opened %1$s</string>
     <string name="text_milestone_short">%1$s • %2$s</string>
     <string name="text_milestone_clear_date">Clear date</string>
     <string name="text_milestone_loading">Loading milestone</string>
