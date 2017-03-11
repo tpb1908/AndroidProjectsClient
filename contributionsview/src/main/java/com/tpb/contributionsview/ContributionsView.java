@@ -26,7 +26,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -191,8 +190,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i(TAG, "onTouchEvent: " + event.getAction());
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+        if(event.getAction() == MotionEvent.ACTION_UP) {
             final float cols = contribs.size() / 7f;
             final float pcr = event.getX() / rect.width();
             final int col = (int) (pcr * cols);
@@ -200,8 +198,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 final float pcc = (event.getY() - gridY) / (rect.height() - gridY);
                 final int row = (int) (pcc * 7);
                 final int pos = (7 * col) + row;
-                Log.i(TAG, "onTouchEvent: (" + row + ", " + col + ")");
-                Log.i(TAG, "onTouchEvent: " + pos);
                 if(pos < contribs.size() && pos >= 0) {
                     final String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date(contribs.get(pos).date));
                     Toast.makeText(getContext(), String.format("%1$d contributions on %2$s", contribs.get(pos).contributions, date), Toast.LENGTH_SHORT).show();

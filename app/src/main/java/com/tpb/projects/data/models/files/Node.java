@@ -1,5 +1,7 @@
 package com.tpb.projects.data.models.files;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -11,7 +13,7 @@ import java.util.List;
  * Created by theo on 17/02/17.
  */
 
-public class Node {
+public class Node implements Parcelable {
 
     private NodeType type;
     private int size;
@@ -171,4 +173,57 @@ public class Node {
         }
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.type == null ? -1 : this.type.ordinal());
+        dest.writeInt(this.size);
+        dest.writeString(this.encoding);
+        dest.writeString(this.name);
+        dest.writeString(this.path);
+        dest.writeString(this.content);
+        dest.writeString(this.sha);
+        dest.writeString(this.url);
+        dest.writeString(this.gitUrl);
+        dest.writeString(this.htmlUrl);
+        dest.writeString(this.downloadUrl);
+        dest.writeString(this.submoduleGitUrl);
+        dest.writeParcelable(this.parent, flags);
+        dest.writeTypedList(this.children);
+    }
+
+    protected Node(Parcel in) {
+        int tmpType = in.readInt();
+        this.type = tmpType == -1 ? null : NodeType.values()[tmpType];
+        this.size = in.readInt();
+        this.encoding = in.readString();
+        this.name = in.readString();
+        this.path = in.readString();
+        this.content = in.readString();
+        this.sha = in.readString();
+        this.url = in.readString();
+        this.gitUrl = in.readString();
+        this.htmlUrl = in.readString();
+        this.downloadUrl = in.readString();
+        this.submoduleGitUrl = in.readString();
+        this.parent = in.readParcelable(Node.class.getClassLoader());
+        this.children = in.createTypedArrayList(Node.CREATOR);
+    }
+
+    public static final Creator<Node> CREATOR = new Creator<Node>() {
+        @Override
+        public Node createFromParcel(Parcel source) {
+            return new Node(source);
+        }
+
+        @Override
+        public Node[] newArray(int size) {
+            return new Node[size];
+        }
+    };
 }
