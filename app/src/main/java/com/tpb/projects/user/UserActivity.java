@@ -36,6 +36,7 @@ import butterknife.ButterKnife;
 
 public class UserActivity extends CircularRevealActivity {
 
+    @BindView(R.id.title_user) TextView mTitle;
     @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
     @BindView(R.id.user_fragment_viewpager) ViewPager mPager;
 
@@ -57,7 +58,7 @@ public class UserActivity extends CircularRevealActivity {
         final Loader loader = new Loader(this);
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             user = getIntent().getStringExtra(getString(R.string.intent_username));
-            ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
+            mTitle.setText(user);
             loader.loadUser(new Loader.GITModelLoader<User>() {
                 @Override
                 public void loadComplete(User u) {
@@ -75,12 +76,15 @@ public class UserActivity extends CircularRevealActivity {
             if(isTaskRoot()) {
                 findViewById(R.id.back_button).setVisibility(View.GONE);
             }
+            final GitHubSession session = GitHubSession.getSession(this);
+            mTitle.setText(session.getUserLogin());
             loader.loadAuthenticatedUser(new Loader.GITModelLoader<User>() {
                 @Override
                 public void loadComplete(User user) {
                     mUser = user;
                     mAdapter.notifyUserLoaded();
-                    GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
+                    mTitle.setText(user.getLogin());
+                    session.updateUserLogin(user.getLogin());
                 }
 
                 @Override

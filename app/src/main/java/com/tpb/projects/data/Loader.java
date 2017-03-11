@@ -162,8 +162,8 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, int page) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + (page > 1 ? "?page=" + page : ""))
+    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, String user,  int page) {
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_STARRED + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
