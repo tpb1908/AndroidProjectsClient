@@ -84,10 +84,8 @@ public class Gist extends DataModel implements Parcelable {
             final JSONObject filesObj = obj.getJSONObject(FILES);
             final Iterator<String> keys = filesObj.keys();
             final List<File> files = new ArrayList<>();
-            String key;
             while(keys.hasNext()) {
-                key = keys.next();
-                files.add(File.parse(filesObj.getJSONObject(key), key));
+                files.add(File.parse(filesObj.getJSONObject(keys.next())));
             }
             g.files = files.toArray(new File[0]);
         } catch(JSONException jse) {
@@ -157,20 +155,22 @@ public class Gist extends DataModel implements Parcelable {
     public String toString() {
         return "Gist{" +
                 "id='" + id + '\'' +
-                ", url='" + url + '\'' +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", commitsUrl='" + commitsUrl + '\'' +
-                ", forksUrl='" + forksUrl + '\'' +
-                ", description='" + description + '\'' +
-                ", isPublic=" + isPublic +
-                ", owner=" + owner +
-                ", user=" + user +
-                ", files=" + Arrays.toString(files) +
-                ", isTruncated=" + isTruncated +
-                ", comments=" + comments +
-                ", updatedAt=" + updatedAt +
+                "\n, url='" + url + '\'' +
+                "\n, htmlUrl='" + htmlUrl + '\'' +
+                "\n, commitsUrl='" + commitsUrl + '\'' +
+                "\n, forksUrl='" + forksUrl + '\'' +
+                "\n, description='" + description + '\'' +
+                "\n, isPublic=" + isPublic +
+                "\n, owner=" + owner +
+                "\n, user=" + user +
+                "\n, files=" + Arrays.toString(files) +
+                "\n, isTruncated=" + isTruncated +
+                "\n, comments=" + comments +
+                "\n, updatedAt=" + updatedAt +
                 '}';
     }
+    
+    
 
 
     @Override

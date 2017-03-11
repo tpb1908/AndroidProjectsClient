@@ -32,14 +32,14 @@ public class File extends DataModel implements Parcelable {
     private static final String LANGUAGE = "language";
     private String language;
 
-    public static File parse(JSONObject obj, String name) {
+    public static File parse(JSONObject obj) {
         final File f = new File();
         try {
-            f.name = name;
+            f.name = obj.getString("filename");
             f.size = obj.getInt(SIZE);
             f.rawUrl = obj.getString(RAW_URL);
             f.type = obj.getString(TYPE);
-            f.truncated = obj.getBoolean(TRUNCATED);
+            f.truncated = obj.has(TRUNCATED) && obj.getBoolean(TRUNCATED);
             f.language = obj.getString(LANGUAGE);
         } catch(JSONException jse) {
             Log.e(File.class.getSimpleName(), "parse: ", jse);

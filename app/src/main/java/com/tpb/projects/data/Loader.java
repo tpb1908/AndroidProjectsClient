@@ -16,6 +16,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
+import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
@@ -214,6 +215,33 @@ public class Loader extends APIHandler {
                 }
             });
         }
+    }
+
+    public void loadGists(GITModelsLoader<Gist> loader, String user) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_GISTS)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                final Gist gist = Gist.parse(response.getJSONObject(i));
+                                Log.i(TAG, "onResponse: Gist " + gist.toString());
+                                Log.i(TAG, "onResponse: Obj " + response.getJSONObject(i).toString());
+                            } catch(JSONException ignored) {
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+
     }
 
     public void loadReadMe(@Nullable GITModelLoader<String> loader, String repoFullName) {
