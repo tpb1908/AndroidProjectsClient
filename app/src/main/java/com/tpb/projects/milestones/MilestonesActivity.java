@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,10 +21,10 @@ import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
-import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.editors.MilestoneEditor;
-import com.tpb.projects.util.Util;
+import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +39,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
 
     @BindView(R.id.milestones_recycler) AnimatingRecycler mRecycler;
     @BindView(R.id.milestones_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.milestones_fab) FloatingActionButton mFab;
+    @BindView(R.id.milestones_fab) com.tpb.projects.util.fab.FloatingActionButton mFab;
 
     private Loader mLoader;
     private Editor mEditor;
@@ -81,7 +80,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
-                        mFab.postDelayed(mFab::show, 300);
+                        mFab.postDelayed(() -> mFab.show(true), 300);
                         enableScrollListener(mRecycler, (LinearLayoutManager) mRecycler.getLayoutManager());
                     }
                 }
@@ -105,9 +104,9 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if(dy > 10) {
-                    mFab.hide();
+                    mFab.hide(true);
                 } else if(dy < -10) {
-                    mFab.show();
+                    mFab.show(true);
                 }
                 if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
                     if(!mIsLoading && !mMaxPageReached) {

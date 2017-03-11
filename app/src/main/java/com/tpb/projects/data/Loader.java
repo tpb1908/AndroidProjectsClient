@@ -274,7 +274,6 @@ public class Loader extends APIHandler {
                     public void onResponse(JSONObject response) {
                         try {
                             final String readme = Util.base64Decode(response.getString(CONTENT));
-                            Log.i(TAG, "onResponse: " + readme);
                             if(loader != null) loader.loadComplete(readme);
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);

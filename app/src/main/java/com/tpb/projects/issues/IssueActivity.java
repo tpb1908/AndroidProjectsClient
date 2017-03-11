@@ -328,7 +328,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                         )
                 );
             }
-            if(milestone.getClosedAt() != 0) {
+            if(milestone.getClosedAt() > 0) {
                 builder.append("<br>");
                 builder.append(
                         String.format(
@@ -337,7 +337,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                         )
                 );
             }
-            if(milestone.getDueOn() != 0) {
+            if(milestone.getDueOn() > 0) {
                 builder.append("<br>");
                 if(System.currentTimeMillis() < milestone.getDueOn() ||
                         (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {

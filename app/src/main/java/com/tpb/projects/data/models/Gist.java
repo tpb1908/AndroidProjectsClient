@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.tpb.projects.data.File;
 import com.tpb.projects.util.Util;
 
 import org.json.JSONException;

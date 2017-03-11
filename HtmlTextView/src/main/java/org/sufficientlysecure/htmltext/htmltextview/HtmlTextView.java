@@ -215,7 +215,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                         setText(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
-                        if(mSpanCacher.get() != null) mSpanCacher.get().cache(buffer);
+                        if(mSpanCacher != null && mSpanCacher.get() != null) mSpanCacher.get().cache(buffer);
                         mSpanCacher = null;
                     }
                 });
