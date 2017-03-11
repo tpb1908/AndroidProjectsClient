@@ -32,6 +32,26 @@ public class File extends DataModel implements Parcelable {
     private static final String LANGUAGE = "language";
     private String language;
 
+    public String getName() {
+        return name;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isTruncated() {
+        return truncated;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
     public static File parse(JSONObject obj) {
         final File f = new File();
         try {

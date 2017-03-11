@@ -65,6 +65,8 @@
     <string name="text_clear">Clear</string>
     <string name="text_show_files">Show files</string>
 
+    <!-- Gist stuff -->
+    <string name="text_gist_viewholder_title">%1$s/%2$s</string>
 
     <!-- Content activity -->
     <string name="text_ribbon_root">Root</string>

@@ -185,7 +185,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     @Override
     public void loadError(APIHandler.APIError error) {
-
+        mIsLoading = false;
     }
 
     private void ensureLoadOfPinnedRepos() {

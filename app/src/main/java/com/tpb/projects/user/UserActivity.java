@@ -99,7 +99,6 @@ public class UserActivity extends CircularRevealActivity {
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(5);
 
-        new Loader(this).loadGists(null, "tpb1908");
     }
 
     public User getUser() {
