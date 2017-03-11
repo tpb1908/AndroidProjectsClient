@@ -150,6 +150,27 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_location, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
+        if(user.getRepos() > 0) {
+            tv = new TextView(getContext());
+            tv.setText(getResources().getQuantityString(
+                    R.plurals.text_user_repositories,
+                    user.getRepos(),
+                    user.getRepos())
+            );
+            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_repo, 0, 0, 0);
+            mInfoList.addView(tv, params);
+        }
+        if(user.getGists() > 0) {
+            tv = new TextView(getContext());
+            tv.setText(getResources().getQuantityString(
+                    R.plurals.text_user_gists,
+                    user.getGists(),
+                    user.getGists())
+            );
+            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_gist, 0, 0, 0);
+            mInfoList.addView(tv, params);
+        }
+
         UI.expand(mInfoList);
     }
 

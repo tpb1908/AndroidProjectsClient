@@ -54,6 +54,9 @@ public class User extends DataModel implements Parcelable {
     private static final String FOLLOWERS = "followers";
     private int followers;
 
+    private static final String FOLLOWING = "following";
+    private int following;
+
     private static final String BIO = "bio";
     private String bio;
 
@@ -62,6 +65,9 @@ public class User extends DataModel implements Parcelable {
 
     private static final String BLOG = "blog";
     private String blog;
+
+    private static final String GISTS = "public_gists";
+    private int gists;
 
     public int getId() {
         return id;
@@ -121,6 +127,14 @@ public class User extends DataModel implements Parcelable {
         return blog;
     }
 
+    public int getGists() {
+        return gists;
+    }
+
+    public int getFollowing() {
+        return following;
+    }
+
     @Override
     public long getCreatedAt() {
         return createdAt;
@@ -155,6 +169,8 @@ public class User extends DataModel implements Parcelable {
             if(obj.has(NAME) && !JSON_NULL.equals(obj.getString(NAME))) u.name = obj.getString(NAME);
             if(obj.has(BLOG) && !JSON_NULL.equals(obj.getString(BLOG))) u.blog = obj.getString(BLOG);
             if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY))) u.company = obj.getString(COMPANY);
+            if(obj.has(GISTS)) u.gists = obj.getInt(GISTS);
+            if(obj.has(FOLLOWING)) u.following = obj.getInt(FOLLOWING);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -201,12 +217,13 @@ public class User extends DataModel implements Parcelable {
                 ", email='" + email + '\'' +
                 ", repos=" + repos +
                 ", followers=" + followers +
+                ", following=" + following +
                 ", bio='" + bio + '\'' +
                 ", company='" + company + '\'' +
                 ", blog='" + blog + '\'' +
+                ", gists=" + gists +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
@@ -226,9 +243,11 @@ public class User extends DataModel implements Parcelable {
         dest.writeString(this.email);
         dest.writeInt(this.repos);
         dest.writeInt(this.followers);
+        dest.writeInt(this.following);
         dest.writeString(this.bio);
         dest.writeString(this.company);
         dest.writeString(this.blog);
+        dest.writeInt(this.gists);
         dest.writeLong(this.createdAt);
     }
 
@@ -244,9 +263,11 @@ public class User extends DataModel implements Parcelable {
         this.email = in.readString();
         this.repos = in.readInt();
         this.followers = in.readInt();
+        this.following = in.readInt();
         this.bio = in.readString();
         this.company = in.readString();
         this.blog = in.readString();
+        this.gists = in.readInt();
         this.createdAt = in.readLong();
     }
 
