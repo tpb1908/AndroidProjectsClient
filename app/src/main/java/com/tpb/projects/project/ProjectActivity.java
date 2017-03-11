@@ -50,6 +50,7 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FloatingActionButton;
@@ -68,7 +69,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends AppCompatActivity implements Loader.GITModelLoader<Project> {
+public class ProjectActivity extends BaseActivity implements Loader.GITModelLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 

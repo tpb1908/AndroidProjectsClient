@@ -33,7 +33,6 @@ public class User extends DataModel implements Parcelable {
     private static final String URL = "url";
     private String url;
 
-
     private static final String HTML_URL = "html_url";
     private String htmlUrl;
 
@@ -57,6 +56,12 @@ public class User extends DataModel implements Parcelable {
 
     private static final String BIO = "bio";
     private String bio;
+
+    private static final String COMPANY = "company";
+    private String company;
+
+    private static final String BLOG = "blog";
+    private String blog;
 
     public int getId() {
         return id;
@@ -108,9 +113,17 @@ public class User extends DataModel implements Parcelable {
         return htmlUrl;
     }
 
+    public String getCompany() {
+        return company;
+    }
+
+    public String getBlog() {
+        return blog;
+    }
+
     @Override
     public long getCreatedAt() {
-        return 0;
+        return createdAt;
     }
 
     public static User parse(JSONObject obj) {
@@ -133,13 +146,15 @@ public class User extends DataModel implements Parcelable {
             } else {
                 u.htmlUrl = "https://github.com/" + u.getLogin();
             }
-            if(obj.has(REPOS_URL)) u.reposUrl = obj.getString(REPOS_URL);
+            if(obj.has(REPOS_URL) && !JSON_NULL.equals(obj.getString(REPOS_URL))) u.reposUrl = obj.getString(REPOS_URL);
             if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
             if(obj.has(FOLLOWERS)) u.followers = obj.getInt(FOLLOWERS);
-            if(obj.has(BIO)) u.bio = obj.getString(BIO);
-            if(obj.has(EMAIL)) u.email = obj.getString(EMAIL);
-            if(obj.has(LOCATION)) u.location = obj.getString(LOCATION);
-            if(obj.has(NAME)) u.name = obj.getString(NAME);
+            if(obj.has(BIO) && !JSON_NULL.equals(obj.getString(BIO))) u.bio = obj.getString(BIO);
+            if(obj.has(EMAIL) && !JSON_NULL.equals(obj.getString(EMAIL))) u.email = obj.getString(EMAIL);
+            if(obj.has(LOCATION) && !JSON_NULL.equals(obj.getString(LOCATION))) u.location = obj.getString(LOCATION);
+            if(obj.has(NAME) && !JSON_NULL.equals(obj.getString(NAME))) u.name = obj.getString(NAME);
+            if(obj.has(BLOG) && !JSON_NULL.equals(obj.getString(BLOG))) u.blog = obj.getString(BLOG);
+            if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY))) u.company = obj.getString(COMPANY);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -187,8 +202,11 @@ public class User extends DataModel implements Parcelable {
                 ", repos=" + repos +
                 ", followers=" + followers +
                 ", bio='" + bio + '\'' +
+                ", company='" + company + '\'' +
+                ", blog='" + blog + '\'' +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -209,10 +227,12 @@ public class User extends DataModel implements Parcelable {
         dest.writeInt(this.repos);
         dest.writeInt(this.followers);
         dest.writeString(this.bio);
+        dest.writeString(this.company);
+        dest.writeString(this.blog);
         dest.writeLong(this.createdAt);
     }
 
-    User(Parcel in) {
+    protected User(Parcel in) {
         this.login = in.readString();
         this.id = in.readInt();
         this.avatarUrl = in.readString();
@@ -225,6 +245,8 @@ public class User extends DataModel implements Parcelable {
         this.repos = in.readInt();
         this.followers = in.readInt();
         this.bio = in.readString();
+        this.company = in.readString();
+        this.blog = in.readString();
         this.createdAt = in.readLong();
     }
 

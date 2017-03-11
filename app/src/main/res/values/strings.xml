@@ -116,7 +116,19 @@
     <string name="text_event_renamed_multiple">Renamed multiple times %1$s</string>
     <string name="text_event_rename_multiple">![CDATA[from <b>\"%1$s\"</b> to <b>\"%2$s\"</b>]></string>
     <string name="text_event_moved_columns_in_project_multiple">Moved columns in project multiple times</string>
+
+    <!-- User activity -->
+
+    <string name="text_user_activity">Activity</string>
+    <string name="text_user_created_at">Created %1$s</string>
     <string name="text_commit">commit %1$s</string>
+    <string name="text_user_no_commits">No commits</string>
+    <string name="text_user_commits">%1$d commits in %2$d days</string>
+    <string name="text_user_average">Average commits per day: %1$.1f</string>
+    <string name="text_user_average_active">Average commits on active days: %1$.1f</string>
+    <string name="text_user_max_commits">Most commits in a day: %1$d</string>
+    <string name="text_user_streak">Longest streak: %1$d days</string>
+
 
     <!--Issues activity -->
     <string name="text_assignee_all">All</string>
@@ -232,6 +244,12 @@
     <string name="title_save_issue_shortcut">Save issue</string>
 
     <string name="title_insert_link">Insert link</string>
+
+    <string name="title_user_info_fragment">Info</string>
+    <string name="title_user_repos_fragment">Repos</string>
+    <string name="title_user_starred_fragment">Starred</string>
+    <string name="title_user_gists_fragment">Gists</string>
+    <string name="title_user_events_fragment">Events</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>

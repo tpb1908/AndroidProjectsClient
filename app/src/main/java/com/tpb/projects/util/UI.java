@@ -2,10 +2,16 @@ package com.tpb.projects.util;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
+import android.support.annotation.Px;
+import android.support.transition.Transition;
+import android.support.transition.TransitionManager;
+import android.util.ArrayMap;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +21,10 @@ import android.view.animation.Transformation;
 
 import com.tpb.projects.R;
 
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 /**
  * Created by theo on 16/12/16.
  */
@@ -23,9 +33,9 @@ public class UI {
     private static final String TAG = UI.class.getSimpleName();
 
     /**
-     * Sets the expansion point for a {@link com.tpb.projects.editors.CircularRevealActivity} Intent
+     * Sets the expansion point for a {@link CircularRevealActivity} Intent
      * to the midpoint of a View
-     * @param i The Intent to launch a {@link com.tpb.projects.editors.CircularRevealActivity} instance
+     * @param i The Intent to launch a {@link CircularRevealActivity} instance
      * @param view The View instance which was clicked
      */
     public static void setViewPositionForIntent(Intent i, View view) {
@@ -40,7 +50,7 @@ public class UI {
     /**
      *
      * @param context Required to get string resource values
-     * @param i The Intent to launch a {@link com.tpb.projects.editors.CircularRevealActivity} instance
+     * @param i The Intent to launch a {@link CircularRevealActivity} instance
      * @param pos The x and y coordinates of the click
      */
     public static void setClickPositionForIntent(Context context, Intent i, float[] pos) {
@@ -101,18 +111,22 @@ public class UI {
         v.startAnimation(a);
     }
 
+    @Dimension
     public static float dpFromPx(final float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
     }
 
+    @Px
     public static int pxFromDp(final float dp) {
         return Math.round(dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
+    @Px
     public static int pxFromDp(final int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
+    @Px
     public static int pxFromSp(final float sp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
     }
@@ -144,6 +158,28 @@ public class UI {
         colorFade.setRepeatCount(1);
         colorFade.start();
 
+    }
+
+    public static void removeActivityFromTransitionManager(Activity activity) {
+        Class transitionManagerClass = TransitionManager.class;
+        try {
+            Field runningTransitionsField = transitionManagerClass.getDeclaredField("sRunningTransitions");
+            runningTransitionsField.setAccessible(true);
+            //noinspection unchecked
+            ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>> runningTransitions
+                    = (ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>>)
+                    runningTransitionsField.get(transitionManagerClass);
+            if (runningTransitions.get() == null || runningTransitions.get().get() == null) {
+                return;
+            }
+            ArrayMap map = runningTransitions.get().get();
+            View decorView = activity.getWindow().getDecorView();
+            if (map.containsKey(decorView)) {
+                map.remove(decorView);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

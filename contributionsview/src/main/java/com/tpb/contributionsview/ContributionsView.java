@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,8 +52,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private int textColor;
     private int textSize;
     private int backGroundColor;
-
-
     private List<ContributionsLoader.GitDay> contribs = new ArrayList<>();
 
     private Paint dayPainter;
@@ -61,6 +60,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private Rect rect;
     private final Rect textBounds = new Rect();
     private float gridY;
+
+    private WeakReference<ContributionsLoadListener> listener;
 
     public ContributionsView(Context context) {
         super(context);
@@ -82,7 +83,6 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context, attrs, defStyleAttr, defStyleRes);
     }
-
 
     private void initView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         rect = new Rect();
@@ -225,20 +225,33 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         return month.format(stamp);
     }
 
-
     public void setTextColor(int textColor) {
         this.textColor = textColor;
     }
-
 
     @Override
     public void onResponse(List<ContributionsLoader.GitDay> contributions) {
         contribs = contributions;
         invalidate();
+        if(listener != null && listener.get() != null) listener.get().contributionsLoaded(contributions);
     }
 
     @Override
     public void onError(VolleyError error) {
 
     }
+
+    public void setListener(ContributionsLoadListener listener) {
+        this.listener = new WeakReference<>(listener);
+    }
+
+    public List<ContributionsLoader.GitDay> getContributions() {
+        return contribs;
+    }
+
+    public interface ContributionsLoadListener {
+
+        void contributionsLoaded(List<ContributionsLoader.GitDay> contributions);
+    }
+
 }

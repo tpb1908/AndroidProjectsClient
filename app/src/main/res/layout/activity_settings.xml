@@ -258,7 +258,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:src="@drawable/ic_email"
+                            android:src="@drawable/ic_email_grey"
                             android:layout_gravity="center_vertical"/>
 
                         <TextView
@@ -323,7 +323,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:src="@drawable/ic_person"
+                            android:src="@drawable/ic_person_grey"
                             android:layout_gravity="center_vertical"/>
 
                         <TextView
