@@ -19,6 +19,8 @@ import com.androidnetworking.widget.ANImageView;
 import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -66,6 +68,20 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 return true;
             }
         });
+        mRefresher.setOnRefreshListener(() -> {
+            new Loader(getContext()).loadUser(new Loader.GITModelLoader<User>() {
+                @Override
+                public void loadComplete(User data) {
+                    userLoaded(data);
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, getParent().getUser().getLogin());
+        });
+
         mAreViewsValid = true;
         return view;
     }
@@ -134,12 +150,12 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_location, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
+        UI.expand(mInfoList);
     }
 
     @Override
     public void contributionsLoaded(List<ContributionsLoader.GitDay> contributions) {
         if(!mAreViewsValid) return;
-        mContributionsInfo.setText(null);
         int total = 0;
         int daysActive = 0;
         int daysTotal = contributions.size();
@@ -171,13 +187,16 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                     String.format(getString(R.string.text_user_max_commits), max) +
                     "\n" +
                     String.format(getString(R.string.text_user_streak), maxStreak);
+            final boolean isEmpty = mContributionsInfo.getText().toString().isEmpty();
             mContributionsInfo.setText(builder);
-            ObjectAnimator.ofInt(
-                    mContributionsInfo,
-                    "maxLines",
-                    0,
-                    mContributionsInfo.getLineCount()
-            ).setDuration(200).start();
+            if(isEmpty) {
+                ObjectAnimator.ofInt(
+                        mContributionsInfo,
+                        "maxLines",
+                        0,
+                        mContributionsInfo.getLineCount()
+                ).setDuration(200).start();
+            }
         } else {
             mContributionsInfo.setText(getString(R.string.text_user_no_commits));
         }

@@ -100,6 +100,10 @@ public class UserActivity extends CircularRevealActivity {
         mPager.setOffscreenPageLimit(5);
     }
 
+    public User getUser() {
+        return mUser;
+    }
+
     private class UserFragmentAdapter extends FragmentPagerAdapter {
 
         private UserFragment[] fragments = new UserFragment[5];
