@@ -4,8 +4,8 @@ import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.Space;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -106,12 +106,11 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         );
         params.setMargins(0, UI.pxFromDp(4), 0, UI.pxFromDp(4));
         if(user.getName() != null) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_person);
             tv.setText(user.getName());
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_person, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
-        tv = new TextView(getContext());
+        tv = getInfoTextView(R.drawable.ic_date);
         tv.setText(
                 String.format(
                     getString(R.string.text_user_created_at),
@@ -121,57 +120,56 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 )
             )
         );
-        tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_date, 0, 0, 0);
         mInfoList.addView(tv, params);
-        mInfoList.addView(new Space(getContext()));
         if(user.getEmail() != null) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_email);
             tv.setAutoLinkMask(Linkify.EMAIL_ADDRESSES);
             tv.setText(user.getEmail());
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_email, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
         if(user.getBlog() != null) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_blog);
             tv.setAutoLinkMask(Linkify.WEB_URLS);
             tv.setText(user.getBlog());
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_blog, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
         if(user.getCompany() != null) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_company);
             tv.setText(user.getCompany());
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_company, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
         if(user.getLocation() != null) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_location);
             tv.setText(user.getLocation());
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_location, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
         if(user.getRepos() > 0) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_repo);
             tv.setText(getResources().getQuantityString(
                     R.plurals.text_user_repositories,
                     user.getRepos(),
                     user.getRepos())
             );
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_repo, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
         if(user.getGists() > 0) {
-            tv = new TextView(getContext());
+            tv = getInfoTextView(R.drawable.ic_gist);
             tv.setText(getResources().getQuantityString(
                     R.plurals.text_user_gists,
                     user.getGists(),
                     user.getGists())
             );
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_gist, 0, 0, 0);
             mInfoList.addView(tv, params);
         }
 
         UI.expand(mInfoList);
+    }
+
+    private TextView getInfoTextView(@DrawableRes int drawableRes) {
+        final TextView tv = new TextView(getContext());
+        tv.setCompoundDrawablePadding(UI.pxFromDp(4));
+        tv.setCompoundDrawablesRelativeWithIntrinsicBounds(drawableRes, 0, 0, 0);
+        return tv;
     }
 
     @Override
