@@ -12,8 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:duplicateParentState="true">
+        android:padding="8dp">
 
         <ImageButton
             android:id="@+id/repo_pin_button"
@@ -31,68 +30,37 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/repo_pin_button"
-            android:layout_toStartOf="@+id/repo_details"
-            android:textAppearance="@android:style/TextAppearance.Material.Title"
-            android:duplicateParentState="true"/>
+            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
         <TextView
             android:id="@+id/repo_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/repo_name"
-            android:layout_toEndOf="@+id/repo_pin_button"
-            android:layout_toStartOf="@+id/repo_details"
-            android:duplicateParentState="true"/>
+            android:layout_toEndOf="@+id/repo_pin_button"/>
 
         <LinearLayout
             android:id="@+id/repo_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:orientation="vertical"
-            android:layout_margin="8dp"
-            android:duplicateParentState="true">
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/repo_pin_button"
+            android:layout_below="@+id/repo_description">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/repo_stars"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginEnd="4dp"
+                android:text="@string/text_zero_value"
+                android:drawableStart="@drawable/ic_stars"/>
 
-                <TextView
-                    android:id="@+id/repo_forks"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_zero_value"/>
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/ic_forked"/>
-
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/repo_forks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:duplicateParentState="true">
-
-                <TextView
-                    android:id="@+id/repo_stars"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_zero_value"/>
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_stars"/>
-
-            </LinearLayout>
+                android:text="@string/text_zero_value"
+                android:drawableStart="@drawable/ic_forked"/>
 
         </LinearLayout>
 

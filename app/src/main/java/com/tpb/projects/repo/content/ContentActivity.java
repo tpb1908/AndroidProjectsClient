@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -16,6 +15,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
  * Created by theo on 17/02/17.
  */
 
-public class ContentActivity extends AppCompatActivity {
+public class ContentActivity extends BaseActivity {
     private static final String TAG = ContentActivity.class.getSimpleName();
 
     @BindView(R.id.content_title) TextView mTitle;

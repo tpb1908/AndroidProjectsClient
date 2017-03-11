@@ -72,6 +72,12 @@ public class Repository extends DataModel implements Parcelable {
     private static final String SIZE = "size";
     private int size;
 
+    private static final String PARENT = "parent";
+    private Repository parent;
+
+    private static final String SOURCE = "source";
+    private Repository source;
+
     public int getId() {
         return id;
     }
@@ -148,6 +154,14 @@ public class Repository extends DataModel implements Parcelable {
         return updatedAt;
     }
 
+    public Repository getParent() {
+        return parent;
+    }
+
+    public Repository getSource() {
+        return source;
+    }
+
     @Override
     public long getCreatedAt() {
         return createdAt;
@@ -174,6 +188,8 @@ public class Repository extends DataModel implements Parcelable {
             r.watchers = obj.getInt(WATCHERS);
             r.issues = obj.getInt(ISSUES);
             r.size = obj.getInt(SIZE);
+            if(obj.has(PARENT)) r.parent = Repository.parse(obj.getJSONObject(PARENT));
+            if(obj.has(SOURCE)) r.source = Repository.parse(obj.getJSONObject(SOURCE));
             try {
                 r.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
                 r.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
@@ -226,24 +242,26 @@ public class Repository extends DataModel implements Parcelable {
     public String toString() {
         return "Repository{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", updatedAt=" + updatedAt +
-                ", userLogin='" + userLogin + '\'' +
-                ", userAvatarUrl='" + userAvatarUrl + '\'' +
-                ", userId=" + userId +
-                ", fullName='" + fullName + '\'' +
-                ", description='" + description + '\'' +
-                ", isPrivate=" + isPrivate +
-                ", isFork=" + isFork +
-                ", url='" + url + '\'' +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", language='" + language + '\'' +
-                ", hasIssues=" + hasIssues +
-                ", starGazers=" + starGazers +
-                ", forks=" + forks +
-                ", watchers=" + watchers +
-                ", issues=" + issues +
-                ", size=" + size +
+                "\n, name='" + name + '\'' +
+                "\n, updatedAt=" + updatedAt +
+                "\n, userLogin='" + userLogin + '\'' +
+                "\n, userAvatarUrl='" + userAvatarUrl + '\'' +
+                "\n, userId=" + userId +
+                "\n, fullName='" + fullName + '\'' +
+                "\n, description='" + description + '\'' +
+                "\n, isPrivate=" + isPrivate +
+                "\n, isFork=" + isFork +
+                "\n, url='" + url + '\'' +
+                "\n, htmlUrl='" + htmlUrl + '\'' +
+                "\n, language='" + language + '\'' +
+                "\n, hasIssues=" + hasIssues +
+                "\n, starGazers=" + starGazers +
+                "\n, forks=" + forks +
+                "\n, watchers=" + watchers +
+                "\n, issues=" + issues +
+                "\n, size=" + size +
+                "\n, parent=" + parent +
+                "\n, source=" + source +
                 '}';
     }
 
@@ -279,10 +297,12 @@ public class Repository extends DataModel implements Parcelable {
         dest.writeInt(this.watchers);
         dest.writeInt(this.issues);
         dest.writeInt(this.size);
+        dest.writeParcelable(this.parent, flags);
+        dest.writeParcelable(this.source, flags);
         dest.writeLong(this.createdAt);
     }
 
-    private Repository(Parcel in) {
+    protected Repository(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
         this.updatedAt = in.readLong();
@@ -302,6 +322,8 @@ public class Repository extends DataModel implements Parcelable {
         this.watchers = in.readInt();
         this.issues = in.readInt();
         this.size = in.readInt();
+        this.parent = in.readParcelable(Repository.class.getClassLoader());
+        this.source = in.readParcelable(Repository.class.getClassLoader());
         this.createdAt = in.readLong();
     }
 

@@ -1,10 +1,8 @@
-package com.tpb.projects.data;
+package com.tpb.projects.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-
-import com.tpb.projects.data.models.DataModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;

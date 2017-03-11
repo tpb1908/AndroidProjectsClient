@@ -1,5 +1,6 @@
 package com.tpb.projects.repo;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,6 +14,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -139,7 +142,12 @@ public class RepoActivity extends BaseActivity implements
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
-            mRepoLoader.loadComplete(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
+            mRepo = launchIntent.getParcelableExtra(getString(R.string.intent_repo));
+            if(mRepo.isFork()) {
+                mLoader.loadRepository(mRepoLoader, mRepo.getFullName());
+            } else {
+                mRepoLoader.loadComplete(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
+            }
         } else {
             mLoader.loadRepository(mRepoLoader, launchIntent.getStringExtra(getString(R.string.intent_repo)));
         }
@@ -176,6 +184,7 @@ public class RepoActivity extends BaseActivity implements
     @OnClick({R.id.repo_stars, R.id.repo_stars_text, R.id.repo_stars_drawable})
     void toggleStar() {
         final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void updated(Boolean isStarred) {
                 mHasStarredRepo = isStarred;
@@ -204,6 +213,7 @@ public class RepoActivity extends BaseActivity implements
     @OnClick({R.id.repo_watchers, R.id.repo_watchers_text, R.id.repo_watchers_drawable})
     void toggleWatch() {
         final Editor.GITModelUpdateListener<Boolean> listener = new Editor.GITModelUpdateListener<Boolean>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void updated(Boolean isWatched) {
                 mIsWatchingRepo = isWatched;
@@ -246,14 +256,49 @@ public class RepoActivity extends BaseActivity implements
     }
     
     private Loader.GITModelLoader<Repository> mRepoLoader = new Loader.GITModelLoader<Repository>() {
+        @SuppressLint("SetTextI18n")
         @Override
-        public void loadComplete(Repository data) {
-            mRepo = data;
+        public void loadComplete(Repository repo) {
+            mRepo = repo;
             mName.setText(mRepo.getName());
-            if(DataModel.JSON_NULL.equals(mRepo.getDescription())) {
+            String desc = null;
+            if(repo.isFork() && repo.getSource() != null) {
+                //Tree of forks
+                if(repo.getParent() != null && !repo.getSource().equals(repo.getParent())) {
+                    desc = String.format(
+                                getString(R.string.text_repo_forked_multiple),
+                                String.format(
+                                        getString(R.string.text_href),
+                                        repo.getParent().getHtmlUrl(),
+                                        repo.getParent().getFullName()
+                                ),
+                                String.format(getString(R.string.text_href),
+                                        repo.getSource().getUrl(),
+                                        repo.getSource().getFullName()
+                                )
+                        );
+                } else {
+                    desc = String.format(
+                                getString(R.string.text_repo_forked),
+                                String.format(
+                                        getString(R.string.text_href),
+                                        repo.getParent().getHtmlUrl(),
+                                        repo.getParent().getFullName()
+                                )
+                    );
+                }
+            }
+            if(desc == null && DataModel.JSON_NULL.equals(mRepo.getDescription())) {
                 mDescription.setVisibility(GONE);
             } else {
-                mDescription.setText(mRepo.getDescription());
+                if(desc == null){
+                    desc = repo.getDescription();
+                } else {
+                    desc += "<br>" + repo.getDescription();
+                }
+                mDescription.setVisibility(View.VISIBLE);
+                mDescription.setText(Html.fromHtml(desc));
+                mDescription.setMovementMethod(LinkMovementMethod.getInstance());
             }
             mUserName.setText(mRepo.getUserLogin());
             mUserImage.setImageUrl(mRepo.getUserAvatarUrl());

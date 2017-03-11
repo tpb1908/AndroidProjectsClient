@@ -43,122 +43,125 @@ public class Interceptor extends Activity {
                 "github.com".equals(getIntent().getData().getHost())) {
             final List<String> segments = getIntent().getData().getPathSegments();
             Log.i(TAG, "onCreate: Path: " + segments.toString());
-            switch(segments.size()) {
-                case 1: //User
-                    final Intent u = new Intent(Interceptor.this, UserActivity.class);
-                    u.putExtra(getString(R.string.intent_username), segments.get(0));
-                    startActivity(u);
-                    overridePendingTransition(R.anim.slide_up, R.anim.none);
-                    finish();
-                    break;
-                case 2: //Repo
-                    final Intent r = new Intent(Interceptor.this, RepoActivity.class);
-                    r.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                    startActivity(r);
-                    overridePendingTransition(R.anim.slide_up, R.anim.none);
-                    finish();
-                    break;
-                case 3:
-                    if("projects".equals(segments.get(2))) {
-                        final Intent pr = new Intent(Interceptor.this, RepoActivity.class);
-                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        startActivity(pr);
+            if(segments.size() == 1) {
+                final Intent u = new Intent(Interceptor.this, UserActivity.class);
+                u.putExtra(getString(R.string.intent_username), segments.get(0));
+                startActivity(u);
+                overridePendingTransition(R.anim.slide_up, R.anim.none);
+                finish();
+            } else {
+                final Intent i = new Intent();
+                putRepo(i, segments);
+                switch(segments.size()) {
+                    case 2: //Repo
+                        i.setClass(Interceptor.this, RepoActivity.class);
+                        startActivity(i);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
-                    } else if("issues".equals(segments.get(2))) {
-                        final Intent pr = new Intent(Interceptor.this, IssuesActivity.class);
-                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        startActivity(pr);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else if("milestones".equals(segments.get(2))) {
-                        final Intent pr = new Intent(Interceptor.this, MilestonesActivity.class);
-                        pr.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        startActivity(pr);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else {
-                        fail();
-                    }
-                    break;
-                case 4: //Project
-                    if("projects".equals(segments.get(2))) {
-                        final Intent p = new Intent(Interceptor.this, ProjectActivity.class);
-                        p.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        p.putExtra(getString(R.string.intent_project_number), Integer.parseInt(segments.get(3)));
-                        final String path = getIntent().getDataString();
+                        break;
+                    case 3:
+                        if("projects".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, RepoActivity.class);
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("issues".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, IssuesActivity.class);
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("milestones".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, MilestonesActivity.class);
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else {
+                            fail();
+                        }
+                        break;
+                    case 4: //Project
+                        if("projects".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, ProjectActivity.class);
+                            i.putExtra(getString(R.string.intent_project_number), safelyExtractInt(segments.get(3)));
+                            final String path = getIntent().getDataString();
+                            final StringBuilder id = new StringBuilder();
+                            for(int j = path.indexOf('#', path.indexOf(segments.get(3))) + 6; j < path.length(); j++) {
+                                if(path.charAt(j) >= '0' && path.charAt(j) <= '9') id.append(path.charAt(j));
+                            }
+                            try {
+                                i.putExtra(getString(R.string.intent_card_id), safelyExtractInt(id.toString()));
+                            } catch(Exception ignored) {}
 
-                        final StringBuilder id = new StringBuilder();
-                        for(int i = path.indexOf('#', path.indexOf(segments.get(3))) + 6; i < path.length(); i++) {
-                            if(path.charAt(i) >= '0' && path.charAt(i) <= '9') id.append(path.charAt(i));
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("issues".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, IssueActivity.class);
+                            i.putExtra(getString(R.string.intent_issue_number), safelyExtractInt(segments.get(3)));
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("milestone".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, MilestonesActivity.class);
+                            i.putExtra(getString(R.string.intent_milestone_number), safelyExtractInt(segments.get(3)));
+                            startActivity(i);
+                            finish();
+                        } else {
+                            fail();
                         }
-                        try {
-                            p.putExtra(getString(R.string.intent_card_id), Integer.parseInt(id.toString()));
-                        } catch(Exception ignored) {}
-
-                        startActivity(p);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else if("issues".equals(segments.get(2))) {
-                        final Intent i = new Intent(Interceptor.this, IssueActivity.class);
-                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        i.putExtra(getString(R.string.intent_issue_number), Integer.parseInt(segments.get(3)));
-                        startActivity(i);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else if("milestone".equals(segments.get(2))) {
-                        final Intent i = new Intent(Interceptor.this, MilestoneActivity.class);
-                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        i.putExtra(getString(R.string.intent_milestone_number), Integer.parseInt(segments.get(3)));
-                        startActivity(i);
-                        finish();
-                    } else {
-                        fail();
-                    }
-                    break;
-                default:
-                    if("tree".equals(segments.get(2))) {
-                        final Intent content = new Intent(Interceptor.this, ContentActivity.class);
-                        content.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        final StringBuilder path = new StringBuilder();
-                        for(int i = 3; i < segments.size(); i++) {
-                            path.append(segments.get(i));
-                            path.append('/');
+                        break;
+                    default:
+                        if("tree".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, ContentActivity.class);
+                            i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                            final StringBuilder path = new StringBuilder();
+                            for(int j = 3; j < segments.size(); j++) {
+                                path.append(segments.get(j));
+                                path.append('/');
+                            }
+                            i.putExtra(getString(R.string.intent_path), path.toString());
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("blob".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, FileActivity.class);
+                            final StringBuilder path = new StringBuilder();
+                            path.append(segments.get(0));
+                            for(int j = 1; j < segments.size(); j++) {
+                                path.append('/');
+                                path.append(segments.get(j));
+                            }
+                            i.putExtra(getString(R.string.intent_blob_path), path.toString());
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
+                        } else if("milestone".equals(segments.get(2))) {
+                            //TODO Deal with number and edit suffix
+                            i.setClass(Interceptor.this, MilestoneActivity.class);
+                            i.putExtra(getString(R.string.intent_milestone_number), safelyExtractInt(segments.get(3)));
+                            startActivity(i);
+                            finish();
+                        } else {
+                            fail();
                         }
-                        content.putExtra(getString(R.string.intent_path), path.toString());
-                        startActivity(content);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else if("blob".equals(segments.get(2))) {
-                        final Intent file = new Intent(Interceptor.this, FileActivity.class);
-                        final StringBuilder path = new StringBuilder();
-                        path.append(segments.get(0));
-                        path.append('/');
-                        path.append(segments.get(1));
-                        file.putExtra(getString(R.string.intent_repo), path.toString());
-                        path.setLength(0);
-                        for(int i = 3; i < segments.size(); i++) {
-                            path.append('/');
-                            path.append(segments.get(i));
-                        }
-                        file.putExtra(getString(R.string.intent_blob_path), path.toString());
-                        startActivity(file);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
-                    } else if("milestone".equals(segments.get(2))) {
-                        //TODO Deal with number and edit suffix
-                        final Intent i = new Intent(Interceptor.this, MilestoneActivity.class);
-                        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-                        i.putExtra(getString(R.string.intent_milestone_number), Integer.parseInt(segments.get(3)));
-                        startActivity(i);
-                        finish();
-                    } else {
-                        fail();
-                    }
+                }
             }
+
         } else {
             fail();
         }
+    }
+
+    private static int safelyExtractInt(String possibleInt) {
+        try {
+            return Integer.parseInt(possibleInt.replace("\\s+", ""));
+        } catch(NumberFormatException nfe) {
+            return -1;
+        }
+    }
+
+    private void putRepo(Intent i, List<String> segments) {
+        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
     }
 
     private void fail() {

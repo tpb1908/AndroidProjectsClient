@@ -138,6 +138,8 @@
         <item quantity="one">%d gist</item>
         <item quantity="other">%d gists</item>
     </plurals>
+    <string name="text_repo_forked">Forked from %1$s</string>
+    <string name="text_repo_forked_multiple">Forked from %1$s with source of %2$s</string>
 
 
     <!--Issues activity -->
