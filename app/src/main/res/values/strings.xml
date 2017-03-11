@@ -247,7 +247,7 @@
 
     <string name="title_user_info_fragment">Info</string>
     <string name="title_user_repos_fragment">Repos</string>
-    <string name="title_user_starred_fragment">Starred</string>
+    <string name="title_user_stars_fragment">Stars</string>
     <string name="title_user_gists_fragment">Gists</string>
     <string name="title_user_events_fragment">Events</string>
 

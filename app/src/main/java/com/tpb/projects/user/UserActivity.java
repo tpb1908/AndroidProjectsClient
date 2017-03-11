@@ -23,7 +23,7 @@ import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
-import com.tpb.projects.user.fragments.UserStarredFragment;
+import com.tpb.projects.user.fragments.UserStarsFragment;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
@@ -118,7 +118,7 @@ public class UserActivity extends CircularRevealActivity {
                     fragments[1] = new UserReposFragment();
                     break;
                 case 2:
-                    fragments[2] = new UserStarredFragment();
+                    fragments[2] = new UserStarsFragment();
                     break;
                 case 3:
                     fragments[3] = new UserGistsFragment();
@@ -150,7 +150,7 @@ public class UserActivity extends CircularRevealActivity {
                 case 1:
                     return getString(R.string.title_user_repos_fragment);
                 case 2:
-                    return getString(R.string.title_user_starred_fragment);
+                    return getString(R.string.title_user_stars_fragment);
                 case 3:
                     return getString(R.string.title_user_gists_fragment);
                 case 4:
