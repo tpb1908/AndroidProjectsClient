@@ -13,6 +13,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Gist;
 
 import java.util.ArrayList;
@@ -115,15 +116,27 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     @Override
     public void onBindViewHolder(GistHolder holder, int position) {
         final Gist g = mGists.get(position);
-        holder.mAvatar.setImageUrl(g.getOwner().getAvatarUrl());
-        holder.mTitle.setText(
-                String.format(
-                        holder.itemView.getResources().getString(R.string.text_gist_viewholder_title),
-                        g.getOwner().getLogin(),
-                        g.getFiles()[0].getName()
-                )
-        );
-        holder.mInfo.setText(g.getDescription());
+        if(mIsShowingPublic) {
+            holder.mTitle.setText(
+                    String.format(
+                            holder.itemView.getResources().getString(R.string.text_gist_viewholder_title),
+                            g.getOwner().getLogin(),
+                            g.getFiles()[0].getName()
+                    )
+            );
+            holder.mAvatar.setImageUrl(g.getOwner().getAvatarUrl());
+        } else {
+            holder.mTitle.setText(g.getFiles()[0].getName());
+            holder.mAvatar.setVisibility(View.GONE);
+        }
+        if(g.getDescription() != null &&
+                !DataModel.JSON_NULL.equals(g.getDescription()) &&
+                !g.getDescription().isEmpty()) {
+            holder.mInfo.setVisibility(View.VISIBLE);
+            holder.mInfo.setText(g.getDescription());
+        } else {
+            holder.mInfo.setVisibility(View.GONE);
+        }
     }
 
     @Override

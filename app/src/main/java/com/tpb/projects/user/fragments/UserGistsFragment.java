@@ -46,7 +46,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(manager.findFirstVisibleItemPosition() + 10 > manager.getItemCount()) {
+                if(manager.findFirstVisibleItemPosition() + 20 > manager.getItemCount()) {
                     mAdapter.notifyBottomReached();
                 }
             }
