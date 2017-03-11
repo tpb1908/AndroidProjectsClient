@@ -136,8 +136,8 @@ public class Markdown {
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
-        final char[] chars = s.toCharArray();
-        for(int i = 0; i < s.length(); i++) {
+        final char[] chars = ("\n" + s).toCharArray();
+        for(int i = 0; i < chars.length; i++) {
             //Ensure that lines are properly spaced
             if(pp != '\n' && chars[i] == '\n' && i != chars.length - 1 && chars[i + 1] != '\n') {
                 builder.append("\n");

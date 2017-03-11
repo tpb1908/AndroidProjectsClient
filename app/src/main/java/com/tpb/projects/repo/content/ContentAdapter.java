@@ -93,16 +93,16 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         If we are one layer down, mPreviousNode is non null, but its parent is null
         If we are further down, both mPreviousNode and its parent are non null
          */
-        if(mPreviousNode == null) {
-            Log.i(TAG, "moveBack: We are already at the root");
-        } else if(mPreviousNode.getParent() == null) {
-            mPreviousNode = mPreviousNode.getParent();
-            mCurrentNodes = mRootNodes;
-            notifyDataSetChanged();
-        } else {
-            mCurrentNodes = mPreviousNode.getParent().getChildren();
-            mPreviousNode = mPreviousNode.getParent();
-            notifyDataSetChanged();
+        if(mPreviousNode != null) {
+            if(mPreviousNode.getParent() == null) {
+                mPreviousNode = mPreviousNode.getParent();
+                mCurrentNodes = mRootNodes;
+                notifyDataSetChanged();
+            } else {
+                mCurrentNodes = mPreviousNode.getParent().getChildren();
+                mPreviousNode = mPreviousNode.getParent();
+                notifyDataSetChanged();
+            }
         }
 
     }
@@ -181,7 +181,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             mRootNodes = directory;
             mCurrentNodes = directory;
             mPreviousNode = null;
-            notifyDataSetChanged();
+            notifyItemRangeInserted(0, mCurrentNodes.size());
         } else {
             mPreviousNode.setChildren(directory);
             mCurrentNodes = directory;
