@@ -28,7 +28,7 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserStarredFragment extends UserFragment implements RepositoriesAdapter.RepoOpener{
+public class UserStarsFragment extends UserFragment implements RepositoriesAdapter.RepoOpener{
 
     private Unbinder unbinder;
 

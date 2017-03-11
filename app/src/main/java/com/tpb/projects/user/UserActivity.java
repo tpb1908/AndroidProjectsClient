@@ -23,7 +23,7 @@ import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
-import com.tpb.projects.user.fragments.UserStarredFragment;
+import com.tpb.projects.user.fragments.UserStarsFragment;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
@@ -36,6 +36,7 @@ import butterknife.ButterKnife;
 
 public class UserActivity extends CircularRevealActivity {
 
+    @BindView(R.id.title_user) TextView mTitle;
     @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
     @BindView(R.id.user_fragment_viewpager) ViewPager mPager;
 
@@ -57,7 +58,7 @@ public class UserActivity extends CircularRevealActivity {
         final Loader loader = new Loader(this);
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             user = getIntent().getStringExtra(getString(R.string.intent_username));
-            ((TextView) findViewById(R.id.title_user)).setText(R.string.title_activity_user);
+            mTitle.setText(user);
             loader.loadUser(new Loader.GITModelLoader<User>() {
                 @Override
                 public void loadComplete(User u) {
@@ -75,12 +76,15 @@ public class UserActivity extends CircularRevealActivity {
             if(isTaskRoot()) {
                 findViewById(R.id.back_button).setVisibility(View.GONE);
             }
+            final GitHubSession session = GitHubSession.getSession(this);
+            mTitle.setText(session.getUserLogin());
             loader.loadAuthenticatedUser(new Loader.GITModelLoader<User>() {
                 @Override
                 public void loadComplete(User user) {
                     mUser = user;
                     mAdapter.notifyUserLoaded();
-                    GitHubSession.getSession(UserActivity.this).updateUserLogin(user.getLogin());
+                    mTitle.setText(user.getLogin());
+                    session.updateUserLogin(user.getLogin());
                 }
 
                 @Override
@@ -94,6 +98,11 @@ public class UserActivity extends CircularRevealActivity {
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(5);
+
+    }
+
+    public User getUser() {
+        return mUser;
     }
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {
@@ -114,7 +123,7 @@ public class UserActivity extends CircularRevealActivity {
                     fragments[1] = new UserReposFragment();
                     break;
                 case 2:
-                    fragments[2] = new UserStarredFragment();
+                    fragments[2] = new UserStarsFragment();
                     break;
                 case 3:
                     fragments[3] = new UserGistsFragment();
@@ -146,7 +155,7 @@ public class UserActivity extends CircularRevealActivity {
                 case 1:
                     return getString(R.string.title_user_repos_fragment);
                 case 2:
-                    return getString(R.string.title_user_starred_fragment);
+                    return getString(R.string.title_user_stars_fragment);
                 case 3:
                     return getString(R.string.title_user_gists_fragment);
                 case 4:

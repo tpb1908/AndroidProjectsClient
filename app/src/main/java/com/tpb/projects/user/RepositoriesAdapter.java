@@ -82,7 +82,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         }
     }
 
-    void loadReposForUser(boolean resetPage) {
+    private void loadReposForUser(boolean resetPage) {
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {
@@ -90,7 +90,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             mMaxPageReached = false;
         }
         if(mIsShowingStars) {
-            mLoader.loadStarredRepositories(this, mPage);
+            mLoader.loadStarredRepositories(this, mUser, mPage);
         } else if(mUser.equals(mAuthenticatedUser)) { //The session user
             mLoader.loadRepositories(this, mPage);
         } else {
@@ -185,7 +185,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     @Override
     public void loadError(APIHandler.APIError error) {
-
+        mIsLoading = false;
     }
 
     private void ensureLoadOfPinnedRepos() {

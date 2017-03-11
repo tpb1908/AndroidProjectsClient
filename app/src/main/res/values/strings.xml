@@ -65,6 +65,8 @@
     <string name="text_clear">Clear</string>
     <string name="text_show_files">Show files</string>
 
+    <!-- Gist stuff -->
+    <string name="text_gist_viewholder_title">%1$s/%2$s</string>
 
     <!-- Content activity -->
     <string name="text_ribbon_root">Root</string>
@@ -128,6 +130,14 @@
     <string name="text_user_average_active">Average commits on active days: %1$.1f</string>
     <string name="text_user_max_commits">Most commits in a day: %1$d</string>
     <string name="text_user_streak">Longest streak: %1$d days</string>
+    <plurals name="text_user_repositories">
+        <item quantity="one">%d repository</item>
+        <item quantity="other">%d repositories</item>
+    </plurals>
+    <plurals name="text_user_gists">
+        <item quantity="one">%d gist</item>
+        <item quantity="other">%d gists</item>
+    </plurals>
 
 
     <!--Issues activity -->
@@ -247,9 +257,10 @@
 
     <string name="title_user_info_fragment">Info</string>
     <string name="title_user_repos_fragment">Repos</string>
-    <string name="title_user_starred_fragment">Starred</string>
+    <string name="title_user_stars_fragment">Stars</string>
     <string name="title_user_gists_fragment">Gists</string>
     <string name="title_user_events_fragment">Events</string>
+
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>

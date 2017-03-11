@@ -16,6 +16,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Column;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Event;
+import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
@@ -162,8 +163,8 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, int page) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + (page > 1 ? "?page=" + page : ""))
+    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, String user,  int page) {
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_STARRED + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
@@ -214,6 +215,54 @@ public class Loader extends APIHandler {
                 }
             });
         }
+    }
+
+    public void loadGists(GITModelsLoader<Gist> loader, int page) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_GISTS + (page > 1 ? "?page=" + page : ""))
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Gist[] gists = new Gist[response.length()];
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                gists[i] = Gist.parse(response.getJSONObject(i));
+                            } catch(JSONException ignored) {}
+                        }
+                        if(loader != null) loader.loadComplete(gists);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) loader.loadError(parseError(anError));
+                    }
+                });
+
+    }
+
+    public void loadGists(GITModelsLoader<Gist> loader, String user, int page) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_GISTS + (page > 1 ? "?page=" + page : ""))
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final Gist[] gists = new Gist[response.length()];
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                gists[i] = Gist.parse(response.getJSONObject(i));
+                            } catch(JSONException ignored) {}
+                        }
+                        if(loader != null) loader.loadComplete(gists);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(loader != null) loader.loadError(parseError(anError));
+                    }
+                });
+
     }
 
     public void loadReadMe(@Nullable GITModelLoader<String> loader, String repoFullName) {
