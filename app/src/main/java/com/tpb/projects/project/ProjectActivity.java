@@ -294,6 +294,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                     mColumnPager.setCurrentItem(mCurrentPosition, true);
                     mColumnPager.postDelayed(() -> mColumnPager.setVisibility(View.VISIBLE), 300);
                 } else {
+                    mRefresher.setRefreshing(false);
                     mAddCard.setVisibility(View.GONE);
                     mAddIssue.setVisibility(View.GONE);
                 }
@@ -354,8 +355,12 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                         mAddCard.setVisibility(View.INVISIBLE);
                         mAddIssue.setVisibility(View.INVISIBLE);
                         mAdapter.columns.add(column);
-                        mAdapter.add(new ColumnPageDescriptor(column));
-                        mColumnPager.setCurrentItem(mAdapter.getCount(), true);
+                        if(mAdapter.columns.size() == 0) {
+                            mAdapter.notifyDataSetChanged();
+                        } else {
+                            mAdapter.add(new ColumnPageDescriptor(column));
+                            mColumnPager.setCurrentItem(mAdapter.getCount(), true);
+                        }
                         mRefresher.setRefreshing(false);
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);

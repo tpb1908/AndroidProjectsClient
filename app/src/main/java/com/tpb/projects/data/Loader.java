@@ -70,7 +70,7 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Authenticated user error");
+                        Log.i(TAG, "onError: Authenticated user error " + anError.getErrorBody());
                         if(loader != null) loader.loadError(parseError(anError));
                     }
                 });

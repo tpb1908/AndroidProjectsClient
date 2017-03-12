@@ -1,5 +1,6 @@
 package com.tpb.projects.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -13,12 +14,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
@@ -53,11 +57,22 @@ public class UserActivity extends CircularRevealActivity {
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_user_viewpager);
         ButterKnife.bind(this);
-
         postponeEnterTransition();
+
+        final OAuthHandler oAuthHandler = new OAuthHandler(
+                this,
+                BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET,
+                BuildConfig.GITHUB_REDIRECT_URL
+        );
+        if(!oAuthHandler.hasAccessToken()) {
+            startActivity(new Intent(UserActivity.this, LoginActivity.class));
+            finish();
+        }
 
         final String user;
         final Loader loader = new Loader(this);
+
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             user = getIntent().getStringExtra(getString(R.string.intent_username));
             mTitle.setText(user);
@@ -141,7 +156,6 @@ public class UserActivity extends CircularRevealActivity {
                     fragments[4] = new UserEventsFragment();
                     break;
             }
-            Log.i(TAG, "getItem: " + (mUser != null));
             if(mUser != null) fragments[position].userLoaded(mUser);
             return fragments[position];
         }

@@ -8,7 +8,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void userLoaded(User user) {
-        Log.i(TAG, "userLoaded: " + user.toString());
+        if(getActivity() == null) return;
         mUserName.setText(user.getLogin());
         mAvatar.setImageUrl(user.getAvatarUrl());
 
