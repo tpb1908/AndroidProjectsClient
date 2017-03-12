@@ -175,6 +175,7 @@ public class Card extends DataModel implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;

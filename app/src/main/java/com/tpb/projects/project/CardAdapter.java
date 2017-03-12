@@ -250,7 +250,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mUserAvatar.setVisibility(View.VISIBLE);
         final Card card = mCards.get(pos).first;
-        if(card.getIssueId() != 0) Log.i(TAG, "bindIssueCard: Card Issue number " + card.getIssueId());
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());

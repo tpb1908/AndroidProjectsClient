@@ -312,13 +312,11 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Card update: " + response.toString());
                         if(listener != null) listener.updated(Card.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Card update: " + anError.getErrorBody());
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
