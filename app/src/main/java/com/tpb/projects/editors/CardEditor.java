@@ -13,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;

@@ -156,7 +156,9 @@ public class IssueEditor extends ImageLoadingActivity {
 
             @Override
             public void keyboardHidden() {
-                mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
+                if(mBodyEdit.isEditing()) {
+                    mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
+                }
             }
         });
 
@@ -190,9 +192,11 @@ public class IssueEditor extends ImageLoadingActivity {
                     if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
                     mBodyEdit.disableEditing();
                     mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
+                    mInfoLayout.setVisibility(View.GONE);
                 } else {
                     mBodyEdit.restoreText();
                     mBodyEdit.enableEditing();
+                    if(!mKeyBoardChecker.isKeyboardOpen()) mInfoLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
