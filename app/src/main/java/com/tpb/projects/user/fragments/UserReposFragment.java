@@ -7,6 +7,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,8 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserReposFragment extends UserFragment implements RepositoriesAdapter.RepoOpener{
+public class UserReposFragment extends UserFragment implements RepositoriesAdapter.RepoOpener {
+    private static final String TAG = UserReposFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -62,6 +64,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
 
     @Override
     public void userLoaded(User user) {
+        Log.i(TAG, "userLoaded: " + user.toString());
         mAdapter.setUser(user.getLogin(), false);
     }
 

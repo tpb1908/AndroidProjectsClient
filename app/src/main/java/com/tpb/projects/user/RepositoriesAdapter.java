@@ -71,7 +71,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     public void setUser(String user, boolean isShowingStars) {
         mUser = user;
         mIsShowingStars = isShowingStars;
-        loadReposForUser(false);
+        mRepos.clear();
+        loadReposForUser(true);
     }
 
 
@@ -83,6 +84,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     private void loadReposForUser(boolean resetPage) {
+        Log.i(TAG, "loadReposForUser: ");
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {

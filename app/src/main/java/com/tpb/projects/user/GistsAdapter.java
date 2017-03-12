@@ -60,7 +60,8 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     public void setUser(String user, boolean isShowingPublic) {
         mUser = user;
         mIsShowingPublic = isShowingPublic;
-        loadGistsForUser(false);
+        mGists.clear();
+        loadGistsForUser(true);
     }
 
 

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,7 @@ import butterknife.ButterKnife;
  */
 
 public class UserActivity extends CircularRevealActivity {
+    private static final String TAG = UserActivity.class.getSimpleName();
 
     @BindView(R.id.title_user) TextView mTitle;
     @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
@@ -132,12 +134,15 @@ public class UserActivity extends CircularRevealActivity {
                     fragments[4] = new UserEventsFragment();
                     break;
             }
+            Log.i(TAG, "getItem: " + (mUser != null));
             if(mUser != null) fragments[position].userLoaded(mUser);
             return fragments[position];
         }
 
         void notifyUserLoaded() {
+            Log.i(TAG, "notifyUserLoaded: " + mUser.toString());
             for(UserFragment f : fragments) {
+                if(f == null) Log.i(TAG, "notifyUserLoaded: null fragment");
                 if(f != null) f.userLoaded(mUser);
             }
         }
@@ -164,6 +169,11 @@ public class UserActivity extends CircularRevealActivity {
                     return "Error";
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
