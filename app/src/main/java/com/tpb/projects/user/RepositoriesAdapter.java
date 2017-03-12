@@ -68,6 +68,17 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
+    public ArrayList<Repository> getRepos() {
+        return mRepos;
+    }
+
+    public void restoreState(ArrayList<Repository> repos) {
+        mRepos.clear();
+        mRepos.addAll(repos);
+        notifyDataSetChanged();
+        mRefresher.setRefreshing(false);
+    }
+
     public void setUser(String user, boolean isShowingStars) {
         mUser = user;
         mIsShowingStars = isShowingStars;

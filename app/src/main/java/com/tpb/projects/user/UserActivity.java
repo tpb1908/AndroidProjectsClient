@@ -96,7 +96,7 @@ public class UserActivity extends CircularRevealActivity {
             });
 
         }
-        mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
+        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(5);
@@ -105,6 +105,13 @@ public class UserActivity extends CircularRevealActivity {
 
     public User getUser() {
         return mUser;
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
+        mAdapter.ensureAttached((UserFragment) fragment);
     }
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {
@@ -137,6 +144,14 @@ public class UserActivity extends CircularRevealActivity {
             Log.i(TAG, "getItem: " + (mUser != null));
             if(mUser != null) fragments[position].userLoaded(mUser);
             return fragments[position];
+        }
+
+        void ensureAttached(UserFragment fragment) {
+            if(fragment instanceof UserInfoFragment) fragments[0] = fragment;
+            else if(fragment instanceof UserReposFragment) fragments[1] = fragment;
+            else if(fragment instanceof UserStarsFragment) fragments[2] = fragment;
+            else if(fragment instanceof UserGistsFragment) fragments[3] = fragment;
+            else if(fragment instanceof UserEventsFragment) fragments[4] = fragment;
         }
 
         void notifyUserLoaded() {
