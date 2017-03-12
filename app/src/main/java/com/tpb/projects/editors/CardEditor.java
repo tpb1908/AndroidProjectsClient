@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
@@ -282,10 +283,8 @@ public class CardEditor extends ImageLoadingActivity {
     @OnClick(R.id.markdown_editor_done)
     void onDone() {
         final Intent done = new Intent();
-
         mCard.setNote(mEditor.getInputText().toString());
         done.putExtra(getString(R.string.parcel_card), mCard);
-
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;
         finish();

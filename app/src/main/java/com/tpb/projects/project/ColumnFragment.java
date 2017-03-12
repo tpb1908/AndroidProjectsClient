@@ -444,8 +444,8 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             int createAttempts = 0;
 
             @Override
-            public void created(Pair<Integer, Card> integerCardPair) {
-                addCard(card);
+            public void created(Pair<Integer, Card> pair) {
+                addCard(pair.second);
                 mParent.mRefresher.setRefreshing(false);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
@@ -475,6 +475,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
     }
 
     void editCard(Card card) {
+        Log.i(TAG, "editCard: Updating card: " + card.toString());
         mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.GITModelUpdateListener<Card>() {
             int updateAttempts = 0;
