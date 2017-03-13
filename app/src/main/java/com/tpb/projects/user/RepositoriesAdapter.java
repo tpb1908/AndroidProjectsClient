@@ -68,10 +68,22 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
     }
 
+    public ArrayList<Repository> getRepos() {
+        return mRepos;
+    }
+
+    public void restoreState(ArrayList<Repository> repos) {
+        mRepos.clear();
+        mRepos.addAll(repos);
+        notifyDataSetChanged();
+        mRefresher.setRefreshing(false);
+    }
+
     public void setUser(String user, boolean isShowingStars) {
         mUser = user;
         mIsShowingStars = isShowingStars;
-        loadReposForUser(false);
+        mRepos.clear();
+        loadReposForUser(true);
     }
 
 
@@ -83,6 +95,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     private void loadReposForUser(boolean resetPage) {
+        Log.i(TAG, "loadReposForUser: ");
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {

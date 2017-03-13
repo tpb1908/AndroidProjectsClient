@@ -28,7 +28,8 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserReposFragment extends UserFragment implements RepositoriesAdapter.RepoOpener{
+public class UserReposFragment extends UserFragment implements RepositoriesAdapter.RepoOpener {
+    private static final String TAG = UserReposFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 

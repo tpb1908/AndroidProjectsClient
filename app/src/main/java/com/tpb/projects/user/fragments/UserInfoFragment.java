@@ -88,6 +88,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void userLoaded(User user) {
+        if(getActivity() == null) return;
         mUserName.setText(user.getLogin());
         mAvatar.setImageUrl(user.getAvatarUrl());
 

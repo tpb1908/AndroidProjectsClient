@@ -50,6 +50,10 @@ public class File extends DataModel implements Parcelable {
         return language;
     }
 
+    public String getRawUrl() {
+        return rawUrl;
+    }
+
     public static File parse(JSONObject obj) {
         final File f = new File();
         try {

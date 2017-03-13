@@ -170,13 +170,16 @@ public class HtmlTagHandler implements Html.TagHandler {
                     String parentList = lists.peek();
                     if(parentList.equalsIgnoreCase(ORDERED_LIST)) {
                         start(output, new Ol());
-                        output.append(olNextIndex.peek().toString()).append("•");
                         olNextIndex.push(olNextIndex.pop() + 1);
                     } else if(parentList.equalsIgnoreCase(UNORDERED_LIST)) {
                         start(output, new Ul());
                     }
                 } else {
                     start(output, new Ol());
+                    if(olNextIndex.isEmpty()) {
+                        olNextIndex.push(0);
+                    }
+                    olNextIndex.push(olNextIndex.pop() + 1);
                     output.append("•");
                 }
             } else if(tag.equalsIgnoreCase("code")) {
@@ -217,7 +220,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                 olNextIndex.pop();
             } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
                 if(!lists.isEmpty()) {
-                    if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
                         if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
                             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                                 output.append("\n");
@@ -227,7 +229,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                             if(lists.size() > 1) {
                                 bulletMargin = indent - bullet.getLeadingMargin(true);
                                 if(lists.size() > 2) {
-                                    // This get's more complicated when we add a LeadingMarginSpan into the same line:
+                                    // This gets more complicated when we add a LeadingMarginSpan into the same line:
                                     // we have also counter it's effect to BulletSpan
                                     bulletMargin -= (lists.size() - 2) * listItemIndent;
                                 }
@@ -250,7 +252,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                                     new LeadingMarginSpan.Standard(numberMargin),
                                     numberSpan);
                         }
-                    }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }
@@ -267,7 +268,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 2, 0);
                 output.setSpan(code, where, where + 2, 0);
                 output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, 0);
-                Log.i(HtmlTagHandler.class.getSimpleName(), "handleTag: CodeSpan from " + where);
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

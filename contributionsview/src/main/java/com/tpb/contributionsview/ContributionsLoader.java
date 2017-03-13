@@ -19,6 +19,8 @@ package com.tpb.contributionsview;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 
@@ -32,7 +34,6 @@ import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by theo on 12/01/17.
@@ -68,7 +69,7 @@ public class ContributionsLoader {
     }
 
     private void parse(String response) {
-        final List<GitDay> contribs = new ArrayList<>();
+        final ArrayList<GitDay> contribs = new ArrayList<>();
         int first = response.indexOf("<rect");
         int last;
         // Find each rectangle in the image
@@ -81,7 +82,7 @@ public class ContributionsLoader {
 
     }
 
-    public static class GitDay {
+    public static class GitDay implements Parcelable {
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         @ColorInt final int color;
         long date;
@@ -104,6 +105,8 @@ public class ContributionsLoader {
             //Log.i(TAG, "GitDay: Contributions" + color + ", " + date + ", " + contributions);
         }
 
+
+
         @Override
         public String toString() {
             return "GitDay{" +
@@ -112,11 +115,41 @@ public class ContributionsLoader {
                     ", contributions=" + contributions +
                     '}';
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.color);
+            dest.writeLong(this.date);
+            dest.writeInt(this.contributions);
+        }
+
+        protected GitDay(Parcel in) {
+            this.color = in.readInt();
+            this.date = in.readLong();
+            this.contributions = in.readInt();
+        }
+
+        public static final Creator<GitDay> CREATOR = new Creator<GitDay>() {
+            @Override
+            public GitDay createFromParcel(Parcel source) {
+                return new GitDay(source);
+            }
+
+            @Override
+            public GitDay[] newArray(int size) {
+                return new GitDay[size];
+            }
+        };
     }
 
     interface ContributionsRequestListener {
 
-        void onResponse(List<GitDay> contributions);
+        void onResponse(ArrayList<GitDay> contributions);
 
         void onError(VolleyError error);
 

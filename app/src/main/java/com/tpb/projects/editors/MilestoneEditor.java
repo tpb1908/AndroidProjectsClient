@@ -166,7 +166,7 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
         mTitleEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = true;
+                mHasBeenEdited = mHasBeenEdited || mDescriptionEditor.isEditing();
             }
         });
         mDescriptionEditor.addTextChangedListener(new DumbTextChangeWatcher() {

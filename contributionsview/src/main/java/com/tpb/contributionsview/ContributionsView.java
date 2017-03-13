@@ -25,6 +25,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +38,7 @@ import com.android.volley.VolleyError;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +54,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private int textColor;
     private int textSize;
     private int backGroundColor;
-    private List<ContributionsLoader.GitDay> contribs = new ArrayList<>();
+    private ArrayList<ContributionsLoader.GitDay> contribs = new ArrayList<>();
 
     private Paint dayPainter;
     private Paint textPainter;
@@ -226,7 +229,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
     @Override
-    public void onResponse(List<ContributionsLoader.GitDay> contributions) {
+    public void onResponse(ArrayList<ContributionsLoader.GitDay> contributions) {
         contribs = contributions;
         invalidate();
         if(listener != null && listener.get() != null) listener.get().contributionsLoaded(contributions);
@@ -248,6 +251,57 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     public interface ContributionsLoadListener {
 
         void contributionsLoaded(List<ContributionsLoader.GitDay> contributions);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        final Parcelable ss = super.onSaveInstanceState();
+        final ContribState state = new ContribState(ss);
+        state.contribs = contribs.toArray(new ContributionsLoader.GitDay[0]);
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+
+        if(!(state instanceof ContribState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        final ContribState cs = (ContribState) state;
+        super.onRestoreInstanceState(cs.getSuperState());
+        this.contribs = new ArrayList<>(Arrays.asList(cs.contribs));
+        invalidate();
+    }
+
+    private static class ContribState extends BaseSavedState {
+        ContributionsLoader.GitDay[] contribs;
+
+        ContribState(Parcel source) {
+            super(source);
+            this.contribs = source.createTypedArray(ContributionsLoader.GitDay.CREATOR);
+        }
+
+        ContribState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeTypedArray(contribs, flags);
+        }
+
+        public static final Parcelable.Creator<ContribState> CREATOR =
+                new Parcelable.Creator<ContribState>() {
+                    public ContribState createFromParcel(Parcel in) {
+                        return new ContribState(in);
+                    }
+                    public ContribState[] newArray(int size) {
+                        return new ContribState[size];
+                    }
+                };
     }
 
 }

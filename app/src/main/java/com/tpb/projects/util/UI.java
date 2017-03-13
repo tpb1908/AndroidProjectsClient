@@ -161,12 +161,12 @@ public class UI {
     }
 
     public static void removeActivityFromTransitionManager(Activity activity) {
-        Class transitionManagerClass = TransitionManager.class;
+        final Class transitionManagerClass = TransitionManager.class;
         try {
-            Field runningTransitionsField = transitionManagerClass.getDeclaredField("sRunningTransitions");
+            final Field runningTransitionsField = transitionManagerClass.getDeclaredField("sRunningTransitions");
             runningTransitionsField.setAccessible(true);
             //noinspection unchecked
-            ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>> runningTransitions
+            final ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>> runningTransitions
                     = (ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>>)
                     runningTransitionsField.get(transitionManagerClass);
             if (runningTransitions.get() == null || runningTransitions.get().get() == null) {

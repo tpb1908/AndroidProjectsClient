@@ -6,6 +6,7 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
+import android.util.Log;
 
 /**
  * Created by theo on 02/03/17.
@@ -18,6 +19,7 @@ public class NumberSpan implements LeadingMarginSpan {
     public NumberSpan(TextPaint textPaint, int number) {
         mNumber = Integer.toString(number).concat(". ");
         mTextWidth = (int) textPaint.measureText(mNumber);
+        Log.i(NumberSpan.class.getSimpleName(), "NumberSpan: " + mNumber);
     }
 
     @Override

@@ -84,7 +84,7 @@ public class CommentEditor extends ImageLoadingActivity {
         mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = mEditor.isEditing();
+                mHasBeenEdited = mHasBeenEdited || mEditor.isEditing();
             }
         });
 

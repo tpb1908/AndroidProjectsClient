@@ -1,5 +1,6 @@
 package com.tpb.projects.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -7,17 +8,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
+import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
@@ -35,6 +40,7 @@ import butterknife.ButterKnife;
  */
 
 public class UserActivity extends CircularRevealActivity {
+    private static final String TAG = UserActivity.class.getSimpleName();
 
     @BindView(R.id.title_user) TextView mTitle;
     @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
@@ -51,11 +57,22 @@ public class UserActivity extends CircularRevealActivity {
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_user_viewpager);
         ButterKnife.bind(this);
-
         postponeEnterTransition();
+
+        final OAuthHandler oAuthHandler = new OAuthHandler(
+                this,
+                BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET,
+                BuildConfig.GITHUB_REDIRECT_URL
+        );
+        if(!oAuthHandler.hasAccessToken()) {
+            startActivity(new Intent(UserActivity.this, LoginActivity.class));
+            finish();
+        }
 
         final String user;
         final Loader loader = new Loader(this);
+
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             user = getIntent().getStringExtra(getString(R.string.intent_username));
             mTitle.setText(user);
@@ -94,7 +111,7 @@ public class UserActivity extends CircularRevealActivity {
             });
 
         }
-        mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
+        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(5);
@@ -103,6 +120,13 @@ public class UserActivity extends CircularRevealActivity {
 
     public User getUser() {
         return mUser;
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
+        mAdapter.ensureAttached((UserFragment) fragment);
     }
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {
@@ -136,6 +160,14 @@ public class UserActivity extends CircularRevealActivity {
             return fragments[position];
         }
 
+        void ensureAttached(UserFragment fragment) {
+            if(fragment instanceof UserInfoFragment) fragments[0] = fragment;
+            else if(fragment instanceof UserReposFragment) fragments[1] = fragment;
+            else if(fragment instanceof UserStarsFragment) fragments[2] = fragment;
+            else if(fragment instanceof UserGistsFragment) fragments[3] = fragment;
+            else if(fragment instanceof UserEventsFragment) fragments[4] = fragment;
+        }
+
         void notifyUserLoaded() {
             for(UserFragment f : fragments) {
                 if(f != null) f.userLoaded(mUser);
@@ -146,6 +178,8 @@ public class UserActivity extends CircularRevealActivity {
         public int getCount() {
             return 5;
         }
+
+
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -164,6 +198,11 @@ public class UserActivity extends CircularRevealActivity {
                     return "Error";
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -223,4 +262,5 @@ public class UserActivity extends CircularRevealActivity {
     public void onToolbarBackPressed(View view) {
         onBackPressed();
     }
+
 }
