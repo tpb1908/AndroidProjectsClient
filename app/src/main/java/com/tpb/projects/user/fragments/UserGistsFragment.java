@@ -1,5 +1,6 @@
 package com.tpb.projects.user.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.GistsAdapter;
 
 import butterknife.BindView;
@@ -63,7 +65,9 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
 
     @Override
     public void openGist(Gist gist, View view) {
-
+        final Intent i = new Intent(getContext(), FileActivity.class);
+        i.putExtra(getString(R.string.intent_gist_url), gist.getFiles()[0].getRawUrl());
+        startActivity(i);
     }
 
     @Override

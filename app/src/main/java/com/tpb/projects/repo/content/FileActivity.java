@@ -68,6 +68,12 @@ public class FileActivity extends AppCompatActivity {
             }
             mWebView.setHighlightLanguage(getLanguage(getFileType(blob)));
             new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
+        } else if(getIntent().hasExtra(getString(R.string.intent_gist_url))) {
+            final String url = getIntent().getStringExtra(getString(R.string.intent_gist_url));
+            Log.i(TAG, "onCreate: File type " + getFileType(url));
+            mWebView.setHighlightLanguage(getLanguage(getFileType(url)));
+            new FileLoader(this).loadRawFile(fileLoadListener, url);
+
         } else if(ContentActivity.mLaunchNode != null) {
             final Node node = ContentActivity.mLaunchNode;
             mName.setText(node.getName());

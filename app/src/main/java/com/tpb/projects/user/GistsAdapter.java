@@ -89,6 +89,9 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
 
     }
 
+    private void open(View view, int pos) {
+        mOpener.openGist(mGists.get(pos), view);
+    }
 
     @Override
     public void loadComplete(Gist[] gists) {
@@ -154,6 +157,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         public GistHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(v -> open(itemView, getAdapterPosition()));
         }
 
 

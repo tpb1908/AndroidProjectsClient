@@ -197,7 +197,6 @@ public class Interceptor extends Activity {
     }
 
     private Intent onFail() {
-        Log.i(TAG, "onFail: ");
         if(failIntent == null && getIntent() != null) {
             return generateFailIntentWithoutApp();
         } else {

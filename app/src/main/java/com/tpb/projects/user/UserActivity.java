@@ -169,9 +169,7 @@ public class UserActivity extends CircularRevealActivity {
         }
 
         void notifyUserLoaded() {
-            Log.i(TAG, "notifyUserLoaded: " + mUser.toString());
             for(UserFragment f : fragments) {
-                if(f == null) Log.i(TAG, "notifyUserLoaded: null fragment");
                 if(f != null) f.userLoaded(mUser);
             }
         }
@@ -180,6 +178,8 @@ public class UserActivity extends CircularRevealActivity {
         public int getCount() {
             return 5;
         }
+
+
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -262,4 +262,5 @@ public class UserActivity extends CircularRevealActivity {
     public void onToolbarBackPressed(View view) {
         onBackPressed();
     }
+
 }

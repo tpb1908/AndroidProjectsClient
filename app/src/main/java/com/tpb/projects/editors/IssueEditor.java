@@ -137,7 +137,7 @@ public class IssueEditor extends ImageLoadingActivity {
             @Override
             public void textChanged() {
 
-                mHasBeenEdited = mBodyEdit.isEditing();
+                mHasBeenEdited = mHasBeenEdited || mBodyEdit.isEditing();
             }
         };
 
