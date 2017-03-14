@@ -150,6 +150,24 @@
 
                 <include layout="@layout/viewholder_milestone" />
 
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/issue_content_viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+                    <android.support.v4.view.PagerTabStrip
+                        android:id="@+id/issue_content_tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+
+                </android.support.v4.view.ViewPager>
+
                 <com.tpb.animatingrecyclerview.AnimatingRecycler
                     android:id="@+id/issue_comments_recycler"
                     android:layout_width="match_parent"
