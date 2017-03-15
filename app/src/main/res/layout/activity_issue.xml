@@ -35,159 +35,24 @@
 
         </android.support.v7.widget.Toolbar>
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/issue_fragment_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|snap|enterAlways"
+            app:tabGravity="center">
+
+        </android.support.design.widget.TabLayout>
+
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/issue_refresher"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/issue_content_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:animateLayoutChanges="true">
-
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/issue_scrollview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/issue_header_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_margin="8dp"
-                    android:minHeight="56dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp">
-
-                        <LinearLayout
-                            android:id="@+id/issue_drawable_wrapper"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginEnd="8dp"
-                            android:orientation="vertical"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentStart="true">
-
-                            <ImageView
-                                android:id="@+id/issue_state"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-
-                            <com.androidnetworking.widget.ANImageView
-                                android:id="@+id/issue_user_avatar"
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginTop="8dp"/>
-
-                        </LinearLayout>
-
-
-                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
-                            android:id="@+id/issue_info"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toEndOf="@+id/issue_drawable_wrapper"
-                            android:layout_toStartOf="@+id/issue_menu_button"
-                            android:layout_marginBottom="8dp"/>
-
-                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
-                            android:id="@+id/issue_open_info"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/issue_info"
-                            android:layout_toEndOf="@+id/issue_drawable_wrapper"
-                            android:layout_toStartOf="@+id/issue_menu_button"
-                            android:layout_marginEnd="8dp"/>
-
-                        <TextView
-                            android:id="@+id/issue_comment_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/issue_menu_button"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginEnd="3dp"
-                            android:text="@string/text_placeholder"
-                            android:background="@drawable/shape_badge"/>
-
-                        <ImageButton
-                            android:id="@+id/issue_menu_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentTop="true"
-                            android:background="@android:color/transparent"
-                            android:src="@drawable/ic_chevron_down"/>
-
-                    </RelativeLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:id="@+id/issue_assignees"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_margin="8dp">
-
-                    </LinearLayout>
-
-                </HorizontalScrollView>
-
-                <include layout="@layout/viewholder_milestone" />
-
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/issue_content_viewpager"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
-                    <android.support.v4.view.PagerTabStrip
-                        android:id="@+id/issue_content_tabs"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp" />
-
-                </android.support.v4.view.ViewPager>
-
-                <com.tpb.animatingrecyclerview.AnimatingRecycler
-                    android:id="@+id/issue_comments_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:nestedScrollingEnabled="false"/>
-
-            </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/issue_comment_fab"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_reply"
-        android:visibility="invisible"
-        app:layout_anchor="@id/issue_refresher"
-        app:layout_anchorGravity="bottom|right|end"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </android.support.v4.view.ViewPager>
+
 
 </android.support.design.widget.CoordinatorLayout>

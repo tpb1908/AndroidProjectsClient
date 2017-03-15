@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.tpb.animatingrecyclerview.AnimatingRecycler
-    android:id="@+id/issue_comments_recycler"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/issue_comments_refresher"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="8dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"/>
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <com.tpb.animatingrecyclerview.AnimatingRecycler
+        android:id="@+id/issue_comments_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/issue_comment_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_reply"
+        android:visibility="invisible"
+        app:layout_anchorGravity="bottom|right|end"/>
+
+</android.support.v4.widget.SwipeRefreshLayout>

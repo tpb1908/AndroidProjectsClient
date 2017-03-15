@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,12 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
-import com.tpb.projects.util.MultiOnRefreshListener;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +36,9 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.GITModelsLoader<Event>{
+public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.GITModelsLoader<Event> {
+    private static final String TAG = IssueEventsAdapter.class.getSimpleName();
+
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
     private Issue mIssue;
     private final IssueEventsFragment mParent;
@@ -47,12 +50,12 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
 
-    IssueEventsAdapter(IssueEventsFragment parent, SwipeRefreshLayout refresher, MultiOnRefreshListener listener) {
+    IssueEventsAdapter(IssueEventsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
-        listener.addListener(() -> {
+        mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;
             notifyDataSetChanged();
@@ -68,16 +71,19 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     void setIssue(Issue issue) {
         mIssue = issue;
         mEvents.clear();
+        mPage = 1;
+        mLoader.loadEvents(this, issue.getRepoPath(), issue.getNumber(), mPage);
     }
 
     @Override
-    public void loadComplete(Event[] data) {
+    public void loadComplete(Event[] events) {
+        Log.i(IssueEventsAdapter.class.getSimpleName(), "loadComplete: Events loaded: " + Arrays.toString(events));
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(data.length > 0) {
+        if(events.length > 0) {
             int oldLength = mEvents.size();
             if(mPage == 1) mEvents.clear();
-            for(Event e : data) {
+            for(Event e : events) {
                 mEvents.add(new Pair<>(e, null));
             }
             notifyItemRangeInserted(oldLength, mEvents.size());
@@ -92,20 +98,22 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     void notifyBottomReached() {
+        Log.i(TAG, "notifyBottomReached: ");
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;
             loadEvents(false);
         }
     }
 
-    void loadEvents(boolean resetPage) {
+    private void loadEvents(boolean resetPage) {
+        Log.i(TAG, "loadEvents: Loading events for page " + mPage);
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
     void addEvent(Event event) {

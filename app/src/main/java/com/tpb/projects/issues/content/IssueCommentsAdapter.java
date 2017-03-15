@@ -18,7 +18,6 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
-import com.tpb.projects.util.MultiOnRefreshListener;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
@@ -47,12 +46,12 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
     
-    IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher, MultiOnRefreshListener listener) {
+    IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
-        listener.addListener(() -> {
+        mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;
             notifyDataSetChanged();
@@ -68,7 +67,8 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     void setIssue(Issue issue) {
         mIssue = issue;
         mComments.clear();
-        //TODO Add pull request model and link to pull requests
+        mPage = 1;
+        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber());
+        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
     void addComment(Comment comment) {
