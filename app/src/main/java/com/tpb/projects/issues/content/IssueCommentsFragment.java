@@ -29,14 +29,14 @@ public class IssueCommentsFragment extends IssueFragment {
     @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
 
     private MultiOnRefreshListener mRefreshListener;
-    private SwipeRefreshLayout mSwiper;
+    private SwipeRefreshLayout mRefresher;
 
     private IssueCommentsAdapter mAdapter;
 
-    static IssueCommentsFragment getInstance(SwipeRefreshLayout swiper, MultiOnRefreshListener refreshListener) {
+    public static IssueCommentsFragment getInstance(SwipeRefreshLayout refresher, MultiOnRefreshListener refreshListener) {
         final IssueCommentsFragment frag = new IssueCommentsFragment();
         frag.mRefreshListener = refreshListener;
-        frag.mSwiper = swiper;
+        frag.mRefresher = refresher;
         return frag;
     }
 
@@ -45,7 +45,7 @@ public class IssueCommentsFragment extends IssueFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_issue_comments, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAdapter = new IssueCommentsAdapter(this, mSwiper, mRefreshListener);
+        mAdapter = new IssueCommentsAdapter(this, mRefresher, mRefreshListener);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
