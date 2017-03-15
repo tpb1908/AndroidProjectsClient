@@ -2,7 +2,6 @@ package com.tpb.projects.issues.content;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tpb.projects.R;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.util.MultiOnRefreshListener;
 
 import butterknife.BindView;
@@ -21,7 +21,7 @@ import butterknife.Unbinder;
  * Created by theo on 14/03/17.
  */
 
-public class IssueCommentsFragment extends Fragment {
+public class IssueCommentsFragment extends IssueFragment {
 
     private Unbinder unbinder;
 
@@ -57,5 +57,16 @@ public class IssueCommentsFragment extends Fragment {
         });
         mRecycler.setAdapter(mAdapter);
         return view;
+    }
+
+    @Override
+    public void issueLoaded(Issue issue) {
+        mAdapter.setIssue(issue);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }
