@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -40,6 +39,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FloatingActionButton;
@@ -56,7 +56,7 @@ import butterknife.OnClick;
  * Created by theo on 27/01/17.
  */
 
-public class IssuesActivity extends AppCompatActivity implements Loader.GITModelsLoader<Issue> {
+public class IssuesActivity extends BaseActivity implements Loader.GITModelsLoader<Issue> {
     private static final String TAG = IssuesActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssuesActivity.java";
 
@@ -599,9 +599,5 @@ public class IssuesActivity extends AppCompatActivity implements Loader.GITModel
                 }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
     }
 }

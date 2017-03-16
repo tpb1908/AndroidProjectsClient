@@ -99,10 +99,6 @@ public class ContentActivity extends BaseActivity {
 
     }
 
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
-    }
-
     @Override
     public void onBackPressed() {
         if(mRibbon.getChildCount() > 1) {

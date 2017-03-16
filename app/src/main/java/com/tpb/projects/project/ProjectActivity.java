@@ -560,10 +560,6 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mAdapter.getCurrentFragment().scrollDown();
     }
 
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
-    }
-
     void notifyFragmentLoaded() {
         mLoadCount++;
         if(mLoadCount == mAdapter.getCount()) {

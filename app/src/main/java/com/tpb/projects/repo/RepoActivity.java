@@ -504,10 +504,6 @@ public class RepoActivity extends BaseActivity implements
 
     }
 
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
-    }
-
     @Override
     public void onBackPressed() {
         mReadme.setVisibility(GONE);

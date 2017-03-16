@@ -1,6 +1,7 @@
 package com.tpb.projects.issues;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -11,7 +12,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -27,6 +29,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.content.IssueCommentsFragment;
 import com.tpb.projects.issues.content.IssueInfoFragment;
 import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -144,6 +147,57 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(IssueActivity.this, SettingsActivity.class));
+                break;
+            case R.id.menu_source:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+                break;
+            case R.id.menu_share:
+                if(mIssue != null) {
+                    final Intent share = new Intent();
+                    share.setAction(Intent.ACTION_SEND);
+                    share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mIssue.getRepoPath() + "/issues/" + mIssue.getNumber());
+                    share.setType("text/plain");
+                    startActivity(share);
+                }
+                break;
+            case R.id.menu_save_to_homescreen:
+                final ShortcutDialog dialog = new ShortcutDialog();
+                final Bundle args = new Bundle();
+                args.putInt(getString(R.string.intent_title_res), R.string.title_save_issue_shortcut);
+                args.putBoolean(getString(R.string.intent_drawable), false);
+                args.putString(getString(R.string.intent_name), "#" + mIssue.getNumber());
+
+                dialog.setArguments(args);
+                dialog.setListener((name, iconFlag) -> {
+                    final Intent i = new Intent(getApplicationContext(), IssueActivity.class);
+                    i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
+                    i.putExtra(getString(R.string.intent_issue_number), mIssue.getNumber());
+
+                    final Intent add = new Intent();
+                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    add.putExtra("duplicate", false);
+                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                    getApplicationContext().sendBroadcast(add);
+                });
+                dialog.show(getSupportFragmentManager(), TAG);
+                break;
+        }
+        return true;
+    }
+
     private class IssueFragmentAdapter extends FragmentPagerAdapter {
 
         IssueCommentsFragment mCommentsFragment;
@@ -184,9 +238,5 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         public int getCount() {
             return 2;
         }
-    }
-
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
     }
 }

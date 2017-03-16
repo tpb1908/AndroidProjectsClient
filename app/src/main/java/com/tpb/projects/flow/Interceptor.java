@@ -230,8 +230,7 @@ public class Interceptor extends Activity {
                 }
                 return chooserIntent;
             }
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(Exception ignored) {
         }
         return failIntent;
     }

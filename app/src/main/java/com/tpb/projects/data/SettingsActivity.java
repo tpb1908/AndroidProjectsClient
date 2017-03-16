@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,13 +19,14 @@ import android.widget.TextView;
 
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
+import com.tpb.projects.util.BaseActivity;
 
 
 /**
  * Created by theo on 26/12/16.
  */
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
     private Preferences preferences;
@@ -109,10 +109,6 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(emailIntent, "Send email:"));
                 break;
         }
-    }
-
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
     }
 
     public static class Preferences {

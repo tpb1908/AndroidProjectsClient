@@ -240,8 +240,4 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
         }
     }
 
-    public void onToolbarBackPressed(View v) {
-        onBackPressed();
-    }
-
 }
