@@ -1,5 +1,6 @@
 package com.tpb.projects.issues.content;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,6 +29,7 @@ import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
@@ -56,13 +58,12 @@ import butterknife.Unbinder;
  * Created by theo on 14/03/17.
  */
 
-public class IssueEventsFragment extends IssueFragment {
+public class IssueInfoFragment extends IssueFragment {
 
     private Unbinder unbinder;
 
     @BindView(R.id.issue_events_recycler) RecyclerView mRecycler;
     @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout; //http://stackoverflow.com/a/29430226/4191572
-    @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
     @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
@@ -70,6 +71,7 @@ public class IssueEventsFragment extends IssueFragment {
     @BindView(R.id.issue_open_info) HtmlTextView mOpenInfo;
     @BindView(R.id.issue_events_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issue_comment_count) TextView mCount;
+    @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
 
     private Issue mIssue;
 
@@ -78,8 +80,8 @@ public class IssueEventsFragment extends IssueFragment {
 
     private IssueEventsAdapter mAdapter;
 
-    public static IssueEventsFragment getInstance() {
-        return new IssueEventsFragment();
+    public static IssueInfoFragment getInstance() {
+        return new IssueInfoFragment();
     }
 
     @Nullable
@@ -107,6 +109,21 @@ public class IssueEventsFragment extends IssueFragment {
         mInfo.setShowUnderLines(false);
         mInfo.setImageHandler(new ImageDialog(getContext()));
         mInfo.setCodeClickHandler(new CodeDialog(getContext()));
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            new Loader(getContext()).loadIssue(new Loader.GITModelLoader<Issue>() {
+                @Override
+                public void loadComplete(Issue issue) {
+                    issueLoaded(issue);
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+
+                }
+            }, mIssue.getRepoPath(), mIssue.getNumber(), true);
+        });
+
         if(mIssue != null) issueLoaded(mIssue);
         return view;
     }
@@ -117,11 +134,10 @@ public class IssueEventsFragment extends IssueFragment {
 
     }
 
-    private void bindIssue() {
-
+    private void displayIssue(Issue issue) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<h1>");
-        builder.append(Markdown.escape(mIssue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
+        builder.append(Markdown.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
         builder.append("</h1>");
         builder.append("\n");
 
@@ -129,15 +145,15 @@ public class IssueEventsFragment extends IssueFragment {
         String html = Markdown.formatMD(builder.toString(), null, false);
         builder.setLength(0); // Clear the builder to reuse it
 
-        if(mIssue.getBody() != null && mIssue.getBody().trim().length() > 0) {
-            builder.append(mIssue.getBody().replaceFirst("\\s++$", ""));
+        if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
+            builder.append(issue.getBody().replaceFirst("\\s++$", ""));
             builder.append("\n");
         }
-        if(mIssue.getLabels() != null && mIssue.getLabels().length > 0) {
-            Label.appendLabels(builder, mIssue.getLabels(), "   ");
+        if(issue.getLabels() != null && issue.getLabels().length > 0) {
+            Label.appendLabels(builder, issue.getLabels(), "   ");
         }
 
-        html += Markdown.parseMD(builder.toString(), mIssue.getRepoPath());
+        html += Markdown.parseMD(builder.toString(), issue.getRepoPath());
 
         mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo), null);
 
@@ -146,30 +162,30 @@ public class IssueEventsFragment extends IssueFragment {
                 String.format(
                         getString(R.string.text_opened_this_issue),
                         String.format(getString(R.string.text_href),
-                                "https://github.com/" + mIssue.getOpenedBy().getLogin(),
-                                mIssue.getOpenedBy().getLogin()
+                                "https://github.com/" + issue.getOpenedBy().getLogin(),
+                                issue.getOpenedBy().getLogin()
                         ),
-                        DateUtils.getRelativeTimeSpanString(mIssue.getCreatedAt())
+                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
                 )
         );
-        mOpenInfo.setHtml(Markdown.parseMD(builder.toString(), mIssue.getRepoPath()));
+        mOpenInfo.setHtml(Markdown.parseMD(builder.toString(), issue.getRepoPath()));
         mUserAvatar.setOnClickListener(v -> {
-            IntentHandler.openUser(getActivity(), mUserAvatar, mIssue.getOpenedBy().getLogin());
+            IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin());
         });
-        mUserAvatar.setImageUrl(mIssue.getOpenedBy().getAvatarUrl());
-        if(mIssue.isClosed()) {
+        mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
+        if(issue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {
             mImageState.setImageResource(R.drawable.ic_state_open);
         }
     }
 
-    private void displayAssignees() {
+    private void displayAssignees(Issue issue) {
         mAssigneesLayout.removeAllViews();
-        if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
+        if(issue != null && issue.getAssignees() != null && issue.getAssignees().length > 0) {
             mAssigneesLayout.setVisibility(View.VISIBLE);
-            for(int i = 0; i < mIssue.getAssignees().length; i++) {
-                final User u = mIssue.getAssignees()[i];
+            for(int i = 0; i < issue.getAssignees().length; i++) {
+                final User u = issue.getAssignees()[i];
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
                 user.setId(i);
                 mAssigneesLayout.addView(user);
@@ -179,7 +195,7 @@ public class IssueEventsFragment extends IssueFragment {
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = (TextView) user.findViewById(R.id.user_login);
                 login.setId(20 * i); //Max 10 assignees
-                login.setText(mIssue.getAssignees()[i].getLogin());
+                login.setText(issue.getAssignees()[i].getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);
                     us.putExtra(getString(R.string.intent_username), u.getLogin());
@@ -287,12 +303,25 @@ public class IssueEventsFragment extends IssueFragment {
     }
 
     public void updateIssue(Issue issue, String[] assignees, String[] labels) {
+        mRefresher.setRefreshing(true);
         mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
             int issueCreationAttempts = 0;
 
             @Override
             public void updated(Issue issue) {
+                int matchCount = 0;
+                if(mIssue.getAssignees() != null && issue.getAssignees() != null) {
+                    for(User u : mIssue.getAssignees()) {
+                        for(User v : mIssue.getAssignees()) {
+                            if(u.equals(v)) matchCount++;
+                        }
+                    }
+                    if(matchCount != mIssue.getAssignees().length || matchCount != issue.getAssignees().length) {
+                        displayAssignees(issue);
+                    }
+                }
                 mIssue = issue;
+                displayIssue(mIssue);
                 mRefresher.setRefreshing(false);
             }
 
@@ -314,33 +343,6 @@ public class IssueEventsFragment extends IssueFragment {
         }, mIssue.getRepoPath(), issue, assignees, labels);
     }
 
-    @OnClick(R.id.issue_header_card)
-    void onHeaderClick(View view) {
-        if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(view);
-    }
-    
-    @OnClick(R.id.issue_menu_button)
-    public void displayIssueMenu(View view) {
-        final PopupMenu menu = new PopupMenu(getContext(), view);
-        menu.inflate(R.menu.menu_issue);
-        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
-            menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
-            menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
-        }
-        menu.setOnMenuItemClickListener(menuItem -> {
-            switch(menuItem.getItemId()) {
-                case 1:
-                    toggleIssueState();
-                    break;
-                case 2:
-                    editIssue(view);
-                    break;
-            }
-            return false;
-        });
-        menu.show();
-    }
-
     private void editIssue(View view) {
         final Intent i = new Intent(getContext(), IssueEditor.class);
         i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
@@ -348,7 +350,7 @@ public class IssueEventsFragment extends IssueFragment {
         UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
     }
-    
+
     private void toggleIssueState() {
         final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
             @Override
@@ -391,6 +393,56 @@ public class IssueEventsFragment extends IssueFragment {
         builder.create().show();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK) {
+            if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
+                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+                final String[] assignees;
+                final String[] labels;
+                if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                } else {
+                    assignees = null;
+                }
+                if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                    labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+                } else {
+                    labels = null;
+                }
+                updateIssue(issue, assignees, labels);
+            }
+        }
+    }
+
+    @OnClick(R.id.issue_header_card)
+    void onHeaderClick(View view) {
+        if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(view);
+    }
+    
+    @OnClick(R.id.issue_menu_button)
+    public void displayIssueMenu(View view) {
+        final PopupMenu menu = new PopupMenu(getContext(), view);
+        menu.inflate(R.menu.menu_issue);
+        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
+            menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
+        }
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case 1:
+                    toggleIssueState();
+                    break;
+                case 2:
+                    editIssue(view);
+                    break;
+            }
+            return false;
+        });
+        menu.show();
+    }
+
     public void setAccessLevel(Repository.AccessLevel level) {
         mAccessLevel = level;
     }
@@ -400,11 +452,12 @@ public class IssueEventsFragment extends IssueFragment {
         mIssue = issue;
         if(mAdapter != null) {
             mAdapter.setIssue(issue);
-            bindIssue();
-            displayAssignees();
+            displayIssue(mIssue);
+            displayAssignees(mIssue);
             displayMilestone();
         }
     }
+
 
     @Override
     public void onDestroyView() {

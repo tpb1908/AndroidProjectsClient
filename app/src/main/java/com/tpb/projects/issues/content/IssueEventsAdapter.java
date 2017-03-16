@@ -41,7 +41,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
     private Issue mIssue;
-    private final IssueEventsFragment mParent;
+    private final IssueInfoFragment mParent;
 
     private int mPage = 1;
     private boolean mIsLoading = false;
@@ -50,7 +50,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
 
-    IssueEventsAdapter(IssueEventsFragment parent, SwipeRefreshLayout refresher) {
+    IssueEventsAdapter(IssueInfoFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;

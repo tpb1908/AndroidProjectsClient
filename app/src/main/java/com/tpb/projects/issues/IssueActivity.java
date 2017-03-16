@@ -24,9 +24,8 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CommentEditor;
-import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.issues.content.IssueCommentsFragment;
-import com.tpb.projects.issues.content.IssueEventsFragment;
+import com.tpb.projects.issues.content.IssueInfoFragment;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
@@ -93,15 +92,13 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         final String login = GitHubSession.getSession(IssueActivity.this).getUserLogin();
         if(mIssue.getOpenedBy().getLogin().equals(login)) {
             mAccessLevel = Repository.AccessLevel.ADMIN;
-            enableAccess();
+            if(mAdapter.mInfoFragment != null) mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
         } else {
             mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
-                    if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                        enableAccess();
-                    }
+                    if(mAdapter.mInfoFragment != null) mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
                 }
 
                 @Override
@@ -136,29 +133,12 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == AppCompatActivity.RESULT_OK) {
-            if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
-                final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                final String[] assignees;
-                final String[] labels;
-                if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
-                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
-                } else {
-                    assignees = null;
-                }
-                if(data.hasExtra(getString(R.string.intent_issue_labels))) {
-                    labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
-                } else {
-                    labels = null;
-                }
-                mAdapter.mEventsFragment.updateIssue(issue, assignees, labels);
-            } else if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
-                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+            final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+            if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
                 mAdapter.mCommentsFragment.createComment(comment);
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
-                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-               mAdapter.mCommentsFragment.editComment(comment);
+                mAdapter.mCommentsFragment.editComment(comment);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
-                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 mAdapter.mCommentsFragment.createCommentForState(comment);
             }
         }
@@ -167,7 +147,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     private class IssueFragmentAdapter extends FragmentPagerAdapter {
 
         IssueCommentsFragment mCommentsFragment;
-        IssueEventsFragment mEventsFragment;
+        IssueInfoFragment mInfoFragment;
 
         IssueFragmentAdapter(FragmentManager fm) {
             super(fm);
@@ -176,9 +156,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         @Override
         public Fragment getItem(int position) {
             if(position == 0) {
-                mEventsFragment = IssueEventsFragment.getInstance();
-                if(mIssue != null) mEventsFragment.issueLoaded(mIssue);
-                return mEventsFragment;
+                mInfoFragment = IssueInfoFragment.getInstance();
+                if(mIssue != null) mInfoFragment.issueLoaded(mIssue);
+                return mInfoFragment;
             } else {
                 mCommentsFragment = IssueCommentsFragment.getInstance();
                 if(mIssue != null) mCommentsFragment.issueLoaded(mIssue);
@@ -188,12 +168,16 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
 
         void setIssue() {
             if(mCommentsFragment != null) mCommentsFragment.issueLoaded(mIssue);
-            if(mEventsFragment != null) mEventsFragment.issueLoaded(mIssue);
+            if(mInfoFragment != null) mInfoFragment.issueLoaded(mIssue);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "TAB " + position;
+            if(position == 0) {
+                return "Events";
+            }  else {
+                return "Comments";
+            }
         }
 
         @Override

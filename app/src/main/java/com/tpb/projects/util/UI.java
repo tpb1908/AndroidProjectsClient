@@ -177,8 +177,7 @@ public class UI {
             if (map.containsKey(decorView)) {
                 map.remove(decorView);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
