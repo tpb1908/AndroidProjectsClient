@@ -48,7 +48,6 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
-            //mRepos.clear();
             mPage = 1;
             mMaxPageReached = false;
             notifyDataSetChanged();

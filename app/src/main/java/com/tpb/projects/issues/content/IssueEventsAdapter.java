@@ -1,7 +1,8 @@
-package com.tpb.projects.issues;
+package com.tpb.projects.issues.content;
 
 import android.content.res.Resources;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.format.DateUtils;
@@ -9,12 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Comment;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
@@ -22,186 +23,118 @@ import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by theo on 07/01/17.
+ * Created by theo on 15/03/17.
  */
 
-class IssueContentAdapter extends RecyclerView.Adapter {
-    private static final String TAG = IssueContentAdapter.class.getSimpleName();
+public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.GITModelsLoader<Event> {
+    private static final String TAG = IssueEventsAdapter.class.getSimpleName();
 
-    private final ArrayList<Pair<DataModel, SpannableString>> mData = new ArrayList<>();
+    private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
     private Issue mIssue;
-    private final IssueActivity mParent;
-    private boolean mHasOtherContentLoaded = false;
+    private final IssueEventsFragment mParent;
 
-    IssueContentAdapter(IssueActivity parent) {
+    private int mPage = 1;
+    private boolean mIsLoading = false;
+    private boolean mMaxPageReached = false;
+
+    private SwipeRefreshLayout mRefresher;
+    private Loader mLoader;
+
+    IssueEventsAdapter(IssueEventsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
+        mLoader = new Loader(parent.getContext());
+        mRefresher = refresher;
+        mRefresher.setRefreshing(true);
+        mRefresher.setOnRefreshListener(() -> {
+            mPage = 1;
+            mMaxPageReached = false;
+            notifyDataSetChanged();
+            loadEvents(true);
+        });
     }
 
     void clear() {
-        mData.clear();
-        mHasOtherContentLoaded = false;
+        mEvents.clear();
         notifyDataSetChanged();
     }
 
     void setIssue(Issue issue) {
         mIssue = issue;
-        //TODO Add pull request model and link to pull requests
-    }
-
-    void loadComments(Comment[] comments) {
-        if(mHasOtherContentLoaded) {
-            mParent.mRefresher.setRefreshing(false);
-        } else {
-            mHasOtherContentLoaded = true;
-        }
-        for(Comment c : comments) {
-            mData.add(new Pair<>(c, null));
-        }
-        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-        notifyDataSetChanged();
-
-    }
-
-    void loadEvents(Event[] events) {
-        if(mHasOtherContentLoaded) {
-            mParent.mRefresher.setRefreshing(false);
-        } else {
-            mHasOtherContentLoaded = true;
-        }
-        for(DataModel e : mergeEvents(events)) {
-            mData.add(new Pair<>(e, null));
-        }
-        Collections.sort(mData, (d1, d2) -> d1.first.getCreatedAt() > d2.first.getCreatedAt() ? 1 : -1);
-        notifyDataSetChanged();
-
-    }
-
-    void addComment(Comment comment) {
-        mData.add(new Pair<>(comment, null));
-        notifyItemInserted(mData.size());
-    }
-
-    void removeComment(Comment comment) {
-        int index = -1;
-        for(int i = 0; i < mData.size(); i++) {
-            if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
-                index = i;
-                break;
-            }
-        }
-        if(index != -1) {
-            mData.remove(index);
-            notifyItemRemoved(index);
-        }
-    }
-
-    void updateComment(Comment comment) {
-
-        int index = -1;
-        for(int i = 0; i < mData.size(); i++) {
-            if(mData.get(i).first instanceof Comment && ((Comment) mData.get(i).first).getId() == comment.getId()) {
-                index = i;
-                break;
-            }
-        }
-        if(index != -1) {
-            mData.set(index, new Pair<>(comment, null));
-            notifyItemChanged(index);
-        }
-    }
-
-    private ArrayList<DataModel> mergeEvents(Event[] events) {
-        final ArrayList<DataModel> merged = new ArrayList<>();
-        ArrayList<Event> toMerge = new ArrayList<>();
-        Event last = new Event();
-        for(int i = 0; i < events.length; i++) {
-            //If we have two of the same event, happening at the same time
-            if(events[i].getCreatedAt() == last.getCreatedAt() && events[i].getEvent() == last.getEvent()) {
-                toMerge.add(events[i - 1]); //Add the previous event
-                int j = i;
-                //Loop until we find an event which shouldn't be merged
-                while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
-                    toMerge.add(events[j++]);
-                }
-                i = j - 1; //Jump to the end of the merged positions
-                merged.add(new MergedEvent(toMerge));
-                toMerge = new ArrayList<>(); //Reset the list of merged events
-            } else {
-                merged.add(events[i]);
-            }
-            last = events[i]; //Set the last event
-        }
-        return merged;
-
+        mEvents.clear();
+        mPage = 1;
+        mLoader.loadEvents(this, issue.getRepoPath(), issue.getNumber(), mPage);
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return mData.get(position).first instanceof Comment ? 1 : 0;
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == 1) {
-            return new CommentHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_comment, parent, false));
+    public void loadComplete(Event[] events) {
+        Log.i(IssueEventsAdapter.class.getSimpleName(), "loadComplete: Events loaded: " + Arrays.toString(events));
+        mRefresher.setRefreshing(false);
+        mIsLoading = false;
+        if(events.length > 0) {
+            int oldLength = mEvents.size();
+            if(mPage == 1) mEvents.clear();
+            for(Event e : events) {
+                mEvents.add(new Pair<>(e, null));
+            }
+            notifyItemRangeInserted(oldLength, mEvents.size());
         } else {
-            return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_event, parent, false));
+            mMaxPageReached = true;
         }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof CommentHolder) {
-            bindComment((CommentHolder) holder);
-        } else {
-            if(mData.get(position).first instanceof Event) {
-                bindEvent((EventHolder) holder, (Event) mData.get(position).first);
-            } else {
-                bindMergedEvent((EventHolder) holder, (MergedEvent) mData.get(position).first);
-            }
+    public void loadError(APIHandler.APIError error) {
+
+    }
+
+    void notifyBottomReached() {
+        Log.i(TAG, "notifyBottomReached: ");
+        if(!mIsLoading && !mMaxPageReached) {
+            mPage++;
+            loadEvents(false);
         }
     }
 
-    private void bindComment(CommentHolder commentHolder) {
-        final int pos = commentHolder.getAdapterPosition();
-        if(mData.get(pos).second == null) {
-            final Comment comment = (Comment) mData.get(pos).first;
-            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
-            final StringBuilder builder = new StringBuilder();
-            builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
-                    String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
-                            comment.getUser().getHtmlUrl(),
-                            comment.getUser().getLogin()),
-                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
-            if(comment.getUpdatedAt() != comment.getCreatedAt()) {
-                builder.append(" • ");
-                builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
-            }
-            builder.append("<br><br>");
-            builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoPath()));
-            commentHolder.mText.setHtml(
-                    Markdown.parseMD(builder.toString()),
-                    new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
-                    text -> mData.set(pos, new Pair<>(comment, text)));
-        } else {
-            commentHolder.mAvatar.setImageUrl(((Comment) mData.get(pos).first).getUser().getAvatarUrl());
-            commentHolder.mText.setText(mData.get(pos).second);
+    private void loadEvents(boolean resetPage) {
+        Log.i(TAG, "loadEvents: Loading events for page " + mPage);
+        mIsLoading = true;
+        mRefresher.setRefreshing(true);
+        if(resetPage) {
+            mPage = 1;
+            mMaxPageReached = false;
         }
-        IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mText);
-        IntentHandler.addGitHubIntentHandler(mParent, commentHolder.mAvatar, ((Comment) mData.get(pos).first).getUser().getLogin());
+        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
+
+    void addEvent(Event event) {
+        mEvents.add(new Pair<>(event, null));
+        notifyItemInserted(mEvents.size());
+    }
+
+    @Override
+    public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_event, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(EventHolder holder, int position) {
+        if(mEvents.get(position).first instanceof Event) {
+            bindEvent(holder, (Event) mEvents.get(position).first);
+        } else {
+            bindMergedEvent(holder, (MergedEvent) mEvents.get(position).first);
+        }
+    }
+
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
         String text;
@@ -298,7 +231,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             case REFERENCED:
                 final StringBuilder commits = new StringBuilder();
                 for(Event e : me.getEvents()) {
-                    Log.i(TAG, "bindMergedEvent: \n\n\nCommit id " + e.getCommitId());
                     commits.append("<br>");
                     commits.append(String.format(res.getString(R.string.text_href),
                             "https://github.com/" + mIssue.getRepoPath() + "/commit/" + e.getCommitId(),
@@ -316,7 +248,7 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                             e.getActor().getLogin()));
                 }
                 text = String.format(res.getString(R.string.text_event_mentioned_multiple),
-                      mentioned.toString());
+                        mentioned.toString());
                 break;
             case RENAMED:
                 final StringBuilder named = new StringBuilder();
@@ -335,7 +267,6 @@ class IssueContentAdapter extends RecyclerView.Adapter {
                 text = res.getString(R.string.text_event_moved_columns_in_project_multiple);
                 break;
             default:
-                Log.e(TAG, "bindMergedEvent: Should be binding merging event " + me.toString(), new Exception());
                 bindEvent(eventHolder, me.getEvents().get(0));
                 return;
         }
@@ -349,9 +280,9 @@ class IssueContentAdapter extends RecyclerView.Adapter {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
             IntentHandler.addGitHubIntentHandler(
-                    mParent,
+                    mParent.getActivity(),
                     eventHolder.mAvatar, me.getEvents().get(0).getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent,
+            IntentHandler.addGitHubIntentHandler(mParent.getActivity(),
                     eventHolder.mText,
                     eventHolder.mAvatar,
                     me.getEvents().get(0).getActor().getLogin());
@@ -557,37 +488,18 @@ class IssueContentAdapter extends RecyclerView.Adapter {
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
-            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mAvatar, event.getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent, eventHolder.mText, eventHolder.mAvatar, event.getActor().getLogin());
+            IntentHandler.addGitHubIntentHandler(mParent.getActivity(), eventHolder.mAvatar, event.getActor().getLogin());
+            IntentHandler.addGitHubIntentHandler(mParent.getActivity(), eventHolder.mText, eventHolder.mAvatar, event.getActor().getLogin());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
     }
 
-    private void displayMenu(View view, int pos) {
-        mParent.displayCommentMenu(view, (Comment) mData.get(pos).first);
+    @Override
+    public int getItemCount() {
+        return mEvents.size();
     }
 
-    private void displayInFullScreen(int pos) {
-        mParent.showCardInFullscreen(((Comment) mData.get(pos).first).getBody());
-    }
-
-    class CommentHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.event_comment_avatar) ANImageView mAvatar;
-        @BindView(R.id.comment_text) HtmlTextView mText;
-        @BindView(R.id.comment_menu_button) ImageButton mMenu;
-
-        CommentHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-            mText.setShowUnderLines(false);
-            mText.setImageHandler(new ImageDialog(mText.getContext()));
-            mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
-            mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-            view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
-        }
-
-    }
 
     class EventHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_text) HtmlTextView mText;
@@ -601,7 +513,5 @@ class IssueContentAdapter extends RecyclerView.Adapter {
 
     }
 
-    public int getItemCount() {
-        return mData.size();
-    }
+
 }

@@ -556,8 +556,8 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadComments(@Nullable GITModelsLoader<Comment> loader, String fullRepoName, int issueNumber) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
+    public void loadComments(@Nullable GITModelsLoader<Comment> loader, String fullRepoName, int issueNumber, int page) {
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
@@ -585,8 +585,8 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadEvents(@Nullable GITModelsLoader<Event> loader, String repoFullName, int issueNumber) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS )
+    public void loadEvents(@Nullable GITModelsLoader<Event> loader, String repoFullName, int issueNumber, int page) {
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
