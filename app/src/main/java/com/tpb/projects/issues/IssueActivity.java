@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 
 public class IssueActivity extends CircularRevealActivity implements Loader.GITModelLoader<Issue> {
     private static final String TAG = IssueActivity.class.getSimpleName();
-    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
+    private static final String URL = "https://raw.githubusercontent.com/tpb1908/AndroidProjectsClient/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
     private FirebaseAnalytics mAnalytics;
 

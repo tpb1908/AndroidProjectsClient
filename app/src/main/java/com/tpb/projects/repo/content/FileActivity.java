@@ -62,6 +62,7 @@ public class FileActivity extends AppCompatActivity {
         if(getIntent().hasExtra(getString(R.string.intent_blob_path))) {
             final String repo = getIntent().getStringExtra(getString(R.string.intent_repo));
             final String blob = getIntent().getStringExtra(getString(R.string.intent_blob_path));
+            Log.i(TAG, "onCreate: Repo path is " + repo);
             Log.i(TAG, "onCreate: Blob path is " + blob);
             final int nameStart = blob.lastIndexOf('/') + 1;
             if(nameStart < blob.length()) {
