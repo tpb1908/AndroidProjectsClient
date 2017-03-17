@@ -1,13 +1,10 @@
 package com.tpb.projects.issues;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +13,8 @@ import android.widget.ImageView;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.Spanner;
 import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.UI;
@@ -107,129 +102,14 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
         IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, issue);
-
         if(mParseCache.get(pos) == null) {
-            final Context context = holder.itemView.getContext();
-            final StringBuilder builder = new StringBuilder();
-            builder.append("<b>");
-            builder.append(Markdown.escape(issue.getTitle()));
-            builder.append("</b><br><br>");
-
-            builder.append(String.format(context.getString(R.string.text_issue_opened_by),
-                    String.format(context.getString(R.string.text_md_link),
-                            "#" + Integer.toString(issue.getNumber()),
-                            "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
-                    ),
-                    String.format(context.getString(R.string.text_md_link),
-                            issue.getOpenedBy().getLogin(),
-                            issue.getOpenedBy().getHtmlUrl()
-                    ),
-                    DateUtils.getRelativeTimeSpanString(issue.getCreatedAt()))
+            holder.mContent.setHtml(Markdown.parseMD(
+                    Spanner.buildShortIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
+                    null,
+                    text -> mParseCache.set(pos, text)
             );
 
-            if(issue.getAssignees() != null) {
-                builder.append("<br>");
-                builder.append(context.getString(R.string.text_assigned_to));
-                builder.append(' ');
-                for(User u : issue.getAssignees()) {
-                    builder.append(String.format(context.getString(R.string.text_md_link),
-                            u.getLogin(),
-                            u.getHtmlUrl()));
-                    builder.append(' ');
-                }
-            }
-
-            if(issue.isClosed() && issue.getClosedBy() != null) {
-                builder.append("<br>");
-                builder.append(String.format(context.getString(R.string.text_closed_by_link),
-                        issue.getClosedBy().getLogin(),
-                        issue.getClosedBy().getHtmlUrl(),
-                        DateUtils.getRelativeTimeSpanString(issue.getClosedAt())));
-            }
-
-            if(issue.getLabels() != null && issue.getLabels().length > 0) {
-                builder.append("<br>");
-                Label.appendLabels(builder, issue.getLabels(), "   ");
-            }
-            if(issue.getComments() > 0) {
-                builder.append("<br>");
-                builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
-            }
-            if(issue.getMilestone() != null) {
-                final Milestone milestone = issue.getMilestone();
-                builder.append("<br>");
-                if(milestone.getClosedAt() == 0) {
-
-
-                    if(milestone.getDueOn() > 0) {
-                        final StringBuilder dueStringBuilder = new StringBuilder();
-                        if(System.currentTimeMillis() < milestone.getDueOn() ||
-                                (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {
-                            dueStringBuilder.append(
-                                    String.format(
-                                            context.getString(R.string.text_milestone_due_on),
-                                            DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
-                                    )
-                            );
-                        } else {
-                            dueStringBuilder.append("<font color=\"");
-                            dueStringBuilder.append(String.format("#%06X", (0xFFFFFF & Color.RED)));
-                            dueStringBuilder.append("\">");
-                            dueStringBuilder.append(
-                                    String.format(
-                                            context.getString(R.string.text_milestone_due_on),
-                                            DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
-                                    )
-                            );
-                            dueStringBuilder.append("</font>");
-                        }
-                        builder.append(
-                                String.format(
-                                        context.getString(R.string.text_milestone_short),
-                                        String.format(
-                                                context.getString(R.string.text_href),
-                                                milestone.getHtmlUrl(),
-                                                milestone.getTitle()),
-                                        dueStringBuilder.toString()
-                                )
-                        );
-                    } else {
-                        builder.append(
-                                String.format(
-                                        context.getString(R.string.text_milestone_short),
-                                        String.format(
-                                                context.getString(R.string.text_href),
-                                                milestone.getHtmlUrl(),
-                                                milestone.getTitle()),
-                                        String.format(
-                                                context.getString(R.string.text_milestone_opened),
-                                                DateUtils.getRelativeTimeSpanString(milestone.getCreatedAt())
-                                        )
-                                )
-                        );
-                    }
-
-
-                } else {
-                    builder.append(
-                            String.format(
-                                    context.getString(R.string.text_milestone_short),
-                                    String.format(
-                                            context.getString(R.string.text_href),
-                                            milestone.getHtmlUrl(),
-                                            milestone.getTitle()),
-                                    String.format(
-                                            context.getString(R.string.text_milestone_closed_at),
-                                            DateUtils.getRelativeTimeSpanString(milestone.getClosedAt())
-                                    )
-                            )
-                    );
-                }
-            }
-            holder.mContent.setHtml(Markdown.parseMD(builder.toString()), null, text -> mParseCache.set(pos, text));
-
         } else {
-            // Log.i(TAG, "onBindViewHolder: Binding pos " + pos + " with\n" + mIssues.get(pos).second);
             holder.mContent.setText(mParseCache.get(pos));
         }
     }

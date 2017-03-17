@@ -14,6 +14,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.Spanner;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
@@ -126,7 +128,7 @@ public class IssueInfoFragment extends IssueFragment {
                 }
             }, mIssue.getRepoPath(), mIssue.getNumber(), true);
         });
-        checkSharedElement();
+        checkSharedElementEntry();
         if(mIssue != null) issueLoaded(mIssue);
         return view;
     }
@@ -462,7 +464,7 @@ public class IssueInfoFragment extends IssueFragment {
         }
     }
 
-    private void checkSharedElement() {
+    private void checkSharedElementEntry() {
         if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
             mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -472,6 +474,18 @@ public class IssueInfoFragment extends IssueFragment {
                     return true;
                 }
             });
+        }
+    }
+
+    public void checkSharedElementExit() {
+        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+            Log.i(IssueInfoFragment.class.getSimpleName(), "checkSharedElementExit: Setting html");
+            mInfo.setHtml(
+                    Markdown.parseMD(
+                            Spanner.buildShortIssueSpan(getContext(), mIssue).toString(),
+                            mIssue.getRepoPath()
+                    )
+            );
         }
     }
 
