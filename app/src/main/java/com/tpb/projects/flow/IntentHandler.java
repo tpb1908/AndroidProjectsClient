@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 
@@ -45,7 +48,7 @@ public class IntentHandler {
         iv.setOnClickListener(v -> openUser(activity, iv, login));
     }
 
-    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, Issue issue) {
+    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, @Nullable CardView cv, Issue issue) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
@@ -54,7 +57,7 @@ public class IntentHandler {
                     openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
                 }
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
-                openIssue(activity, tv, issue);
+                openIssue(activity, cv == null ? tv : cv, issue);
             } else {
                 final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 activity.startActivity(i);
@@ -84,10 +87,18 @@ public class IntentHandler {
         i.putExtra(activity.getString(R.string.intent_issue_number), number);
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+            activity.startActivity(i);
+        } else if(view instanceof CardView) {
+            activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity,
+                    Pair.create(view, activity.getString(R.string.transition_card)),
+                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+            );
         } else {
             UI.setViewPositionForIntent(i, view);
+            activity.startActivity(i);
         }
-        activity.startActivity(i);
+
     }
 
     public static void openIssue(Activity activity, View view, Issue issue) {
@@ -95,10 +106,19 @@ public class IntentHandler {
         i.putExtra(activity.getString(R.string.parcel_issue), issue);
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+            activity.startActivity(i);
+        } else if(view instanceof CardView) {
+            i.putExtra(activity.getString(R.string.transition_card), "");
+            activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity,
+                    Pair.create(view, activity.getString(R.string.transition_card)),
+                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+            );
         } else {
             UI.setViewPositionForIntent(i, view);
+            activity.startActivity(i);
         }
-        activity.startActivity(i);
+
     }
 
     private static void openUser(Activity activity, View view, String login) {

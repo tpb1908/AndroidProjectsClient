@@ -55,7 +55,6 @@
 
                     </LinearLayout>
 
-
                     <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
                         android:id="@+id/issue_info"
                         android:layout_width="match_parent"
@@ -64,17 +63,8 @@
                         android:layout_toStartOf="@+id/issue_menu_button"
                         android:layout_marginBottom="8dp"/>
 
-                    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
-                        android:id="@+id/issue_open_info"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/issue_info"
-                        android:layout_toEndOf="@+id/issue_drawable_wrapper"
-                        android:layout_toStartOf="@+id/issue_menu_button"
-                        android:layout_marginEnd="8dp"/>
-
                     <TextView
-                        android:id="@+id/issue_comment_count"
+                        android:id="@+id/issue_event_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/issue_menu_button"
@@ -82,7 +72,8 @@
                         android:layout_alignParentBottom="true"
                         android:layout_marginEnd="3dp"
                         android:text="@string/text_placeholder"
-                        android:background="@drawable/shape_badge"/>
+                        android:background="@drawable/shape_badge"
+                        android:visibility="invisible"/>
 
                     <ImageButton
                         android:id="@+id/issue_menu_button"

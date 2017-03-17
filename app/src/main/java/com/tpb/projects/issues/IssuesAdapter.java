@@ -101,10 +101,10 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
-        IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, issue);
+        IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, null, issue);
         if(mParseCache.get(pos) == null) {
             holder.mContent.setHtml(Markdown.parseMD(
-                    Spanner.buildShortIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
+                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
                     null,
                     text -> mParseCache.set(pos, text)
             );

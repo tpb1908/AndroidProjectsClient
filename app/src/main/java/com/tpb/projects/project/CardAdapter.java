@@ -9,7 +9,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,19 +22,18 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.Spanner;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.User;
-import com.tpb.projects.util.Analytics;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.Analytics;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
 
@@ -253,59 +251,21 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, card.getIssue());
+        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, holder.mCardView, card.getIssue());
         if(mCards.get(pos).second == null) {
-
-            final StringBuilder builder = new StringBuilder();
-            builder.append("<b>");
-            builder.append(Markdown.escape(card.getIssue().getTitle()));
-            builder.append("</b><br><br>");
-            if(card.getIssue().getBody() != null && !card.getIssue().getBody().isEmpty()) {
-                builder.append(Markdown.formatMD(card.getIssue().getBody().replaceFirst("\\s++$", ""), card.getIssue().getRepoPath()));
-                builder.append(" \n\n ");
-            }
-
-            builder.append(String.format(mParent.getString(R.string.text_issue_opened_by),
-                    String.format(mParent.getString(R.string.text_md_link),
-                            "#" + Integer.toString(card.getIssue().getNumber()),
-                            "https://github.com/" + mParent.mParent.mProject.getRepoPath() + "/issues/" + Integer.toString(card.getIssue().getNumber())
+            holder.mText.setHtml(
+                    Markdown.parseMD(
+                            Spanner.buildIssueSpan(
+                                holder.itemView.getContext(),
+                                card.getIssue(),
+                                false,
+                                false,
+                                true,
+                                true,
+                                true,
+                                true
+                            ).toString()
                     ),
-                    String.format(mParent.getString(R.string.text_md_link),
-                            card.getIssue().getOpenedBy().getLogin(),
-                            card.getIssue().getOpenedBy().getHtmlUrl()
-                    ),
-                    DateUtils.getRelativeTimeSpanString(card.getIssue().getCreatedAt()))
-            );
-
-            if(card.getIssue().getAssignees() != null) {
-                builder.append("<br>");
-                builder.append(mParent.getString(R.string.text_assigned_to));
-                builder.append(' ');
-                for(User u : card.getIssue().getAssignees()) {
-                    builder.append(String.format(mParent.getString(R.string.text_md_link),
-                            u.getLogin(),
-                            u.getHtmlUrl()));
-                    builder.append(' ');
-                }
-            }
-
-            if(card.getIssue().isClosed() && card.getIssue().getClosedBy() != null) {
-                builder.append("<br>");
-                builder.append(String.format(mParent.getString(R.string.text_closed_by_link),
-                        card.getIssue().getClosedBy().getLogin(),
-                        card.getIssue().getClosedBy().getHtmlUrl(),
-                        DateUtils.getRelativeTimeSpanString(card.getIssue().getClosedAt())));
-            }
-
-            if(card.getIssue().getLabels() != null && card.getIssue().getLabels().length > 0) {
-                builder.append("<br>");
-                Label.appendLabels(builder, card.getIssue().getLabels(), "   ");
-            }
-            if(card.getIssue().getComments() > 0) {
-                builder.append("<br>");
-                builder.append(mParent.getResources().getQuantityString(R.plurals.text_issue_comment_count, card.getIssue().getComments(), card.getIssue().getComments()));
-            }
-            holder.mText.setHtml(Markdown.parseMD(builder.toString(), card.getIssue().getRepoPath()),
                     new HtmlHttpImageGetter(holder.mText, holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );
