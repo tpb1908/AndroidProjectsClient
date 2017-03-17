@@ -11,7 +11,6 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -23,6 +22,7 @@ import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -243,12 +243,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         final Intent i = new Intent(mParent, IssueActivity.class);
         i.putExtra(mParent.getString(R.string.transition_card), "");
         i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos));
+        //We have to add the nav bar as ViewOverlay is above it
         mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 mParent,
                 Pair.create(view, mParent.getString(R.string.transition_card)),
-                Pair.create(
-                        mParent.findViewById(android.R.id.navigationBarBackground),
-                        Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME)).toBundle()
+                UI.getSafeNavigationBarTransitionPair(mParent)).toBundle()
         );
     }
 
