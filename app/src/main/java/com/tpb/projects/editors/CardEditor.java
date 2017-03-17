@@ -147,9 +147,10 @@ public class CardEditor extends ImageLoadingActivity {
 
     private void bindIssue(Issue issue) {
         mEditor.setHtml(
-                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, false, true, true, true, false).toString())
-                , new HtmlHttpImageGetter(mEditor, mEditor)
+                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, false, true, true, true, false).toString()),
+                new HtmlHttpImageGetter(mEditor, mEditor)
         );
+
     }
 
     private void addFromIssueButtonListeners(Intent launchIntent) {
@@ -196,7 +197,7 @@ public class CardEditor extends ImageLoadingActivity {
                         mEditor.setFilters(new InputFilter[] {}); //Remove the length filter
                         mEditorWrapper.setCounterEnabled(false); //Remove the counter
                         bindIssue(mCard.getIssue());
-                        mEditor.setEnabled(false); //Stop the user editing the content
+                        mEditor.setFocusable(false);
                         mClearButton.setVisibility(View.VISIBLE); //Enable clearing
                     }));
                     scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
