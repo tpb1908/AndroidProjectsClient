@@ -22,7 +22,6 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CommentEditor;
@@ -136,13 +135,12 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == AppCompatActivity.RESULT_OK) {
-            final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-            if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
-                mAdapter.mCommentsFragment.createComment(comment);
-            } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
-                mAdapter.mCommentsFragment.editComment(comment);
-            } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
-                mAdapter.mCommentsFragment.createCommentForState(comment);
+            if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
+                mAdapter.mCommentsFragment.createCommentForState(
+                        data.getParcelableExtra(
+                                getString(R.string.parcel_comment)
+                        )
+                );
             }
         }
     }

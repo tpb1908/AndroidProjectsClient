@@ -1,8 +1,10 @@
 package com.tpb.projects.issues.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +17,9 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.IssueCommentsAdapter;
+import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -74,6 +78,11 @@ public class IssueCommentsFragment extends IssueFragment {
                 }
             }
         });
+        mFab.setOnClickListener(v -> {
+            final Intent i = new Intent(getContext(), CommentEditor.class);
+            UI.setViewPositionForIntent(i, mFab);
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
+        });
         mAdapter = new IssueCommentsAdapter(this, mRefresher);
         if(mIssue != null) mAdapter.setIssue(mIssue);
         if(mAccessLevel != null && mAccessLevel == Repository.AccessLevel.ADMIN) {
@@ -104,12 +113,12 @@ public class IssueCommentsFragment extends IssueFragment {
         }
     }
 
-    public void createComment(Comment comment) {
+    private void createComment(Comment comment) {
+        mRefresher.setRefreshing(true);
         mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
             @Override
             public void created(Comment comment) {
                 mRefresher.setRefreshing(false);
-                mAdapter.addComment(comment);
                 mAdapter.addComment(comment);
                 //mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
             }
@@ -125,7 +134,7 @@ public class IssueCommentsFragment extends IssueFragment {
         createComment(comment);
     }
 
-    public void editComment(Comment comment) {
+    private void editComment(Comment comment) {
         mEditor.updateComment(new Editor.GITModelUpdateListener<Comment>() {
             @Override
             public void updated(Comment comment) {
@@ -138,6 +147,21 @@ public class IssueCommentsFragment extends IssueFragment {
                 mRefresher.setRefreshing(false);
             }
         }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == AppCompatActivity.RESULT_OK) {
+            final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+            if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
+                createComment(comment);
+            } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
+                editComment(comment);
+            } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
+                createCommentForState(comment);
+            }
+        }
     }
 
     void removeComment(Comment comment) {
