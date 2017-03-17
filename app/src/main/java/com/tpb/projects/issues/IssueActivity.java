@@ -73,14 +73,17 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
 
         mLoader = new Loader(this);
         mAdapter = new IssueFragmentAdapter(getSupportFragmentManager());
-
-        if(getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.parcel_issue))) {
-            mIssue = getIntent().getExtras().getParcelable(getString(R.string.parcel_issue));
+        final Intent launchIntent = getIntent();
+        if(launchIntent.hasExtra(getString(R.string.transition_card))) {
+            postponeEnterTransition();
+        }
+        if(launchIntent.getExtras() != null && launchIntent.getExtras().containsKey(getString(R.string.parcel_issue))) {
+            mIssue = launchIntent.getExtras().getParcelable(getString(R.string.parcel_issue));
 
             loadComplete(mIssue);
         } else {
-            final int issueNumber = getIntent().getIntExtra(getString(R.string.intent_issue_number), -1);
-            final String fullRepoName = getIntent().getStringExtra(getString(R.string.intent_repo));
+            final int issueNumber = launchIntent.getIntExtra(getString(R.string.intent_issue_number), -1);
+            final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
 

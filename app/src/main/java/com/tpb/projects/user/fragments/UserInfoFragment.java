@@ -222,8 +222,6 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         }
     }
 
-
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

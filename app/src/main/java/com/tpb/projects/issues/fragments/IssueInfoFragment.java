@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,6 +64,7 @@ public class IssueInfoFragment extends IssueFragment {
 
     private Unbinder unbinder;
 
+    @BindView(R.id.issue_header_card) CardView mHeader;
     @BindView(R.id.issue_events_recycler) RecyclerView mRecycler;
     @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
@@ -124,7 +126,7 @@ public class IssueInfoFragment extends IssueFragment {
                 }
             }, mIssue.getRepoPath(), mIssue.getNumber(), true);
         });
-
+        checkSharedElement();
         if(mIssue != null) issueLoaded(mIssue);
         return view;
     }
@@ -460,6 +462,18 @@ public class IssueInfoFragment extends IssueFragment {
         }
     }
 
+    private void checkSharedElement() {
+        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+            mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().startPostponedEnterTransition();
+                    return true;
+                }
+            });
+        }
+    }
 
     @Override
     public void onDestroyView() {
