@@ -31,8 +31,8 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
@@ -71,9 +71,8 @@ public class IssueInfoFragment extends IssueFragment {
     @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
-    @BindView(R.id.issue_open_info) HtmlTextView mOpenInfo;
     @BindView(R.id.issue_events_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_comment_count) TextView mCount;
+    @BindView(R.id.issue_event_count) TextView mCount;
     @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
 
     private Issue mIssue;
@@ -108,7 +107,6 @@ public class IssueInfoFragment extends IssueFragment {
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(manager);
 
-        mOpenInfo.setShowUnderLines(false);
         mInfo.setShowUnderLines(false);
         mInfo.setImageHandler(new ImageDialog(getContext()));
         mInfo.setCodeClickHandler(new CodeDialog(getContext()));
@@ -126,7 +124,7 @@ public class IssueInfoFragment extends IssueFragment {
                 }
             }, mIssue.getRepoPath(), mIssue.getNumber(), true);
         });
-        checkSharedElement();
+        checkSharedElementEntry();
         if(mIssue != null) issueLoaded(mIssue);
         return view;
     }
@@ -138,40 +136,7 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayIssue(Issue issue) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<h1>");
-        builder.append(Markdown.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
-        builder.append("</h1>");
-        builder.append("\n");
-
-        // The title and body are formatted separately, because the title shouldn't be formatted
-        String html = Markdown.formatMD(builder.toString(), null, false);
-        builder.setLength(0); // Clear the builder to reuse it
-
-        if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
-            builder.append(issue.getBody().replaceFirst("\\s++$", ""));
-            builder.append("\n");
-        }
-        if(issue.getLabels() != null && issue.getLabels().length > 0) {
-            Label.appendLabels(builder, issue.getLabels(), "   ");
-        }
-
-        html += Markdown.parseMD(builder.toString(), issue.getRepoPath());
-
-        mInfo.setHtml(html, new HtmlHttpImageGetter(mInfo, mInfo), null);
-
-        builder.setLength(0);
-        builder.append(
-                String.format(
-                        getString(R.string.text_opened_this_issue),
-                        String.format(getString(R.string.text_href),
-                                "https://github.com/" + issue.getOpenedBy().getLogin(),
-                                issue.getOpenedBy().getLogin()
-                        ),
-                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
-                )
-        );
-        mOpenInfo.setHtml(Markdown.parseMD(builder.toString(), issue.getRepoPath()));
+        mInfo.setHtml(Markdown.parseMD(Spanner.buildIssueSpan(getContext(), issue, true, false, false, false, true, false).toString()), new HtmlHttpImageGetter(mInfo, mInfo), null);
         mUserAvatar.setOnClickListener(v -> {
             IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin());
         });
@@ -462,7 +427,7 @@ public class IssueInfoFragment extends IssueFragment {
         }
     }
 
-    private void checkSharedElement() {
+    private void checkSharedElementEntry() {
         if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
             mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -472,6 +437,18 @@ public class IssueInfoFragment extends IssueFragment {
                     return true;
                 }
             });
+        }
+    }
+
+    public void checkSharedElementExit() {
+        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+            mCount.setVisibility(View.INVISIBLE);
+            mInfo.setHtml(
+                    Markdown.parseMD(
+                            Spanner.buildCombinedIssueSpan(getContext(), mIssue).toString(),
+                            mIssue.getRepoPath()
+                    )
+            );
         }
     }
 

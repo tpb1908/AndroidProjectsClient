@@ -199,6 +199,13 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        mAdapter.mInfoFragment.checkSharedElementExit();
+        super.onBackPressed();
+    }
+
+
     private class IssueFragmentAdapter extends FragmentPagerAdapter {
 
         IssueCommentsFragment mCommentsFragment;

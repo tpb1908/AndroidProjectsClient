@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.util.Log;
 import android.view.View;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -47,7 +46,6 @@ public class CodeSpan extends ReplacementSpan {
     public void setCode(String code) {
         final int ls = code.indexOf('[');
         final int le = code.indexOf(']');
-        Log.i(CodeSpan.class.getSimpleName(), "setCode: Code is " + code + " ls " + ls + ", le " + le + " index " + code.indexOf("\u0002"));
         if(ls != -1 && le != -1 && le - ls > 0 && le < code.indexOf("\n")) {
             mLanguage = code.substring(ls+1, le);
             mCode = code.substring(le + 1);

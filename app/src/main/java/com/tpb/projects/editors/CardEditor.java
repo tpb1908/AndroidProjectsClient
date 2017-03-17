@@ -10,9 +10,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
 import android.text.InputFilter;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
@@ -25,10 +23,10 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -148,39 +146,11 @@ public class CardEditor extends ImageLoadingActivity {
     }
 
     private void bindIssue(Issue issue) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<h1>");
-        builder.append(Markdown.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
-        builder.append("</h1>");
-        builder.append("\n");
-
-        // The title and body are formatted separately, because the title shouldn't be formatted
-        String html = Markdown.formatMD(builder.toString(), null, false);
-        builder.setLength(0); // Clear the builder to reuse it
-
-        if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
-            builder.append(issue.getBody().replaceFirst("\\s++$", ""));
-            builder.append("\n");
-        }
-        if(issue.getLabels() != null && issue.getLabels().length > 0) {
-            Label.appendLabels(builder, issue.getLabels(), "   ");
-        }
-        
-        builder.append("\n");
-        builder.append(
-                String.format(
-                        getString(R.string.text_opened_this_issue),
-                        String.format(getString(R.string.text_href),
-                                "https://github.com/" + issue.getOpenedBy().getLogin(),
-                                issue.getOpenedBy().getLogin()
-                        ),
-                        DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
-                )
+        mEditor.setHtml(
+                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, false, true, true, true, false).toString()),
+                new HtmlHttpImageGetter(mEditor, mEditor)
         );
 
-        html += Markdown.parseMD(builder.toString(), issue.getRepoPath());
-
-        mEditor.setText(Html.fromHtml(html));
     }
 
     private void addFromIssueButtonListeners(Intent launchIntent) {
@@ -227,7 +197,7 @@ public class CardEditor extends ImageLoadingActivity {
                         mEditor.setFilters(new InputFilter[] {}); //Remove the length filter
                         mEditorWrapper.setCounterEnabled(false); //Remove the counter
                         bindIssue(mCard.getIssue());
-                        mEditor.setEnabled(false); //Stop the user editing the content
+                        mEditor.setFocusable(false);
                         mClearButton.setVisibility(View.VISIBLE); //Enable clearing
                     }));
                     scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());

@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
+import android.support.annotation.NonNull;
 import android.support.annotation.Px;
 import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
+import android.support.v4.util.Pair;
 import android.util.ArrayMap;
 import android.util.TypedValue;
 import android.view.View;
@@ -158,6 +160,13 @@ public class UI {
         colorFade.setRepeatCount(1);
         colorFade.start();
 
+    }
+
+    public static Pair<View, String> getSafeNavigationBarTransitionPair(@NonNull Activity activity) {
+        final View nav = activity.findViewById(android.R.id.navigationBarBackground);
+        return nav == null ?
+                new Pair<>(new View(activity), "not_for_transition") :
+                new Pair<>(nav, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
     }
 
     public static void removeActivityFromTransitionManager(Activity activity) {
