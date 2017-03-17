@@ -1,4 +1,4 @@
-package com.tpb.projects.issues.content;
+package com.tpb.projects.issues.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -40,6 +40,7 @@ import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
+import com.tpb.projects.issues.IssueEventsAdapter;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.UI;

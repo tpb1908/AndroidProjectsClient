@@ -1,4 +1,4 @@
-package com.tpb.projects.issues.content;
+package com.tpb.projects.issues.fragments;
 
 import android.support.v4.app.Fragment;
 

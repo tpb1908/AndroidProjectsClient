@@ -1,4 +1,4 @@
-package com.tpb.projects.issues.content;
+package com.tpb.projects.issues.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +15,7 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.issues.IssueCommentsAdapter;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -31,7 +32,7 @@ public class IssueCommentsFragment extends IssueFragment {
 
     @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
     @BindView(R.id.issue_comments_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
+    private FloatingActionButton mFab;
 
     private IssueCommentsAdapter mAdapter;
 
@@ -40,8 +41,10 @@ public class IssueCommentsFragment extends IssueFragment {
     private Repository.AccessLevel mAccessLevel;
     private Issue mIssue;
 
-    public static IssueCommentsFragment getInstance() {
-        return new IssueCommentsFragment();
+    public static IssueCommentsFragment getInstance(FloatingActionButton fab) {
+        final IssueCommentsFragment frag = new IssueCommentsFragment();
+        frag.mFab = fab;
+        return frag;
     }
 
     @Override
@@ -64,11 +67,11 @@ public class IssueCommentsFragment extends IssueFragment {
                     mAdapter.notifyBottomReached();
                 }
                 mFab.show(true);
-//                if(dy > 10) {
-//                    mFab.hide(true);
-//                } else if(dy < -10) {
-//                    mFab.show(true);
-//                }
+                if(dy > 10) {
+                    mFab.hide(true);
+                } else if(dy < -10) {
+                    mFab.show(true);
+                }
             }
         });
         mAdapter = new IssueCommentsAdapter(this, mRefresher);

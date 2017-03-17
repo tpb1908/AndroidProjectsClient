@@ -26,11 +26,12 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CommentEditor;
-import com.tpb.projects.issues.content.IssueCommentsFragment;
-import com.tpb.projects.issues.content.IssueInfoFragment;
+import com.tpb.projects.issues.fragments.IssueCommentsFragment;
+import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.ShortcutDialog;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +51,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
     @BindView(R.id.issue_content_viewpager) ViewPager mPager;
     @BindView(R.id.issue_fragment_tabs) TabLayout mTabs;
     @BindView(R.id.issue_number) TextView mNumber;
+    @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
 
     private Loader mLoader;
 
@@ -86,6 +88,17 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         mPager.setOffscreenPageLimit(2);
         mPager.setAdapter(mAdapter);
         mTabs.setupWithViewPager(mPager);
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(position == 1) {
+                    mFab.show(true);
+                } else {
+                    mFab.hide(true);
+                }
+            }
+        });
     }
 
     @Override
@@ -201,7 +214,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 if(mIssue != null) mInfoFragment.issueLoaded(mIssue);
                 return mInfoFragment;
             } else {
-                mCommentsFragment = IssueCommentsFragment.getInstance();
+                mCommentsFragment = IssueCommentsFragment.getInstance(mFab);
                 if(mIssue != null) mCommentsFragment.issueLoaded(mIssue);
                 return mCommentsFragment;
             }
@@ -220,6 +233,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
                 return "Comments";
             }
         }
+
+
 
         @Override
         public int getCount() {
