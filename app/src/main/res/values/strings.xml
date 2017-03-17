@@ -264,6 +264,8 @@
     <string name="title_user_gists_fragment">Gists</string>
     <string name="title_user_events_fragment">Events</string>
 
+    <string name="title_issue_info_fragment">Details</string>
+    <string name="title_issue_comments_fragment">Comments</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>

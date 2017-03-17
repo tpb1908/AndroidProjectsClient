@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|snap|enterAlways"
-            app:tabGravity="center">
+            app:tabGravity="fill">
 
         </android.support.design.widget.TabLayout>
 
@@ -59,7 +59,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_reply"
-        android:background="@color/colorAccent"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/colorAccent"
         android:layout_margin="@dimen/fab_margin"
         android:layout_gravity="bottom|end"
         android:visibility="invisible"/>

@@ -228,9 +228,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         @Override
         public CharSequence getPageTitle(int position) {
             if(position == 0) {
-                return "Events";
+                return getString(R.string.title_issue_info_fragment);
             }  else {
-                return "Comments";
+                return getString(R.string.title_issue_comments_fragment);
             }
         }
 
