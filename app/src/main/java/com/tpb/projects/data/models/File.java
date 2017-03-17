@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 public class File extends DataModel implements Parcelable {
 
+    private static final String FILE_NAME = "filename";
     private String name;
 
     private static final String SIZE = "size";
@@ -57,7 +58,7 @@ public class File extends DataModel implements Parcelable {
     public static File parse(JSONObject obj) {
         final File f = new File();
         try {
-            f.name = obj.getString("filename");
+            f.name = obj.getString(FILE_NAME);
             f.size = obj.getInt(SIZE);
             f.rawUrl = obj.getString(RAW_URL);
             f.type = obj.getString(TYPE);

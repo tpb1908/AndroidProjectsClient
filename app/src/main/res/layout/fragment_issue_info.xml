@@ -21,6 +21,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/issue_header_card"
+                android:transitionName="@string/transition_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -37,9 +38,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="vertical"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentStart="true">
+                        android:layout_alignParentTop="true">
 
                         <ImageView
                             android:id="@+id/issue_state"
@@ -112,7 +113,7 @@
 
             </HorizontalScrollView>
 
-            <include layout="@layout/viewholder_milestone" />
+            <include layout="@layout/viewholder_milestone" android:visibility="gone"/>
 
             <com.tpb.animatingrecyclerview.AnimatingRecycler
                 android:id="@+id/issue_events_recycler"

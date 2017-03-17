@@ -29,8 +29,8 @@ import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
+import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -181,7 +181,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
                 }
 
                 if(mCodeHandler != null) {
-                    enableCodeClicks(html, buffer);
+                    enableCodeClicks(buffer);
                 }
 
                 //Post back on UI thread
@@ -249,31 +249,12 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
         }
     }
 
-    private void enableCodeClicks(String text, final Spannable s) {
+    private void enableCodeClicks(final Spannable s) {
         // Collect all of the CodeSpans
         final CodeSpan[] spans = s.getSpans(0, s.length(), CodeSpan.class);
-        final String[] codes = new String[spans.length];
-        int startIndex = 0;
-        int endIndex = 0;
-        int i = 0; // Index in spans
 
-        //Collect all of the code strings
-        while(startIndex != -1 && i < spans.length) {
-            // Search for the next code start after our previous position
-            startIndex = text.indexOf("<code>", startIndex);
-            if(startIndex == -1) break; // No more code tags
-            endIndex = text.indexOf("</code>", startIndex);
-
-            if(endIndex != -1) { // Ignore tags which aren't closed
-                codes[i] = text.substring(startIndex + "<code>".length(), endIndex);
-            }
-            i++;
-            startIndex = endIndex; //Jump to end of current span
-        }
-        //Set the correct code for each span
         for(CodeSpan span : spans) {
             span.setHandler(mCodeHandler);
-            span.setCode(codes[span.getIndex()]);
         }
     }
 

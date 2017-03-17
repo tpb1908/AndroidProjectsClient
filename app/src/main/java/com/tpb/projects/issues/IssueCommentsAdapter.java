@@ -1,4 +1,4 @@
-package com.tpb.projects.issues.content;
+package com.tpb.projects.issues;
 
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +17,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -46,7 +47,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
     
-    IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
+    public IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
@@ -59,12 +60,12 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         });
     }
 
-    void clear() {
+    public void clear() {
         mComments.clear();
         notifyDataSetChanged();
     }
     
-    void setIssue(Issue issue) {
+    public void setIssue(Issue issue) {
         mIssue = issue;
         mComments.clear();
         mPage = 1;
@@ -99,7 +100,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         }
     }
     
-    void loadComments(boolean resetPage) {
+    public void loadComments(boolean resetPage) {
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {
@@ -109,7 +110,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
-    void addComment(Comment comment) {
+    public void addComment(Comment comment) {
         mComments.add(new Pair<>(comment, null));
         notifyItemInserted(mComments.size());
     }
@@ -128,7 +129,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         }
     }
 
-    void updateComment(Comment comment) {
+    public void updateComment(Comment comment) {
         int index = -1;
         for(int i = 0; i < mComments.size(); i++) {
             if(mComments.get(i).first.getId() == comment.getId()) {
@@ -186,7 +187,6 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), commentHolder.mText);
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
     }
-
 
     @Override
     public int getItemCount() {

@@ -126,8 +126,7 @@ public class Interceptor extends Activity {
                         } else if("blob".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, FileActivity.class);
                             final StringBuilder path = new StringBuilder();
-                            path.append(segments.get(0));
-                            for(int j = 1; j < segments.size(); j++) {
+                            for(int j = 2; j < segments.size(); j++) {
                                 path.append('/');
                                 path.append(segments.get(j));
                             }
@@ -230,8 +229,7 @@ public class Interceptor extends Activity {
                 }
                 return chooserIntent;
             }
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(Exception ignored) {
         }
         return failIntent;
     }

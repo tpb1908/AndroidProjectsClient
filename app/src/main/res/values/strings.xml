@@ -264,6 +264,8 @@
     <string name="title_user_gists_fragment">Gists</string>
     <string name="title_user_events_fragment">Events</string>
 
+    <string name="title_issue_info_fragment">Details</string>
+    <string name="title_issue_comments_fragment">Comments</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>
@@ -351,10 +353,11 @@
     <string name="parcel_milestone" translatable="false">milestone</string>
 
     <!--Constants for shared element transitions -->
-    <string name="transition_name" translatable="false">card</string>
+    <string name="transition_name" translatable="false">name</string>
     <string name="transition_appbar" translatable="false">appbar</string>
     <string name="transition_title" translatable="false">title</string>
     <string name="transition_username" translatable="false">user_name</string>
     <string name="transition_user_image" translatable="false">user_image</string>
+    <string name="transition_card" translatable="false">card</string>
 
 </resources>

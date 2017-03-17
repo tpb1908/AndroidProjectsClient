@@ -257,8 +257,4 @@ public class UserActivity extends CircularRevealActivity {
         return true;
     }
 
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
-    }
-
 }

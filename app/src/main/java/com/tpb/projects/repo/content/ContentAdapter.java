@@ -13,6 +13,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
@@ -110,11 +111,17 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private void loadNode(int pos) {
         if(mIsLoading) return;
         final Node node = mCurrentNodes.get(pos);
+        Log.i(TAG, "loadNode: onClick " + node.toString());
         if(node.getType() == Node.NodeType.FILE) {
             ContentActivity.mLaunchNode = node;
             final Intent file = new Intent(mParent, FileActivity.class);
             mParent.startActivity(file);
         } else if(node.getType() == Node.NodeType.SUBMODULE) {
+            final Intent i = new Intent(mParent, RepoActivity.class);
+            String path = node.getHtmlUrl();
+            path = path .substring(path.indexOf("com/") + 4, path.indexOf("/tree"));
+            i.putExtra(mParent.getString(R.string.intent_repo), path);
+            mParent.startActivity(i);
             //TODO Open the submodule in another instance
         } else {
             mParent.addRibbonItem(node);

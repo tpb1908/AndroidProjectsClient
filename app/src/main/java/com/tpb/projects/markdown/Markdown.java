@@ -43,6 +43,7 @@ public class Markdown {
 
         private final HtmlWriter html;
         private HtmlNodeRendererContext context;
+        private Class lastNode = null;
         private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
         static { //Nodes to capture
             nodeTypes.add(FencedCodeBlock.class);
@@ -65,13 +66,15 @@ public class Markdown {
         public void render(Node node) {
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
-
-                // Greater than 5 lines of code
-                if(Util.instancesOf(block.getLiteral(), "\n") > 7) {
+                if(FencedCodeBlock.class.equals(lastNode)) {
+                    html.line();
+                    html.tag("br");
+                }
+                // Greater than 8 lines of code
+                if(Util.instancesOf(block.getLiteral(), "\n") > 10) {
                     html.line();
                     html.tag("code");
-                    // \u0002 is start of text
-                    html.text(String.format("[%1$s]\u0002%2$s", block.getInfo(), block.getLiteral()));
+                    html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(), block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")));
                     html.tag("/code");
                 } else {
                     html.tag("small");
@@ -79,10 +82,7 @@ public class Markdown {
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }
-                    for(String s : block.getLiteral().replace("\n\n", "\n").split("\n")) {
-                        html.raw(s.replace(" ", "&nbsp;")); //Preserve formatting
-                        html.tag("br");
-                    }
+                    html.raw(block.getLiteral().replace("\n\n", "\n").replace("\n", "<br>").replace(" ", "&nbsp;"));
                     html.tag("/small");
                     html.line();
                 }
@@ -104,6 +104,7 @@ public class Markdown {
                 html.tag("/s");
                 html.line();
             }
+            lastNode = node.getClass();
         }
     }
 

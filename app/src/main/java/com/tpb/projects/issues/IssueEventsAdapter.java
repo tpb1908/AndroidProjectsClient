@@ -1,4 +1,4 @@
-package com.tpb.projects.issues.content;
+package com.tpb.projects.issues;
 
 import android.content.res.Resources;
 import android.support.v4.util.Pair;
@@ -21,6 +21,7 @@ import com.tpb.projects.data.models.Event;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -41,7 +42,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
     private Issue mIssue;
-    private final IssueEventsFragment mParent;
+    private final IssueInfoFragment mParent;
 
     private int mPage = 1;
     private boolean mIsLoading = false;
@@ -50,7 +51,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
 
-    IssueEventsAdapter(IssueEventsFragment parent, SwipeRefreshLayout refresher) {
+    public IssueEventsAdapter(IssueInfoFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
@@ -63,12 +64,12 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         });
     }
 
-    void clear() {
+    public void clear() {
         mEvents.clear();
         notifyDataSetChanged();
     }
 
-    void setIssue(Issue issue) {
+    public void setIssue(Issue issue) {
         mIssue = issue;
         mEvents.clear();
         mPage = 1;
@@ -97,7 +98,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     }
 
-    void notifyBottomReached() {
+    public void notifyBottomReached() {
         Log.i(TAG, "notifyBottomReached: ");
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;

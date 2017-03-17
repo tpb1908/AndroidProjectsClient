@@ -4,10 +4,7 @@
     android:id="@+id/viewholder_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
+    android:layout_margin="4dp"
     app:cardCornerRadius="2dp"
     app:cardElevation="2dp"
     android:focusable="true"
@@ -15,14 +12,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:layout_height="wrap_content">
 
         <com.androidnetworking.widget.ANImageView
             android:id="@+id/gist_user_avatar"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"/>
 
@@ -30,7 +27,7 @@
             android:id="@+id/gist_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_margin="8dp"
             android:layout_toEndOf="@+id/gist_user_avatar"
             android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
@@ -39,6 +36,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/gist_title"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_centerVertical="true">
         </TextView>
 

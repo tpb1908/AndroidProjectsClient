@@ -58,8 +58,13 @@ public class Node implements Parcelable {
             gitUrl = obj.getString(GIT_URL_KEY);
             htmlUrl = obj.getString(HTML_URL_KEY);
             downloadUrl = obj.getString(DOWNLOAD_URL_KEY);
-            if(obj.has(SUBMODULE_GIT_URL_KEY))
+            if(obj.has(SUBMODULE_GIT_URL_KEY)) {
                 submoduleGitUrl = obj.getString(SUBMODULE_GIT_URL_KEY);
+                type = NodeType.SUBMODULE;
+            }
+            if(gitUrl.contains("/git/trees/")) {
+                type = NodeType.SUBMODULE;
+            }
         } catch(JSONException jse) {
             Log.e("Node", "Node: Exception: ", jse);
         }

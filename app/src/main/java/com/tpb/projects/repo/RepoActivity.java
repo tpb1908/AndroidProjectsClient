@@ -143,6 +143,7 @@ public class RepoActivity extends BaseActivity implements
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
             mRepo = launchIntent.getParcelableExtra(getString(R.string.intent_repo));
+
             if(mRepo.isFork()) {
                 mLoader.loadRepository(mRepoLoader, mRepo.getFullName());
             } else {
@@ -502,10 +503,6 @@ public class RepoActivity extends BaseActivity implements
     @Override
     public void projectEditCancelled() {
 
-    }
-
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
     }
 
     @Override
