@@ -1,4 +1,4 @@
-package com.tpb.projects.data;
+package com.tpb.projects.markdown;
 
 import android.content.Context;
 import android.graphics.Color;

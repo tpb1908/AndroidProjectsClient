@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
-import com.tpb.projects.data.Spanner;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
