@@ -35,8 +35,8 @@ import android.util.Log;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.spans.BarSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
-import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
+import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.xml.sax.XMLReader;
 
@@ -250,7 +250,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                             NumberSpan numberSpan = new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1);
                             end(output, Ol.class, false,
                                     new LeadingMarginSpan.Standard(numberMargin),
-                                    numberSpan);
+                                    numberSpan);start(output, new Code());
                         }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
@@ -262,12 +262,14 @@ public class HtmlTagHandler implements Html.TagHandler {
                 // end of the tag
                 int len = output.length();
                 output.removeSpan(obj);
+                final char[] chars = new char[len-where];
+                output.getChars(where, len, chars, 0);
                 output.insert(where, "\n"); // Another line for our CodeSpan to cover
                 output.replace(where+1, len, " ");
                 final CodeSpan code = new CodeSpan(codeCount++);
-                output.setSpan(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE, where, where + 2, 0);
-                output.setSpan(code, where, where + 2, 0);
-                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, 0);
+                code.setCode(new String(chars));
+                output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

@@ -41,8 +41,6 @@
 
         </LinearLayout>
 
-
-
         <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
             android:id="@+id/issue_content_markdown"
             android:layout_width="match_parent"

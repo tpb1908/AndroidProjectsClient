@@ -63,7 +63,6 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         loadGistsForUser(true);
     }
 
-
     public void notifyBottomReached() {
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;

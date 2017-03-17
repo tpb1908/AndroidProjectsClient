@@ -14,6 +14,8 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,13 +30,14 @@ public class IssueCommentsFragment extends IssueFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
-
     @BindView(R.id.issue_comments_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
 
     private IssueCommentsAdapter mAdapter;
 
     private Editor mEditor;
 
+    private Repository.AccessLevel mAccessLevel;
     private Issue mIssue;
 
     public static IssueCommentsFragment getInstance() {
@@ -60,12 +63,26 @@ public class IssueCommentsFragment extends IssueFragment {
                 if(manager.findFirstVisibleItemPosition() + 20 > manager.getItemCount()) {
                     mAdapter.notifyBottomReached();
                 }
+                mFab.show(true);
+//                if(dy > 10) {
+//                    mFab.hide(true);
+//                } else if(dy < -10) {
+//                    mFab.show(true);
+//                }
             }
         });
         mAdapter = new IssueCommentsAdapter(this, mRefresher);
         if(mIssue != null) mAdapter.setIssue(mIssue);
+        if(mAccessLevel != null && mAccessLevel == Repository.AccessLevel.ADMIN) {
+            mFab.setVisibility(View.VISIBLE);
+        }
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(manager);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            mAdapter.setIssue(mIssue);
+        });
+
         return view;
     }
 
@@ -75,13 +92,22 @@ public class IssueCommentsFragment extends IssueFragment {
         if(mAdapter != null) mAdapter.setIssue(issue);
     }
 
+    @Override
+    public void setAccessLevel(Repository.AccessLevel level) {
+        mAccessLevel = level;
+        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
+            mFab.setVisibility(View.VISIBLE);
+            mFab.show(true);
+        }
+    }
+
     public void createComment(Comment comment) {
         mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
             @Override
             public void created(Comment comment) {
                 mRefresher.setRefreshing(false);
                 mAdapter.addComment(comment);
-                // mAdapter.addComment(comment);
+                mAdapter.addComment(comment);
                 //mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
             }
 
@@ -96,7 +122,6 @@ public class IssueCommentsFragment extends IssueFragment {
         createComment(comment);
     }
 
-
     public void editComment(Comment comment) {
         mEditor.updateComment(new Editor.GITModelUpdateListener<Comment>() {
             @Override
@@ -110,6 +135,10 @@ public class IssueCommentsFragment extends IssueFragment {
                 mRefresher.setRefreshing(false);
             }
         }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
+    }
+
+    void removeComment(Comment comment) {
+
     }
 
     @Override

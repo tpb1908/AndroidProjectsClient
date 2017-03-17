@@ -112,7 +112,7 @@
 
             </HorizontalScrollView>
 
-            <include layout="@layout/viewholder_milestone" />
+            <include layout="@layout/viewholder_milestone" android:visibility="gone"/>
 
             <com.tpb.animatingrecyclerview.AnimatingRecycler
                 android:id="@+id/issue_events_recycler"

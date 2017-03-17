@@ -187,7 +187,6 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         IntentHandler.addGitHubIntentHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
     }
 
-
     @Override
     public int getItemCount() {
         return mComments.size();

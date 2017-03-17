@@ -87,7 +87,7 @@ public class IssueInfoFragment extends IssueFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_issue_events, container, false);
+        final View view = inflater.inflate(R.layout.fragment_issue_info, container, false);
         unbinder = ButterKnife.bind(this, view);
         mAccessLevel = ((IssueActivity)getActivity()).mAccessLevel;
         mEditor = new Editor(getContext());
@@ -443,6 +443,7 @@ public class IssueInfoFragment extends IssueFragment {
         menu.show();
     }
 
+    @Override
     public void setAccessLevel(Repository.AccessLevel level) {
         mAccessLevel = level;
     }

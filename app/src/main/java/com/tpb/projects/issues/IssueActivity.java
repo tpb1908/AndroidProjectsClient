@@ -114,19 +114,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
         mAdapter.setIssue();
     }
 
-    private void enableAccess() {
-//        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-//            @Override
-//            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                if(scrollY - oldScrollY > 10) {
-//                    mFab.hide();
-//                } else if(scrollY - oldScrollY < -10) {
-//                    mFab.show();
-//                }
-//            }
-//        });
-    }
-
     @Override
     public void loadError(APIHandler.APIError error) {
 
