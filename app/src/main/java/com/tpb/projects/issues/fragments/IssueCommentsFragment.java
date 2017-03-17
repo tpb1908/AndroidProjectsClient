@@ -120,7 +120,7 @@ public class IssueCommentsFragment extends IssueFragment {
             public void created(Comment comment) {
                 mRefresher.setRefreshing(false);
                 mAdapter.addComment(comment);
-                //mScrollView.post(() -> mScrollView.smoothScrollTo(0, mScrollView.getBottom()));
+                mRecycler.post(() -> mRecycler.smoothScrollToPosition(mAdapter.getItemCount()));
             }
 
             @Override
