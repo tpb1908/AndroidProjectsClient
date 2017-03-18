@@ -51,13 +51,13 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mParent = parent;
         mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
-        mRefresher.setRefreshing(true);
-        mRefresher.setOnRefreshListener(() -> {
-            mPage = 1;
-            mMaxPageReached = false;
-            notifyDataSetChanged();
-            loadComments(true);
-        });
+//        mRefresher.setRefreshing(true);
+//        mRefresher.setOnRefreshListener(() -> {
+//            mPage = 1;
+//            mMaxPageReached = false;
+//            notifyDataSetChanged();
+//            loadComments(true);
+//        });
     }
 
     public void clear() {
@@ -100,7 +100,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         }
     }
     
-    public void loadComments(boolean resetPage) {
+    private void loadComments(boolean resetPage) {
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {

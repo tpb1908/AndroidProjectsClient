@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -22,12 +23,12 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
-import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Analytics;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -45,14 +46,22 @@ import butterknife.OnClick;
  * Created by theo on 20/12/16.
  */
 
-class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
+class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implements Loader.GITModelsLoader<Card> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<Card, SpannableString>> mCards = new ArrayList<>();
 
     private final ColumnFragment mParent;
+    private int mColumn;
     private final Editor mEditor;
     private static final HandlerThread parseThread = new HandlerThread("card_parser");
+
+    private int mPage = 1;
+    private boolean mIsLoading = false;
+    private boolean mMaxPageReached = false;
+
+    private SwipeRefreshLayout mRefresher;
+    private Loader mLoader;
 
     static {
         parseThread.start();
@@ -62,23 +71,73 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     private Repository.AccessLevel mAccessLevel;
     private final ProjectActivity.NavigationDragListener mNavListener;
 
-    CardAdapter(ColumnFragment parent, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
+    CardAdapter(ColumnFragment parent,
+                ProjectActivity.NavigationDragListener navListener,
+                Repository.AccessLevel accessLevel,
+                SwipeRefreshLayout refresher) {
         mParent = parent;
         mEditor = new Editor(mParent.getContext());
+        mLoader = new Loader(parent.getContext());
         mAccessLevel = accessLevel;
         mNavListener = navListener;
+        mRefresher = refresher;
+        mRefresher.setRefreshing(true);
+        mRefresher.setOnRefreshListener(() -> {
+            mPage = 1;
+            mMaxPageReached = false;
+            notifyDataSetChanged();
+            loadCards(true);
+        });
+    }
+
+    void setColumn(int columnId) {
+        mColumn = columnId;
+        loadCards(true);
+    }
+
+    public void notifyBottomReached() {
+        if(!mIsLoading && !mMaxPageReached) {
+            mPage++;
+            loadCards(false);
+        }
+    }
+
+    private void loadCards(boolean resetPage) {
+        mIsLoading = true;
+        mRefresher.setRefreshing(true);
+        if(resetPage) {
+            mPage = 1;
+            mMaxPageReached = false;
+        }
+        mLoader.loadCards(this, mParent.mColumn.getId(), mPage);
+    }
+
+    @Override
+    public void loadComplete(Card[] data) {
+        mRefresher.setRefreshing(false);
+        mIsLoading = false;
+        if(data.length > 0) {
+            int oldLength = mCards.size();
+            if(mPage == 1){
+                mParent.mParent.notifyFragmentLoaded();
+                mCards.clear();
+            }
+            for(Card c : data) {
+                mCards.add(new Pair<>(c, null));
+            }
+            notifyItemRangeInserted(oldLength, mCards.size());
+        } else {
+            mMaxPageReached = true;
+        }
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
     }
 
     void setAccessLevel(Repository.AccessLevel accessLevel) {
         mAccessLevel = accessLevel;
-        notifyDataSetChanged();
-    }
-
-    void setCards(ArrayList<Card> cards) {
-        mCards.clear();
-        for(Card c : cards) {
-            mCards.add(new Pair<>(c, null));
-        }
         notifyDataSetChanged();
     }
 
@@ -90,7 +149,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> {
     void addCardFromDrag(Card card) {
         mCards.add(new Pair<>(card, null));
         notifyItemInserted(mCards.size());
-        mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), -1);
+        mEditor.moveCard(null, mColumn, card.getId(), -1);
     }
 
     void addCardFromDrag(int pos, Card card) {

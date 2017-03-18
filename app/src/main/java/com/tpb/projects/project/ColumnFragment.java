@@ -47,7 +47,6 @@ import com.tpb.projects.util.UI;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +59,7 @@ import static com.tpb.projects.data.SettingsActivity.Preferences.CardAction.COPY
  * Created by theo on 19/12/16.
  */
 
-public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<Card> {
+public class ColumnFragment extends Fragment {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     FirebaseAnalytics mAnalytics;
@@ -84,7 +83,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     private CardAdapter mAdapter;
 
-
     public static ColumnFragment getInstance(Column column, ProjectActivity.NavigationDragListener navListener, Repository.AccessLevel accessLevel) {
         final ColumnFragment cf = new ColumnFragment();
         cf.mColumn = column;
@@ -101,11 +99,11 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
         if(mColumn == null && savedInstanceState != null) {
             mColumn = savedInstanceState.getParcelable(getString(R.string.parcel_column));
         }
-
         mName.setText(mColumn.getName());
 
         mViewsValid = true;
-        mAdapter = new CardAdapter(this, mNavListener, mAccessLevel);
+        mAdapter = new CardAdapter(this, mNavListener, mAccessLevel, mParent.mRefresher);
+        mAdapter.setColumn(mColumn.getId());
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
@@ -114,7 +112,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             disableAccess(view);
         }
         mName.clearFocus();
-
 
         displayLastUpdate();
         return view;
@@ -167,7 +164,7 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
             }
             return false;
         });
-        new Loader(getContext()).loadCards(this, mColumn.getId());
+        
     }
 
     void setAccessLevel(Repository.AccessLevel accessLevel) {
@@ -238,29 +235,6 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
 
     void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId) {
         mParent.loadIssue(loader, issueId, mColumn);
-    }
-
-    @Override
-    public void loadComplete(Card[] cards) {
-        if(mViewsValid) {
-            mCardCount.setText(Integer.toString(cards.length));
-            mAdapter.setCards(new ArrayList<>(Arrays.asList(cards)));
-        }
-        mParent.notifyFragmentLoaded();
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-        mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);
-    }
-
-    @Override
-    public void loadError(APIHandler.APIError error) {
-        if(error != APIHandler.APIError.NO_CONNECTION) {
-            final Bundle bundle = new Bundle();
-            bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
-            mAnalytics.logEvent(Analytics.TAG_CARDS_LOADED, bundle);
-            //TODO check for auth errors
-        } //TODO Add a listener to wait for network change and reload automatically
-
     }
 
     private void addCard(Card card) {
@@ -749,6 +723,10 @@ public class ColumnFragment extends Fragment implements Loader.GITModelsLoader<C
                 copyToClipboard(card.getNote());
                 break;
         }
+    }
+
+    void notifyScroll() {
+        mAdapter.notifyBottomReached();
     }
 
     void scrollUp() {
