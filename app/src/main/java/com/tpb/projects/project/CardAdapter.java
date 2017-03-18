@@ -331,7 +331,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         } else {
             holder.mText.setText(mCards.get(pos).second);
         }
-        holder.mSpinner.setVisibility(View.INVISIBLE);
+        holder.mSpinner.setVisibility(View.GONE);
     }
 
     @Override
