@@ -166,14 +166,14 @@ public class Markdown {
                 if(i - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 3);
                 } else {
-                    builder.setLength(builder.length() - 2);
+                    builder.setLength(builder.length() - 1);
                 }
                 builder.append("\u2610"); //☐ ballot box
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
                 if(i- 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
-                    builder.setLength(builder.length() - 3);
+                    builder.setLength(builder.length() - 2);
                 }
                 builder.append("\u2610");
             } else if(chars[i] == '(') {
