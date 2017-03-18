@@ -114,8 +114,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
 
-    private int codeCount = 0;
-
     public HtmlTagHandler(TextPaint paint) {
         mTextPaint = paint;
     }
@@ -261,15 +259,16 @@ public class HtmlTagHandler implements Html.TagHandler {
                 int where = output.getSpanStart(obj);
                 // end of the tag
                 int len = output.length();
-                output.removeSpan(obj);
-                final char[] chars = new char[len-where];
-                output.getChars(where, len, chars, 0);
-                output.insert(where, "\n"); // Another line for our CodeSpan to cover
-                output.replace(where+1, len, " ");
-                final CodeSpan code = new CodeSpan(codeCount++);
-                code.setCode(new String(chars));
-                output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if(len > where + 1) {
+                    output.removeSpan(obj);
+                    final char[] chars = new char[len - where];
+                    output.getChars(where, len, chars, 0);
+                    output.insert(where, "\n"); // Another line for our CodeSpan to cover
+                    output.replace(where + 1, len, " ");
+                    final CodeSpan code = new CodeSpan(new String(chars));
+                    output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }  else if(tag.equals("bar")) {
                 final Object obj = getLast(output, Bar.class);
                 final int where = output.getSpanStart(obj);

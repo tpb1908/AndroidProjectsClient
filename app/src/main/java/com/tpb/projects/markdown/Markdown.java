@@ -183,10 +183,10 @@ public class Markdown {
                 //We jump over the code block
                 pp = ' ';
                 p = ' ';
-                for(int j = i; j < chars.length; j++) {
+                int j = i;
+                for(; j < chars.length; j++) {
                     builder.append(chars[j]);
                     if(pp == '`' && p == '`' && chars[j] == '`') {
-                        i = j;
                         p = ' ';
                         break;
                     } else {
@@ -194,6 +194,7 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
+                i = j - 1;
             } else {
                 builder.append(chars[i]);
             }
