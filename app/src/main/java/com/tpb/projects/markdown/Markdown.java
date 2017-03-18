@@ -118,6 +118,7 @@ public class Markdown {
         s = s.replace("@", "&#64;"); //Ignore tags and email addresses
         s = s.replace("<", "&#60;"); //Ignore html
         s = s.replace(">", "&#62;");
+        s = s.replace("`", "&#96;"); //Code tags in titles
         return s;
     }
 
