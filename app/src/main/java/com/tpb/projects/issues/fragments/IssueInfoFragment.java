@@ -14,6 +14,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -31,7 +32,6 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
-import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.Repository;
@@ -43,6 +43,7 @@ import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssueEventsAdapter;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.UI;
 
@@ -136,7 +137,19 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayIssue(Issue issue) {
-        mInfo.setHtml(Markdown.parseMD(Spanner.buildIssueSpan(getContext(), issue, true, false, false, false, true, false).toString()), new HtmlHttpImageGetter(mInfo, mInfo), null);
+        mInfo.setHtml(
+                Markdown.parseMD(
+                        Spanner.buildIssueSpan(
+                                getContext(),
+                                issue,
+                                true, //Header title
+                                false,  //No number in title
+                                false, //No numbered link
+                                false, //No assignees
+                                true, //Closed at
+                                false //No comment count
+                        ).toString()
+                ), new HtmlHttpImageGetter(mInfo, mInfo), null);
         mUserAvatar.setOnClickListener(v -> {
             IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin());
         });

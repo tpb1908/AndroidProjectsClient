@@ -9,7 +9,6 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.markdown.Markdown;
 
 /**
  * Created by theo on 17/03/17.

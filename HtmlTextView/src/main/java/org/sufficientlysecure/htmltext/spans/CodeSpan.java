@@ -29,14 +29,13 @@ public class CodeSpan extends ReplacementSpan {
     private WeakReference<CodeClickHandler> mHandler;
     private String mCode;
     private String mLanguage;
-    private int mIndex;
     private static String mLanguageFormatString = "%1$s code";
     private static String mNoLanguageString = "Code";
     private static Bitmap mCodeBM;
     private PorterDuffColorFilter mBMFilter;
 
-    public CodeSpan(int index) {
-        this.mIndex = index;
+    public CodeSpan(String code) {
+        setCode(code);
     }
 
     public void setHandler(CodeClickHandler handler) {
@@ -52,10 +51,6 @@ public class CodeSpan extends ReplacementSpan {
         } else {
             mCode = code;
         }
-    }
-
-    public int getIndex() {
-        return mIndex;
     }
 
     @Override

@@ -428,8 +428,8 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadCards(@Nullable GITModelsLoader<Card> loader, int columnId) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
+    public void loadCards(@Nullable GITModelsLoader<Card> loader, int columnId, int page) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(PROJECTS_PREVIEW_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
                 .build()

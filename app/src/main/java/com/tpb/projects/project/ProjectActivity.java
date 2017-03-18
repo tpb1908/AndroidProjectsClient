@@ -167,6 +167,10 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                 loadFromId(repo, number);
             }
         });
+        mRefresher.setOnChildScrollUpCallback((parent, child) -> {
+            mAdapter.getCurrentFragment().notifyScroll();
+            return false;
+        });
         mNavListener = new NavigationDragListener();
         mRefresher.setOnDragListener(mNavListener);
     }

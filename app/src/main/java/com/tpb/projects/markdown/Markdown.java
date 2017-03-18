@@ -118,6 +118,7 @@ public class Markdown {
         s = s.replace("@", "&#64;"); //Ignore tags and email addresses
         s = s.replace("<", "&#60;"); //Ignore html
         s = s.replace(">", "&#62;");
+        s = s.replace("`", "&#96;"); //Code tags in titles
         return s;
     }
 
@@ -165,14 +166,14 @@ public class Markdown {
                 if(i - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 3);
                 } else {
-                    builder.setLength(builder.length() - 2);
+                    builder.setLength(builder.length() - 1);
                 }
                 builder.append("\u2610"); //☐ ballot box
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
                 if(i- 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                 } else {
-                    builder.setLength(builder.length() - 3);
+                    builder.setLength(builder.length() - 2);
                 }
                 builder.append("\u2610");
             } else if(chars[i] == '(') {
@@ -182,10 +183,10 @@ public class Markdown {
                 //We jump over the code block
                 pp = ' ';
                 p = ' ';
-                for(int j = i; j < chars.length; j++) {
+                int j = i;
+                for(; j < chars.length; j++) {
                     builder.append(chars[j]);
                     if(pp == '`' && p == '`' && chars[j] == '`') {
-                        i = j;
                         p = ' ';
                         break;
                     } else {
@@ -193,6 +194,7 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
+                i = j - 1;
             } else {
                 builder.append(chars[i]);
             }
