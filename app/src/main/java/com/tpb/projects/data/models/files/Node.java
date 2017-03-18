@@ -2,6 +2,7 @@ package com.tpb.projects.data.models.files;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -62,12 +63,27 @@ public class Node implements Parcelable {
                 submoduleGitUrl = obj.getString(SUBMODULE_GIT_URL_KEY);
                 type = NodeType.SUBMODULE;
             }
-            if(gitUrl.contains("/git/trees/")) {
-                type = NodeType.SUBMODULE;
-            }
+            if(isSubmodule(url, gitUrl)) type = NodeType.SUBMODULE;
         } catch(JSONException jse) {
             Log.e("Node", "Node: Exception: ", jse);
         }
+    }
+
+    private boolean isSubmodule(@NonNull String url, @NonNull String gitUrl) {
+        try {
+            int start = url.indexOf("com/") + 4;
+            int repoStart = url.indexOf('/', url.indexOf('/', url.indexOf('/', start + 1) + 1));
+            int repoEnd = url.indexOf('/', repoStart + 1) + 1;
+            final String repo = url.substring(repoStart, repoEnd);
+            start = gitUrl.indexOf("com/") + 4;
+            repoStart = gitUrl.indexOf('/', gitUrl.indexOf('/', gitUrl.indexOf('/', start + 1) + 1));
+            repoEnd = gitUrl.indexOf('/', repoStart + 1) + 1;
+            return !repo.equals(gitUrl.substring(repoStart, repoEnd));
+        } catch(IndexOutOfBoundsException iob) {
+            return false;
+        }
+
+
     }
 
     public NodeType getType() {
