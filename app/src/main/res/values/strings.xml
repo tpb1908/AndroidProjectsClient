@@ -263,6 +263,8 @@
     <string name="title_user_stars_fragment">Stars</string>
     <string name="title_user_gists_fragment">Gists</string>
     <string name="title_user_events_fragment">Events</string>
+    <string name="title_user_followers_fragment">Followers</string>
+    <string name="title_user_following_fragment">Following</string>
 
     <string name="title_issue_info_fragment">Details</string>
     <string name="title_issue_comments_fragment">Comments</string>

@@ -23,6 +23,8 @@ import com.tpb.projects.data.auth.OAuthHandler;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
+import com.tpb.projects.user.fragments.UserFollowersFragment;
+import com.tpb.projects.user.fragments.UserFollowingFragment;
 import com.tpb.projects.user.fragments.UserFragment;
 import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
@@ -54,7 +56,7 @@ public class UserActivity extends CircularRevealActivity {
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
-        setContentView(R.layout.activity_user_viewpager);
+        setContentView(R.layout.activity_user);
         ButterKnife.bind(this);
         postponeEnterTransition();
 
@@ -130,7 +132,7 @@ public class UserActivity extends CircularRevealActivity {
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {
 
-        private UserFragment[] fragments = new UserFragment[5];
+        private UserFragment[] fragments = new UserFragment[7];
 
         UserFragmentAdapter(FragmentManager fm) {
             super(fm);
@@ -152,7 +154,13 @@ public class UserActivity extends CircularRevealActivity {
                     fragments[3] = new UserGistsFragment();
                     break;
                 case 4:
-                    fragments[4] = new UserEventsFragment();
+                    fragments[4] = new UserFollowingFragment();
+                    break;
+                case 5:
+                    fragments[5] = new UserFollowersFragment();
+                    break;
+                case 6:
+                    fragments[6] = new UserEventsFragment();
                     break;
             }
             if(mUser != null) fragments[position].userLoaded(mUser);
@@ -164,7 +172,9 @@ public class UserActivity extends CircularRevealActivity {
             else if(fragment instanceof UserReposFragment) fragments[1] = fragment;
             else if(fragment instanceof UserStarsFragment) fragments[2] = fragment;
             else if(fragment instanceof UserGistsFragment) fragments[3] = fragment;
-            else if(fragment instanceof UserEventsFragment) fragments[4] = fragment;
+            else if(fragment instanceof UserFollowingFragment) fragments[4] = fragment;
+            else if(fragment instanceof UserFollowersFragment) fragments[5] = fragment;
+            else if(fragment instanceof UserEventsFragment) fragments[6] = fragment;
         }
 
         void notifyUserLoaded() {
@@ -175,10 +185,8 @@ public class UserActivity extends CircularRevealActivity {
 
         @Override
         public int getCount() {
-            return 5;
+            return 7;
         }
-
-
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -192,6 +200,10 @@ public class UserActivity extends CircularRevealActivity {
                 case 3:
                     return getString(R.string.title_user_gists_fragment);
                 case 4:
+                    return getString(R.string.title_user_following_fragment);
+                case 5:
+                    return getString(R.string.title_user_followers_fragment);
+                case 6:
                     return getString(R.string.title_user_events_fragment);
                 default:
                     return "Error";

@@ -14,12 +14,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_margin="8dp">
 
         <com.androidnetworking.widget.ANImageView
             android:id="@+id/user_avatar"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
             android:layout_gravity="center_vertical"/>
 
         <TextView
