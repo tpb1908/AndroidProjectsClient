@@ -101,7 +101,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(@Nullable GITModelsLoader<Repository> loader, String user, int page) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + (page > 1 ? "?page=" + page : ""))
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + "?sort=updated" + (page > 1 ? "?page=" + page : "" ))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
@@ -133,7 +133,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadRepositories(@Nullable GITModelsLoader<Repository> loader, int page) {
-        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + (page > 1 ? "?page=" + page : ""))
+        final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + "?sort=updated" + (page > 1 ? "?page=" + page : ""))
                 .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
