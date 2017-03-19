@@ -1,6 +1,6 @@
 package com.tpb.projects.user;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.flow.IntentHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +39,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
 
-    public UserAdapter(Context context,  SwipeRefreshLayout refresher) {
-        mLoader = new Loader(context);
+    private Activity mLauncher;
+
+    public UserAdapter(Activity activity, SwipeRefreshLayout refresher) {
+        mLauncher = activity;
+        mLoader = new Loader(activity);
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -105,6 +109,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
 
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {
+
         holder.mAvatar.setImageUrl(mUsers.get(position).getAvatarUrl());
         holder.mName.setText(mUsers.get(position).getLogin());
     }
@@ -114,14 +119,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
         return mUsers.size();
     }
 
+    private void openUser(int pos, ANImageView iv) {
+        IntentHandler.openUser(mLauncher, iv, mUsers.get(pos).getLogin());
+    }
+
     class UserHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.user_avatar) ANImageView mAvatar;
         @BindView(R.id.user_name) TextView mName;
 
-        public UserHolder(View itemView) {
+        UserHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(v -> openUser(getAdapterPosition(), mAvatar));
         }
     }
 

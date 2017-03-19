@@ -36,7 +36,7 @@ public class UserFollowersFragment extends UserFragment {
         unbinder = ButterKnife.bind(this, view);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(manager);
-        mAdapter = new UserAdapter(getContext(), mRefresher);
+        mAdapter = new UserAdapter(getActivity(), mRefresher);
         mRecycler.setAdapter(mAdapter);
 
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
