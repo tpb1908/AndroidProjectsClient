@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.data.models.User;
@@ -29,7 +30,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
     private Unbinder unbinder;
 
     @BindView(R.id.user_gists_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_gists_recycler) RecyclerView mRecycler;
+    @BindView(R.id.user_gists_recycler) AnimatingRecyclerView mRecycler;
 
     private GistsAdapter mAdapter;
 
@@ -41,6 +42,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
 
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(manager);
+        mRecycler.enableLineDecoration();
         mAdapter = new GistsAdapter(getContext(), this, mRefresher);
         mRecycler.setAdapter(mAdapter);
 

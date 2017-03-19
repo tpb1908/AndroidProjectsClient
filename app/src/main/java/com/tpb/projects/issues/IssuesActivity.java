@@ -22,7 +22,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -64,7 +64,7 @@ public class IssuesActivity extends BaseActivity implements Loader.GITModelsLoad
 
     @BindView(R.id.issues_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issues_toolbar) Toolbar mToolbar;
-    @BindView(R.id.issues_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.issues_recycler) AnimatingRecyclerView mRecycler;
     @BindView(R.id.issues_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issues_fab) FloatingActionButton mFab;
     @BindView(R.id.issues_filter_button) ImageButton mFilterButton;

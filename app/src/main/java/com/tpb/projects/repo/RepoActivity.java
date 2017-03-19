@@ -27,7 +27,7 @@ import android.widget.Toast;
 import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mittsu.markedview.MarkedView;
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -84,7 +84,7 @@ public class RepoActivity extends BaseActivity implements
 
     @BindView(R.id.repo_coordinator) CoordinatorLayout mCoordinator;
     @BindView(R.id.repo_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_project_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.repo_project_recycler) AnimatingRecyclerView mRecycler;
 
     @BindView(R.id.repo_new_project) Button mNewProjectButton;
 

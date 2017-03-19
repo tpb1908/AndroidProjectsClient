@@ -68,7 +68,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:animateLayoutChanges="true">
 
-        <com.tpb.animatingrecyclerview.AnimatingRecycler
+        <com.tpb.animatingrecyclerview.AnimatingRecyclerView
             android:id="@+id/milestones_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

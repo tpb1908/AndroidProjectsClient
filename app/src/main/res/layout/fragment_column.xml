@@ -80,7 +80,7 @@
         </android.support.v7.widget.CardView>
 
 
-        <com.tpb.animatingrecyclerview.AnimatingRecycler
+        <com.tpb.animatingrecyclerview.AnimatingRecyclerView
             android:id="@+id/column_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

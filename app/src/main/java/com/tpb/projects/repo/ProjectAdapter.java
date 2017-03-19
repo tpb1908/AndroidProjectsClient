@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -39,7 +39,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private boolean canAccessRepo = false;
 
 
-    public ProjectAdapter(ProjectEditor editor, AnimatingRecycler recycler) {
+    public ProjectAdapter(ProjectEditor editor, AnimatingRecyclerView recycler) {
         mEditor = editor;
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override

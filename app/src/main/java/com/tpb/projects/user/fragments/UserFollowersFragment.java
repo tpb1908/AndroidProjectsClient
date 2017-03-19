@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserAdapter;
@@ -27,7 +28,7 @@ public class UserFollowersFragment extends UserFragment {
 
     private UserAdapter mAdapter;
     @BindView(R.id.user_followers_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_followers_recycler) RecyclerView mRecycler;
+    @BindView(R.id.user_followers_recycler) AnimatingRecyclerView mRecycler;
 
     @Nullable
     @Override
@@ -37,8 +38,8 @@ public class UserFollowersFragment extends UserFragment {
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(manager);
         mAdapter = new UserAdapter(getActivity(), mRefresher);
+        mRecycler.enableLineDecoration();
         mRecycler.setAdapter(mAdapter);
-
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

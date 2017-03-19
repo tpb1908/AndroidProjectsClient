@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -74,7 +74,7 @@ public class ColumnFragment extends Fragment {
     @BindView(R.id.column_last_updated) TextView mLastUpdate;
     @BindView(R.id.column_card_count) TextView mCardCount;
     @BindView(R.id.column_scrollview) NestedScrollView mNestedScroller;
-    @BindView(R.id.column_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.column_recycler) AnimatingRecyclerView mRecycler;
 
     ProjectActivity mParent;
     private ProjectActivity.NavigationDragListener mNavListener;

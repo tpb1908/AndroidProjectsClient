@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.PopupMenu;
 
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -37,7 +37,7 @@ import butterknife.OnClick;
 public class MilestonesActivity extends CircularRevealActivity implements Loader.GITModelsLoader<Milestone> {
     private static final String TAG = MilestonesActivity.class.getSimpleName();
 
-    @BindView(R.id.milestones_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.milestones_recycler) AnimatingRecyclerView mRecycler;
     @BindView(R.id.milestones_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.milestones_fab) com.tpb.projects.util.fab.FloatingActionButton mFab;
 

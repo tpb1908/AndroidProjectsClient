@@ -106,7 +106,7 @@
 
             <include layout="@layout/viewholder_milestone" android:visibility="gone"/>
 
-            <com.tpb.animatingrecyclerview.AnimatingRecycler
+            <com.tpb.animatingrecyclerview.AnimatingRecyclerView
                 android:id="@+id/issue_events_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

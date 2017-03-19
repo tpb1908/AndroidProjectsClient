@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <com.tpb.animatingrecyclerview.AnimatingRecycler
+    <com.tpb.animatingrecyclerview.AnimatingRecyclerView
         android:id="@+id/user_gists_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

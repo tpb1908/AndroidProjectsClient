@@ -283,13 +283,13 @@
 
                 </android.support.v7.widget.CardView>
 
-                <com.tpb.animatingrecyclerview.AnimatingRecycler
+                <com.tpb.animatingrecyclerview.AnimatingRecyclerView
                     android:id="@+id/repo_project_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false">
 
-                </com.tpb.animatingrecyclerview.AnimatingRecycler>
+                </com.tpb.animatingrecyclerview.AnimatingRecyclerView>
 
 
                 <android.support.v7.widget.CardView

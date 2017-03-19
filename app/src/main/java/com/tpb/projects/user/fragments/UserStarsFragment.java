@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tpb.animatingrecyclerview.AnimatingRecycler;
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
@@ -32,7 +32,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
 
     private Unbinder unbinder;
 
-    @BindView(R.id.user_repos_recycler) AnimatingRecycler mRecycler;
+    @BindView(R.id.user_repos_recycler) AnimatingRecyclerView mRecycler;
     @BindView(R.id.user_repos_refresher) SwipeRefreshLayout mRefresher;
     private RepositoriesAdapter mAdapter;
 
@@ -44,6 +44,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
 
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(manager);
+        mRecycler.enableLineDecoration();
         mAdapter = new RepositoriesAdapter(getContext(), this, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
