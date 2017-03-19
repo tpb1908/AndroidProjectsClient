@@ -56,6 +56,7 @@ public class UserFollowersFragment extends UserFragment {
     @Override
     public void userLoaded(User user) {
         mAdapter.setUser(user.getLogin(), true);
+        mUser = user;
     }
 
     @Override

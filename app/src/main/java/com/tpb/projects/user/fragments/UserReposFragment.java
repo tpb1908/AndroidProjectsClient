@@ -64,6 +64,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
     @Override
     public void userLoaded(User user) {
         mAdapter.setUser(user.getLogin(), false);
+        mUser = user;
     }
 
     @Override

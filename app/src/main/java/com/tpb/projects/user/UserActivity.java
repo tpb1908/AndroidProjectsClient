@@ -115,7 +115,7 @@ public class UserActivity extends CircularRevealActivity {
         if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
-        mPager.setOffscreenPageLimit(5);
+        mPager.setOffscreenPageLimit(7);
 
     }
 

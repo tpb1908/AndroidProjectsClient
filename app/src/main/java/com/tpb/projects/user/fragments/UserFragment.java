@@ -1,7 +1,10 @@
 package com.tpb.projects.user.fragments;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.tpb.projects.R;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 
@@ -11,6 +14,7 @@ import com.tpb.projects.user.UserActivity;
 
 public abstract class UserFragment extends Fragment {
 
+    protected User mUser;
     protected boolean mAreViewsValid;
 
     @Override
@@ -24,5 +28,20 @@ public abstract class UserFragment extends Fragment {
     }
 
     public abstract void userLoaded(User user);
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.parcel_user))) {
+            mUser = savedInstanceState.getParcelable(getString(R.string.parcel_user));
+            userLoaded(mUser);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(getString(R.string.parcel_user), mUser);
+    }
 
 }

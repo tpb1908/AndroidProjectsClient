@@ -353,6 +353,7 @@
     <string name="parcel_issue" translatable="false">issue</string>
     <string name="parcel_comment" translatable="false">comment</string>
     <string name="parcel_milestone" translatable="false">milestone</string>
+    <string name="parcel_user" translatable="false">user</string>
 
     <!--Constants for shared element transitions -->
     <string name="transition_name" translatable="false">name</string>

@@ -64,6 +64,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
     @Override
     public void userLoaded(User user) {
         mAdapter.setUser(user.getLogin(), true);
+        mUser = user;
     }
 
     @Override

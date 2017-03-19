@@ -61,6 +61,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
     @Override
     public void userLoaded(User user) {
         mAdapter.setUser(user.getLogin(), false);
+        mUser = user;
     }
 
     @Override
