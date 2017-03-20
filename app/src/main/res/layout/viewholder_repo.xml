@@ -54,7 +54,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_zero_value"
-            android:drawableStart="@drawable/ic_forked"/>
+            android:drawableStart="@drawable/ic_forked"
+            android:layout_marginEnd="4dp"/>
+
+        <TextView
+            android:id="@+id/repo_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/repo_last_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

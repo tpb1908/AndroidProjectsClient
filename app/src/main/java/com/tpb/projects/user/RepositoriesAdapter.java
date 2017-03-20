@@ -3,12 +3,9 @@ package com.tpb.projects.user;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,7 +83,6 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         loadReposForUser(true);
     }
 
-
     public void notifyBottomReached() {
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;
@@ -126,21 +122,24 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         holder.mName.setText(
                 (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r.isFork() ? " (Forked) " : "")
         );
-        final SpannableStringBuilder builder = new SpannableStringBuilder();
-
-        if(r.getDescription() != null && !DataModel.JSON_NULL.equals(r.getDescription())) {
-            builder.append(r.getDescription());
+        if(!DataModel.JSON_NULL.equals(r.getLanguage())) {
+            holder.mLanguage.setVisibility(View.VISIBLE);
+            holder.mLanguage.setText(r.getLanguage());
+        } else {
+            holder.mLanguage.setVisibility(View.GONE);
         }
-        if(r.getLanguage() != null && !DataModel.JSON_NULL.equals(r.getLanguage())) {
-            if(builder.length() > 0) builder.append("\n");
-            builder.append(r.getLanguage(), new ForegroundColorSpan(Color.WHITE), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if(!DataModel.JSON_NULL.equals(r.getDescription())) {
+            holder.mDescription.setVisibility(View.VISIBLE);
+            holder.mDescription.setText(r.getDescription());
+        } else {
+            holder.mDescription.setVisibility(View.GONE);
         }
-        holder.mDescription.setText(builder);
         final boolean isPinned = mPinChecker.isPinned(r.getFullName());
         holder.isPinned = isPinned;
         holder.mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
         holder.mForks.setText(Integer.toString(r.getForks()));
         holder.mStars.setText(Integer.toString(r.getStarGazers()));
+        holder.mLastUpdated.setText(DateUtils.getRelativeTimeSpanString(r.getUpdatedAt()));
     }
 
     private void togglePin(int pos) {
@@ -233,6 +232,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         @BindView(R.id.repo_description) TextView mDescription;
         @BindView(R.id.repo_forks) TextView mForks;
         @BindView(R.id.repo_stars) TextView mStars;
+        @BindView(R.id.repo_language) TextView mLanguage;
+        @BindView(R.id.repo_last_updated) TextView mLastUpdated;
         @BindView(R.id.repo_pin_button) ImageButton mPin;
         private boolean isPinned = false;
 
