@@ -38,6 +38,7 @@ import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
 import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.NumberSpan;
+import org.sufficientlysecure.htmltext.spans.QuoteSpan;
 import org.xml.sax.XMLReader;
 
 import java.util.Stack;
@@ -50,6 +51,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
     private static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
     private static final String LIST_ITEM = "HTML_TEXTVIEW_ESCAPED_LI_TAG";
+    private static final String CUSTOM_BLOCKQUOTE = "HTML_TEXTVIEW_ESCAPED_BLOCKQUOTE";
 
     /**
      * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
@@ -71,6 +73,8 @@ public class HtmlTagHandler implements Html.TagHandler {
         html = html.replace("</ol>", "</" + ORDERED_LIST + ">");
         html = html.replace("<li", "<" + LIST_ITEM);
         html = html.replace("</li>", "</" + LIST_ITEM + ">");
+        html = html.replace("<blockquote>", "<" + CUSTOM_BLOCKQUOTE + ">");
+        html = html.replace("</blockquote>", "</" + CUSTOM_BLOCKQUOTE + ">");
 
         return html;
     }
@@ -147,6 +151,8 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static class Bar {}
 
+    private static class BlockQuote {}
+
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
         if(opening) {
@@ -204,6 +210,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Td());
             } else if(tag.equalsIgnoreCase("bar")) {
                 start(output, new Bar());
+            } else if(tag.equalsIgnoreCase(CUSTOM_BLOCKQUOTE)) {
+                start(output, new BlockQuote());
             }
         } else {
             // closing tag
@@ -307,6 +315,14 @@ public class HtmlTagHandler implements Html.TagHandler {
                 end(output, Th.class, false);
             } else if(tag.equalsIgnoreCase("td")) {
                 end(output, Td.class, false);
+            } else if(tag.equalsIgnoreCase(CUSTOM_BLOCKQUOTE)) {
+                Object obj = getLast(output, BlockQuote.class);
+                // start of the tag
+                int where = output.getSpanStart(obj);
+                // end of the tag
+                int len = output.length();
+                output.removeSpan(obj);
+                output.setSpan(new QuoteSpan(), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
 
