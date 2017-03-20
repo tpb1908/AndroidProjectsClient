@@ -38,7 +38,7 @@ public class Spanner {
 
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
             builder.append(Markdown.formatMD(issue.getBody().replaceFirst("\\s++$", ""), issue.getRepoPath()));
-            builder.append("\n \n");
+            builder.append("<br>");
         }
         if(showNumberedLink) {
             builder.append(String.format(context.getString(R.string.text_issue_opened_by),
@@ -52,7 +52,7 @@ public class Spanner {
                     ),
                     DateUtils.getRelativeTimeSpanString(issue.getCreatedAt()))
             );
-
+            builder.append("<br>");
         } else {
             builder.append(
                     String.format(
@@ -64,8 +64,8 @@ public class Spanner {
                             DateUtils.getRelativeTimeSpanString(issue.getCreatedAt())
                     )
             );
+            builder.append("<br>");
         }
-        builder.append("<br>");
 
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
             Label.appendLabels(builder, issue.getLabels(), "   ");
@@ -83,15 +83,15 @@ public class Spanner {
             builder.append("<br>");
         }
         if(showCommentCount && issue.getComments() > 0) {
-            builder.append("<br>");
             builder.append(context.getResources().getQuantityString(R.plurals.text_issue_comment_count, issue.getComments(), issue.getComments()));
+            builder.append("<br>");
         }
         if(showClosedAt && issue.getClosedAt() != 0 && issue.getClosedBy() != null) {
-            builder.append("<br>");
             builder.append(String.format(context.getString(R.string.text_closed_by_link),
                     issue.getClosedBy().getLogin(),
                     issue.getClosedBy().getHtmlUrl(),
                     DateUtils.getRelativeTimeSpanString(issue.getClosedAt())));
+            builder.append("<br>");
         }
 
         return builder;
@@ -196,8 +196,6 @@ public class Spanner {
                             )
                     );
                 }
-
-
             } else {
                 builder.append(
                         String.format(
