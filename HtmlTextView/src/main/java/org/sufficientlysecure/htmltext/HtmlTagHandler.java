@@ -33,9 +33,10 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
+import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.spans.BarSpan;
+import org.sufficientlysecure.htmltext.spans.HorizontalRuleSpan;
 import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
@@ -110,10 +111,12 @@ public class HtmlTagHandler implements Html.TagHandler {
     private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
     private LinkClickHandler mLinkHandler;
+    private CodeClickHandler mCodeHandler;
 
-    public HtmlTagHandler(TextPaint paint, LinkClickHandler linkHandler) {
+    public HtmlTagHandler(TextPaint paint, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
         mTextPaint = paint;
         mLinkHandler = linkHandler;
+        mCodeHandler = codeHandler;
     }
 
 
@@ -172,8 +175,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Th());
             } else if(tag.equalsIgnoreCase("td")) {
                 start(output, new Td());
-            } else if(tag.equalsIgnoreCase("bar")) {
-                start(output, new Bar());
+            } else if(tag.equalsIgnoreCase("hr")) {
+                start(output, new HorizontalRule());
             } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
                 start(output, new BlockQuote());
             } else if(tag.equalsIgnoreCase(A_TAG)) {
@@ -239,16 +242,16 @@ public class HtmlTagHandler implements Html.TagHandler {
                     output.getChars(where, len, chars, 0);
                     output.insert(where, "\n"); // Another line for our CodeSpan to cover
                     output.replace(where + 1, len, " ");
-                    final CodeSpan code = new CodeSpan(new String(chars));
+                    final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
                     output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            }  else if(tag.equals("bar")) {
-                final Object obj = getLast(output, Bar.class);
+            }  else if(tag.equals("hr")) {
+                final Object obj = getLast(output, HorizontalRule.class);
                 final int where = output.getSpanStart(obj);
                 output.removeSpan(obj); //Remove the old span
                 output.replace(where, output.length(), " "); //We need a non-empty span
-                output.setSpan(new BarSpan(), where, where + 1, 0); //Insert the bar span
+                output.setSpan(new HorizontalRuleSpan(), where, where + 1, 0); //Insert the bar span
             } else if(tag.equalsIgnoreCase("center")) {
                 end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
             } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
@@ -301,26 +304,23 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
-
         storeTableTags(opening, tag);
     }
 
     private static String getAttribute(@NonNull String attr, @NonNull XMLReader reader, String defaultAttr) {
         try {
-            Field elementField = reader.getClass().getDeclaredField("theNewElement");
+            final Field elementField = reader.getClass().getDeclaredField("theNewElement");
             elementField.setAccessible(true);
-            Object element = elementField.get(reader);
-            Field attsField = element.getClass().getDeclaredField("theAtts");
+            final Object element = elementField.get(reader);
+            final Field attsField = element.getClass().getDeclaredField("theAtts");
             attsField.setAccessible(true);
-            Object atts = attsField.get(element);
-            Field dataField = atts.getClass().getDeclaredField("data");
+            final Object atts = attsField.get(element);
+            final Field dataField = atts.getClass().getDeclaredField("data");
             dataField.setAccessible(true);
-            String[] data = (String[]) dataField.get(atts);
-            Field lengthField = atts.getClass().getDeclaredField("length");
+            final String[] data = (String[]) dataField.get(atts);
+            final Field lengthField = atts.getClass().getDeclaredField("length");
             lengthField.setAccessible(true);
-            int len = (Integer) lengthField.get(atts);
-
-
+            final int len = (Integer) lengthField.get(atts);
             for(int i = 0; i < len; i++) {
                 if(attr.equals(data[i * 5 + 1])) {
                     return data[i * 5 + 4];
@@ -463,7 +463,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static class Td {
     }
 
-    private static class Bar {}
+    private static class HorizontalRule {}
 
     private static class BlockQuote {}
 

@@ -12,6 +12,7 @@ import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.Code;
 import org.commonmark.node.FencedCodeBlock;
+import org.commonmark.node.Image;
 import org.commonmark.node.IndentedCodeBlock;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -51,6 +52,7 @@ public class Markdown {
             nodeTypes.add(IndentedCodeBlock.class);
             nodeTypes.add(Code.class);
             nodeTypes.add(Strikethrough.class);
+            nodeTypes.add(Image.class);
         }
         private static HashMap<String, String> fontAttrs = new HashMap<>();
         static {
@@ -106,6 +108,12 @@ public class Markdown {
                 context.render(node.getFirstChild()); //Fully render the children
                 html.tag("/s");
                 html.line();
+            } else if(node instanceof Image) {
+                html.line();
+                html.tag("br");
+                html.raw("<img src=\"" + ((Image) node).getDestination() + "\">");
+                //context.render(node);
+                html.line();
             }
             lastNode = node.getClass();
         }
@@ -154,7 +162,7 @@ public class Markdown {
             } else if(chars[i] == '-' && p == '-' && pp == '-') {
                 //Full width bar
                 builder.setLength(builder.length() - 2);
-                builder.append("<bar></bar>");
+                builder.append("<br><hr></hr><br><br>");
 
             } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);

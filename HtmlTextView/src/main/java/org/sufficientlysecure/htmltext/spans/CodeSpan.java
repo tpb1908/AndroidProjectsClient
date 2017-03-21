@@ -34,11 +34,8 @@ public class CodeSpan extends ReplacementSpan {
     private static Bitmap mCodeBM;
     private PorterDuffColorFilter mBMFilter;
 
-    public CodeSpan(String code) {
+    public CodeSpan(String code, CodeClickHandler handler) {
         setCode(code);
-    }
-
-    public void setHandler(CodeClickHandler handler) {
         mHandler = new WeakReference<>(handler);
     }
 

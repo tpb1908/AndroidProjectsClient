@@ -49,22 +49,17 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     private Editable mSavedText = new SpannableStringBuilder();
 
     public boolean linkHit;
-    @Nullable
-    private ClickableTableSpan clickableTableSpan;
-    @Nullable
-    private DrawTableLinkSpan drawTableLinkSpan;
+    @Nullable private ClickableTableSpan clickableTableSpan;
+    @Nullable private DrawTableLinkSpan drawTableLinkSpan;
 
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
-    private LinkClickHandler mLinkHandler;
-
-    private ImageClickHandler mImageClickHandler;
+    @Nullable private LinkClickHandler mLinkHandler;
+    @Nullable private ImageClickHandler mImageClickHandler;
     private final HashMap<String, Drawable> mDrawables = new HashMap<>();
-
-    private CodeClickHandler mCodeHandler;
-
-    private Handler mParseHandler;
+    @Nullable private CodeClickHandler mCodeHandler;
+    @Nullable private Handler mParseHandler;
 
     private float[] mLastClickPosition = new float[] { -1, -1};
 
@@ -136,14 +131,13 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */
-    //http://stackoverflow.com/a/17201376/4191572
     public void setHtml(@NonNull final String html, @Nullable final Html.ImageGetter imageGetter) {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint(), mLinkHandler);
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint(), mLinkHandler, mCodeHandler);
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
@@ -174,10 +168,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
                 if(mImageClickHandler != null) {
                     enableImageClicks(buffer);
-                }
-
-                if(mCodeHandler != null) {
-                    enableCodeClicks(buffer);
                 }
 
                 //Post back on UI thread
@@ -228,54 +218,6 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
-    }
-
-    private void enableCodeClicks(final Spannable s) {
-        // Collect all of the CodeSpans
-        final CodeSpan[] spans = s.getSpans(0, s.length(), CodeSpan.class);
-
-        for(CodeSpan span : spans) {
-            span.setHandler(mCodeHandler);
-        }
-    }
-
-    public boolean isEditing() {
-        return mIsEditing;
-    }
-
-    public void enableEditing() {
-        if(mIsEditing) return;
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        setCursorVisible(true);
-        setEnabled(true);
-        mIsEditing = true;
-    }
-
-    public void disableEditing() {
-        if(!mIsEditing) return;
-        setBackground(null);
-        setFocusable(false);
-        setCursorVisible(false);
-        //setEnabled(false);
-        mIsEditing = false;
-    }
-
-    public void saveText() {
-        mSavedText = getText();
-    }
-
-    public void restoreText() {
-        setText(mSavedText);
-    }
-
-    public Editable getInputText() {
-        return mIsEditing ? getText() : mSavedText;
-    }
-
-    @Override
-    public boolean isSuggestionsEnabled() {
-        return mIsEditing;
     }
 
     /**
@@ -343,6 +285,45 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
             return linkHit;
         }
         return res;
+    }
+
+    public boolean isEditing() {
+        return mIsEditing;
+    }
+
+    public void enableEditing() {
+        if(mIsEditing) return;
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        setCursorVisible(true);
+        setEnabled(true);
+        mIsEditing = true;
+    }
+
+    public void disableEditing() {
+        if(!mIsEditing) return;
+        setBackground(null);
+        setFocusable(false);
+        setCursorVisible(false);
+        //setEnabled(false);
+        mIsEditing = false;
+    }
+
+    public void saveText() {
+        mSavedText = getText();
+    }
+
+    public void restoreText() {
+        setText(mSavedText);
+    }
+
+    public Editable getInputText() {
+        return mIsEditing ? getText() : mSavedText;
+    }
+
+    @Override
+    public boolean isSuggestionsEnabled() {
+        return mIsEditing;
     }
     
 }

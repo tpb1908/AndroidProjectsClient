@@ -10,7 +10,7 @@ import android.text.style.ReplacementSpan;
  * Created by theo on 02/03/17.
  */
 
-public class BarSpan extends ReplacementSpan {
+public class HorizontalRuleSpan extends ReplacementSpan {
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
