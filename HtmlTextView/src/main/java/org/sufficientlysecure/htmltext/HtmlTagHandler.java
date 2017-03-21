@@ -36,16 +36,18 @@ import android.util.Log;
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.spans.HorizontalRuleSpan;
 import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
 import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
+import org.sufficientlysecure.htmltext.spans.HorizontalRuleSpan;
 import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.sufficientlysecure.htmltext.spans.QuoteSpan;
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -59,6 +61,20 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String LIST_ITEM_TAG = "ESCAPED_LI_TAG";
     private static final String BLOCKQUOTE_TAG = "ESCAPED_BLOCKQUOTE_TAG";
     private static final String A_TAG = "ESCAPED_A_TAG";
+    
+    private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
+    static {
+        ESCAPE_MAP.put("<ul", "<" + UNORDERED_LIST_TAG);
+        ESCAPE_MAP.put("</ul>", "</" + UNORDERED_LIST_TAG + ">");
+        ESCAPE_MAP.put("<ol", "<" + ORDERED_LIST_TAG);
+        ESCAPE_MAP.put("</ol>", "</" + ORDERED_LIST_TAG + ">");
+        ESCAPE_MAP.put("<li", "<" + LIST_ITEM_TAG);
+        ESCAPE_MAP.put("</li>", "</" + LIST_ITEM_TAG + ">");
+        ESCAPE_MAP.put("<blockquote>", "<" + BLOCKQUOTE_TAG + ">");
+        ESCAPE_MAP.put("</blockquote>", "</" + BLOCKQUOTE_TAG + ">");
+        ESCAPE_MAP.put("<a", "<" + A_TAG);
+        ESCAPE_MAP.put("</a>", "</" + A_TAG + ">");
+    }
 
     /**
      * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
@@ -71,20 +87,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
     public String overrideTags(@Nullable String html) {
-
-        if(html == null) return null;
-
-        html = html.replace("<ul", "<" + UNORDERED_LIST_TAG);
-        html = html.replace("</ul>", "</" + UNORDERED_LIST_TAG + ">");
-        html = html.replace("<ol", "<" + ORDERED_LIST_TAG);
-        html = html.replace("</ol>", "</" + ORDERED_LIST_TAG + ">");
-        html = html.replace("<li", "<" + LIST_ITEM_TAG);
-        html = html.replace("</li>", "</" + LIST_ITEM_TAG + ">");
-        html = html.replace("<blockquote>", "<" + BLOCKQUOTE_TAG + ">");
-        html = html.replace("</blockquote>", "</" + BLOCKQUOTE_TAG + ">");
-        html = html.replace("<a", "<" + A_TAG);
-        html = html.replace("</a>", "</" + A_TAG + ">");
-        return html;
+        return MultiStringReplacer.replace(html, ESCAPE_MAP);
     }
 
     /**

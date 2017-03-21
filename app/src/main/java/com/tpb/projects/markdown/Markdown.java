@@ -316,7 +316,7 @@ public class Markdown {
                         "bmp".equals(extension) ||
                         "webp".equals(extension)) {
                     builder.append(link);
-                    builder.append(") <br>");
+                    builder.append(") <br><br>");
                 } else {
                     builder.append(link);
                     builder.append(")");
