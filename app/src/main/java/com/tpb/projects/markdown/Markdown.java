@@ -20,11 +20,14 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.renderer.html.HtmlWriter;
+import org.sufficientlysecure.htmltext.MultiStringReplacer;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Created by theo on 24/02/17.
@@ -119,18 +122,24 @@ public class Markdown {
         }
     }
 
+    
+    private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
+    static {
+        ESCAPE_MAP.put("#", "&#35;"); //Hashes must be escaped first
+        ESCAPE_MAP.put("@", "&#64;"); //Ignore tags and email addresses
+        ESCAPE_MAP.put("<", "&#60;"); //Ignore html
+        ESCAPE_MAP.put(">", "&#62;");
+        ESCAPE_MAP.put("`", "&#96;"); //Code tags in titles
+    }
+    private static final Pattern ESCAPE_PATTERN = MultiStringReplacer.generatePattern(ESCAPE_MAP.keySet());
+    
     /**
      * Escapes characters to stop parser mishandling them
      * @param s The string to escape
      * @return String with #, @, <, and > replaced with their HTML codes
      */
-    public static String escape(@NonNull String s) {
-        s = s.replace("#", "&#35;"); //Hashes must be escaped first
-        s = s.replace("@", "&#64;"); //Ignore tags and email addresses
-        s = s.replace("<", "&#60;"); //Ignore html
-        s = s.replace(">", "&#62;");
-        s = s.replace("`", "&#96;"); //Code tags in titles
-        return s;
+    public static String escape(@Nullable String s) {
+        return MultiStringReplacer.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     public static String parseMD(@NonNull String s, @Nullable String fullRepoName) {

@@ -12,15 +12,19 @@ import java.util.regex.Pattern;
  * Created by theo on 21/03/17.
  */
 
-class MultiStringReplacer {
+public class MultiStringReplacer {
 
     private static final Pattern REGEX_ESCAPE_CHARS =
             Pattern.compile("[\\<\\(\\[\\{\\\\\\^\\-\\=\\$\\!\\|\\]\\}\\)‌​\\?\\*\\+\\.\\>]");
 
-    static String replace(@Nullable String s, Map<String, String> replacements) {
+    public static String replace(@Nullable String s, Map<String, String> replacements) {
+        return replace(s, replacements, generatePattern(replacements.keySet()));
+    }
+
+    public static String replace(@Nullable String s, Map<String, String> replacements, Pattern pattern) {
         if(s == null) return null;
         final StringBuffer buffer = new StringBuffer();
-        final Matcher matcher = generatePattern(replacements.keySet()).matcher(s);
+        final Matcher matcher = pattern.matcher(s);
         while(matcher.find()) {
             matcher.appendReplacement(buffer, replacements.get(matcher.group()));
         }
@@ -28,7 +32,7 @@ class MultiStringReplacer {
         return buffer.toString();
     }
 
-    private static Pattern generatePattern(@NonNull Set<String> keys) {
+    public static Pattern generatePattern(@NonNull Set<String> keys) {
         final StringBuilder b = new StringBuilder();
         int i = 0;
         for(String s : keys) {
