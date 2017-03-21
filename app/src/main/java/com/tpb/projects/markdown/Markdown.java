@@ -144,7 +144,7 @@ public class Markdown {
         final char[] chars = ("\n" + s).toCharArray();
         for(int i = 0; i < chars.length; i++) {
             //Ensure that lines are properly spaced
-            if(pp != '\n' && chars[i] == '\n' && i != chars.length - 1 && chars[i + 1] != '\n') {
+            if(chars[i] == '\n' && p != '\n'  && i != chars.length - 1 && chars[i + 1] != '\n') {
                 builder.append("\n");
             }
             if(linkUsernames && chars[i] == '@' && (p == ' ' || p == '\n')) {

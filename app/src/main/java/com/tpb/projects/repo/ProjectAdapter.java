@@ -145,7 +145,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             view.findViewById(R.id.project_edit_button).setOnClickListener((v) -> mEditor.editProject(mProjects.get(getAdapterPosition())));
             view.findViewById(R.id.project_edit_button).setVisibility(canAccessRepo ? View.VISIBLE : View.INVISIBLE);
             view.setOnClickListener((v) -> mEditor.openProject(mProjects.get(getAdapterPosition()), mName));
-            mBody.setShowUnderLines(false);
         }
 
     }

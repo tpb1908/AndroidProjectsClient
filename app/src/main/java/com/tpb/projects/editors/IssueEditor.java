@@ -93,8 +93,6 @@ public class IssueEditor extends ImageLoadingActivity {
         stub.inflate();
         ButterKnife.bind(this);
 
-        mAssigneesText.setShowUnderLines(false);
-
         final Intent launchIntent = getIntent();
         mRepo = launchIntent.getStringExtra(getString(R.string.intent_repo));
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {

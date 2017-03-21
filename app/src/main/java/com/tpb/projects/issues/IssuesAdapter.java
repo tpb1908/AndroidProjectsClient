@@ -145,7 +145,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mContent.setShowUnderLines(false);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
             view.setOnClickListener((v) -> openIssue(v, getAdapterPosition()));
         }

@@ -14,7 +14,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -108,7 +107,6 @@ public class IssueInfoFragment extends IssueFragment {
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(manager);
 
-        mInfo.setShowUnderLines(false);
         mInfo.setImageHandler(new ImageDialog(getContext()));
         mInfo.setCodeClickHandler(new CodeDialog(getContext()));
         mRefresher.setOnRefreshListener(() -> {
@@ -202,7 +200,6 @@ public class IssueInfoFragment extends IssueFragment {
             mMilestoneCard.setVisibility(View.VISIBLE);
             final Milestone milestone = mIssue.getMilestone();
             final HtmlTextView tv = ButterKnife.findById(mMilestoneCard, R.id.milestone_content_markdown);
-            tv.setShowUnderLines(false);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
             final ANImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
             IntentHandler.addGitHubIntentHandler(getActivity(), tv, user, milestone.getCreator().getLogin());

@@ -205,7 +205,6 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         CommentHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mText.setShowUnderLines(false);
             mText.setImageHandler(new ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));

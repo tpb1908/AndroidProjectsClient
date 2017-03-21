@@ -357,7 +357,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(this));
-            mText.setShowUnderLines(false);
             mText.setParseHandler(mParseHandler);
             mText.setImageHandler(new ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new CodeDialog(mText.getContext()));

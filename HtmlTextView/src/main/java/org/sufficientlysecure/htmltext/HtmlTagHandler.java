@@ -19,6 +19,7 @@
 
 package org.sufficientlysecure.htmltext;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.Html;
@@ -32,8 +33,10 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
+import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.spans.BarSpan;
+import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
 import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
@@ -41,17 +44,20 @@ import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.sufficientlysecure.htmltext.spans.QuoteSpan;
 import org.xml.sax.XMLReader;
 
+import java.lang.reflect.Field;
 import java.util.Stack;
 
 /**
  * Some parts of this code are based on android.text.Html
  */
 public class HtmlTagHandler implements Html.TagHandler {
+    private static final String TAG = HtmlTagHandler.class.getSimpleName();
 
-    private static final String UNORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_UL_TAG";
-    private static final String ORDERED_LIST = "HTML_TEXTVIEW_ESCAPED_OL_TAG";
-    private static final String LIST_ITEM = "HTML_TEXTVIEW_ESCAPED_LI_TAG";
-    private static final String CUSTOM_BLOCKQUOTE = "HTML_TEXTVIEW_ESCAPED_BLOCKQUOTE";
+    private static final String UNORDERED_LIST_TAG = "ESCAPED_UL_TAG";
+    private static final String ORDERED_LIST_TAG = "ESCAPED_OL_TAG";
+    private static final String LIST_ITEM_TAG = "ESCAPED_LI_TAG";
+    private static final String BLOCKQUOTE_TAG = "ESCAPED_BLOCKQUOTE_TAG";
+    private static final String A_TAG = "ESCAPED_A_TAG";
 
     /**
      * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
@@ -67,15 +73,16 @@ public class HtmlTagHandler implements Html.TagHandler {
 
         if(html == null) return null;
 
-        html = html.replace("<ul", "<" + UNORDERED_LIST);
-        html = html.replace("</ul>", "</" + UNORDERED_LIST + ">");
-        html = html.replace("<ol", "<" + ORDERED_LIST);
-        html = html.replace("</ol>", "</" + ORDERED_LIST + ">");
-        html = html.replace("<li", "<" + LIST_ITEM);
-        html = html.replace("</li>", "</" + LIST_ITEM + ">");
-        html = html.replace("<blockquote>", "<" + CUSTOM_BLOCKQUOTE + ">");
-        html = html.replace("</blockquote>", "</" + CUSTOM_BLOCKQUOTE + ">");
-
+        html = html.replace("<ul", "<" + UNORDERED_LIST_TAG);
+        html = html.replace("</ul>", "</" + UNORDERED_LIST_TAG + ">");
+        html = html.replace("<ol", "<" + ORDERED_LIST_TAG);
+        html = html.replace("</ol>", "</" + ORDERED_LIST_TAG + ">");
+        html = html.replace("<li", "<" + LIST_ITEM_TAG);
+        html = html.replace("</li>", "</" + LIST_ITEM_TAG + ">");
+        html = html.replace("<blockquote>", "<" + BLOCKQUOTE_TAG + ">");
+        html = html.replace("</blockquote>", "</" + BLOCKQUOTE_TAG + ">");
+        html = html.replace("<a", "<" + A_TAG);
+        html = html.replace("</a>", "</" + A_TAG + ">");
         return html;
     }
 
@@ -89,22 +96,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      * we can continue with correct index of outer list
      */
     private final Stack<Integer> olNextIndex = new Stack<>();
-    /**
-     * List indentation in pixels. Nested lists use multiple of this.
-     */
-    /**
-     * Running HTML table string based off of the root table tag. Root table tag being the tag which
-     * isn't embedded within any other table tag. Example:
-     * <!-- This is the root level opening table tag. This is where we keep track of tables. -->
-     * <table>
-     * ...
-     * <table> <!-- Non-root table tags -->
-     * ...
-     * </table>
-     * ...
-     * </table>
-     * <!-- This is the root level closing table tag and the end of the string we track. -->
-     */
+
     private StringBuilder tableHtmlBuilder = new StringBuilder();
     /**
      * Tells us which level of table tag we're on; ultimately used to find the root table tag.
@@ -117,41 +109,13 @@ public class HtmlTagHandler implements Html.TagHandler {
     private ClickableTableSpan clickableTableSpan;
     private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
+    private LinkClickHandler mLinkHandler;
 
-    public HtmlTagHandler(TextPaint paint) {
+    public HtmlTagHandler(TextPaint paint, LinkClickHandler linkHandler) {
         mTextPaint = paint;
+        mLinkHandler = linkHandler;
     }
 
-    private static class Ul {
-    }
-
-    private static class Ol {
-    }
-
-    private static class Code {
-    }
-
-    private static class Center {
-    }
-
-    private static class Strike {
-    }
-
-    private static class Table {
-    }
-
-    private static class Tr {
-    }
-
-    private static class Th {
-    }
-
-    private static class Td {
-    }
-
-    private static class Bar {}
-
-    private static class BlockQuote {}
 
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
@@ -161,21 +125,21 @@ public class HtmlTagHandler implements Html.TagHandler {
                 Log.d(HtmlTextView.TAG, "opening, output: " + output.toString());
             }
 
-            if(tag.equalsIgnoreCase(UNORDERED_LIST)) {
+            if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                 lists.push(tag);
-            } else if(tag.equalsIgnoreCase(ORDERED_LIST)) {
+            } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                 lists.push(tag);
                 olNextIndex.push(1);
-            } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
+            } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
                 if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                     output.append("\n");
                 }
                 if(!lists.isEmpty()) {
                     String parentList = lists.peek();
-                    if(parentList.equalsIgnoreCase(ORDERED_LIST)) {
+                    if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                         start(output, new Ol());
                         olNextIndex.push(olNextIndex.pop() + 1);
-                    } else if(parentList.equalsIgnoreCase(UNORDERED_LIST)) {
+                    } else if(parentList.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                         start(output, new Ul());
                     }
                 } else {
@@ -210,8 +174,10 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new Td());
             } else if(tag.equalsIgnoreCase("bar")) {
                 start(output, new Bar());
-            } else if(tag.equalsIgnoreCase(CUSTOM_BLOCKQUOTE)) {
+            } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
                 start(output, new BlockQuote());
+            } else if(tag.equalsIgnoreCase(A_TAG)) {
+                start(output, new A(getAttribute("href", xmlReader, "error.com")));
             }
         } else {
             // closing tag
@@ -219,14 +185,14 @@ public class HtmlTagHandler implements Html.TagHandler {
                 Log.d(HtmlTextView.TAG, "closing, output: " + output.toString());
             }
 
-            if(tag.equalsIgnoreCase(UNORDERED_LIST)) {
+            if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                 lists.pop();
-            } else if(tag.equalsIgnoreCase(ORDERED_LIST)) {
+            } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                 lists.pop();
                 olNextIndex.pop();
-            } else if(tag.equalsIgnoreCase(LIST_ITEM)) {
+            } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
                 if(!lists.isEmpty()) {
-                        if(lists.peek().equalsIgnoreCase(UNORDERED_LIST)) {
+                        if(lists.peek().equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                                 output.append("\n");
                             }
@@ -244,7 +210,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                             end(output, Ul.class, false,
                                     new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
                                     newBullet);
-                        } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST)) {
+                        } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST_TAG)) {
                             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                                 output.append("\n");
                             }
@@ -315,7 +281,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 end(output, Th.class, false);
             } else if(tag.equalsIgnoreCase("td")) {
                 end(output, Td.class, false);
-            } else if(tag.equalsIgnoreCase(CUSTOM_BLOCKQUOTE)) {
+            } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
                 Object obj = getLast(output, BlockQuote.class);
                 // start of the tag
                 int where = output.getSpanStart(obj);
@@ -323,10 +289,47 @@ public class HtmlTagHandler implements Html.TagHandler {
                 int len = output.length();
                 output.removeSpan(obj);
                 output.setSpan(new QuoteSpan(), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else if(tag.equalsIgnoreCase(A_TAG)) {
+                A obj = getLast(output, A.class);
+                // start of the tag
+                int where = output.getSpanStart(obj);
+                // end of the tag
+                int len = output.length();
+                output.removeSpan(obj);
+                final char[] chars = new char[len-where];
+                output.getChars(where, len, chars, 0);
+                output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
 
         storeTableTags(opening, tag);
+    }
+
+    private static String getAttribute(@NonNull String attr, @NonNull XMLReader reader, String defaultAttr) {
+        try {
+            Field elementField = reader.getClass().getDeclaredField("theNewElement");
+            elementField.setAccessible(true);
+            Object element = elementField.get(reader);
+            Field attsField = element.getClass().getDeclaredField("theAtts");
+            attsField.setAccessible(true);
+            Object atts = attsField.get(element);
+            Field dataField = atts.getClass().getDeclaredField("data");
+            dataField.setAccessible(true);
+            String[] data = (String[]) dataField.get(atts);
+            Field lengthField = atts.getClass().getDeclaredField("length");
+            lengthField.setAccessible(true);
+            int len = (Integer) lengthField.get(atts);
+
+
+            for(int i = 0; i < len; i++) {
+                if(attr.equals(data[i * 5 + 1])) {
+                    return data[i * 5 + 4];
+                }
+            }
+        } catch(Exception e) {
+            Log.e(TAG, "handleTag: ", e);
+        }
+        return defaultAttr;
     }
 
     /**
@@ -410,8 +413,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     /**
      * Get last marked position of a specific tag kind (private class)
      */
-    private static Object getLast(Editable text, Class kind) {
-        Object[] objs = text.getSpans(0, text.length(), kind);
+    private static <T> T getLast(Editable text, Class<T> kind) {
+        final T[] objs = text.getSpans(0, text.length(), kind);
         if(objs.length == 0) {
             return null;
         } else {
@@ -424,6 +427,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
     }
 
+
     public void setClickableTableSpan(ClickableTableSpan clickableTableSpan) {
         this.clickableTableSpan = clickableTableSpan;
     }
@@ -432,5 +436,45 @@ public class HtmlTagHandler implements Html.TagHandler {
         this.drawTableLinkSpan = drawTableLinkSpan;
     }
 
+    private static class Ul {
+    }
 
-} 
+    private static class Ol {
+    }
+
+    private static class Code {
+    }
+
+    private static class Center {
+    }
+
+    private static class Strike {
+    }
+
+    private static class Table {
+    }
+
+    private static class Tr {
+    }
+
+    private static class Th {
+    }
+
+    private static class Td {
+    }
+
+    private static class Bar {}
+
+    private static class BlockQuote {}
+
+    private static class A {
+
+        String href;
+
+        A(String href) {
+            this.href = href;
+        }
+
+    }
+
+}

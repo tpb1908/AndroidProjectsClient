@@ -509,7 +509,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         EventHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mText.setShowUnderLines(false);
         }
 
     }

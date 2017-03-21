@@ -43,7 +43,6 @@ import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
 import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
@@ -67,7 +66,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
-    private boolean showUnderLines = false;
 
     private LinkClickHandler mLinkHandler;
 
@@ -85,16 +83,19 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     public HtmlTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        setLineSpacing(0, 0.85f);
     }
 
     public HtmlTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        setLineSpacing(0, 0.85f);
     }
 
     public HtmlTextView(Context context) {
         super(context);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        setLineSpacing(0, 0.85f);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {
@@ -157,7 +158,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint());
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint(), mLinkHandler);
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
@@ -197,10 +198,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
                 }
 
-                if(!showUnderLines) {
-                    stripUnderLines(buffer);
-                }
-
                 if(mImageClickHandler != null) {
                     enableImageClicks(buffer);
                 }
@@ -233,21 +230,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     @Override
     public void drawableLoaded(Drawable d, String source) {
         mDrawables.put(source, d);
-    }
-
-    private void stripUnderLines(Spannable s) {
-        final URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
-        for(URLSpan span : spans) {
-            final int start = s.getSpanStart(span);
-            final int end = s.getSpanEnd(span);
-            s.removeSpan(span);
-            if(mLinkHandler == null) {
-                span = new CleanURLSpan(span.getURL());
-            } else {
-                span = new CleanURLSpan(span.getURL(), mLinkHandler);
-            }
-            s.setSpan(span, start, end, 0);
-        }
     }
 
     private void enableImageClicks(final Spannable s) {
@@ -297,10 +279,6 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
     public void setDrawTableLinkSpan(@Nullable DrawTableLinkSpan drawTableLinkSpan) {
         this.drawTableLinkSpan = drawTableLinkSpan;
-    }
-
-    public void setShowUnderLines(boolean show) {
-        showUnderLines = show;
     }
 
     public float[] getLastClickPosition() {
