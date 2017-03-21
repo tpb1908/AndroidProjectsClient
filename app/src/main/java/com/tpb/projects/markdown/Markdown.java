@@ -21,6 +21,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.renderer.html.HtmlWriter;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +52,10 @@ public class Markdown {
             nodeTypes.add(Code.class);
             nodeTypes.add(Strikethrough.class);
         }
+        private static HashMap<String, String> fontAttrs = new HashMap<>();
+        static {
+            fontAttrs.put("face", "monospace");
+        }
 
         CustomBlockRenderer(HtmlNodeRendererContext context) {
             this.context = context;
@@ -66,10 +71,7 @@ public class Markdown {
         public void render(Node node) {
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
-                if(FencedCodeBlock.class.equals(lastNode)) {
-                    html.line();
-                    html.tag("br");
-                }
+
                 // Greater than 8 lines of code
                 if(Util.instancesOf(block.getLiteral(), "\n") > 10) {
                     html.line();
@@ -77,26 +79,27 @@ public class Markdown {
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(), block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")));
                     html.tag("/code");
                 } else {
-                    html.tag("small");
-                    html.line();
+                    //html.tag("small");
+                    html.tag("font", fontAttrs);
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }
-                    html.raw(block.getLiteral().replace("\n\n", "\n").replace("\n", "<br>").replace(" ", "&nbsp;"));
-                    html.tag("/small");
-                    html.line();
+                    html.raw(block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;"));
+                   // html.tag("/small");
+                    html.tag("/font", fontAttrs);
+                    html.tag("br");
                 }
             } else if(node instanceof IndentedCodeBlock) {
-                html.tag("br");
-                html.tag("code");
                 final IndentedCodeBlock block = (IndentedCodeBlock) node;
-                html.text(String.format("[%1$s]\u0002%2$s", "", block.getLiteral()));
+                html.tag("code");
+                html.text(String.format("[%1$s]\u0002%2$s", "", block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;")));
                 html.tag("/code");
-                html.tag("/br");
+                html.tag("br");
             } else if(node instanceof Code) {
                 html.tag("small");
                 html.raw(((Code) node).getLiteral().replace(" ", "&nbsp;"));
                 html.tag("/small");
+                html.tag("br");
             } else if(node instanceof Strikethrough) {
                 html.line();
                 html.tag("s"); //Proper tag
@@ -187,6 +190,7 @@ public class Markdown {
                 for(; j < chars.length; j++) {
                     builder.append(chars[j]);
                     if(pp == '`' && p == '`' && chars[j] == '`') {
+                        i = j;
                         p = ' ';
                         break;
                     } else {
@@ -194,7 +198,6 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
-                i = j - 1;
             } else {
                 builder.append(chars[i]);
             }

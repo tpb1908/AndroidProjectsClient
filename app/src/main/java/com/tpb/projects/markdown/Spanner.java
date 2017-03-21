@@ -38,8 +38,9 @@ public class Spanner {
 
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
             builder.append(Markdown.formatMD(issue.getBody().replaceFirst("\\s++$", ""), issue.getRepoPath()));
-            builder.append("<br>");
+            builder.append("\n");
         }
+        //builder.append("<bar></bar><br>");
         if(showNumberedLink) {
             builder.append(String.format(context.getString(R.string.text_issue_opened_by),
                     String.format(context.getString(R.string.text_md_link),
