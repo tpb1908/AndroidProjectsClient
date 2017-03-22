@@ -84,14 +84,15 @@ public class Markdown {
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(), block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")));
                     html.tag("/code");
                 } else {
-                    //html.tag("small");
-                    html.tag("font", fontAttrs);
+                    html.tag("inlinecode");
+                    //html.tag("font", fontAttrs);
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }
                     html.raw(block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;"));
                    // html.tag("/small");
-                    html.tag("/font", fontAttrs);
+                    //html.tag("/font", fontAttrs);
+                    html.tag("/inlinecode");
                     html.tag("br");
                 }
             } else if(node instanceof IndentedCodeBlock) {
@@ -171,7 +172,7 @@ public class Markdown {
             } else if(chars[i] == '-' && p == '-' && pp == '-') {
                 //Full width bar
                 builder.setLength(builder.length() - 2);
-                builder.append("<br><hr></hr><br><br>");
+                builder.append("<hr></hr>");
 
             } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);

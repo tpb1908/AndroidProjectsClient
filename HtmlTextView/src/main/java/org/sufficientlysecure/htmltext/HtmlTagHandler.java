@@ -41,6 +41,7 @@ import org.sufficientlysecure.htmltext.spans.ClickableTableSpan;
 import org.sufficientlysecure.htmltext.spans.CodeSpan;
 import org.sufficientlysecure.htmltext.spans.DrawTableLinkSpan;
 import org.sufficientlysecure.htmltext.spans.HorizontalRuleSpan;
+import org.sufficientlysecure.htmltext.spans.InlineCodeSpan;
 import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.sufficientlysecure.htmltext.spans.QuoteSpan;
 import org.xml.sax.XMLReader;
@@ -186,6 +187,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new BlockQuote());
             } else if(tag.equalsIgnoreCase(A_TAG)) {
                 start(output, new A(getAttribute("href", xmlReader, "error.com")));
+            } else if(tag.equalsIgnoreCase("inlinecode")) {
+                start(output, new InlineCode());
             }
         } else {
             // closing tag
@@ -307,6 +310,12 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final char[] chars = new char[len-where];
                 output.getChars(where, len, chars, 0);
                 output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else if(tag.equalsIgnoreCase("inlinecode")) {
+                final InlineCode obj = getLast(output, InlineCode.class);
+                final int where = output.getSpanStart(obj);
+                final int len = output.length();
+                output.removeSpan(obj);
+                output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
         storeTableTags(opening, tag);
@@ -471,6 +480,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static class HorizontalRule {}
 
     private static class BlockQuote {}
+
+    private static class InlineCode {}
 
     private static class A {
 
