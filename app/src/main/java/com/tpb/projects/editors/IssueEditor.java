@@ -310,7 +310,7 @@ public class IssueEditor extends ImageLoadingActivity {
 
             @Override
             public void loadError(APIHandler.APIError error) {
-                if(isClosing()) return;;
+                if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
             }

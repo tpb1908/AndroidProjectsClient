@@ -317,9 +317,7 @@ public class IssuesActivity extends BaseActivity implements Loader.GITModelsLoad
 
                 final AlertDialog.Builder builder = new AlertDialog.Builder(IssuesActivity.this);
                 builder.setTitle(R.string.title_choose_assignee);
-                builder.setSingleChoiceItems(collabNames, pos, (dialogInterface, i) -> {
-                    mAssigneeFilter = collabNames[i];
-                });
+                builder.setSingleChoiceItems(collabNames, pos, (dialogInterface, i) -> mAssigneeFilter = collabNames[i]);
                 builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> refresh());
                 builder.setNegativeButton(R.string.action_cancel, null);
                 builder.create().show();

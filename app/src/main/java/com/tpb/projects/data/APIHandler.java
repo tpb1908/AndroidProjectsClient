@@ -15,7 +15,7 @@ import java.util.HashMap;
  */
 
 public abstract class APIHandler {
-    public static final String TAG = APIHandler.class.getSimpleName();
+    static final String TAG = APIHandler.class.getSimpleName();
 
     protected static final String GIT_BASE = "https://api.github.com";
     private static final String ACCEPT_HEADER_KEY = "Accept";

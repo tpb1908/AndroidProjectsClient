@@ -194,7 +194,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     private void displayMenu(View view, int pos) {
-        mParent.displayCommentMenu(view, (Comment) mComments.get(pos).first);
+        mParent.displayCommentMenu(view, mComments.get(pos).first);
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {

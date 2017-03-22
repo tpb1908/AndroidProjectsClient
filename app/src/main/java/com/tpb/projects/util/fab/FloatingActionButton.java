@@ -21,6 +21,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -474,7 +475,7 @@ public class FloatingActionButton extends AppCompatImageButton {
         }
 
         @Override
-        public void draw(Canvas canvas) {
+        public void draw(@NonNull Canvas canvas) {
             canvas.drawCircle(calculateCenterX(), calculateCenterY(), mRadius, mPaint);
             canvas.drawCircle(calculateCenterX(), calculateCenterY(), mRadius, mErase);
         }
@@ -521,12 +522,9 @@ public class FloatingActionButton extends AppCompatImageButton {
         mClickListener = l;
         View label = (View) getTag(R.id.fab_label);
         if (label != null) {
-            label.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mClickListener != null) {
-                        mClickListener.onClick(FloatingActionButton.this);
-                    }
+            label.setOnClickListener(v -> {
+                if (mClickListener != null) {
+                    mClickListener.onClick(FloatingActionButton.this);
                 }
             });
         }

@@ -189,9 +189,7 @@ public class CardEditor extends ImageLoadingActivity {
 
                     final AlertDialog.Builder scBuilder = new AlertDialog.Builder(CardEditor.this);
                     scBuilder.setTitle(R.string.title_choose_issue);
-                    scBuilder.setSingleChoiceItems(issues, 0, (dialogInterface, i) -> {
-                        selectedIssuePosition = i;
-                    });
+                    scBuilder.setSingleChoiceItems(issues, 0, (dialogInterface, i) -> selectedIssuePosition = i);
                     scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
                         mCard.setFromIssue(validIssues.get(selectedIssuePosition));
                         mEditor.setFilters(new InputFilter[] {}); //Remove the length filter

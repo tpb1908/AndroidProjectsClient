@@ -7,7 +7,7 @@ import android.view.View;
  * Created by theo on 10/03/17.
  */
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {

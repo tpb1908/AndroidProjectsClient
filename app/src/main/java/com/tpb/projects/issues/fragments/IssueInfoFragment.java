@@ -148,9 +148,7 @@ public class IssueInfoFragment extends IssueFragment {
                                 false //No comment count
                         ).toString()
                 ), new HtmlHttpImageGetter(mInfo, mInfo), null);
-        mUserAvatar.setOnClickListener(v -> {
-            IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin());
-        });
+        mUserAvatar.setOnClickListener(v -> IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
         mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         if(issue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);

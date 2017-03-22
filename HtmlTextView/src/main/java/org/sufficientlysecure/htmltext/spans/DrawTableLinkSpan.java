@@ -19,6 +19,7 @@ package org.sufficientlysecure.htmltext.spans;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.text.style.ReplacementSpan;
 
 /**
@@ -50,14 +51,14 @@ public class DrawTableLinkSpan extends ReplacementSpan {
     }
 
     @Override
-    public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
         int width = (int) paint.measureText(mTableLinkText, 0, mTableLinkText.length());
         mTextSize = paint.getTextSize();
         return width;
     }
 
     @Override
-    public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         final Paint paint2 = new Paint();
         paint2.setStyle(Paint.Style.STROKE);
         paint2.setColor(mTextColor);

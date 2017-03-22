@@ -19,6 +19,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -352,7 +353,7 @@ public class Label extends AppCompatTextView {
         }
 
         @Override
-        public void draw(Canvas canvas) {
+        public void draw(@NonNull Canvas canvas) {
             RectF shadowRect = new RectF(
                     mShadowRadius + Math.abs(mShadowXOffset),
                     mShadowRadius + Math.abs(mShadowYOffset),
