@@ -115,10 +115,10 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         notifyItemInserted(mComments.size());
     }
 
-    void removeComment(Comment comment) {
+    public void removeComment(int commentId) {
         int index = -1;
         for(int i = 0; i < mComments.size(); i++) {
-            if(mComments.get(i).first.getId() == comment.getId()) {
+            if(mComments.get(i).first.getId() == commentId) {
                 index = i;
                 break;
             }
@@ -194,7 +194,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     private void displayMenu(View view, int pos) {
-        //mParent.displayCommentMenu(view, (Comment) mComments.get(pos).first);
+        mParent.displayCommentMenu(view, (Comment) mComments.get(pos).first);
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {

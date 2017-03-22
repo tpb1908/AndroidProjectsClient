@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="fab_label" type="id" />
+    <item name="menu_edit_comment" type="id" />
+    <item name="menu_delete_comment" type="id" />
 </resources>
