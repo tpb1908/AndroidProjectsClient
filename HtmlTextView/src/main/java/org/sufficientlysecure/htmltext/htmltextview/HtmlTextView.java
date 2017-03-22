@@ -30,7 +30,6 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
-import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,6 +37,7 @@ import android.view.View;
 import org.sufficientlysecure.htmltext.HtmlTagHandler;
 import org.sufficientlysecure.htmltext.LocalLinkMovementMethod;
 import org.sufficientlysecure.htmltext.SpanCache;
+import org.sufficientlysecure.htmltext.StringUtils;
 import org.sufficientlysecure.htmltext.URLPattern;
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.ImageClickHandler;
@@ -182,7 +182,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
                 //Add links for emails and web-urls
 
-                Linkify.addLinks(buffer, URLPattern.SPACED_URL_PATTERN, "");
+                StringUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN, "");
 
                 //Copy back the spans from the original text
                 for(URLSpan us : spans) {

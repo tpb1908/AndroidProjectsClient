@@ -76,7 +76,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         ESCAPE_MAP.put("<a", "<" + A_TAG);
         ESCAPE_MAP.put("</a>", "</" + A_TAG + ">");
     }
-    private static final Pattern ESCAPE_PATTERN = MultiStringReplacer.generatePattern(ESCAPE_MAP.keySet());
+    private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
 
     /**
      * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
@@ -89,7 +89,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
     public String overrideTags(@Nullable String html) {
-        return MultiStringReplacer.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
+        return StringUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     /**

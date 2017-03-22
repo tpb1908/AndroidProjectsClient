@@ -20,7 +20,7 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.renderer.html.HtmlWriter;
-import org.sufficientlysecure.htmltext.MultiStringReplacer;
+import org.sufficientlysecure.htmltext.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -131,7 +131,7 @@ public class Markdown {
         ESCAPE_MAP.put(">", "&#62;");
         ESCAPE_MAP.put("`", "&#96;"); //Code tags in titles
     }
-    private static final Pattern ESCAPE_PATTERN = MultiStringReplacer.generatePattern(ESCAPE_MAP.keySet());
+    private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
     
     /**
      * Escapes characters to stop parser mishandling them
@@ -139,7 +139,7 @@ public class Markdown {
      * @return String with #, @, <, and > replaced with their HTML codes
      */
     public static String escape(@Nullable String s) {
-        return MultiStringReplacer.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
+        return StringUtils.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     public static String parseMD(@NonNull String s, @Nullable String fullRepoName) {
