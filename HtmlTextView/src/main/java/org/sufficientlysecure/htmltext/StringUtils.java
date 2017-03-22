@@ -4,11 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.util.Linkify;
 
 import org.sufficientlysecure.htmltext.spans.CleanURLSpan;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -48,79 +46,20 @@ public class StringUtils {
         return Pattern.compile(b.toString());
     }
 
-    public static final boolean addLinks(@NonNull Spannable text, @NonNull Pattern pattern,
-                                         @Nullable String scheme) {
-        return addLinks(text, pattern, scheme, null, null, null);
-    }
-
-    public static boolean addLinks(@NonNull Spannable spannable, @NonNull Pattern pattern,
-                                         @Nullable  String defaultScheme, @Nullable String[] schemes,
-                                         @Nullable Linkify.MatchFilter matchFilter, @Nullable Linkify.TransformFilter transformFilter) {
-        final String[] schemesCopy;
-        if (defaultScheme == null) defaultScheme = "";
-        if (schemes == null || schemes.length < 1) {
-            schemes = new String[0];
-        }
-
-        schemesCopy = new String[schemes.length + 1];
-        schemesCopy[0] = defaultScheme.toLowerCase(Locale.ROOT);
-        for (int index = 0; index < schemes.length; index++) {
-            String scheme = schemes[index];
-            schemesCopy[index + 1] = (scheme == null) ? "" : scheme.toLowerCase(Locale.ROOT);
-        }
-
+    public static boolean addLinks(@NonNull Spannable spannable, @NonNull Pattern pattern) {
         boolean hasMatches = false;
         final Matcher m = pattern.matcher(spannable);
 
         while (m.find()) {
-            int start = m.start();
-            int end = m.end();
-            boolean allowed = true;
-
-            if (matchFilter != null) {
-                allowed = matchFilter.acceptMatch(spannable, start, end);
-            }
-
-            if (allowed) {
-                String url = makeUrl(m.group(0), schemesCopy, m, transformFilter);
-
-                applyLink(url, start, end, spannable);
-                hasMatches = true;
-            }
+            spannable.setSpan(
+                    new CleanURLSpan(m.group(0)),
+                    m.start(),
+                    m.end(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            hasMatches = true;
         }
 
         return hasMatches;
     }
 
-
-    private static void applyLink(String url, int start, int end, Spannable text) {
-        text.setSpan(new CleanURLSpan(url), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-    }
-
-    private static String makeUrl(@NonNull String url, @NonNull String[] prefixes,
-                                        Matcher matcher, @Nullable Linkify.TransformFilter filter) {
-        if (filter != null) {
-            url = filter.transformUrl(matcher, url);
-        }
-
-        boolean hasPrefix = false;
-
-        for(String prefixe : prefixes) {
-            if(url.regionMatches(true, 0, prefixe, 0, prefixe.length())) {
-                hasPrefix = true;
-
-                // Fix capitalization if necessary
-                if(!url.regionMatches(false, 0, prefixe, 0, prefixe.length())) {
-                    url = prefixe + url.substring(prefixe.length());
-                }
-                break;
-            }
-        }
-
-        if (!hasPrefix && prefixes.length > 0) {
-            url = prefixes[0] + url;
-        }
-
-        return url;
-    }
 }

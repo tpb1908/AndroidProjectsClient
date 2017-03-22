@@ -182,7 +182,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
 
                 //Add links for emails and web-urls
 
-                StringUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN, "");
+                StringUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
 
                 //Copy back the spans from the original text
                 for(URLSpan us : spans) {
