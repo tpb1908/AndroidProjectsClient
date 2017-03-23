@@ -68,7 +68,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
 
     @Override
     public void loadComplete(Milestone milestone) {
-        IntentHandler.addGitHubIntentHandler(this, mContent, mAvatar, milestone.getCreator().getLogin());
+        IntentHandler.addOnClickHandler(this, mContent, mAvatar, milestone.getCreator().getLogin());
         mStateImage.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
         mAvatar.setImageUrl(milestone.getCreator().getAvatarUrl());
 

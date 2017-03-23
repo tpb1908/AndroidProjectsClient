@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/repo_pin_button"
-        android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+        android:textAppearance="@android:style/TextAppearance.Material.Large"/>
 
     <TextView
         android:id="@+id/repo_description"

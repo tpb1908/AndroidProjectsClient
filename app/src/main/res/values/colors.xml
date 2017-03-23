@@ -4,9 +4,9 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#607D8B</color>
-    <color name="colorPrimaryText">@color/md_grey_900</color>
+    <color name="colorPrimaryText">#DD000000</color>
     <color name="colorPrimaryTextInverse">@color/md_grey_50</color>
-    <color name="colorSecondaryText">@color/md_grey_600</color>
+    <color name="colorSecondaryText">#89000000</color>
     <color name="colorSecondaryTextInverse">@color/md_grey_400</color>
     <color name="iconColorSecondaryLight">#61000000</color>
     <color name="iconColorSecondaryDark">#80FFFFFF</color>

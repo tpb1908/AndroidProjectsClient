@@ -2,6 +2,7 @@ package com.tpb.projects.markdown;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.IntRange;
 import android.text.format.DateUtils;
 
 import com.tpb.projects.R;
@@ -18,7 +19,6 @@ public class Spanner {
 
     public static StringBuilder buildIssueSpan(Context context, Issue issue,
                                                boolean headerTitle,
-                                               boolean showNumberedTitle,
                                                boolean showNumberedLink,
                                                boolean showAssignees,
                                                boolean showClosedAt,
@@ -26,14 +26,8 @@ public class Spanner {
         final StringBuilder builder = new StringBuilder();
         if(headerTitle) {
             builder.append("<h1>");
-            if(showNumberedTitle) builder.append(String.format("#%1$s ", issue.getNumber()));
             builder.append(Markdown.escape(issue.getTitle()).replace("\n", "</h1><h1>")); //h1 won't do multiple lines
             builder.append("</h1>");
-        } else {
-            builder.append("<b>");
-            if(showNumberedTitle) builder.append(String.format("#%1$s ", issue.getNumber()));
-            builder.append(Markdown.escape(issue.getTitle()));
-            builder.append("</b><br><br>");
         }
 
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
@@ -100,10 +94,6 @@ public class Spanner {
 
     public static StringBuilder buildCombinedIssueSpan(Context context, Issue issue) {
         final StringBuilder builder = new StringBuilder();
-        builder.append("<b>");
-        builder.append(Markdown.escape(issue.getTitle()));
-        builder.append("</b><br><br>");
-
         builder.append(String.format(context.getString(R.string.text_issue_opened_by),
                 String.format(context.getString(R.string.text_md_link),
                         "#" + Integer.toString(issue.getNumber()),
@@ -214,6 +204,16 @@ public class Spanner {
             }
         }
         return builder;
+    }
+
+    public static String bold(String s) {
+        return "<b>" + Markdown.escape(s) + "</b>";
+    }
+
+    public static String header(String s, @IntRange(from=0, to=6) int depth) {
+        String header = "<h" + depth + ">";
+        header += Markdown.escape(s).replace("\n", "</h" + depth +"><h" + depth + ">");
+        return header + "</h" + depth + ">";
     }
 
 }

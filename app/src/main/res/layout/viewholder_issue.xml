@@ -18,27 +18,44 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="16dp">
 
         <LinearLayout
             android:id="@+id/issue_drawable_wrapper"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical"
-            android:layout_alignParentTop="true">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="4dp">
 
             <ImageView
-                android:id="@+id/issue_drawable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:id="@+id/issue_state_drawable"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="top"/>
 
             <com.androidnetworking.widget.ANImageView
                 android:id="@+id/issue_user_avatar"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="8dp"/>
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top"
+                android:layout_marginStart="4dp"/>
+
+            <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                android:id="@+id/issue_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_vertical"/>
+
+            <ImageButton
+                android:id="@+id/issue_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_chevron_down"/>
 
         </LinearLayout>
 
@@ -46,22 +63,9 @@
             android:id="@+id/issue_content_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_toEndOf="@+id/issue_drawable_wrapper"
-            android:layout_toStartOf="@+id/issue_menu_button"
-            android:layout_centerVertical="true">
+            android:layout_below="@+id/issue_drawable_wrapper">
         </org.sufficientlysecure.htmltext.htmltextview.HtmlTextView>
 
-
-        <ImageButton
-            android:id="@+id/issue_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_chevron_down"/>
 
     </RelativeLayout>
 

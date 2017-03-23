@@ -48,7 +48,6 @@ public class Markdown {
 
         private final HtmlWriter html;
         private HtmlNodeRendererContext context;
-        private Class lastNode = null;
         private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
         static { //Nodes to capture
             nodeTypes.add(FencedCodeBlock.class);
@@ -56,10 +55,6 @@ public class Markdown {
             nodeTypes.add(Code.class);
             nodeTypes.add(Strikethrough.class);
             nodeTypes.add(Image.class);
-        }
-        private static HashMap<String, String> fontAttrs = new HashMap<>();
-        static {
-            fontAttrs.put("face", "monospace");
         }
 
         CustomBlockRenderer(HtmlNodeRendererContext context) {
@@ -85,13 +80,10 @@ public class Markdown {
                     html.tag("/code");
                 } else {
                     html.tag("inlinecode");
-                    //html.tag("font", fontAttrs);
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }
                     html.raw(block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;"));
-                   // html.tag("/small");
-                    //html.tag("/font", fontAttrs);
                     html.tag("/inlinecode");
                     html.tag("br");
                 }
@@ -102,9 +94,9 @@ public class Markdown {
                 html.tag("/code");
                 html.tag("br");
             } else if(node instanceof Code) {
-                html.tag("small");
+                html.tag("inlinecode");
                 html.raw(((Code) node).getLiteral().replace(" ", "&nbsp;"));
-                html.tag("/small");
+                html.tag("/inlinecode");
                 html.tag("br");
             } else if(node instanceof Strikethrough) {
                 html.line();
@@ -119,7 +111,6 @@ public class Markdown {
                 //context.render(node);
                 html.line();
             }
-            lastNode = node.getClass();
         }
     }
 
@@ -161,10 +152,10 @@ public class Markdown {
         char pp = ' ';
         final char[] chars = ("\n" + s).toCharArray();
         for(int i = 0; i < chars.length; i++) {
-            //Ensure that lines are properly spaced
-            if(chars[i] == '\n' && p != '\n'  && i != chars.length - 1 && chars[i + 1] != '\n') {
-                builder.append("\n");
-            }
+//            //Ensure that lines are properly spaced
+//            if(chars[i] == '\n' && p != '\n'  && i != chars.length - 1 && chars[i + 1] != '\n') {
+//               // builder.append("\n");
+//            }
             if(linkUsernames && chars[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
@@ -179,13 +170,15 @@ public class Markdown {
             } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
                 if(i - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
+                    builder.append("<br>");
                 } else {
                     builder.setLength(builder.length() - 2);
                 }
-                builder.append("\u2611"); //☑ ballot box with check
+                builder.append("\u2611");         //☑ ballot box with check
             } else if(p == '[' && chars[i] == ']') { //Closed box
                 if(i - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 3);
+                    builder.append("<br>");
                 } else {
                     builder.setLength(builder.length() - 1);
                 }
@@ -193,6 +186,7 @@ public class Markdown {
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
                 if(i- 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
+                    builder.append("<br>");
                 } else {
                     builder.setLength(builder.length() - 2);
                 }

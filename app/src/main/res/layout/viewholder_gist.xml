@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_toEndOf="@+id/gist_user_avatar"
-        android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+        android:textAppearance="@android:style/TextAppearance.Material.Large"/>
 
     <TextView
         android:id="@+id/gist_info"

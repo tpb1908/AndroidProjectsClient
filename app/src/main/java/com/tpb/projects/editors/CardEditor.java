@@ -147,7 +147,7 @@ public class CardEditor extends ImageLoadingActivity {
 
     private void bindIssue(Issue issue) {
         mEditor.setHtml(
-                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, false, true, true, true, false).toString()),
+                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, true, true, true, false).toString()),
                 new HtmlHttpImageGetter(mEditor, mEditor)
         );
 

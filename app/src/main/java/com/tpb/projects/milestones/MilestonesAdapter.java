@@ -92,7 +92,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         if(mParseCache.get(position) == null) {
             final Milestone milestone = mMilestones.get(position);
 
-            IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mAvatar, milestone.getCreator().getLogin());
+            IntentHandler.addOnClickHandler(mParent, holder.mContent, holder.mAvatar, milestone.getCreator().getLogin());
             holder.mState.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
             holder.mAvatar.setImageUrl(milestone.getCreator().getAvatarUrl());
 

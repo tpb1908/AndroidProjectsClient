@@ -38,8 +38,8 @@
 
                         <com.androidnetworking.widget.ANImageView
                             android:id="@+id/user_image"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:layout_margin="16dp"
                             android:layout_gravity="center_vertical"
                             android:transitionName="@string/transition_user_image"/>

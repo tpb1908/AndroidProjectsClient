@@ -98,10 +98,11 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     public void onBindViewHolder(IssueHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
         final Issue issue = mIssues.get(pos);
+        holder.mTitle.setHtml(Spanner.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
-        IntentHandler.addGitHubIntentHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
-        IntentHandler.addGitHubIntentHandler(mParent, holder.mContent, holder.mUserAvatar, null, issue);
+        IntentHandler.addOnClickHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
+        IntentHandler.addOnClickHandler(mParent, holder.mContent, holder.mUserAvatar, null, issue);
         if(mParseCache.get(pos) == null) {
             holder.mContent.setHtml(Markdown.parseMD(
                     Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
@@ -135,17 +136,20 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         mParent.openMenu(view, mIssues.get(pos));
     }
 
-    public class IssueHolder extends RecyclerView.ViewHolder {
+    class IssueHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.issue_title) HtmlTextView mTitle;
         @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
         @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
-        @BindView(R.id.issue_drawable) ImageView mIssueIcon;
+        @BindView(R.id.issue_state_drawable) ImageView mIssueIcon;
         @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
 
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
+            mContent.setConsumeNonUrlClicks(false);
+            mTitle.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> openIssue(v, getAdapterPosition()));
         }
 

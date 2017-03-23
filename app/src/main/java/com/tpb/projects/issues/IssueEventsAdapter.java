@@ -280,10 +280,10 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         if(me.getEvents().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
-            IntentHandler.addGitHubIntentHandler(
+            IntentHandler.addOnClickHandler(
                     mParent.getActivity(),
                     eventHolder.mAvatar, me.getEvents().get(0).getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent.getActivity(),
+            IntentHandler.addOnClickHandler(mParent.getActivity(),
                     eventHolder.mText,
                     eventHolder.mAvatar,
                     me.getEvents().get(0).getActor().getLogin());
@@ -489,8 +489,8 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         if(event.getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
             eventHolder.mAvatar.setImageUrl(event.getActor().getAvatarUrl());
-            IntentHandler.addGitHubIntentHandler(mParent.getActivity(), eventHolder.mAvatar, event.getActor().getLogin());
-            IntentHandler.addGitHubIntentHandler(mParent.getActivity(), eventHolder.mText, eventHolder.mAvatar, event.getActor().getLogin());
+            IntentHandler.addOnClickHandler(mParent.getActivity(), eventHolder.mAvatar, event.getActor().getLogin());
+            IntentHandler.addOnClickHandler(mParent.getActivity(), eventHolder.mText, eventHolder.mAvatar, event.getActor().getLogin());
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }

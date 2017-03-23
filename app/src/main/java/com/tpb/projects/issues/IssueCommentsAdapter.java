@@ -184,8 +184,8 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             commentHolder.mText.setText(mComments.get(pos).second);
         }
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), commentHolder.mText);
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mText);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
     }
 
     @Override

@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -285,8 +284,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     private void bindStandardCard(CardHolder holder, int pos) {
-        holder.mIssueIcon.setVisibility(View.GONE);
-        holder.mUserAvatar.setVisibility(View.GONE);
+        holder.mTitleLayout.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
             final Card card = mCards.get(pos).first;
             holder.mText.setHtml(
@@ -300,7 +298,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         } else {
             holder.mText.setText(mCards.get(pos).second);
         }
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText);
     }
 
     private void bindIssueCard(CardHolder holder, int pos) {
@@ -309,15 +307,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         final Card card = mCards.get(pos).first;
         holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
-        IntentHandler.addGitHubIntentHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, holder.mCardView, card.getIssue());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, holder.mCardView, card.getIssue());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mIssueIcon, holder.mCardView, card.getIssue());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, holder.mCardView, card.getIssue());
+        holder.mTitleLayout.setVisibility(View.VISIBLE);
+
+        holder.mTitle.setHtml(Spanner.bold(card.getIssue().getTitle()));
         if(mCards.get(pos).second == null) {
             holder.mText.setHtml(
                     Markdown.parseMD(
                             Spanner.buildIssueSpan(
                                 holder.itemView.getContext(),
                                 card.getIssue(),
-                                false,
                                 false,
                                 true,
                                 true,
@@ -342,9 +344,11 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     class CardHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.card_markdown) HtmlTextView mText;
+        @BindView(R.id.card_title) HtmlTextView mTitle;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
-        @BindView(R.id.card_menu_button) ImageButton mMenuButton;
+        @BindView(R.id.card_menu_button) View mMenuButton;
+        @BindView(R.id.card_drawable_wrapper) View mTitleLayout;
         @BindView(R.id.card_issue_drawable) ImageView mIssueIcon;
         @BindView(R.id.card_user_avatar) ANImageView mUserAvatar;
 
@@ -360,6 +364,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             mText.setParseHandler(mParseHandler);
             mText.setImageHandler(new ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
+            mTitle.setConsumeNonUrlClicks(true);
+            mText.setConsumeNonUrlClicks(false);
         }
 
     }

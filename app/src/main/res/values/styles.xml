@@ -11,9 +11,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
         <item name="android:textColorSecondary">@color/colorSecondaryText</item>
-        <item name="android:textColorPrimaryInverse">@color/colorPrimaryTextInverse</item>
-        <item name="android:textColorSecondaryInverse">@color/colorSecondaryTextInverse</item>
-        <item name="drawableColor">@color/md_black_1000</item>
+        <!--<item name="android:textColorPrimaryInverse">@color/colorPrimaryTextInverse</item>-->
+        <!--<item name="android:textColorSecondaryInverse">@color/colorSecondaryTextInverse</item>-->
+        <item name="drawableColor">@color/md_grey_600</item>
         <item name="drawableColorSecondary">@color/iconColorSecondaryLight</item>
     </style>
 

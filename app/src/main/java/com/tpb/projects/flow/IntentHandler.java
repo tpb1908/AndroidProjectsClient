@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.View;
 
 import com.androidnetworking.widget.ANImageView;
@@ -30,9 +29,8 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 public class IntentHandler {
     private static final String TAG = IntentHandler.class.getSimpleName();
 
-    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv) {
+    public static void addOnClickHandler(Activity activity, HtmlTextView tv) {
         tv.setLinkClickHandler(url -> {
-            Log.i(TAG, "addGitHubIntentHandler: \n\n\nURL " + url);
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
@@ -44,11 +42,15 @@ public class IntentHandler {
         });
     }
 
-    public static void addGitHubIntentHandler(Activity activity, ANImageView iv, String login) {
+    public static void addOnClickHandler(Activity activity, ANImageView iv, String login) {
         iv.setOnClickListener(v -> openUser(activity, iv, login));
     }
 
-    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, @Nullable CardView cv, Issue issue) {
+    public static void addOnClickHandler(Activity activity, View view, CardView parent, Issue issue) {
+        view.setOnClickListener(v -> openIssue(activity, parent, issue));
+    }
+
+    public static void addOnClickHandler(Activity activity, HtmlTextView tv, ANImageView iv, @Nullable CardView cv, Issue issue) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
@@ -65,7 +67,7 @@ public class IntentHandler {
         });
     }
 
-    public static void addGitHubIntentHandler(Activity activity, HtmlTextView tv, ANImageView iv, String login) {
+    public static void addOnClickHandler(Activity activity, HtmlTextView tv, ANImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 openUser(activity, iv, login);
@@ -76,7 +78,7 @@ public class IntentHandler {
                 activity.startActivity(i);
             }
         });
-        addGitHubIntentHandler(activity, iv, login);
+        addOnClickHandler(activity, iv, login);
     }
 
     private static void openIssue(Activity activity, View view, String url) {

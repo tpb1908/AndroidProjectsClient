@@ -203,38 +203,38 @@ public class HtmlTagHandler implements Html.TagHandler {
                 olNextIndex.pop();
             } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
                 if(!lists.isEmpty()) {
-                        if(lists.peek().equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                                output.append("\n");
-                            }
-                            // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
-                            int bulletMargin = indent;
-                            if(lists.size() > 1) {
-                                bulletMargin = indent - bullet.getLeadingMargin(true);
-                                if(lists.size() > 2) {
-                                    // This gets more complicated when we add a LeadingMarginSpan into the same line:
-                                    // we have also counter it's effect to BulletSpan
-                                    bulletMargin -= (lists.size() - 2) * listItemIndent;
-                                }
-                            }
-                            BulletSpan newBullet = new BulletSpan(bulletMargin);
-                            end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                    newBullet);
-                        } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST_TAG)) {
-                            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                                output.append("\n");
-                            }
-                            int numberMargin = listItemIndent * (lists.size() - 1);
-                            if(lists.size() > 2) {
-                                // Same as in ordered lists: counter the effect of nested Spans
-                                numberMargin -= (lists.size() - 2) * listItemIndent;
-                            }
-                            NumberSpan numberSpan = new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1);
-                            end(output, Ol.class, false,
-                                    new LeadingMarginSpan.Standard(numberMargin),
-                                    numberSpan);start(output, new Code());
+                    if(lists.peek().equalsIgnoreCase(UNORDERED_LIST_TAG)) {
+                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                            output.append("\n");
                         }
+                        // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
+                        int bulletMargin = indent;
+                        if(lists.size() > 1) {
+                            bulletMargin = indent - bullet.getLeadingMargin(true);
+                            if(lists.size() > 2) {
+                                // This gets more complicated when we add a LeadingMarginSpan into the same line:
+                                // we have also counter it's effect to BulletSpan
+                                bulletMargin -= (lists.size() - 2) * listItemIndent;
+                            }
+                        }
+                        BulletSpan newBullet = new BulletSpan(bulletMargin);
+                        end(output, Ul.class, false,
+                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
+                                newBullet);
+                    } else if(lists.peek().equalsIgnoreCase(ORDERED_LIST_TAG)) {
+                        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                            output.append("\n");
+                        }
+                        int numberMargin = listItemIndent * (lists.size() - 1);
+                        if(lists.size() > 2) {
+                            // Same as in ordered lists: counter the effect of nested Spans
+                            numberMargin -= (lists.size() - 2) * listItemIndent;
+                        }
+                        NumberSpan numberSpan = new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1);
+                        end(output, Ol.class, false,
+                                new LeadingMarginSpan.Standard(numberMargin),
+                                numberSpan);start(output, new Code());
+                    }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
                 }

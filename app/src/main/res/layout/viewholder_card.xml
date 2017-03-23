@@ -17,7 +17,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="16dp">
 
         <ProgressBar
             android:id="@+id/card_issue_progress"
@@ -32,44 +32,54 @@
 
         <LinearLayout
             android:id="@+id/card_drawable_wrapper"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical"
-            android:layout_alignParentTop="true">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/card_menu_button"
+            android:layout_marginBottom="8dp">
 
             <ImageView
                 android:id="@+id/card_issue_drawable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top"/>
 
             <com.androidnetworking.widget.ANImageView
                 android:id="@+id/card_user_avatar"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="8dp"/>
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="top"
+                android:layout_marginStart="4dp"/>
+
+            <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                android:id="@+id/card_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_vertical"/>
+
 
         </LinearLayout>
-
-        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
-            android:id="@+id/card_markdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/card_drawable_wrapper"
-            android:layout_toStartOf="@+id/card_menu_button"
-            android:layout_centerVertical="true">
-        </org.sufficientlysecure.htmltext.htmltextview.HtmlTextView>
 
         <ImageButton
             android:id="@+id/card_menu_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_chevron_down"/>
+
+        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+            android:id="@+id/card_markdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_drawable_wrapper">
+        </org.sufficientlysecure.htmltext.htmltextview.HtmlTextView>
+
+
 
     </RelativeLayout>
 

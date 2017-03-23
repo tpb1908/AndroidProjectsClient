@@ -63,7 +63,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     @Nullable
     private DrawTableLinkSpan drawTableLinkSpan;
 
-    private final boolean dontConsumeNonUrlClicks = true;
+    private boolean consumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
     @Nullable private LinkClickHandler mLinkHandler;
@@ -271,6 +271,10 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
         return mLastClickPosition;
     }
 
+    public void setConsumeNonUrlClicks(boolean consume) {
+        consumeNonUrlClicks = consume;
+    }
+
     /**
      * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
      */
@@ -306,7 +310,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
         linkHit = false;
         boolean res = super.onTouchEvent(event);
 
-        if(dontConsumeNonUrlClicks) {
+        if(!consumeNonUrlClicks) {
             return linkHit;
         }
         return res;

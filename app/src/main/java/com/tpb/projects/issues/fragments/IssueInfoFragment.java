@@ -70,6 +70,7 @@ public class IssueInfoFragment extends IssueFragment {
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
     @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
+    @BindView(R.id.issue_title) HtmlTextView mTitle;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
     @BindView(R.id.issue_events_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issue_event_count) TextView mCount;
@@ -135,13 +136,13 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayIssue(Issue issue) {
+        mTitle.setHtml(Spanner.header(issue.getTitle(), 1));
         mInfo.setHtml(
                 Markdown.parseMD(
                         Spanner.buildIssueSpan(
                                 getContext(),
                                 issue,
-                                true, //Header title
-                                false,  //No number in title
+                                false, //Header title
                                 false, //No numbered link
                                 false, //No assignees
                                 true, //Closed at
@@ -150,6 +151,7 @@ public class IssueInfoFragment extends IssueFragment {
                 ), new HtmlHttpImageGetter(mInfo, mInfo), null);
         mUserAvatar.setOnClickListener(v -> IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
         mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
+        mImageState.setOnClickListener(v -> toggleIssueState());
         if(issue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {
@@ -200,8 +202,8 @@ public class IssueInfoFragment extends IssueFragment {
             final HtmlTextView tv = ButterKnife.findById(mMilestoneCard, R.id.milestone_content_markdown);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
             final ANImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
-            IntentHandler.addGitHubIntentHandler(getActivity(), tv, user, milestone.getCreator().getLogin());
-            IntentHandler.addGitHubIntentHandler(getActivity(), user, milestone.getCreator().getLogin());
+            IntentHandler.addOnClickHandler(getActivity(), tv, user, milestone.getCreator().getLogin());
+            IntentHandler.addOnClickHandler(getActivity(), user, milestone.getCreator().getLogin());
             status.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
             user.setImageUrl(milestone.getCreator().getAvatarUrl());
 
@@ -450,13 +452,21 @@ public class IssueInfoFragment extends IssueFragment {
 
     public void checkSharedElementExit() {
         if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
-            mCount.setVisibility(View.INVISIBLE);
-            mInfo.setHtml(
-                    Markdown.parseMD(
-                            Spanner.buildCombinedIssueSpan(getContext(), mIssue).toString(),
-                            mIssue.getRepoPath()
-                    )
-            );
+//            mCount.setVisibility(View.INVISIBLE);
+//            mTitle.setHtml(Spanner.bold(mIssue.getTitle()));
+//            mInfo.setHtml(
+//                    Markdown.parseMD(
+//                        Spanner.buildIssueSpan(
+//                            getContext(),
+//                            mIssue,
+//                            false,
+//                            true,
+//                            true,
+//                            true,
+//                            true
+//                        ).toString()
+//                    )
+//            );
         }
     }
 
