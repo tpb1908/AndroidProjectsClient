@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/issue_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/issue_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back"
+                android:onClick="onToolbarBackPressed"/>
+
+            <TextView
+                android:id="@+id/emoji_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_placeholder"
+                android:transitionName="@string/transition_name"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="32dp"
+                android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <EditText
+        android:id="@+id/emoji_search_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:maxLines="1"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/emoji_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
