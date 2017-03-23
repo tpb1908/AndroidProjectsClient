@@ -83,7 +83,7 @@ public class EmojiActivity extends BaseActivity {
             mFilteredEmojis.clear();
             for(Emoji e : mEmojis) {
                 for(String s : e.getAliases()) {
-                    if(s.startsWith(query)) {
+                    if(s.contains(query)) {
                         mFilteredEmojis.add(e);
                         break;
                     }
