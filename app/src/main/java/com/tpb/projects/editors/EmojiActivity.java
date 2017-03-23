@@ -1,6 +1,7 @@
 package com.tpb.projects.editors;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
@@ -30,7 +32,9 @@ import butterknife.ButterKnife;
 public class EmojiActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_CHOOSE_EMOJI = 666;
+    private static final String PREFS_COMMON_EMOJIS = "COMMON_EMOJIS";
 
+    private SharedPreferences mCommonEmojis;
     @BindView(R.id.emoji_recycler) RecyclerView mRecycler;
     @BindView(R.id.emoji_search_box) EditText mSearch;
 
@@ -41,8 +45,10 @@ public class EmojiActivity extends BaseActivity {
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_emoji);
         ButterKnife.bind(this);
+
+        mCommonEmojis = getSharedPreferences(PREFS_COMMON_EMOJIS, MODE_PRIVATE);
         mRecycler.setLayoutManager(new GridLayoutManager(this, 3));
-        final EmojiAdapter adapter = new EmojiAdapter();
+        final EmojiAdapter adapter = new EmojiAdapter(mCommonEmojis);
         mRecycler.setAdapter(adapter);
         mSearch.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
@@ -57,9 +63,15 @@ public class EmojiActivity extends BaseActivity {
         private ArrayList<Emoji> mEmojis = new ArrayList<>();
         private ArrayList<Emoji> mFilteredEmojis = new ArrayList<>();
         
-        EmojiAdapter() {
-
+        EmojiAdapter(SharedPreferences prefs) {
             mEmojis.addAll(EmojiManager.getAll());
+            if(prefs.getString("common", null) != null) {
+                final String[] common = prefs.getString("common", "").split(",");
+                for(String s : common) {
+                    final Emoji e = EmojiManager.getForAlias(s);
+                    if(e != null) mEmojis.add(0, e);
+                }
+            }
             mFilteredEmojis.addAll(mEmojis);
         }
 
@@ -115,6 +127,21 @@ public class EmojiActivity extends BaseActivity {
     }
 
     private void choose(String emoji) {
+        String common = "";
+        if(mCommonEmojis.getString("common", null) != null) {
+            String current = mCommonEmojis.getString("common", "");
+            if(current.contains(emoji)) {
+                final int index = current.indexOf(emoji);
+                current = current.substring(0, index) + current.substring(index + emoji.length());
+            }
+            if(Util.instancesOf(current, ",") > 5) {
+                current = current.substring(current.indexOf(',') + 1);
+            }
+            common += current;
+        }
+        common += "," + emoji;
+        mCommonEmojis.edit().putString("common", common).apply();
+
         final Intent result = new Intent();
         result.putExtra(getString(R.string.intent_emoji), emoji);
         setResult(RESULT_OK, result);
