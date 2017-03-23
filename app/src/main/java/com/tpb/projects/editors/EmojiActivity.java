@@ -1,5 +1,6 @@
 package com.tpb.projects.editors;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,6 +28,8 @@ import butterknife.ButterKnife;
  */
 
 public class EmojiActivity extends BaseActivity {
+
+    public static final int REQUEST_CODE_CHOOSE_EMOJI = 666;
 
     @BindView(R.id.emoji_recycler) RecyclerView mRecycler;
     @BindView(R.id.emoji_search_box) EditText mSearch;
@@ -77,6 +80,10 @@ public class EmojiActivity extends BaseActivity {
             notifyDataSetChanged();
         }
 
+        private void choose(int pos) {
+            EmojiActivity.this.choose(mFilteredEmojis.get(pos).getAliases().get(0));
+        }
+
         @Override
         public EmojiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new EmojiViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_emoji, parent, false));
@@ -101,9 +108,17 @@ public class EmojiActivity extends BaseActivity {
             EmojiViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
+                itemView.setOnClickListener(v -> choose(getAdapterPosition()));
             }
         }
 
+    }
+
+    private void choose(String emoji) {
+        final Intent result = new Intent();
+        result.putExtra(getString(R.string.intent_emoji), emoji);
+        setResult(RESULT_OK, result);
+        finish();
     }
 
 }

@@ -18,11 +18,11 @@ import com.tpb.projects.util.UI;
 class MarkdownButtonAdapter {
     private static final String TAG = MarkdownButtonAdapter.class.getSimpleName();
 
-    private final ImageLoadingActivity mParent;
+    private final EditorActivity mParent;
     private final LinearLayout mScrollView;
     private final MarkDownButtonListener mListener;
 
-    MarkdownButtonAdapter(ImageLoadingActivity parent, @NonNull LinearLayout scrollView, @NonNull MarkDownButtonListener listener) {
+    MarkdownButtonAdapter(EditorActivity parent, @NonNull LinearLayout scrollView, @NonNull MarkDownButtonListener listener) {
         mParent = parent;
         mScrollView = scrollView;
         mListener = listener;
@@ -139,7 +139,7 @@ class MarkdownButtonAdapter {
     }
 
     private void showInsertEmoticonActivity() {
-        mParent.startActivity(new Intent(mParent, EmojiActivity.class));
+        mParent.startActivityForResult(new Intent(mParent, EmojiActivity.class), EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI);
     }
 
     interface MarkDownButtonListener {

@@ -25,10 +25,8 @@
                 android:id="@+id/emoji_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_placeholder"
-                android:transitionName="@string/transition_name"
+                android:text="@string/title_activity_emoji"
                 android:maxLines="1"
-                android:ellipsize="end"
                 android:layout_marginStart="32dp"
                 android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
@@ -41,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:hint="@string/hint_search_emojis"
         android:maxLines="1"/>
 
     <android.support.v7.widget.RecyclerView

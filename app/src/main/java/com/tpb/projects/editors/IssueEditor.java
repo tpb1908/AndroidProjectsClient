@@ -32,6 +32,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 import com.tpb.projects.markdown.Markdown;
@@ -53,7 +54,7 @@ import butterknife.OnClick;
  * Created by theo on 07/02/17.
  */
 
-public class IssueEditor extends ImageLoadingActivity {
+public class IssueEditor extends EditorActivity {
     private static final String TAG = IssueEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_ISSUE = 3025;
@@ -198,7 +199,6 @@ public class IssueEditor extends ImageLoadingActivity {
                 }
             }
         });
-
 
     }
 
@@ -360,9 +360,7 @@ public class IssueEditor extends ImageLoadingActivity {
                 Log.i(TAG, "imageUploaded: Image uploaded " + link);
                 mUploadDialog.cancel();
                 final String snippet = String.format(getString(R.string.text_image_link), link);
-                final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
-                mBodyEdit.getText().insert(start, snippet);
-                mBodyEdit.setSelection(start + snippet.indexOf("]"));
+                Util.insertString(mBodyEdit, snippet);
             }
 
             @Override
@@ -375,6 +373,11 @@ public class IssueEditor extends ImageLoadingActivity {
     @Override
     void imageLoadException(IOException ioe) {
 
+    }
+
+    @Override
+    protected void emojiChosen(String emoji) {
+        Util.insertString(mBodyEdit, String.format(":%1$s:", emoji));
     }
 
     @OnClick(R.id.markdown_editor_done)

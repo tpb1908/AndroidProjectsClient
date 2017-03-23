@@ -20,6 +20,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 import com.tpb.projects.markdown.Markdown;
@@ -39,7 +40,7 @@ import butterknife.OnClick;
  * Created by theo on 14/02/17.
  */
 
-public class CommentEditor extends ImageLoadingActivity {
+public class CommentEditor extends EditorActivity {
     private static final String TAG = CommentEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_COMMENT = 1799;
@@ -91,7 +92,9 @@ public class CommentEditor extends ImageLoadingActivity {
         new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
             @Override
             public void snippetEntered(String snippet, int relativePosition) {
-                insertString(snippet, relativePosition);
+                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
+                    Util.insertString(mEditor, snippet, relativePosition);
+                }
             }
 
             @Override
@@ -119,12 +122,9 @@ public class CommentEditor extends ImageLoadingActivity {
 
     }
 
-    private void insertString(String snippet, int relativePosition) {
-        if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
-            final int start = Math.max(mEditor.getSelectionStart(), 0);
-            mEditor.getText().insert(start, snippet);
-            mEditor.setSelection(start + relativePosition);
-        }
+    @Override
+    protected void emojiChosen(String emoji) {
+        Util.insertString(mEditor, String.format(":%1$s:", emoji));
     }
 
     @OnClick(R.id.markdown_editor_done)
@@ -153,7 +153,9 @@ public class CommentEditor extends ImageLoadingActivity {
                 Log.i(TAG, "imageUploaded: Image uploaded " + link);
                 mUploadDialog.cancel();
                 final String snippet = String.format(getString(R.string.text_image_link), link);
-                insertString(snippet, snippet.indexOf("]"));
+                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
+                    Util.insertString(mEditor, snippet, snippet.indexOf("}"));
+                }
             }
 
             @Override
