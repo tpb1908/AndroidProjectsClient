@@ -28,6 +28,7 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
@@ -47,7 +48,7 @@ import butterknife.OnClick;
  * Created by theo on 13/02/17.
  */
 
-public class CardEditor extends ImageLoadingActivity {
+public class CardEditor extends EditorActivity {
     private static final String TAG = CardEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_CARD = 1606;
@@ -262,6 +263,10 @@ public class CardEditor extends ImageLoadingActivity {
         onBackPressed();
     }
 
+    @Override
+    protected void emojiChosen(String emoji) {
+        Util.insertString(mEditor, String.format(":%1$s:", emoji));
+    }
 
     @Override
     public void finish() {

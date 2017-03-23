@@ -2,9 +2,11 @@ package com.tpb.projects.util;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.Base64;
+import android.widget.EditText;
 
 import com.tpb.projects.data.models.Repository;
 
@@ -173,5 +175,15 @@ public class Util {
      */
     public static boolean hasLollipop() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+    public static void insertString(@NonNull EditText et, @NonNull String insert) {
+        insertString(et, insert, 0);
+    }
+
+    public static void insertString(@NonNull EditText et, @NonNull String insert, @IntRange(from = 0) int relativePosition) {
+        final int start = Math.max(et.getSelectionStart(), 0);
+        et.getText().insert(start, insert);
+        et.setSelection(start + relativePosition);
     }
 }

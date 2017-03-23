@@ -30,8 +30,8 @@ import java.util.Date;
  * Created by theo on 16/02/17.
  */
 
-public abstract class ImageLoadingActivity extends CircularRevealActivity {
-    private static final String TAG = ImageLoadingActivity.class.getSimpleName();
+public abstract class EditorActivity extends CircularRevealActivity {
+    private static final String TAG = EditorActivity.class.getSimpleName();
 
     private static final int REQUEST_CAMERA = 9403; //Random request codes
     private static final int SELECT_FILE = 6113;
@@ -52,7 +52,7 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
         builder.setTitle(getString(R.string.text_upload_an_image));
         builder.setItems(items, (dialog, which) -> {
             if(mUploadDialog == null) {
-                mUploadDialog = new ProgressDialog(ImageLoadingActivity.this);
+                mUploadDialog = new ProgressDialog(EditorActivity.this);
                 mUploadDialog.setTitle(R.string.title_image_upload);
                 mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             }
@@ -130,38 +130,49 @@ public abstract class ImageLoadingActivity extends CircularRevealActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == AppCompatActivity.RESULT_OK) {
-            final ProgressDialog pd = new ProgressDialog(this);
-            pd.setCanceledOnTouchOutside(false);
-            pd.setCancelable(false);
-            if(requestCode == REQUEST_CAMERA) {
-                pd.setTitle(R.string.title_image_conversion);
-                pd.show();
-                AsyncTask.execute(() -> { // Execute asynchronously
-                    final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
-                    final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    pd.cancel();
-                    imageLoadComplete(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
-                });
+            if(requestCode == EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI) {
+                if(data.hasExtra(getString(R.string.intent_emoji))) {
+                    emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
+                }
+            } else {
+                final ProgressDialog pd = new ProgressDialog(this);
+                pd.setCanceledOnTouchOutside(false);
+                pd.setCancelable(false);
+                if(requestCode == REQUEST_CAMERA) {
 
-            } else if(requestCode == SELECT_FILE) {
-                final Uri selectedFile = data.getData();
-                Log.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
-                pd.setTitle(R.string.title_image_conversion);
-                pd.show();
-                AsyncTask.execute(() -> {
-                    try {
-                        final String image = attemptLoadPicture(selectedFile);
+                    pd.setTitle(R.string.title_image_conversion);
+                    pd.show();
+                    AsyncTask.execute(() -> { // Execute asynchronously
+                        final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
+                        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         pd.cancel();
-                        imageLoadComplete(image);
-                    } catch(IOException ioe) {
-                        Log.e(TAG, "onActivityResult: ", ioe);
-                        pd.cancel();
-                        imageLoadException(ioe);
-                    }
-                });
+                        imageLoadComplete(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
+                    });
+
+                } else if(requestCode == SELECT_FILE) {
+                    final Uri selectedFile = data.getData();
+                    Log.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
+                    pd.setTitle(R.string.title_image_conversion);
+                    pd.show();
+                    AsyncTask.execute(() -> {
+                        try {
+                            final String image = attemptLoadPicture(selectedFile);
+                            pd.cancel();
+                            imageLoadComplete(image);
+                        } catch(IOException ioe) {
+                            Log.e(TAG, "onActivityResult: ", ioe);
+                            pd.cancel();
+                            imageLoadException(ioe);
+                        }
+                    });
+                }
             }
         }
+    }
+
+    protected void emojiChosen(String emoji) {
+
     }
 
 }

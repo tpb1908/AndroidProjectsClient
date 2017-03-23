@@ -23,6 +23,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Milestone;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 import com.tpb.projects.markdown.Markdown;
@@ -45,7 +46,7 @@ import butterknife.OnClick;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITModelLoader<Milestone> {
+public class MilestoneEditor extends EditorActivity implements Loader.GITModelLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_MILESTONE = 810;
@@ -257,5 +258,10 @@ public class MilestoneEditor extends ImageLoadingActivity implements Loader.GITM
     @Override
     void imageLoadException(IOException ioe) {
 
+    }
+
+    @Override
+    protected void emojiChosen(String emoji) {
+        Util.insertString(mDescriptionEditor, String.format(":%1$s", emoji));
     }
 }

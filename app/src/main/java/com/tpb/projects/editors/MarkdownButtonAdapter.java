@@ -1,5 +1,6 @@
 package com.tpb.projects.editors;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -14,14 +15,14 @@ import com.tpb.projects.util.UI;
  * Created by theo on 10/02/17.
  */
 
-public class MarkdownButtonAdapter {
+class MarkdownButtonAdapter {
     private static final String TAG = MarkdownButtonAdapter.class.getSimpleName();
 
-    private final ImageLoadingActivity mParent;
+    private final EditorActivity mParent;
     private final LinearLayout mScrollView;
     private final MarkDownButtonListener mListener;
 
-    public MarkdownButtonAdapter(ImageLoadingActivity parent, @NonNull LinearLayout scrollView, @NonNull MarkDownButtonListener listener) {
+    MarkdownButtonAdapter(EditorActivity parent, @NonNull LinearLayout scrollView, @NonNull MarkDownButtonListener listener) {
         mParent = parent;
         mScrollView = scrollView;
         mListener = listener;
@@ -95,6 +96,11 @@ public class MarkdownButtonAdapter {
         });
         mScrollView.addView(preview);
 
+        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview.setImageResource(R.drawable.ic_emoticon);
+        preview.setOnClickListener((v) -> showInsertEmoticonActivity());
+        mScrollView.addView(preview);
+
 
     }
 
@@ -132,7 +138,11 @@ public class MarkdownButtonAdapter {
 
     }
 
-    public interface MarkDownButtonListener {
+    private void showInsertEmoticonActivity() {
+        mParent.startActivityForResult(new Intent(mParent, EmojiActivity.class), EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI);
+    }
+
+    interface MarkDownButtonListener {
 
         void snippetEntered(String snippet, int relativePosition);
 
