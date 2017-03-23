@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
 
 import com.tpb.projects.util.Util;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -152,10 +154,6 @@ public class Markdown {
         char pp = ' ';
         final char[] chars = ("\n" + s).toCharArray();
         for(int i = 0; i < chars.length; i++) {
-//            //Ensure that lines are properly spaced
-//            if(chars[i] == '\n' && p != '\n'  && i != chars.length - 1 && chars[i + 1] != '\n') {
-//               // builder.append("\n");
-//            }
             if(linkUsernames && chars[i] == '@' && (p == ' ' || p == '\n')) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
@@ -210,6 +208,8 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
+            } else if(chars[i] == ':') {
+                i = parseEmoji(builder, chars, i);
             } else {
                 builder.append(chars[i]);
             }
@@ -330,6 +330,29 @@ public class Markdown {
         }
 
         return --pos;
+    }
+
+    private static int parseEmoji(StringBuilder builder, char[] cs, int pos) {
+        final StringBuilder emojiBuilder = new StringBuilder();
+
+        for(int i = pos + 1; i < cs.length; i++) {
+            if((cs[i] >= 'A' && cs[i] <= 'Z') ||
+                    (cs[i] >= '0' && cs[i] <= '9') ||
+                    (cs[i] >= 'a' && cs[i] <= 'z') ||
+                    cs[i] == '_' ||
+                    cs[i] == '|') {
+                emojiBuilder.append(cs[i]);
+            } else if(cs[i] == ':') {
+                final Emoji eww = EmojiManager.getForAlias(emojiBuilder.toString());
+                if(eww == null) break;
+                builder.append(eww.getUnicode());
+                return i;
+            } else {
+                break;
+            }
+        }
+        builder.append(cs[pos]);
+        return pos;
     }
 
 }
