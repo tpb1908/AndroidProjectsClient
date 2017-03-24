@@ -101,7 +101,10 @@ class MarkdownButtonAdapter {
         preview.setOnClickListener((v) -> showInsertEmoticonActivity());
         mScrollView.addView(preview);
 
-
+        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview.setImageResource(R.drawable.ic_character);
+        preview.setOnClickListener((v) -> showInsertCharacterActivity());
+        mScrollView.addView(preview);
     }
 
     private void showInsertLinkDialog() {
@@ -140,6 +143,10 @@ class MarkdownButtonAdapter {
 
     private void showInsertEmoticonActivity() {
         mParent.startActivityForResult(new Intent(mParent, EmojiActivity.class), EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI);
+    }
+
+    private void showInsertCharacterActivity() {
+        mParent.startActivityForResult(new Intent(mParent, CharacterActivity.class), CharacterActivity.REQUEST_CODE_INSERT_CHARACTER);
     }
 
     interface MarkDownButtonListener {

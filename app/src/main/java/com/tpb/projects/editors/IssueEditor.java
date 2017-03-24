@@ -380,6 +380,11 @@ public class IssueEditor extends EditorActivity {
         Util.insertString(mBodyEdit, String.format(":%1$s:", emoji));
     }
 
+    @Override
+    protected void characterChosen(String c) {
+        Util.insertString(mBodyEdit, c);
+    }
+
     @OnClick(R.id.markdown_editor_done)
     void onDone() {
         final Intent done = new Intent();

@@ -7,14 +7,14 @@
               android:background="?attr/selectableItemBackgroundBorderless">
 
     <TextView
-        android:id="@+id/emoji_text"
+        android:id="@+id/text_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
     <TextView
-        android:id="@+id/emoji_name"
+        android:id="@+id/text_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"/>

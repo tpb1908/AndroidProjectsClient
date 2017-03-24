@@ -269,6 +269,11 @@ public class CardEditor extends EditorActivity {
     }
 
     @Override
+    protected void characterChosen(String c) {
+        Util.insertString(mEditor, c);
+    }
+
+    @Override
     public void finish() {
         if(mHasBeenEdited && !mEditor.getText().toString().isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);

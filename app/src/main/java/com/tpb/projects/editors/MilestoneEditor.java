@@ -264,4 +264,9 @@ public class MilestoneEditor extends EditorActivity implements Loader.GITModelLo
     protected void emojiChosen(String emoji) {
         Util.insertString(mDescriptionEditor, String.format(":%1$s", emoji));
     }
+
+    @Override
+    protected void characterChosen(String c) {
+        Util.insertString(mDescriptionEditor, c);
+    }
 }

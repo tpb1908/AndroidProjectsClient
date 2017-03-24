@@ -127,6 +127,11 @@ public class CommentEditor extends EditorActivity {
         Util.insertString(mEditor, String.format(":%1$s:", emoji));
     }
 
+    @Override
+    protected void characterChosen(String c) {
+        Util.insertString(mEditor, c);
+    }
+
     @OnClick(R.id.markdown_editor_done)
     void onDone() {
         final Intent done = new Intent();
