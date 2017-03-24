@@ -110,6 +110,7 @@ public class IssueInfoFragment extends IssueFragment {
 
         mInfo.setImageHandler(new ImageDialog(getContext()));
         mInfo.setCodeClickHandler(new CodeDialog(getContext()));
+        mInfo.setConsumeNonUrlClicks(false);
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
             new Loader(getContext()).loadIssue(new Loader.GITModelLoader<Issue>() {
@@ -129,12 +130,6 @@ public class IssueInfoFragment extends IssueFragment {
         return view;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
     private void displayIssue(Issue issue) {
         mTitle.setHtml(Spanner.header(issue.getTitle(), 1));
         mInfo.setHtml(
@@ -149,6 +144,7 @@ public class IssueInfoFragment extends IssueFragment {
                                 false //No comment count
                         ).toString()
                 ), new HtmlHttpImageGetter(mInfo, mInfo), null);
+
         mUserAvatar.setOnClickListener(v -> IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
         mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         mImageState.setOnClickListener(v -> toggleIssueState());
@@ -395,8 +391,8 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     @OnClick(R.id.issue_header_card)
-    void onHeaderClick(View view) {
-        if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(view);
+    void onHeaderClick() {
+        if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(mInfo);
     }
     
     @OnClick(R.id.issue_menu_button)
