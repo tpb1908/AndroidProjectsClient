@@ -197,7 +197,8 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             }
         }
         if(total > 0) {
-            String builder = String.format(getString(R.string.text_user_commits), total, daysTotal) +
+
+            final String info = getResources().getQuantityString(R.plurals.text_user_commits, total, total) +
                     "\n" +
                     String.format(getString(R.string.text_user_average), (float) total / daysTotal) +
                     "\n" +
@@ -207,7 +208,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                     "\n" +
                     String.format(getString(R.string.text_user_streak), maxStreak);
             final boolean isEmpty = mContributionsInfo.getText().toString().isEmpty();
-            mContributionsInfo.setText(builder);
+            mContributionsInfo.setText(info);
             if(isEmpty) {
                 ObjectAnimator.ofInt(
                         mContributionsInfo,

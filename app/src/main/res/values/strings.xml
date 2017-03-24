@@ -125,16 +125,22 @@
     <string name="text_user_created_at">Created %1$s</string>
     <string name="text_commit">commit %1$s</string>
     <string name="text_user_no_commits">No commits</string>
-    <string name="text_user_commits">%1$d commits in %2$d days</string>
+    <plurals name="text_user_commits">
+        <item quantity="zero">No commits in the last year</item>
+        <item quantity="one">%d commit in the last year</item>
+        <item quantity="other">%d commits in the last year</item>
+    </plurals>
     <string name="text_user_average">Average commits per day: %1$.1f</string>
     <string name="text_user_average_active">Average commits on active days: %1$.1f</string>
     <string name="text_user_max_commits">Most commits in a day: %1$d</string>
     <string name="text_user_streak">Longest streak: %1$d days</string>
     <plurals name="text_user_repositories">
+        <item quantity="zero">No repositories</item>
         <item quantity="one">%d repository</item>
         <item quantity="other">%d repositories</item>
     </plurals>
     <plurals name="text_user_gists">
+        <item quantity="zero">No gists</item>
         <item quantity="one">%d gist</item>
         <item quantity="other">%d gists</item>
     </plurals>
@@ -146,6 +152,7 @@
     <string name="text_assignee_all">All</string>
     <string name="text_assignee_none">None</string>
     <plurals name="text_issue_comment_count">
+        <item quantity="zero">No comments</item>
         <item quantity="one">%d comment</item>
         <item quantity="other">%d comments</item>
     </plurals>
