@@ -181,6 +181,10 @@ public class Util {
         insertString(et, insert, 0);
     }
 
+    /**
+     * Inserts a string into an EditText
+     * @param relativePosition Where to place the cursor, relative to the start of the inserted string
+     */
     public static void insertString(@NonNull EditText et, @NonNull String insert, @IntRange(from = 0) int relativePosition) {
         final int start = Math.max(et.getSelectionStart(), 0);
         et.getText().insert(start, insert);

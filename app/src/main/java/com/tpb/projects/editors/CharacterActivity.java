@@ -1,6 +1,7 @@
 package com.tpb.projects.editors;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
@@ -52,6 +53,15 @@ public class CharacterActivity extends BaseActivity {
                 adapter.filter(mSearch.getText().toString().toUpperCase());
             }
         });
+        AsyncTask.execute(() -> {
+            final ArrayList<Pair<String, String>> characters = new ArrayList<>();
+            for(int i = Character.MIN_CODE_POINT; i < Character.MAX_CODE_POINT; i++) {
+                if(Character.isDefined(i) && !Character.isISOControl(i)) {
+                    characters.add(Pair.create(String.valueOf((char) i), Character.getName(i)));
+                }
+            }
+            CharacterActivity.this.runOnUiThread(() -> adapter.setCharacters(characters));
+        });
     }
 
     class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
@@ -60,12 +70,13 @@ public class CharacterActivity extends BaseActivity {
         private ArrayList<Pair<String, String>> mFilteredCharacters = new ArrayList<>();
 
         CharacterAdapter() {
-            for(int i = Character.MIN_CODE_POINT; i < Character.MAX_CODE_POINT; i++) {
-                if(Character.isDefined(i) && !Character.isISOControl(i)) {
-                    mCharacters.add(Pair.create(String.valueOf((char) i), Character.getName(i)));
-                }
-            }
+
+        }
+
+        void setCharacters(ArrayList<Pair<String, String>> characters) {
+            mCharacters = characters;
             mFilteredCharacters.addAll(mCharacters);
+            notifyDataSetChanged();
         }
 
         void filter(String query) {

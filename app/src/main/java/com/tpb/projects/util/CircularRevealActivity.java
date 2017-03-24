@@ -64,7 +64,6 @@ public abstract class CircularRevealActivity extends BaseActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
-
     private void circularRevealActivity(int cx, int cy) {
         final View rootLayout = findViewById(android.R.id.content);
 

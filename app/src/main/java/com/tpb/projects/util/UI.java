@@ -162,6 +162,12 @@ public class UI {
 
     }
 
+    /**
+     * Checks whether the device has a navigation bar, and if so returns a pair
+     * for {@see ActivityOptionsCompat#makeSceneTransition}
+     * @param activity Any activity in which to find the navigation bar
+     * @return The navigation bar view view pair, or an empty view pair
+     */
     public static Pair<View, String> getSafeNavigationBarTransitionPair(@NonNull Activity activity) {
         final View nav = activity.findViewById(android.R.id.navigationBarBackground);
         return nav == null ?
