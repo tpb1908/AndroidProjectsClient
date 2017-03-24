@@ -147,7 +147,7 @@ public class Util {
     }
 
     public static String formatDateLocally(Context context, Date date) {
-        return DateFormat.getDateFormat(context).format(date);
+        return DateFormat.getMediumDateFormat(context).format(date);
     }
 
     /**
