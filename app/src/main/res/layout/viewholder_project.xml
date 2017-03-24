@@ -40,6 +40,7 @@
             android:layout_margin="8dp"
             android:src="@drawable/ic_edit"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/content_description_edit"
             android:layout_alignParentEnd="true"/>
 
         <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView

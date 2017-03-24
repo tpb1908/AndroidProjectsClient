@@ -367,4 +367,12 @@
     <string name="transition_user_image" translatable="false">user_image</string>
     <string name="transition_card" translatable="false">card</string>
 
+    <string name="content_description_back">Back</string>
+    <string name="content_description_filter">Filter</string>
+    <string name="content_description_delete">Delete</string>
+    <string name="content_description_issue_state">Issue state</string>
+    <string name="content_description_menu">Menu</string>
+    <string name="content_description_edit">Edit</string>
+    <string name="content_description_pin">Pin repository</string>
+
 </resources>

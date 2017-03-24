@@ -73,7 +73,6 @@ public class IssueInfoFragment extends IssueFragment {
     @BindView(R.id.issue_title) HtmlTextView mTitle;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
     @BindView(R.id.issue_events_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.issue_event_count) TextView mCount;
     @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
 
     private Issue mIssue;

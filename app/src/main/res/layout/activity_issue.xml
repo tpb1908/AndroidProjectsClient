@@ -16,12 +16,12 @@
             android:layout_height="56dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <!--suppress AndroidMissingOnClickHandler -->
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back"
+                android:contentDescription="@string/content_description_back"
                 android:onClick="onToolbarBackPressed"/>
 
             <TextView

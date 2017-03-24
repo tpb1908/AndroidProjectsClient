@@ -43,7 +43,8 @@
                 android:id="@+id/card_issue_drawable"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_gravity="top"/>
+                android:layout_gravity="top"
+                android:contentDescription="@string/content_description_issue_state"/>
 
             <com.androidnetworking.widget.ANImageView
                 android:id="@+id/card_user_avatar"
@@ -70,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/content_description_issue_state"
             android:src="@drawable/ic_chevron_down"/>
 
         <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView

@@ -38,6 +38,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/content_description_menu"
             android:src="@drawable/ic_chevron_down"/>
 
     </RelativeLayout>

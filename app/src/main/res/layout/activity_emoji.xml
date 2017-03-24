@@ -19,6 +19,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back"
+                android:contentDescription="@string/content_description_back"
                 android:onClick="onToolbarBackPressed"/>
 
             <TextView

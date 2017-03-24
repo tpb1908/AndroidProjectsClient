@@ -16,6 +16,7 @@
         android:layout_centerVertical="true"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_not_pinned"
+        android:contentDescription="@string/content_description_pin"
         android:layout_margin="8dp"/>
 
     <TextView
