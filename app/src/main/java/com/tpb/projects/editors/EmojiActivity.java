@@ -35,17 +35,19 @@ public class EmojiActivity extends BaseActivity {
     private static final String PREFS_COMMON_EMOJIS = "COMMON_EMOJIS";
 
     private SharedPreferences mCommonEmojis;
-    @BindView(R.id.emoji_recycler) RecyclerView mRecycler;
-    @BindView(R.id.emoji_search_box) EditText mSearch;
+    @BindView(R.id.search_title) TextView mTitle;
+    @BindView(R.id.search_recycler) RecyclerView mRecycler;
+    @BindView(R.id.search_search_box) EditText mSearch;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
-        setContentView(R.layout.activity_emoji);
+        setContentView(R.layout.activity_simple_search);
         ButterKnife.bind(this);
-
+        mTitle.setText(R.string.title_activity_emoji);
+        mSearch.setHint(R.string.hint_search_characters);
         mCommonEmojis = getSharedPreferences(PREFS_COMMON_EMOJIS, MODE_PRIVATE);
         mRecycler.setLayoutManager(new GridLayoutManager(this, 3));
         final EmojiAdapter adapter = new EmojiAdapter(mCommonEmojis);
@@ -98,7 +100,7 @@ public class EmojiActivity extends BaseActivity {
 
         @Override
         public EmojiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new EmojiViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_emoji, parent, false));
+            return new EmojiViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_text, parent, false));
         }
 
         @Override
@@ -114,8 +116,8 @@ public class EmojiActivity extends BaseActivity {
 
         class EmojiViewHolder extends RecyclerView.ViewHolder {
 
-            @BindView(R.id.emoji_text) TextView mEmoji;
-            @BindView(R.id.emoji_name) TextView mName;
+            @BindView(R.id.text_content) TextView mEmoji;
+            @BindView(R.id.text_info) TextView mName;
             
             EmojiViewHolder(View itemView) {
                 super(itemView);

@@ -100,6 +100,8 @@
 
         <activity android:name=".editors.EmojiActivity" />
 
+        <activity android:name=".editors.CharacterActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.tpb.projects.provider"

@@ -233,12 +233,14 @@
     <string name="hint_due_date">Due </string>
 
     <string name="hint_search_emojis">Search emojis</string>
+    <string name="hint_search_characters">Search characters</string>
 
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_user">Repositories</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_repo">Repository</string>
     <string name="title_activity_emoji">Emojis</string>
+    <string name="title_activity_characters">Characters</string>
 
     <string name="title_new_project">New project</string>
     <string name="title_edit_project">Edit project</string>
@@ -356,6 +358,7 @@
     <string name="intent_state" translatable="false">state</string>
     <string name="intent_gist_url" translatable="false">gist_url</string>
     <string name="intent_emoji" translatable="false">disgusting_emoji</string>
+    <string name="intent_character" translatable="false">character</string>
 
     <!-- Constants for models passed as parcels -->
     <string name="parcel_project" translatable="false">project</string>

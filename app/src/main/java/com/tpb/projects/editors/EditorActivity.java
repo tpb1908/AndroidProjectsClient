@@ -134,6 +134,10 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 if(data.hasExtra(getString(R.string.intent_emoji))) {
                     emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
                 }
+            } else if(requestCode == CharacterActivity.REQUEST_CODE_INSERT_CHARACTER) {
+                if(data.hasExtra(getString(R.string.intent_character))) {
+                    characterChosen(data.getStringExtra(getString(R.string.intent_character)));
+                }
             } else {
                 final ProgressDialog pd = new ProgressDialog(this);
                 pd.setCanceledOnTouchOutside(false);
@@ -172,6 +176,10 @@ public abstract class EditorActivity extends CircularRevealActivity {
     }
 
     protected void emojiChosen(String emoji) {
+
+    }
+
+    protected void characterChosen(String c) {
 
     }
 
