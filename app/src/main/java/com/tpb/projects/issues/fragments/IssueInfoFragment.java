@@ -434,11 +434,15 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void checkSharedElementEntry() {
-        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+        final Intent i = getActivity().getIntent();
+        if(i.hasExtra(getString(R.string.transition_card))) {
             mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
                     mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
+                    if(i.hasExtra(getString(R.string.intent_drawable))) {
+                        mUserAvatar.setImageBitmap(i.getParcelableExtra(getString(R.string.intent_drawable)));
+                    }
                     getActivity().startPostponedEnterTransition();
                     return true;
                 }

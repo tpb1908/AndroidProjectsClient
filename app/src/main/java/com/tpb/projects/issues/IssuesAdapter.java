@@ -1,6 +1,7 @@
 package com.tpb.projects.issues;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +14,10 @@ import android.widget.ImageView;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -120,14 +121,15 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         return mIssues.size();
     }
 
-    private void openIssue(View view, int pos) {
+    private void openIssue(IssueHolder holder, int pos) {
         final Intent i = new Intent(mParent, IssueActivity.class);
         i.putExtra(mParent.getString(R.string.transition_card), "");
         i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos));
+        i.putExtra(mParent.getString(R.string.intent_drawable), ((BitmapDrawable) holder.mUserAvatar.getDrawable()).getBitmap());
         //We have to add the nav bar as ViewOverlay is above it
         mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 mParent,
-                Pair.create(view, mParent.getString(R.string.transition_card)),
+                Pair.create(holder.itemView, mParent.getString(R.string.transition_card)),
                 UI.getSafeNavigationBarTransitionPair(mParent)).toBundle()
         );
     }
@@ -150,7 +152,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
             mContent.setConsumeNonUrlClicks(false);
             mTitle.setConsumeNonUrlClicks(false);
-            view.setOnClickListener((v) -> openIssue(v, getAdapterPosition()));
+            view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
         }
 
 
