@@ -80,6 +80,8 @@ public class Markdown {
                     html.tag("code");
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(), block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")));
                     html.tag("/code");
+                    html.tag("br");
+                    html.line();
                 } else {
                     html.tag("inlinecode");
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {

@@ -48,7 +48,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="top"/>
 
             <ImageButton
                 android:id="@+id/issue_menu_button"
