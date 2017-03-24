@@ -186,7 +186,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
                 start(output, new BlockQuote());
             } else if(tag.equalsIgnoreCase(A_TAG)) {
-                start(output, new A(getAttribute("href", xmlReader, "error.com")));
+                start(output, new A(getAttribute("href", xmlReader, "invalid_url")));
             } else if(tag.equalsIgnoreCase("inlinecode")) {
                 start(output, new InlineCode());
             }
@@ -307,9 +307,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                 // end of the tag
                 int len = output.length();
                 output.removeSpan(obj);
-                final char[] chars = new char[len-where];
-                output.getChars(where, len, chars, 0);
-                output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                if(isValidURL(obj.href)) {
+                    output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             } else if(tag.equalsIgnoreCase("inlinecode")) {
                 final InlineCode obj = getLast(output, InlineCode.class);
                 final int where = output.getSpanStart(obj);
@@ -344,6 +344,10 @@ public class HtmlTagHandler implements Html.TagHandler {
             Log.e(TAG, "handleTag: ", e);
         }
         return defaultAttr;
+    }
+
+    private static boolean isValidURL(String possible) {
+        return URLPattern.AUTOLINK_WEB_URL.matcher(possible).matches();
     }
 
     /**
