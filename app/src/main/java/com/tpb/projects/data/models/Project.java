@@ -92,6 +92,10 @@ public class Project extends DataModel implements Parcelable {
         return ownerUrl.substring(ownerUrl.indexOf("s/") + 2);
     }
 
+    public State getState() {
+        return state;
+    }
+
     public static Project parse(JSONObject object) {
         final Project p = new Project();
         try {
@@ -149,9 +153,11 @@ public class Project extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", number=" + number +
                 ", creatorUserName='" + creatorUserName + '\'' +
+                ", state=" + state +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -167,11 +173,12 @@ public class Project extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeInt(this.number);
         dest.writeString(this.creatorUserName);
+        dest.writeInt(this.state == null ? -1 : this.state.ordinal());
         dest.writeLong(this.updatedAt);
         dest.writeLong(this.createdAt);
     }
 
-    private Project(Parcel in) {
+    protected Project(Parcel in) {
         this.id = in.readInt();
         this.ownerUrl = in.readString();
         this.url = in.readString();
@@ -179,6 +186,8 @@ public class Project extends DataModel implements Parcelable {
         this.body = in.readString();
         this.number = in.readInt();
         this.creatorUserName = in.readString();
+        int tmpState = in.readInt();
+        this.state = tmpState == -1 ? null : State.values()[tmpState];
         this.updatedAt = in.readLong();
         this.createdAt = in.readLong();
     }

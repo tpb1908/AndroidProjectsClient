@@ -17,6 +17,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.fragment.RepoProjectsFragment;
@@ -80,14 +81,18 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
     @Override
     public void onBindViewHolder(ProjectViewHolder holder, int position) {
-        holder.mName.setText(mProjects.get(position).getName());
+        final Project p = mProjects.get(position);
+        holder.mName.setText(p.getName());
+        holder.mName.setCompoundDrawablesWithIntrinsicBounds(
+                p.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed,
+                0, 0, 0);
         holder.mLastUpdate.setText(
                 String.format(
                         holder.itemView.getContext().getString(R.string.text_last_updated),
-                        DateUtils.getRelativeTimeSpanString(mProjects.get(position).getUpdatedAt())
+                        DateUtils.getRelativeTimeSpanString(p.getUpdatedAt())
                 )
         );
-        if(!(DataModel.JSON_NULL.equals(mProjects.get(position).getBody()) || mProjects.get(position).getBody().isEmpty())) {
+        if(!(DataModel.JSON_NULL.equals(p.getBody()) || p.getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setHtml(
                     Markdown.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
@@ -97,7 +102,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         }
         holder.itemView.setOnClickListener(v -> {
             final Intent i = new Intent(mParent.getContext(), ProjectActivity.class);
-            i.putExtra(mParent.getString(R.string.parcel_project), mProjects.get(position));
+            i.putExtra(mParent.getString(R.string.parcel_project), p);
             mParent.startActivity(i,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             mParent.getActivity(),
@@ -105,9 +110,9 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
                             mParent.getString(R.string.transition_title)
                     ).toBundle()
             );
-            i.putExtra(mParent.getString(R.string.intent_project_number), mProjects.get(position).getNumber());
+            i.putExtra(mParent.getString(R.string.intent_project_number), p.getNumber());
         });
-        holder.mMenu.setOnClickListener(v -> mParent.showMenu(holder.mMenu, mProjects.get(position)));
+        holder.mMenu.setOnClickListener(v -> mParent.showMenu(holder.mMenu, p));
 
     }
 

@@ -22,15 +22,15 @@
 
         <ImageView
             android:id="@+id/issue_state_drawable"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="top"
             android:contentDescription="@string/content_description_issue_state"/>
 
         <com.androidnetworking.widget.ANImageView
             android:id="@+id/issue_user_avatar"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="top"
             android:layout_marginStart="4dp"/>
 

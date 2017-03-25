@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:drawablePadding="4dp"
         android:layout_toStartOf="@+id/project_menu_button"
         android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
