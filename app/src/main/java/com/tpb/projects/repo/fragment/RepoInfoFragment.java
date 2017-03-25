@@ -23,6 +23,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -44,6 +45,12 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
     @BindView(R.id.repo_readme) MarkedView mReadme;
+
+    @BindView(R.id.repo_size) TextView mSize;
+    @BindView(R.id.repo_stars) TextView mStars;
+    @BindView(R.id.repo_issues) TextView mIssues;
+    @BindView(R.id.repo_forks) TextView mForks;
+
 
     @Nullable
     @Override
@@ -103,6 +110,10 @@ public class RepoInfoFragment extends RepoFragment {
 
             }
         }, mRepo.getFullName());
+        mIssues.setText(String.valueOf(repo.getIssues()));
+        mForks.setText(String.valueOf(repo.getForks()));
+        mSize.setText(Util.formatKB(repo.getSize()));
+        mStars.setText(String.valueOf(repo.getStarGazers()));
     }
 
     @Override

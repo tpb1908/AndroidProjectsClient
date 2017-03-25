@@ -88,12 +88,6 @@
                                 android:layout_height="16dp"
                                 android:src="@drawable/ic_stars"/>
 
-                            <ImageView
-                                android:id="@+id/repo_watchers_drawable"
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/ic_watchers"/>
-
                         </TableRow>
 
                         <TableRow
@@ -127,13 +121,6 @@
                                 android:text="@string/text_stars"
                                 android:textAlignment="center"/>
 
-                            <TextView
-                                android:id="@+id/repo_watchers_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_watchers"
-                                android:textAlignment="center"/>
-
                         </TableRow>
 
                         <TableRow
@@ -163,13 +150,6 @@
 
                             <TextView
                                 android:id="@+id/repo_stars"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_placeholder"
-                                android:textAlignment="center"/>
-
-                            <TextView
-                                android:id="@+id/repo_watchers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/text_placeholder"
