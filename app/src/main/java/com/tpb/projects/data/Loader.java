@@ -373,6 +373,7 @@ public class Loader extends APIHandler {
         final ANRequest req =
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                .addQueryParameter("state", "all")
                 .build();
         if(loader == null) {
             req.prefetch();
@@ -385,6 +386,11 @@ public class Loader extends APIHandler {
                         for(int i = 0; i < response.length(); i++) {
                             projects[i] = Project.parse(response.getJSONObject(i));
                         }
+                        Arrays.sort(projects, (p1, p2) -> {
+                            if(p1.getState() == State.OPEN && p2.getState() != State.OPEN) return -1;
+                            if(p2.getState() == State.OPEN && p1.getState() != State.OPEN) return 1;
+                            return p1.getUpdatedAt() > p2.getUpdatedAt() ? -1 : 1;
+                        });
                         loader.loadComplete(projects);
                     } catch(JSONException jse) {
                         Log.e(TAG, "onResponse: ", jse);

@@ -50,6 +50,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
     }
 
     public void setRepository(Repository repo) {
+        mRefresher.setRefreshing(true);
         mLoader.loadProjects(this, repo.getFullName());
         mRepo = repo;
     }
