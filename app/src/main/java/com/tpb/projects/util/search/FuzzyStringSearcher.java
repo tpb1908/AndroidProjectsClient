@@ -1,7 +1,5 @@
 package com.tpb.projects.util.search;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,17 +28,19 @@ To perform fuzzy searching, we need a 2d bit array
 Instead of having a single array which changes over the length of the text, we have k arrays
 R_i holds a representation of the prefixes of pattern that match any suffix of the current string with i or fewer errors.
 An error may be insertion, deletion, or substitution
-
-
  */
 
 public class FuzzyStringSearcher {
     private static final String TAG = FuzzyStringSearcher.class.getSimpleName();
 
-    private ArrayList<String> items;
+    private ArrayList<String> items = new ArrayList<>();
     private final int[] queryMask = new int[65536];
 
     private static FuzzyStringSearcher instance;
+
+    public FuzzyStringSearcher() {
+
+    }
 
     private FuzzyStringSearcher(ArrayList<String> items) {
         this.items = items;
@@ -55,19 +55,18 @@ public class FuzzyStringSearcher {
         return instance;
     }
 
-    private void setItems(ArrayList<String> items) {
+    public void setItems(ArrayList<String> items) {
         this.items = items;
     }
 
     public ArrayList<Integer> search(String query) {
         final ArrayList<Integer> positions = new ArrayList<>();
         final ArrayList<Integer> ranks = new ArrayList<>();
-        Log.i(TAG, "search: For " + query);
         int index, rank;
         for(int i = 0; i < items.size(); i++) {
             index = findIndex(items.get(i), query, 1);
             if(index >= 0) {
-                rank = rank(index, query, items.get(i));
+                rank = index; //TODO Other indexing
                 boolean added = false;
                 for(int j = 0; j < ranks.size(); j++) {
                     if(rank > ranks.get(j)) {
@@ -124,12 +123,5 @@ public class FuzzyStringSearcher {
         return result;
     }
 
-    private int rank(int pos, String query, String text) {
-        int rank = -pos;
-        for(int i = pos; i < text.length() && i < query.length(); i++) {
-            if(text.charAt(i) == query.charAt(i - pos)) rank += 2;
-        }
-        return rank;
-    }
 
 }

@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class RepoIssuesFragment extends RepoFragment {
 
     @BindView(R.id.repo_issues_recycler) RecyclerView mRecyclerView;
     @BindView(R.id.repo_issues_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.issues_search_view) SearchView mSearchView;
     private RepoIssuesAdapter mAdapter;
 
     private State mFilter = State.OPEN;
@@ -68,6 +70,22 @@ public class RepoIssuesFragment extends RepoFragment {
                     mAdapter.notifyBottomReached();
                 }
             }
+        });
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.search(newText);
+                return false;
+            }
+        });
+        mSearchView.setOnCloseListener(() -> {
+            mAdapter.closeSearch();
+            return false;
         });
         return view;
     }
@@ -220,4 +238,5 @@ public class RepoIssuesFragment extends RepoFragment {
         super.onDestroyView();
         unbinder.unbind();
     }
+
 }

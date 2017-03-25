@@ -19,6 +19,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.flow.IntentHandler;
@@ -27,6 +28,7 @@ import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
+import com.tpb.projects.util.search.FuzzyStringSearcher;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -44,6 +46,10 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     private final Activity mParent;
     private final SwipeRefreshLayout mRefresher;
     private final ArrayList<Pair<Issue, SpannableString>> mIssues = new ArrayList<>();
+    private ArrayList<String> mSearchStrings = new ArrayList<>();
+    private FuzzyStringSearcher mSearcher = new FuzzyStringSearcher();
+    private boolean mIsSearching = false;
+    private ArrayList<Integer> mSearchFilter = new ArrayList<>();
 
     private Loader mLoader;
     private Repository mRepo;
@@ -72,7 +78,32 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         loadIssues(true);
     }
 
+    public void search(String query) {
+        if(mIsLoading) return;
+        mIsSearching = true;
+        final ArrayList<String> issues = new ArrayList<>();
+        String s;
+        for(Pair<Issue, SpannableString> p : mIssues) {
+            s = "#" + p.first.getNumber();
+            if(p.first.getLabels() != null) {
+                for(Label l : p.first.getLabels()) s += "\n" + l.getName();
+            }
+            s += p.first.getTitle() + "\n" + p.first.getBody();
+            issues.add(s);
+        }
+        mSearcher.setItems(issues);
+        mSearchFilter = mSearcher.search(query);
+        notifyDataSetChanged();
+    }
+
+    public void closeSearch() {
+        mIsSearching = false;
+        mSearchFilter.clear();
+    }
+
     public void applyFilter(State state, String assignee, ArrayList<String> labels) {
+        mIsSearching = false;
+        mSearchFilter.clear();
         mFilter = state;
         mAssigneeFilter = assignee;
         mLabelsFilter.clear();
@@ -127,12 +158,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         notifyItemInserted(0);
     }
 
-    void clear() {
-        final int oldSize = mIssues.size();
-        mIssues.clear();
-        notifyItemRangeRemoved(0, oldSize);
-    }
-
     void updateIssue(Issue issue) {
         int index = Util.indexInPair(mIssues, issue);
         if(index != -1) {
@@ -147,7 +172,12 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        final int pos = holder.getAdapterPosition();
+        final int pos;
+        if(mIsSearching) {
+            pos = mSearchFilter.get(position);
+        } else {
+            pos = holder.getAdapterPosition();
+        }
         final Issue issue = mIssues.get(pos).first;
         holder.mTitle.setHtml(Spanner.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
@@ -168,7 +198,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     @Override
     public int getItemCount() {
-        return mIssues.size();
+        return mIsSearching ? mSearchFilter.size() : mIssues.size();
     }
 
     private void openIssue(IssueHolder holder, int pos) {
