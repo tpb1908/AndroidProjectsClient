@@ -3,18 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/issue_comments_refresher"
+    android:id="@+id/repo_issues_refresher"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <com.tpb.animatingrecyclerview.AnimatingRecyclerView
-            android:id="@+id/issue_comments_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"/>
+    <com.tpb.animatingrecyclerview.AnimatingRecyclerView
+        android:id="@+id/repo_issues_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"/>
 
 </android.support.v4.widget.SwipeRefreshLayout>
-
-
-
-
