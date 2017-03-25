@@ -163,7 +163,7 @@ public class IssueInfoFragment extends IssueFragment {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
                 user.setId(i);
                 mAssigneesLayout.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
                 imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);

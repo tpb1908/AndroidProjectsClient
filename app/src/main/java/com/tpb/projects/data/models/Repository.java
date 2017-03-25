@@ -230,7 +230,7 @@ public class Repository extends DataModel implements Parcelable {
             r.size = obj.getInt(SIZE);
             if(obj.has(PARENT)) r.parent = Repository.parse(obj.getJSONObject(PARENT));
             if(obj.has(SOURCE)) r.source = Repository.parse(obj.getJSONObject(SOURCE));
-            if(obj.has(LICENSE)) {
+            if(obj.has(LICENSE) && !JSON_NULL.equals(obj.getString(LICENSE))) {
                 final JSONObject license = obj.getJSONObject(LICENSE);
                 r.licenseKey = license.getString(KEY);
                 r.licenseName = license.getString(LICENSE_NAME);

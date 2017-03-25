@@ -70,7 +70,7 @@ public class RepoActivity extends BaseActivity implements
     @BindView(R.id.repo_toolbar) Toolbar mToolbar;
     @BindView(R.id.repo_name) TextView mName;
     @BindView(R.id.repo_description) TextView mDescription;
-    @BindView(R.id.user_image) ANImageView mUserImage;
+    @BindView(R.id.user_avatar) ANImageView mUserImage;
     @BindView(R.id.user_name) TextView mUserName;
 
     @BindView(R.id.repo_forks) TextView mForks;
@@ -154,7 +154,7 @@ public class RepoActivity extends BaseActivity implements
         }
     }
 
-    @OnClick({R.id.user_name, R.id.user_image})
+    @OnClick({R.id.user_name, R.id.user_avatar})
     void openUser() {
         if(mRepo != null) {
             final Intent i = new Intent(RepoActivity.this, UserActivity.class);

@@ -44,7 +44,7 @@ public class RepoInfoFragment extends RepoFragment {
     private Loader mLoader;
 
     @BindView(R.id.repo_info_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_image) ANImageView mAvatar;
+    @BindView(R.id.user_avatar) ANImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
     @BindView(R.id.repo_readme) MarkedView mReadme;
@@ -140,7 +140,7 @@ public class RepoInfoFragment extends RepoFragment {
                                                                       );
                 user.setId(View.generateViewId());
                 mCollaborators.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
                 imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -197,6 +197,24 @@ public class RepoInfoFragment extends RepoFragment {
                     Toast.makeText(getContext(), R.string.error_loading_license, Toast.LENGTH_SHORT).show();
                 }
             }, mRepo.getLicenseUrl());
+        }
+    }
+
+    @OnClick({R.id.user_avatar, R.id.user_name})
+    void openUser() {
+        if(mRepo != null) {
+            final Intent i = new Intent(getContext(), UserActivity.class);
+            i.putExtra(getString(R.string.intent_username), mRepo.getUserLogin());
+            if(mAvatar.getDrawable() != null) {
+                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) mAvatar.getDrawable()).getBitmap());
+            }
+            startActivity(i,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            getActivity(),
+                            Pair.create(mUserName, getString(R.string.transition_username)),
+                            Pair.create(mAvatar, getString(R.string.transition_user_image))
+                    ).toBundle()
+            );
         }
     }
 

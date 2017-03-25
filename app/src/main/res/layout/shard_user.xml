@@ -7,7 +7,7 @@
               android:paddingEnd="8dp">
 
     <com.androidnetworking.widget.ANImageView
-        android:id="@+id/user_image"
+        android:id="@+id/user_avatar"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center_horizontal"/>

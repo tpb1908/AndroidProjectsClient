@@ -103,7 +103,7 @@
                             android:layout_margin="16dp">
 
                             <com.androidnetworking.widget.ANImageView
-                                android:id="@+id/user_image"
+                                android:id="@+id/user_avatar"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_gravity="center_horizontal"
