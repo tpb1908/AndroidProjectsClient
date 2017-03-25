@@ -75,6 +75,14 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
     }
 
+    public void updateProject(Project project) {
+        final int index = mProjects.indexOf(project);
+        if(index != -1) {
+            mProjects.set(index, project);
+            notifyItemChanged(index);
+        }
+    }
+
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_project, parent, false));

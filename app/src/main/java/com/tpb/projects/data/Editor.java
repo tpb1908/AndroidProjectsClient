@@ -136,6 +136,52 @@ public class Editor extends APIHandler {
                 });
     }
 
+    public void openProject(@NonNull GITModelUpdateListener<Project> listener, int projectId) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(STATE, STATE_OPEN);
+        } catch(JSONException ignored) {
+        }
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId)
+                         .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                         .addJSONObjectBody(obj)
+                         .build()
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 listener.updated(Project.parse(response));
+                             }
+
+                             @Override
+                             public void onError(ANError anError) {
+                                 listener.updateError(parseError(anError));
+                             }
+                         });
+    }
+
+    public void closeProject(@NonNull GITModelUpdateListener<Project> listener, int projectId) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(STATE, STATE_CLOSED);
+        } catch(JSONException ignored) {
+        }
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId)
+                         .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                         .addJSONObjectBody(obj)
+                         .build()
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 listener.updated(Project.parse(response));
+                             }
+
+                             @Override
+                             public void onError(ANError anError) {
+                                 listener.updateError(parseError(anError));
+                             }
+                         });
+    }
+
     public void updateColumnName(@Nullable GITModelUpdateListener<Column> listener, int columnId, String newName) {
         final JSONObject obj = new JSONObject();
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
