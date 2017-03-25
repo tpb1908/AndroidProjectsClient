@@ -138,7 +138,7 @@ public class RepoActivity extends BaseActivity implements
                 mLoader.loadRepository(mRepoLoader, mRepo.getFullName());
             }
         });
-        mAdapter = new ProjectAdapter(this, mRecycler);
+        mAdapter = new ProjectAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {

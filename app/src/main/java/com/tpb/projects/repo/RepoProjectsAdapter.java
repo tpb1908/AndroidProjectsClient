@@ -1,5 +1,7 @@
 package com.tpb.projects.repo;
 
+import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -9,10 +11,10 @@ import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
+import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -25,19 +27,44 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by theo on 17/12/16.
+ * Created by theo on 25/03/17.
  */
 
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> implements Loader.GITModelsLoader<Project> {
-    private static final String TAG = ProjectAdapter.class.getSimpleName();
+public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapter.ProjectViewHolder> implements  Loader.GITModelsLoader<Project> {
 
     private ArrayList<Project> mProjects = new ArrayList<>();
-    private final ProjectEditor mEditor;
-    private boolean canAccessRepo = false;
+    private Loader mLoader;
+    private Repository mRepo;
+    private SwipeRefreshLayout mRefresher;
 
+    public RepoProjectsAdapter(Context context, SwipeRefreshLayout refresher) {
+        mLoader = new Loader(context);
+        mRefresher = refresher;
+    }
 
-    public ProjectAdapter(ProjectEditor editor) {
-        mEditor = editor;
+    public void setRepository(Repository repo) {
+        mLoader.loadProjects(this, repo.getFullName());
+        mRepo = repo;
+    }
+
+    public void reload() {
+        final int oldSize = mProjects.size();
+        mProjects.clear();
+        notifyItemRangeRemoved(0, oldSize);
+        mLoader.loadProjects(this, mRepo.getFullName());
+    }
+
+    @Override
+    public void loadComplete(Project[] data) {
+        mProjects.clear();
+        mProjects.addAll(Arrays.asList(data));
+        notifyItemRangeChanged(0, mProjects.size());
+        mRefresher.setRefreshing(false);
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
     }
 
     @Override
@@ -64,43 +91,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
     }
 
-    void enableEditAccess() {
-        canAccessRepo = true;
-        if(mProjects.size() > 0) notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
         return mProjects.size();
-    }
-
-    @Override
-    public void loadComplete(Project[] projects) {
-        mProjects = new ArrayList<>(Arrays.asList(projects));
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void loadError(APIHandler.APIError error) {
-
-    }
-
-    void clearProjects() {
-        mProjects.clear();
-        notifyDataSetChanged();
-    }
-
-    void addProject(Project project) {
-        mProjects.add(0, project);
-        notifyItemInserted(0);
-    }
-
-    void updateProject(Project project) {
-        final int pos = mProjects.indexOf(project);
-        if(pos != -1) {
-            mProjects.set(pos, project);
-            notifyItemChanged(pos);
-        }
     }
 
     class ProjectViewHolder extends RecyclerView.ViewHolder {
@@ -112,20 +105,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         ProjectViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.findViewById(R.id.project_edit_button).setOnClickListener((v) -> mEditor.editProject(mProjects.get(getAdapterPosition())));
-            view.findViewById(R.id.project_edit_button).setVisibility(canAccessRepo ? View.VISIBLE : View.INVISIBLE);
-            view.setOnClickListener((v) -> mEditor.openProject(mProjects.get(getAdapterPosition()), mName));
         }
 
     }
-
-    interface ProjectEditor {
-
-        void openProject(Project project, View name);
-
-        void editProject(Project project);
-
-        void deleteProject(Project project, Editor.GITModelDeletionListener<Project> listener);
-    }
-
 }

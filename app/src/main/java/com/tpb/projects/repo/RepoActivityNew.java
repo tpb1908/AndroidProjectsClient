@@ -72,6 +72,7 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
     public void loadComplete(Repository repo) {
         mRepo = repo;
         mAdapter.notifyRepoLoaded();
+        mTitle.setText(repo.getName());
     }
 
     @Override

@@ -114,11 +114,11 @@ public class RepoInfoFragment extends RepoFragment {
                 user.setId(i);
                 mCollaborators.addView(user);
                 final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-                imageView.setId(10 * i);
+                imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = (TextView) user.findViewById(R.id.user_login);
-                login.setId(20 * i); //Max 10 assignees
+                login.setId(View.generateViewId());
                 login.setText(u.getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);
@@ -130,15 +130,14 @@ public class RepoInfoFragment extends RepoFragment {
                     getActivity().startActivity(us,
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     getActivity(),
-                                    new Pair<>(login, getString(R.string.transition_username)),
-                                    new Pair<>(imageView, getString(R.string.transition_user_image))
+                                    Pair.create(login, getString(R.string.transition_username)),
+                                    Pair.create(imageView, getString(R.string.transition_user_image))
                             ).toBundle());
                 });
             }
         } else {
             mCollaborators.setVisibility(View.GONE);
         }
-        
     }
 
 
