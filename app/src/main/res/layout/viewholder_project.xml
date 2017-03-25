@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/project_edit_button"
+        android:layout_toStartOf="@+id/project_menu_button"
         android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
     <TextView
@@ -19,11 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/project_name"
-        android:layout_toStartOf="@+id/project_edit_button"
+        android:layout_toStartOf="@+id/project_menu_button"
         android:textAppearance="@android:style/TextAppearance.Material.Small"/>
 
     <ImageButton
-        android:id="@+id/project_edit_button"
+        android:id="@+id/project_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

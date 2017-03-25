@@ -331,6 +331,11 @@
     <string name="menu_filter_assignee">Assignee</string>
     <string name="menu_search">Search</string>
 
+    <string name="menu_edit_project">Edit</string>
+    <string name="menu_delete_project">Delete</string>
+    <string name="menu_close_project">Close</string>
+    <string name="menu_reopen_project">Reopen</string>
+
     <!-- Format strings -->
     <string name="text_last_updated">Last updated %1$s</string>
     <string name="text_zero_value">0</string>

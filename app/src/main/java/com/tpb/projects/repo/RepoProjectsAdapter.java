@@ -8,6 +8,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
@@ -106,6 +107,8 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
             );
             i.putExtra(mParent.getString(R.string.intent_project_number), mProjects.get(position).getNumber());
         });
+        holder.mMenu.setOnClickListener(v -> mParent.showMenu(holder.mMenu, mProjects.get(position)));
+
     }
 
     @Override
@@ -113,11 +116,12 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         return mProjects.size();
     }
 
-    class ProjectViewHolder extends RecyclerView.ViewHolder {
+    static class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.project_name) TextView mName;
         @BindView(R.id.project_last_updated) TextView mLastUpdate;
         @BindView(R.id.project_body) HtmlTextView mBody;
+        @BindView(R.id.project_menu_button) ImageButton mMenu;
 
         ProjectViewHolder(View view) {
             super(view);

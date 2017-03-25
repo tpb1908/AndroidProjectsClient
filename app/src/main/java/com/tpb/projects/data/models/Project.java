@@ -38,6 +38,9 @@ public class Project extends DataModel implements Parcelable {
     private static final String LOGIN = "login";
     private String creatorUserName;
 
+    private static final String STATE = "state";
+    private State state;
+
     private long updatedAt;
 
     public String getOwnerUrl() {
@@ -104,6 +107,7 @@ public class Project extends DataModel implements Parcelable {
             p.ownerUrl = object.getString(OWNER_URL);
             p.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
             p.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
+            p.state = State.fromString(object.getString(STATE));
         } catch(Exception jse) {
             Log.e(TAG, "parse: ", jse);
         }

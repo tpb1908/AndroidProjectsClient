@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoProjectsAdapter;
 import com.tpb.projects.util.fab.FabHideScrollListener;
@@ -60,6 +61,10 @@ public class RepoProjectsFragment extends RepoFragment {
             mFabHideScrollListener = new FabHideScrollListener(fab);
             mRecycler.addOnScrollListener(mFabHideScrollListener);
         }
+    }
+
+    public void showMenu(View view, Project project) {
+
     }
 
     @Override
