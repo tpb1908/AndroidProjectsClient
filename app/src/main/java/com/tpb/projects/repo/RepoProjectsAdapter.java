@@ -1,6 +1,7 @@
 package com.tpb.projects.repo;
 
-import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -16,6 +17,8 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.project.ProjectActivity;
+import com.tpb.projects.repo.fragment.RepoProjectsFragment;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
@@ -35,10 +38,12 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
     private ArrayList<Project> mProjects = new ArrayList<>();
     private Loader mLoader;
     private Repository mRepo;
+    private RepoProjectsFragment mParent;
     private SwipeRefreshLayout mRefresher;
 
-    public RepoProjectsAdapter(Context context, SwipeRefreshLayout refresher) {
-        mLoader = new Loader(context);
+    public RepoProjectsAdapter(RepoProjectsFragment parent, SwipeRefreshLayout refresher) {
+        mLoader = new Loader(parent.getContext());
+        mParent = parent;
         mRefresher = refresher;
     }
 
@@ -89,6 +94,18 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
                     null
             );
         }
+        holder.itemView.setOnClickListener(v -> {
+            final Intent i = new Intent(mParent.getContext(), ProjectActivity.class);
+            i.putExtra(mParent.getString(R.string.parcel_project), mProjects.get(position));
+            mParent.startActivity(i,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            mParent.getActivity(),
+                            holder.mName,
+                            mParent.getString(R.string.transition_title)
+                    ).toBundle()
+            );
+            i.putExtra(mParent.getString(R.string.intent_project_number), mProjects.get(position).getNumber());
+        });
     }
 
     @Override

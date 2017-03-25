@@ -34,7 +34,7 @@ public class RepoProjectsFragment extends RepoFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_repo_projects, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAdapter = new RepoProjectsAdapter(getContext(), mRefresher);
+        mAdapter = new RepoProjectsAdapter(this, mRefresher);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecycler.setAdapter(mAdapter);
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());
