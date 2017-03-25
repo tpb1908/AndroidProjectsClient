@@ -181,6 +181,10 @@ public class Repository extends DataModel implements Parcelable {
         return hasIssues;
     }
 
+    public boolean hasLicense() {
+        return licenseName != null;
+    }
+
     public String getLicenseKey() {
         return licenseKey;
     }

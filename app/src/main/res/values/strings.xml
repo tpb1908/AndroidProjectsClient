@@ -35,18 +35,22 @@
     <string name="error_bad_request">Error: Bad request</string>
     <string name="error_unknown">Unknown error</string>
 
-    <!--Issue activity -->
+    <string name="error_loading_license">Couldn\'t load license</string>
+
+    <!--Repository activity -->
     <string name="text_forks">Forks</string>
     <string name="text_issues">Issues</string>
     <string name="text_stars">Stars</string>
     <string name="text_size">Size</string>
     <string name="text_watchers">Watchers</string>
+    <string name="text_license">License</string>
     <string name="text_show_readme">Show README</string>
     <string name="text_hide_readme">Hide README</string>
     <string name="text_create_project">Create new project</string>
     <string name="text_project_created">Project created successfully</string>
     <string name="text_project_edited">Project edited successfully</string>
     <string name="text_delete_project_warning">Do you want to delete this project?</string>
+    <string name="text_no_license">None</string>
 
     <!--Project activity-->
     <string name="text_fab_new_card">New card</string>
@@ -285,6 +289,8 @@
 
     <string name="title_issue_info_fragment">Details</string>
     <string name="title_issue_comments_fragment">Comments</string>
+
+    <string name="title_loading_license">Loading</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>

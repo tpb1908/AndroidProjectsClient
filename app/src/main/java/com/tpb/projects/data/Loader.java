@@ -1,6 +1,7 @@
 package com.tpb.projects.data;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -883,6 +884,32 @@ public class Loader extends APIHandler {
                         if(loader != null) loader.loadError(parseError(anError));
                     }
                 });
+    }
+
+    public void loadLicenseBody(@NonNull GITModelLoader<String> loader, @NonNull String path) {
+        AndroidNetworking.get(path)
+                .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(response.has("body")) {
+                            try {
+                                loader.loadComplete(response.getString("body"));
+                            } catch(JSONException jse) {
+                                loader.loadError(APIError.NOT_FOUND);
+                            }
+                        } else {
+                            loader.loadError(APIError.NOT_FOUND);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        loader.loadError(parseError(anError));
+                    }
+                });
+
     }
 
     public interface GITModelsLoader<T> {

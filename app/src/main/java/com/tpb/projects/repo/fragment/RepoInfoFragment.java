@@ -1,5 +1,7 @@
 package com.tpb.projects.repo.fragment;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -50,7 +53,7 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.repo_stars) TextView mStars;
     @BindView(R.id.repo_issues) TextView mIssues;
     @BindView(R.id.repo_forks) TextView mForks;
-
+    @BindView(R.id.repo_license) TextView mLicense;
 
     @Nullable
     @Override
@@ -114,6 +117,11 @@ public class RepoInfoFragment extends RepoFragment {
         mForks.setText(String.valueOf(repo.getForks()));
         mSize.setText(Util.formatKB(repo.getSize()));
         mStars.setText(String.valueOf(repo.getStarGazers()));
+        if(mRepo.hasLicense()) {
+            mLicense.setText(repo.getLicenseShortName());
+        } else {
+            mLicense.setText(R.string.text_no_license);
+        }
     }
 
     @Override
@@ -164,6 +172,33 @@ public class RepoInfoFragment extends RepoFragment {
         }
     }
 
+    @OnClick({R.id.repo_license, R.id.repo_license_drawable, R.id.repo_license_text})
+    void showLicense() {
+        if(mRepo.hasLicense()) {
+            final ProgressDialog pd = new ProgressDialog(getContext());
+            pd.setTitle(R.string.title_loading_license);
+            pd.setMessage(mRepo.getLicenseName());
+            pd.show();
+            mLoader.loadLicenseBody(new Loader.GITModelLoader<String>() {
+                @Override
+                public void loadComplete(String data) {
+                    pd.dismiss();
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(mRepo.getLicenseName())
+                            .setMessage(data)
+                            .setPositiveButton(R.string.action_ok, null)
+                            .create()
+                            .show();
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+                    pd.dismiss();
+                    Toast.makeText(getContext(), R.string.error_loading_license, Toast.LENGTH_SHORT).show();
+                }
+            }, mRepo.getLicenseUrl());
+        }
+    }
 
     @Override
     public void onDestroyView() {
