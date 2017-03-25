@@ -127,6 +127,16 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
             if(mRepo != null) mFragments[position].repoLoaded(mRepo);
             return mFragments[position];
         }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch(position) {
+                case 0: return getString(R.string.title_repo_info);
+                case 1: return getString(R.string.title_repo_issues);
+                case 2: return getString(R.string.title_repo_projects);
+                default: return "";
+            }
+        }
     }
 
 }

@@ -14,7 +14,7 @@ import com.tpb.projects.repo.RepoActivityNew;
 
 public abstract class RepoFragment extends Fragment {
 
-    protected Repository mRepository;
+    protected Repository mRepo;
     protected boolean mAreViewsValid;
 
     public abstract void repoLoaded(Repository repo);
@@ -23,15 +23,15 @@ public abstract class RepoFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.intent_repo))) {
-            mRepository = savedInstanceState.getParcelable(getString(R.string.intent_repo));
-            repoLoaded(mRepository);
+            mRepo = savedInstanceState.getParcelable(getString(R.string.intent_repo));
+            repoLoaded(mRepo);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(getString(R.string.intent_repo), mRepository);
+        outState.putParcelable(getString(R.string.intent_repo), mRepo);
     }
 
     @Override

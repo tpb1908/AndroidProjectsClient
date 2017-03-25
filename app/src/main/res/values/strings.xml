@@ -19,6 +19,7 @@
     <string name="error_project_not_found">Project not found</string>
     <string name="error_repo_not_found">Repository not found</string>
     <string name="error_no_application_for_picture">No camera</string>
+    <string name="error_readme_not_found">Readme not found</string>
 
     <!-- Network errors -->
     <string name="error_no_connection">No connection</string>
@@ -277,6 +278,10 @@
     <string name="title_user_events_fragment">Events</string>
     <string name="title_user_followers_fragment">Followers</string>
     <string name="title_user_following_fragment">Following</string>
+
+    <string name="title_repo_info">Info</string>
+    <string name="title_repo_issues">Issues</string>
+    <string name="title_repo_projects">Projects</string>
 
     <string name="title_issue_info_fragment">Details</string>
     <string name="title_issue_comments_fragment">Comments</string>
