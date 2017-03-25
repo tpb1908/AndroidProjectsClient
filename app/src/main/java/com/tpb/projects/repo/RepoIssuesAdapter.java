@@ -51,6 +51,10 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
+    private State mFilter = State.OPEN;
+    private String mAssigneeFilter;
+    private final ArrayList<String> mLabelsFilter = new ArrayList<>();
+
     public RepoIssuesAdapter(Activity parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(mParent);
@@ -65,6 +69,17 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     public void setRepo(Repository repo) {
         mRepo = repo;
+        loadIssues(true);
+    }
+
+    public void applyFilter(State state, String assignee, ArrayList<String> labels) {
+        mFilter = state;
+        mAssigneeFilter = assignee;
+        mLabelsFilter.clear();
+        mLabelsFilter.addAll(labels);
+        final int oldSize = mIssues.size();
+        mIssues.clear();
+        notifyItemRangeRemoved(0, oldSize);
         loadIssues(true);
     }
 
@@ -103,7 +118,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadIssues(this, mRepo.getFullName(), State.OPEN, null, null, mPage);
+        mLoader.loadIssues(this, mRepo.getFullName(), mFilter, mAssigneeFilter, mLabelsFilter, mPage);
     }
 
 

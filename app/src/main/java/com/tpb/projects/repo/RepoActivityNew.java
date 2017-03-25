@@ -84,7 +84,7 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
         if(mAdapter == null) mAdapter = new RepoFragmentAdapter(getSupportFragmentManager());
-        mAdapter.ensureAttached((RepoFragment) fragment);
+        if(fragment instanceof RepoFragment) mAdapter.ensureAttached((RepoFragment) fragment);
     }
 
     private class RepoFragmentAdapter extends FragmentPagerAdapter {
