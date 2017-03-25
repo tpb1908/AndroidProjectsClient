@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoProjectsAdapter;
+import com.tpb.projects.util.fab.FabHideScrollListener;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +29,7 @@ public class RepoProjectsFragment extends RepoFragment {
 
     @BindView(R.id.repo_projects_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_projects_recycler) RecyclerView mRecycler;
+    private FabHideScrollListener mFabHideScrollListener;
     private RepoProjectsAdapter mAdapter;
 
     @Nullable
@@ -44,6 +47,15 @@ public class RepoProjectsFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mAdapter.setRepository(repo);
+    }
+
+    @Override
+    public void handleFab(FloatingActionButton fab) {
+        fab.show(true);
+        if(mFabHideScrollListener == null) {
+            mFabHideScrollListener = new FabHideScrollListener(fab);
+            mRecycler.addOnScrollListener(mFabHideScrollListener);
+        }
     }
 
     @Override

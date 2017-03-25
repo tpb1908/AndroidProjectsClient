@@ -23,6 +23,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -103,7 +104,12 @@ public class RepoInfoFragment extends RepoFragment {
             }
         }, mRepo.getFullName());
     }
-    
+
+    @Override
+    public void handleFab(FloatingActionButton fab) {
+        fab.hide(true);
+    }
+
     private void displayCollaborators(User[] collaborators) {
         mCollaborators.removeAllViews();
         if(collaborators.length > 1) {

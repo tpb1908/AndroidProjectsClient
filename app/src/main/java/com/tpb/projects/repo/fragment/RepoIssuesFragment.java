@@ -1,6 +1,7 @@
 package com.tpb.projects.repo.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,13 +17,21 @@ import android.widget.Toast;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.Loader;
+import com.tpb.projects.data.models.Comment;
+import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.editors.CommentEditor;
+import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.repo.RepoIssuesAdapter;
+import com.tpb.projects.util.UI;
+import com.tpb.projects.util.fab.FabHideScrollListener;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -45,6 +54,7 @@ public class RepoIssuesFragment extends RepoFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.repo_issues_recycler) RecyclerView mRecyclerView;
+    private FabHideScrollListener mFabHideScrollListener;
     @BindView(R.id.repo_issues_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issues_search_view) SearchView mSearchView;
     private RepoIssuesAdapter mAdapter;
@@ -53,16 +63,20 @@ public class RepoIssuesFragment extends RepoFragment {
     private String mAssigneeFilter;
     private final ArrayList<String> mLabelsFilter = new ArrayList<>();
 
+    private Editor mEditor;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_repo_issues, container, false);
         unbinder = ButterKnife.bind(this, view);
+        mEditor = new Editor(getContext());
         mAdapter = new RepoIssuesAdapter(getParent(), mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -94,6 +108,21 @@ public class RepoIssuesFragment extends RepoFragment {
     public void repoLoaded(Repository repo) {
         mAdapter.setRepo(repo);
         mRepo = repo;
+    }
+
+    @Override
+    public void handleFab(FloatingActionButton fab) {
+        fab.show(true);
+        fab.setOnClickListener(v -> {
+            final Intent intent = new Intent(getContext(), IssueEditor.class);
+            intent.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+            UI.setViewPositionForIntent(intent, fab);
+            startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
+        });
+        if(mFabHideScrollListener == null) {
+            mFabHideScrollListener = new FabHideScrollListener(fab);
+            mRecyclerView.addOnScrollListener(mFabHideScrollListener);
+        }
     }
 
     @OnClick(R.id.issues_filter_button)
@@ -231,6 +260,86 @@ public class RepoIssuesFragment extends RepoFragment {
                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepo.getFullName());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == IssueEditor.RESULT_OK) {
+            final String[] assignees;
+            final String[] labels;
+            if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
+                assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+            } else {
+                assignees = null;
+            }
+            if(data.hasExtra(getString(R.string.intent_issue_labels))) {
+                labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
+            } else {
+                labels = null;
+            }
+            final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
+            if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
+
+                mRefresher.setRefreshing(true);
+                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                    @Override
+                    public void created(Issue issue) {
+                        mRefresher.setRefreshing(false);
+                        mAdapter.addIssue(issue);
+                        mRecyclerView.scrollToPosition(0);
+                    }
+
+                    @Override
+                    public void creationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, mRepo.getFullName(), issue.getTitle(), issue.getBody(), assignees, labels);
+            } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
+                mRefresher.setRefreshing(true);
+                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
+                    int issueCreationAttempts = 0;
+
+                    @Override
+                    public void updated(Issue issue) {
+                        mAdapter.updateIssue(issue);
+                        mRefresher.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void updateError(APIHandler.APIError error) {
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                        } else {
+                            if(issueCreationAttempts < 5) {
+                                issueCreationAttempts++;
+                                mEditor.updateIssue(this, mRepo.getFullName(), issue, assignees, labels);
+                            } else {
+                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                                mRefresher.setRefreshing(false);
+                            }
+                        }
+                    }
+                }, mRepo.getFullName(), issue, assignees, labels);
+            } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
+                final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+                    @Override
+                    public void created(Comment comment) {
+                        mRefresher.setRefreshing(true);
+                    }
+
+                    @Override
+                    public void creationError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                        if(error == APIHandler.APIError.NO_CONNECTION) {
+                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
+            }
+        }
     }
 
     @Override

@@ -53,6 +53,22 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(3);
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mAdapter.mFragments[position].handleFab(mFab);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         final Intent launchIntent = getIntent();
         final Loader loader = new Loader(this);

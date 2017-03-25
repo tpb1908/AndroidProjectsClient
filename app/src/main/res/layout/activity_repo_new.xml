@@ -59,7 +59,7 @@
         android:id="@+id/repo_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_reply"
+        android:src="@drawable/ic_add"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccent"
         android:layout_margin="@dimen/fab_margin"

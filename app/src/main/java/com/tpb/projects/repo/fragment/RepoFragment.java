@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivityNew;
+import com.tpb.projects.util.fab.FloatingActionButton;
 
 /**
  * Created by theo on 25/03/17.
@@ -18,6 +19,8 @@ public abstract class RepoFragment extends Fragment {
     protected boolean mAreViewsValid;
 
     public abstract void repoLoaded(Repository repo);
+
+    public abstract void handleFab(FloatingActionButton fab);
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

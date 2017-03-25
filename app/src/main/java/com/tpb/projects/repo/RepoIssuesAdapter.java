@@ -46,7 +46,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     private final Activity mParent;
     private final SwipeRefreshLayout mRefresher;
     private final ArrayList<Pair<Issue, SpannableString>> mIssues = new ArrayList<>();
-    private ArrayList<String> mSearchStrings = new ArrayList<>();
     private FuzzyStringSearcher mSearcher = new FuzzyStringSearcher();
     private boolean mIsSearching = false;
     private ArrayList<Integer> mSearchFilter = new ArrayList<>();
@@ -153,12 +152,12 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     }
 
 
-    void addIssue(Issue issue) {
+    public void addIssue(Issue issue) {
         mIssues.add(0, Pair.create(issue, null));
         notifyItemInserted(0);
     }
 
-    void updateIssue(Issue issue) {
+    public void updateIssue(Issue issue) {
         int index = Util.indexInPair(mIssues, issue);
         if(index != -1) {
             mIssues.set(index, Pair.create(issue, null));
