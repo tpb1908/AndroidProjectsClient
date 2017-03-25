@@ -125,10 +125,12 @@ public class RepoInfoFragment extends RepoFragment {
         mCollaborators.removeAllViews();
         if(collaborators.length > 1) {
             mCollaborators.setVisibility(View.VISIBLE);
-            for(int i = 0; i < collaborators.length; i++) {
-                final User u = collaborators[i];
-                final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
-                user.setId(i);
+            for(final User u : collaborators) {
+                final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
+                                                                      .inflate(R.layout.shard_user,
+                                                                              mCollaborators, false
+                                                                      );
+                user.setId(View.generateViewId());
                 mCollaborators.addView(user);
                 final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
                 imageView.setId(View.generateViewId());
@@ -142,14 +144,19 @@ public class RepoInfoFragment extends RepoFragment {
                     us.putExtra(getString(R.string.intent_username), u.getLogin());
 
                     if(imageView.getDrawable() != null) {
-                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                        us.putExtra(getString(R.string.intent_drawable),
+                                ((BitmapDrawable) imageView.getDrawable()).getBitmap()
+                        );
                     }
                     getActivity().startActivity(us,
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     getActivity(),
                                     Pair.create(login, getString(R.string.transition_username)),
-                                    Pair.create(imageView, getString(R.string.transition_user_image))
-                            ).toBundle());
+                                    Pair.create(imageView,
+                                            getString(R.string.transition_user_image)
+                                    )
+                            ).toBundle()
+                    );
                 });
             }
         } else {
