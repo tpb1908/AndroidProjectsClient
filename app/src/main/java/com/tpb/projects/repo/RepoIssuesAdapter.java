@@ -1,6 +1,5 @@
 package com.tpb.projects.repo;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -26,6 +25,7 @@ import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.repo.fragment.RepoIssuesFragment;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 
 public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.IssueHolder> implements Loader.GITModelsLoader<Issue> {
 
-    private final Activity mParent;
+    private final RepoIssuesFragment mParent;
     private final SwipeRefreshLayout mRefresher;
     private final ArrayList<Pair<Issue, SpannableString>> mIssues = new ArrayList<>();
     private FuzzyStringSearcher mSearcher = new FuzzyStringSearcher();
@@ -60,9 +60,9 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     private String mAssigneeFilter;
     private final ArrayList<String> mLabelsFilter = new ArrayList<>();
 
-    public RepoIssuesAdapter(Activity parent, SwipeRefreshLayout refresher) {
+    public RepoIssuesAdapter(RepoIssuesFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
-        mLoader = new Loader(mParent);
+        mLoader = new Loader(mParent.getContext());
         mRefresher = refresher;
         mRefresher.setOnRefreshListener(() -> {
             final int oldSize = mIssues.size();
@@ -181,8 +181,8 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         holder.mTitle.setHtml(Spanner.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
-        IntentHandler.addOnClickHandler(mParent, holder.mUserAvatar, issue.getOpenedBy().getLogin());
-        IntentHandler.addOnClickHandler(mParent, holder.mContent, holder.mUserAvatar, null, issue);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar, issue.getOpenedBy().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mContent, holder.mUserAvatar, null, issue);
         if(mIssues.get(pos).second == null) {
             holder.mContent.setHtml(Markdown.parseMD(
                     Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
@@ -201,15 +201,15 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     }
 
     private void openIssue(IssueHolder holder, int pos) {
-        final Intent i = new Intent(mParent, IssueActivity.class);
+        final Intent i = new Intent(mParent.getContext(), IssueActivity.class);
         i.putExtra(mParent.getString(R.string.transition_card), "");
         i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos).first);
         i.putExtra(mParent.getString(R.string.intent_drawable), ((BitmapDrawable) holder.mUserAvatar.getDrawable()).getBitmap());
         //We have to add the nav bar as ViewOverlay is above it
         mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                mParent,
+                mParent.getActivity(),
                 Pair.create(holder.itemView, mParent.getString(R.string.transition_card)),
-                UI.getSafeNavigationBarTransitionPair(mParent)).toBundle()
+                UI.getSafeNavigationBarTransitionPair(mParent.getActivity())).toBundle()
         );
     }
 
@@ -224,7 +224,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            //mMenuButton.setOnClickListener((v) -> openMenu(v, getAdapterPosition()));
+            mMenuButton.setOnClickListener((v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
             mContent.setConsumeNonUrlClicks(false);
             mTitle.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));

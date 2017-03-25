@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -32,6 +33,8 @@ import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FabHideScrollListener;
 import com.tpb.projects.util.fab.FloatingActionButton;
+
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -72,7 +75,7 @@ public class RepoIssuesFragment extends RepoFragment {
         final View view = inflater.inflate(R.layout.fragment_repo_issues, container, false);
         unbinder = ButterKnife.bind(this, view);
         mEditor = new Editor(getContext());
-        mAdapter = new RepoIssuesAdapter(getParent(), mRefresher);
+        mAdapter = new RepoIssuesAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
@@ -262,6 +265,85 @@ public class RepoIssuesFragment extends RepoFragment {
         }, mRepo.getFullName());
     }
 
+    public void openMenu(View view, final Issue issue) {
+        final PopupMenu menu = new PopupMenu(getContext(), view);
+        menu.inflate(R.menu.menu_issue);
+        menu.getMenu().add(0, R.id.menu_toggle_issue_state, Menu.NONE, issue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+        menu.getMenu().add(0, R.id.menu_edit_issue, Menu.NONE, getString(R.string.menu_edit_issue));
+
+        menu.setOnMenuItemClickListener(menuItem -> {
+            switch(menuItem.getItemId()) {
+                case R.id.menu_toggle_issue_state:
+                    toggleIssueState(issue);
+                    break;
+                case R.id.menu_edit_issue:
+                    editIssue(view, issue);
+                    break;
+            }
+            return false;
+        });
+        menu.show();
+    }
+
+    private void editIssue(View view, Issue issue) {
+        final Intent intent = new Intent(getContext(), IssueEditor.class);
+        intent.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+        intent.putExtra(getString(R.string.parcel_issue), issue);
+        final Loader loader = new Loader(getContext());
+        loader.loadLabels(null, issue.getRepoPath());
+        loader.loadCollaborators(null, issue.getRepoPath());
+        if(view instanceof HtmlTextView) {
+            UI.setClickPositionForIntent(getActivity(), intent, ((HtmlTextView) view).getLastClickPosition());
+        } else {
+            UI.setViewPositionForIntent(intent, view);
+        }
+        startActivityForResult(intent, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
+
+    }
+
+    private void toggleIssueState(Issue issue) {
+        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
+            @Override
+            public void updated(Issue toggled) {
+                mAdapter.updateIssue(toggled);
+                mRefresher.setRefreshing(false);
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_state_change_comment);
+        builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
+            final Intent i = new Intent(getContext(), CommentEditor.class);
+            i.putExtra(getString(R.string.parcel_issue), issue);
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
+            if(issue.isClosed()) {
+                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+            }
+
+        });
+        builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
+            mRefresher.setRefreshing(true);
+            if(issue.isClosed()) {
+                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+            } else {
+                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+            }
+        });
+        builder.setNeutralButton(R.string.action_cancel, null);
+        builder.create().show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -327,7 +409,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
-                        mRefresher.setRefreshing(true);
+                        mRefresher.setRefreshing(false);
                     }
 
                     @Override
