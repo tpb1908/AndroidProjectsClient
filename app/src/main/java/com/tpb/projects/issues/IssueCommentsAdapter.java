@@ -61,8 +61,9 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     public void clear() {
+        final int oldSize = mComments.size();
         mComments.clear();
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(0, oldSize);
     }
     
     public void setIssue(Issue issue) {
