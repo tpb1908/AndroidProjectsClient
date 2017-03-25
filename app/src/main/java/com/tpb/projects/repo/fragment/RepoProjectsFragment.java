@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoProjectsAdapter;
@@ -28,7 +28,7 @@ public class RepoProjectsFragment extends RepoFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.repo_projects_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_projects_recycler) RecyclerView mRecycler;
+    @BindView(R.id.repo_projects_recycler) AnimatingRecyclerView mRecycler;
     private FabHideScrollListener mFabHideScrollListener;
     private RepoProjectsAdapter mAdapter;
 
@@ -38,14 +38,18 @@ public class RepoProjectsFragment extends RepoFragment {
         final View view = inflater.inflate(R.layout.fragment_repo_projects, container, false);
         unbinder = ButterKnife.bind(this, view);
         mAdapter = new RepoProjectsAdapter(this, mRefresher);
+        mRecycler.enableLineDecoration();
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecycler.setAdapter(mAdapter);
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());
+        mAreViewsValid = true;
+        if(mRepo != null) repoLoaded(mRepo);
         return view;
     }
 
     @Override
     public void repoLoaded(Repository repo) {
+        if(!mAreViewsValid) return;;
         mAdapter.setRepository(repo);
     }
 
@@ -56,6 +60,11 @@ public class RepoProjectsFragment extends RepoFragment {
             mFabHideScrollListener = new FabHideScrollListener(fab);
             mRecycler.addOnScrollListener(mFabHideScrollListener);
         }
+    }
+
+    @Override
+    public void notifyBackPressed() {
+
     }
 
     @Override

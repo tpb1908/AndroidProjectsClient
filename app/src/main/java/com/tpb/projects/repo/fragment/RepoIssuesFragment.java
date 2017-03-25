@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -56,7 +57,7 @@ public class RepoIssuesFragment extends RepoFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.repo_issues_recycler) RecyclerView mRecyclerView;
+    @BindView(R.id.repo_issues_recycler) AnimatingRecyclerView mRecyclerView;
     private FabHideScrollListener mFabHideScrollListener;
     @BindView(R.id.repo_issues_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.issues_search_view) SearchView mSearchView;
@@ -77,6 +78,7 @@ public class RepoIssuesFragment extends RepoFragment {
         mEditor = new Editor(getContext());
         mAdapter = new RepoIssuesAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        mRecyclerView.enableLineDecoration();
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -104,13 +106,16 @@ public class RepoIssuesFragment extends RepoFragment {
             mAdapter.closeSearch();
             return false;
         });
+        mAreViewsValid = true;
+        if(mRepo != null) repoLoaded(mRepo);
         return view;
     }
 
     @Override
     public void repoLoaded(Repository repo) {
-        mAdapter.setRepo(repo);
         mRepo = repo;
+        if(!mAreViewsValid) return;
+        mAdapter.setRepo(repo);
     }
 
     @Override
@@ -422,6 +427,11 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
             }
         }
+    }
+
+    @Override
+    public void notifyBackPressed() {
+
     }
 
     @Override

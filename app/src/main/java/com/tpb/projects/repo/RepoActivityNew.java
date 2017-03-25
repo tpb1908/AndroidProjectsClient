@@ -103,6 +103,12 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
         if(fragment instanceof RepoFragment) mAdapter.ensureAttached((RepoFragment) fragment);
     }
 
+    @Override
+    public void onBackPressed() {
+        mAdapter.notifyBackPressed();
+        super.onBackPressed();
+    }
+
     private class RepoFragmentAdapter extends FragmentPagerAdapter {
 
         private RepoFragment[] mFragments = new RepoFragment[3];
@@ -125,6 +131,12 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
         void notifyRepoLoaded() {
             for(RepoFragment rf : mFragments) {
                 if(rf != null) rf.repoLoaded(mRepo);
+            }
+        }
+
+        void notifyBackPressed() {
+            for(RepoFragment rf : mFragments) {
+                if(rf != null) rf.notifyBackPressed();
             }
         }
 
@@ -155,5 +167,7 @@ public class RepoActivityNew extends BaseActivity implements Loader.GITModelLoad
             }
         }
     }
+
+
 
 }

@@ -32,7 +32,8 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="32dp"
-                android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+                android:textAppearance="@android:style/TextAppearance.Material.Title"
+                android:transitionName="@string/transition_name"/>
 
         </android.support.v7.widget.Toolbar>
 

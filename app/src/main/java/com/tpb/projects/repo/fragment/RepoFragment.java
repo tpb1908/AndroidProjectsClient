@@ -22,6 +22,8 @@ public abstract class RepoFragment extends Fragment {
 
     public abstract void handleFab(FloatingActionButton fab);
 
+    public abstract void notifyBackPressed();
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

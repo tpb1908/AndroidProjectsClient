@@ -92,7 +92,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
-    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.ADMIN;
     private int mLaunchCardId = -1;
     private int mLoadCount;
 
@@ -116,9 +116,14 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             loadComplete(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
-            mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
-            if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+            if(launchIntent.hasExtra(getString(R.string.intent_access_level))) {
+                mAccessLevel = (Repository.AccessLevel) launchIntent
+                        .getSerializableExtra(getString(R.string.intent_access_level));
+                if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                    new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+                }
+            } else {
+                checkAccess(mProject);
             }
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));

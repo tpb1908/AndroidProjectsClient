@@ -76,13 +76,15 @@ public class RepoInfoFragment extends RepoFragment {
                 }
             }, mRepo.getFullName());
         });
+        if(mRepo != null) repoLoaded(mRepo);
         return view;
     }
 
     @Override
     public void repoLoaded(Repository repo) {
-        mRefresher.setRefreshing(false);
         mRepo = repo;
+        if(!mAreViewsValid) return;
+        mRefresher.setRefreshing(false);
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
 
@@ -216,6 +218,11 @@ public class RepoInfoFragment extends RepoFragment {
                     ).toBundle()
             );
         }
+    }
+
+    @Override
+    public void notifyBackPressed() {
+        mReadme.setVisibility(View.GONE);
     }
 
     @Override

@@ -122,6 +122,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         ProjectViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mBody.setConsumeNonUrlClicks(false);
         }
 
     }
