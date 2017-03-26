@@ -62,7 +62,7 @@ public class Spanner {
         }
 
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
-            appendLabels(builder, issue.getLabels(), "   ");
+            appendLabels(builder, issue.getLabels(), "&nbsp;");
             builder.append("<br>");
         }
         if(showAssignees && issue.getAssignees() != null) {
@@ -216,16 +216,21 @@ public class Spanner {
 
     private static void appendLabels(StringBuilder builder, Label[] labels, String spacer) {
         for(Label label : labels) {
-            builder.append("<font color=\"");
-            builder.append(String.format("#%06X", getTextColor((0xFFFFFF & label.getColor()))));
-            builder.append("\" bgcolor=\"");
-            builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
-            builder.append("\"> ");
-            builder.append(label.getName());
-            builder.append(" </font>");
+            builder.append(getLabelString(label.getName(), label.getColor()));
             builder.append(spacer);
         }
         builder.setLength(Math.max(0, builder.length() - spacer.length())); //Strip the last spacer
+    }
+    
+    public static String getLabelString(String name, int color) {
+        return
+        "<font color=\"" +
+                String.format("#%06X", getTextColor((0xFFFFFF & color))) +
+                "\" bgcolor=\"" +
+                String.format("#%06X", (0xFFFFFF & color)) +
+                "\"> " +
+                name +
+                " </font>";
     }
 
     private static int getTextColor(int bg) {

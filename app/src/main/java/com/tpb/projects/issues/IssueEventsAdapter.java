@@ -23,12 +23,12 @@ import com.tpb.projects.data.models.MergedEvent;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,7 +78,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     @Override
     public void loadComplete(Event[] events) {
-        Log.i(IssueEventsAdapter.class.getSimpleName(), "loadComplete: Events loaded: " + Arrays.toString(events));
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(events.length > 0) {
@@ -135,7 +134,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             bindMergedEvent(holder, (MergedEvent) mEvents.get(position).first);
         }
     }
-
 
     private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
         String text;
@@ -196,12 +194,10 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             case LABELED:
                 final StringBuilder labels = new StringBuilder();
                 for(Event e : me.getEvents()) {
-                    labels.append(String.format(res.getString(R.string.text_label),
-                            String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
-                            e.getLabelName()));
-                    labels.append(", ");
+                    labels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    labels.append("&nbsp;");
                 }
-                labels.setLength(labels.length() - 2);
+                labels.setLength(labels.length() - "&nbsp;".length());
                 text = String.format(
                         res.getString(R.string.text_event_labels_added),
                         String.format(res.getString(R.string.text_href),
@@ -212,11 +208,8 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             case UNLABELED:
                 final StringBuilder unlabels = new StringBuilder();
                 for(Event e : me.getEvents()) {
-                    unlabels.append(
-                            String.format(res.getString(R.string.text_label),
-                                    String.format("#%06X", (0xFFFFFF & e.getLabelColor())),
-                                    e.getLabelName()));
-                    unlabels.append(", ");
+                    unlabels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    unlabels.append("&nbsp;");
                 }
                 unlabels.setLength(unlabels.length() - 2);
                 text = String.format(res.getString(R.string.text_event_labels_removed),
@@ -377,18 +370,16 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                         String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
-                        String.format(res.getString(R.string.text_label),
-                                String.format("#%06X", (0xFFFFFF & event.getLabelColor())),
-                                event.getLabelName()));
+                        Spanner.getLabelString(event.getLabelName(), event.getLabelColor())
+                );
                 break;
             case UNLABELED:
                 text = String.format(res.getString(R.string.text_event_unlabeled),
                         String.format(res.getString(R.string.text_href),
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
-                        String.format(res.getString(R.string.text_label),
-                                String.format("#%06X", (0xFFFFFF & event.getLabelColor())),
-                                event.getLabelName()));
+                        Spanner.getLabelString(event.getLabelName(), event.getLabelColor())
+                );
                 break;
             case MILESTONED:
                 text = "Milestoned"; //TODO

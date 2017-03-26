@@ -74,7 +74,7 @@
     <string name="text_gist_viewholder_title">%1$s/%2$s</string>
 
     <!-- Content activity -->
-    <string name="text_ribbon_root">Root</string>
+    <string name="text_ribbon_root">/</string>
 
     <!--Image uploading -->
     <string name="text_take_a_picture">Take a picture</string>
