@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/animatingrecycler/animatingrecycler.iml" filepath="$PROJECT_DIR$/animatingrecycler/animatingrecycler.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/contributionsview/contributionsview.iml" filepath="$PROJECT_DIR$/contributionsview/contributionsview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/markedview/markedview.iml" filepath="$PROJECT_DIR$/markedview/markedview.iml" />
     </modules>
   </component>
 </project>

@@ -86,6 +86,7 @@ public class RepoInfoFragment extends RepoFragment {
             }, mRepo.getFullName());
         });
         if(mRepo != null) repoLoaded(mRepo);
+        mReadme.enableDarkTheme();
         mParent.notifyFragmentViewCreated(this);
         return view;
     }
