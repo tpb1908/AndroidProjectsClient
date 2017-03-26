@@ -139,7 +139,7 @@ public class Markdown {
     }
 
     public static String parseMD(@NonNull String s, @Nullable String fullRepoName) {
-        return renderer.render(parser.parse(formatMD(s, fullRepoName)));
+        return renderer.render(parser.parse(formatMD(s, fullRepoName, true)));
     }
 
     public static String parseMD(@NonNull String s) {
@@ -240,7 +240,7 @@ public class Markdown {
                 nameBuilder.append(cs[i]);
                 p = cs[i];
                 //nameBuilder.length() > 0 stop us linking a single @
-            } else if((cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1) && nameBuilder.length() > 0) {
+            } else if((cs[i] == ' ' || cs[i] == '\n' || cs[i] == '\r' || i == cs.length - 1) && nameBuilder.length() > 0) {
                 if(i == cs.length - 1) {
                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
                 }

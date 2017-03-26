@@ -18,6 +18,8 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [HtmlTextView](https://github.com/SufficientlySecure/html-textview) Modified
 
+* [emoji-java](https://github.com/vdurmont/emoji-java)
+
 * [MarkedView](https://github.com/mittsuu/MarkedView-for-Android)
 
 * [CWAC Pager](https://github.com/commonsguy/cwac-pager)
@@ -29,7 +31,6 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 * [FireBase core and crash](https://firebase.google.com/docs/android/setup)
 
 * [Leak Canary](https://github.com/square/leakcanary)
-
 
 
 
@@ -97,24 +98,18 @@ The setup process can be completed through Android Studios' helper under tools -
 
 
 ### Screenshots
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/repos.png" width="720" height="1280" />
 
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/repo.png" width="720" height="1280" />
-
-<br />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/project.png" width="720" height="1280" />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/editing.png" width="720" height="1280" />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/issue_conversion.png" width="720" height="1280" />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/assignment.png" width="720" height="1280" />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/issue.png" width="720" height="1280" />
-
-<img src="https://github.com/tpb1908/AndroidProjectsClient/blob/master/screenshots/issues.png" width="720" height="1280" />
-
+| Context | Screenshot  |
+| --- | --- |
+| User | ![User](./screenshots/user.png)  |
+| Repos | ![Repos](./screenshots/repos.png) |
+| Repo | ![Repo](./screenshots/repo.png)  |
+| License | ![License](./screenshots/license.png) |
+| Issues | ![Issues](./screenshots/issues.png) |
+| Assignment | ![Assignment](./screenshots/assignment.png) |
+| Issue | ![Issue](./screenshots/issue.png) |
+| Project | ![Project](./screenshots/project.png) |
+| Editing | ![Editing](./screenshots/editing.png) |
 
 ### License
 
