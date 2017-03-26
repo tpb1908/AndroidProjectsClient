@@ -84,19 +84,6 @@ public class Label extends DataModel implements Parcelable {
         return obj;
     }
 
-    public static void appendLabels(StringBuilder builder, Label[] labels, String spacer) {
-        for(Label label : labels) {
-            builder.append("<font color=\"");
-            builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
-            builder.append("\" bgcolor=\"#00FF00\" ");
-            builder.append(">");
-            builder.append(label.getName());
-            builder.append("</font>");
-            builder.append(spacer);
-        }
-        builder.setLength(Math.max(0, builder.length() - spacer.length())); //Strip the last spacer
-    }
-
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Label && ((Label) obj).id == id;

@@ -348,14 +348,14 @@ public class HtmlTagHandler implements Html.TagHandler {
                     final int where = output.getSpanStart(fgc);
                     final int len = output.length();
                     output.removeSpan(fgc);
-                    output.setSpan(new ForegroundColorSpan(Color.parseColor(fgc.color)), where, len,
+                    output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), where, len,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 if(bgc != null) {
                     final int where = output.getSpanStart(bgc);
                     final int len = output.length();
                     output.removeSpan(bgc);
-                    output.setSpan(new BackgroundColorSpan(Color.parseColor(bgc.color)), where, len,
+                    output.setSpan(new BackgroundColorSpan(safelyParseColor(bgc.color)), where, len,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 if(f != null) {
@@ -368,6 +368,51 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
         }
         storeTableTags(opening, tag);
+    }
+
+    private static int safelyParseColor(String color) {
+        try {
+            return Color.parseColor(color);
+        } catch(Exception e) {
+            switch(color) {
+                case "black":
+                    return Color.BLACK;
+                case "white":
+                    return Color.WHITE;
+                case "red":
+                    return Color.RED;
+                case "blue":
+                    return Color.BLUE;
+                case "green":
+                    return Color.GREEN;
+                case "grey":
+                    return Color.GRAY;
+                case "yellow":
+                    return Color.YELLOW;
+                case "aqua":
+                    return Color.parseColor("#00FFFF");
+                case "fuchsia":
+                    return Color.parseColor("#FF00FF");
+                case "lime":
+                    return Color.parseColor("#00FF00");
+                case "maroon":
+                    return Color.parseColor("#800000");
+                case "navy":
+                    return Color.parseColor("#FF00FF");
+                case "olive":
+                    return Color.parseColor("#808000");
+                case "purple":
+                    return Color.parseColor("#800080");
+
+                case "silver":
+                    return Color.parseColor("#C0C0C0");
+                case "teal":
+                    return Color.parseColor("#008080");
+                default:
+                    return Color.WHITE;
+
+            }
+        }
     }
 
     private static String getAttribute(@NonNull String attr, @NonNull XMLReader reader, String defaultAttr) {

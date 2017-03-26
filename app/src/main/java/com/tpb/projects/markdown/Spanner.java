@@ -62,7 +62,7 @@ public class Spanner {
         }
 
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
-            Label.appendLabels(builder, issue.getLabels(), "   ");
+            appendLabels(builder, issue.getLabels(), "   ");
             builder.append("<br>");
         }
         if(showAssignees && issue.getAssignees() != null) {
@@ -126,7 +126,7 @@ public class Spanner {
 
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
             builder.append("<br>");
-            Label.appendLabels(builder, issue.getLabels(), "   ");
+            appendLabels(builder, issue.getLabels(), "   ");
         }
         if(issue.getComments() > 0) {
             builder.append("<br>");
@@ -212,6 +212,42 @@ public class Spanner {
         String header = "<h" + depth + ">";
         header += Markdown.escape(s).replace("\n", "</h" + depth +"><h" + depth + ">");
         return header + "</h" + depth + ">";
+    }
+
+    private static void appendLabels(StringBuilder builder, Label[] labels, String spacer) {
+        for(Label label : labels) {
+            builder.append("<font color=\"");
+            builder.append(String.format("#%06X", getTextColor((0xFFFFFF & label.getColor()))));
+            builder.append("\" bgcolor=\"");
+            builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
+            builder.append("\">");
+            builder.append(label.getName());
+            builder.append("</font>");
+            builder.append(spacer);
+        }
+        builder.setLength(Math.max(0, builder.length() - spacer.length())); //Strip the last spacer
+    }
+
+    private static int getTextColor(int bg) {
+        double r = Color.red(bg) / 255d;
+        if(r <= 0.03928) {
+            r = r / 12.92;
+        } else {
+            r = Math.pow((r+0.055)/1.055, 2.4);
+        }
+        double g = Color.green(bg) / 255d;
+        if(g <= 0.03928) {
+            g = g / 12.92;
+        } else {
+            g = Math.pow((g+0.055)/1.055, 2.4);
+        }
+        double b = Color.blue(bg) / 255d;
+        if(b <= 0.03928) {
+            b = b / 12.92;
+        } else {
+            b = Math.pow((b+0.055)/1.055, 2.4);
+        }
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.25 ? Color.BLACK : Color.WHITE;
     }
 
 }
