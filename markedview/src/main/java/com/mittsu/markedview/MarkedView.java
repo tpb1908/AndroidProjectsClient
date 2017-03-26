@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -65,10 +66,10 @@ public final class MarkedView extends WebView {
     public void setMarkdown(String mdText){
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             previewText = String.format("javascript:preview('%s', %b)", escape(mdText), isCodeScrollDisable());
-
         } else {
             previewText = String.format("preview('%s', %b)", escape(mdText), isCodeScrollDisable());
         }
+        Log.i(MarkedView.class.getSimpleName(), "Text: " + previewText);
     }
 
     private String escape(String mdText){

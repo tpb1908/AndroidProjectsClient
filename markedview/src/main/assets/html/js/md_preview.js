@@ -8,8 +8,10 @@ $(function() {
         $('#preview').html(md_text.replace(/\\n/g, "\n"));
 
         $('pre code').each(function(i, block) {
-            
-            hljs.highlightBlock(block);
+            if(!block.innerHTML.includes("license")) {
+                hljs.highlightBlock(block);
+            }
         });
+
     };
 });

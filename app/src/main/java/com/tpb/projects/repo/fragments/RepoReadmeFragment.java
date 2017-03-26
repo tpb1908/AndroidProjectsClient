@@ -77,6 +77,7 @@ public class RepoReadmeFragment extends RepoFragment {
                 mLoader.renderMarkDown(new Loader.GITModelLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
+                        data = data.replaceAll("\\s<code>", "<pre><code>").replaceAll("</code>\\s", "</code></pre>");
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
                         mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
@@ -107,5 +108,11 @@ public class RepoReadmeFragment extends RepoFragment {
     @Override
     public void notifyBackPressed() {
         mReadme.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }
