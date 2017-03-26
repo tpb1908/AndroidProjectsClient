@@ -19,6 +19,7 @@
 
 package org.sufficientlysecure.htmltext;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -28,9 +29,12 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.AlignmentSpan;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.BulletSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
@@ -63,6 +67,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String LIST_ITEM_TAG = "ESCAPED_LI_TAG";
     private static final String BLOCKQUOTE_TAG = "ESCAPED_BLOCKQUOTE_TAG";
     private static final String A_TAG = "ESCAPED_A_TAG";
+    private static final String FONT_TAG = "ESCAPED_FONT_TAG";
     
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
     static {
@@ -76,6 +81,8 @@ public class HtmlTagHandler implements Html.TagHandler {
         ESCAPE_MAP.put("</blockquote>", "</" + BLOCKQUOTE_TAG + ">");
         ESCAPE_MAP.put("<a", "<" + A_TAG);
         ESCAPE_MAP.put("</a>", "</" + A_TAG + ">");
+        ESCAPE_MAP.put("<font", "<" + FONT_TAG);
+        ESCAPE_MAP.put("</font>", "</" + FONT_TAG + ">");
     }
     private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
 
@@ -90,7 +97,9 @@ public class HtmlTagHandler implements Html.TagHandler {
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
     public String overrideTags(@Nullable String html) {
-        return StringUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
+        final String replaced = StringUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
+        Log.i(TAG, String.format("Original %1$s \n\n\nReplaced %2$s", html, replaced));
+        return replaced;
     }
 
     /**
@@ -189,7 +198,21 @@ public class HtmlTagHandler implements Html.TagHandler {
                 start(output, new A(getAttribute("href", xmlReader, "invalid_url")));
             } else if(tag.equalsIgnoreCase("inlinecode")) {
                 start(output, new InlineCode());
-            }
+            } else if(tag.equalsIgnoreCase(FONT_TAG)) {
+                final String font = getAttribute("face", xmlReader, "");
+                final String fgColor = getAttribute("color", xmlReader, "");
+                final String bgColor = getAttribute("bgcolor", xmlReader, "");
+                Log.i(TAG, String.format("Found font tag %1$s %2$s %3$s", font, fgColor, bgColor));
+                if(font != null && !font.isEmpty()) {
+                    start(output, new Font(font));
+                }
+                if(fgColor != null && !fgColor.isEmpty()) {
+                    start(output, new ForegroundColor(fgColor));
+                }
+                if(bgColor != null && !bgColor.isEmpty()) {
+                    start(output, new BackgroundColor(bgColor));
+                }
+             }
         } else {
             // closing tag
             if(HtmlTextView.DEBUG) {
@@ -316,6 +339,32 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final int len = output.length();
                 output.removeSpan(obj);
                 output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else if(tag.equalsIgnoreCase(FONT_TAG)) {
+                final ForegroundColor fgc = getLast(output, ForegroundColor.class);
+                final BackgroundColor bgc = getLast(output, BackgroundColor.class);
+                final Font f = getLast(output, Font.class);
+                Log.i(TAG, String.format("End tags are %1$s %2$s %3$s", fgc, bgc, f));
+                if(fgc != null) {
+                    final int where = output.getSpanStart(fgc);
+                    final int len = output.length();
+                    output.removeSpan(fgc);
+                    output.setSpan(new ForegroundColorSpan(Color.parseColor(fgc.color)), where, len,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                if(bgc != null) {
+                    final int where = output.getSpanStart(bgc);
+                    final int len = output.length();
+                    output.removeSpan(bgc);
+                    output.setSpan(new BackgroundColorSpan(Color.parseColor(bgc.color)), where, len,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                if(f != null) {
+                    final int where = output.getSpanStart(f);
+                    final int len = output.length();
+                    output.removeSpan(f);
+                    output.setSpan(new TypefaceSpan(f.face), where, len,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
         }
         storeTableTags(opening, tag);
@@ -340,6 +389,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                     return data[i * 5 + 4];
                 }
             }
+
         } catch(Exception e) {
             Log.e(TAG, "handleTag: ", e);
         }
@@ -495,6 +545,31 @@ public class HtmlTagHandler implements Html.TagHandler {
             this.href = href;
         }
 
+    }
+
+    private static class ForegroundColor {
+        String color;
+
+        ForegroundColor(String color) {
+            this.color = color;
+        }
+
+    }
+
+    private static class BackgroundColor {
+        String color;
+
+        BackgroundColor(String color) {
+            this.color = color;
+        }
+    }
+
+    private static class Font {
+        String face;
+
+        Font(String face) {
+            this.face = face;
+        }
     }
 
 }

@@ -88,7 +88,8 @@ public class Label extends DataModel implements Parcelable {
         for(Label label : labels) {
             builder.append("<font color=\"");
             builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
-            builder.append("\">");
+            builder.append("\" bgcolor=\"#00FF00\" ");
+            builder.append(">");
             builder.append(label.getName());
             builder.append("</font>");
             builder.append(spacer);
