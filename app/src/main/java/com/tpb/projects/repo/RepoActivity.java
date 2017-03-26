@@ -19,6 +19,7 @@ import com.tpb.projects.repo.fragments.RepoFragment;
 import com.tpb.projects.repo.fragments.RepoInfoFragment;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
+import com.tpb.projects.repo.fragments.RepoReadmeFragment;
 import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -129,7 +130,7 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
 
     private class RepoFragmentAdapter extends FragmentPagerAdapter {
 
-        private RepoFragment[] mFragments = new RepoFragment[3];
+        private RepoFragment[] mFragments = new RepoFragment[4];
 
         RepoFragmentAdapter(FragmentManager fm) {
             super(fm);
@@ -137,13 +138,14 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         void ensureAttached(RepoFragment fragment) {
             if(fragment instanceof RepoInfoFragment) mFragments[0] = fragment;
-            if(fragment instanceof RepoIssuesFragment) mFragments[1] = fragment;
-            if(fragment instanceof RepoProjectsFragment) mFragments[2] = fragment;
+            if(fragment instanceof RepoReadmeFragment) mFragments[2] = fragment;
+            if(fragment instanceof RepoIssuesFragment) mFragments[2] = fragment;
+            if(fragment instanceof RepoProjectsFragment) mFragments[3] = fragment;
         }
 
         void notifyRepoLoaded() {
@@ -169,10 +171,13 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
                     mFragments[0] = RepoInfoFragment.newInstance(RepoActivity.this);
                     break;
                 case 1:
-                    mFragments[1] = RepoIssuesFragment.newInstance(RepoActivity.this);
+                    mFragments[1] = RepoReadmeFragment.newInstance(RepoActivity.this);
                     break;
                 case 2:
-                    mFragments[2] = RepoProjectsFragment.newInstance(RepoActivity.this);
+                    mFragments[2] = RepoIssuesFragment.newInstance(RepoActivity.this);
+                    break;
+                case 3:
+                    mFragments[3] = RepoProjectsFragment.newInstance(RepoActivity.this);
                     break;
             }
             if(mRepo != null) mFragments[position].repoLoaded(mRepo);
@@ -183,8 +188,9 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
         public CharSequence getPageTitle(int position) {
             switch(position) {
                 case 0: return getString(R.string.title_repo_info);
-                case 1: return getString(R.string.title_repo_issues);
-                case 2: return getString(R.string.title_repo_projects);
+                case 1: return getString(R.string.title_repo_readme);
+                case 2: return getString(R.string.title_repo_issues);
+                case 3: return getString(R.string.title_repo_projects);
                 default: return "";
             }
         }

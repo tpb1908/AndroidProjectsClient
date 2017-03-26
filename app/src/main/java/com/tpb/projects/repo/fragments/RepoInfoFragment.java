@@ -18,13 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.widget.ANImageView;
-import com.mittsu.markedview.MarkedView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
@@ -50,7 +48,6 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.user_avatar) ANImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
-    @BindView(R.id.repo_readme) MarkedView mReadme;
 
     @BindView(R.id.repo_size) TextView mSize;
     @BindView(R.id.repo_stars) TextView mStars;
@@ -86,7 +83,6 @@ public class RepoInfoFragment extends RepoFragment {
             }, mRepo.getFullName());
         });
         if(mRepo != null) repoLoaded(mRepo);
-        mReadme.enableDarkTheme();
         mParent.notifyFragmentViewCreated(this);
         return view;
     }
@@ -98,33 +94,6 @@ public class RepoInfoFragment extends RepoFragment {
         mRefresher.setRefreshing(false);
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
-        mReadme.setVisibility(View.VISIBLE);
-
-        mLoader.loadReadMe(new Loader.GITModelLoader<String>() {
-            @Override
-            public void loadComplete(String data) {
-                mLoader.renderMarkDown(new Loader.GITModelLoader<String>() {
-                    @Override
-                    public void loadComplete(String data) {
-                        mReadme.setVisibility(View.VISIBLE);
-                        mReadme.setMDText(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
-                        mReadme.reload();
-                    }
-
-                    @Override
-                    public void loadError(APIHandler.APIError error) {
-                        Toast.makeText(getContext(), R.string.error_rendering_readme, Toast.LENGTH_SHORT).show();
-                    }
-                }, data, mRepo.getDescription());
-            }
-
-            @Override
-            public void loadError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NOT_FOUND) {
-                    Toast.makeText(getContext(), R.string.error_readme_not_found, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, mRepo.getFullName());
         
         mLoader.loadCollaborators(new Loader.GITModelsLoader<User>() {
             @Override
@@ -254,7 +223,7 @@ public class RepoInfoFragment extends RepoFragment {
 
     @Override
     public void notifyBackPressed() {
-        mReadme.setVisibility(View.GONE);
+
     }
 
     @Override

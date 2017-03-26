@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/repo_readme_refresher"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.mittsu.markedview.MarkedView
+        android:id="@+id/repo_readme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:visibility="gone"/>
+
+</android.support.v4.widget.SwipeRefreshLayout>

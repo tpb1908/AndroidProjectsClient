@@ -286,6 +286,7 @@
     <string name="title_user_following_fragment">Following</string>
 
     <string name="title_repo_info">Info</string>
+    <string name="title_repo_readme">Readme</string>
     <string name="title_repo_issues">Issues</string>
     <string name="title_repo_projects">Projects</string>
 
