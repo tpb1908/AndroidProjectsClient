@@ -32,6 +32,9 @@ import butterknife.ButterKnife;
 
 public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<Repository> {
 
+    public static final int PAGE_ISSUES = 1;
+    public static final int PAGE_PROJECTS = 2;
+
     @BindView(R.id.title_repo) TextView mTitle;
     @BindView(R.id.repo_fragment_tabs) TabLayout mTabs;
     @BindView(R.id.repo_fragment_viewpager) ViewPager mPager;

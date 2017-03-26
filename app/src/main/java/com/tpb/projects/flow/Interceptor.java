@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.tpb.projects.R;
 import com.tpb.projects.issues.IssueActivity;
-import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.milestones.MilestoneActivity;
 import com.tpb.projects.milestones.MilestonesActivity;
 import com.tpb.projects.project.ProjectActivity;
@@ -66,7 +65,8 @@ public class Interceptor extends Activity {
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
                         } else if("issues".equals(segments.get(2))) {
-                            i.setClass(Interceptor.this, IssuesActivity.class);
+                            i.setClass(Interceptor.this, RepoActivity.class);
+                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_ISSUES);
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();

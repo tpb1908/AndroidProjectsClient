@@ -376,6 +376,7 @@
     <string name="intent_gist_url" translatable="false">gist_url</string>
     <string name="intent_emoji" translatable="false">disgusting_emoji</string>
     <string name="intent_character" translatable="false">character</string>
+    <string name="intent_pager_page" translatable="false">page</string>
 
     <!-- Constants for models passed as parcels -->
     <string name="parcel_project" translatable="false">project</string>
