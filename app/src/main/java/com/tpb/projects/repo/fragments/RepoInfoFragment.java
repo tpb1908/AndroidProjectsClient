@@ -24,6 +24,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Util;
@@ -56,6 +57,12 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.repo_forks) TextView mForks;
     @BindView(R.id.repo_license) TextView mLicense;
 
+    public static RepoInfoFragment newInstance(RepoActivity parent) {
+        final RepoInfoFragment rif = new RepoInfoFragment();
+        rif.mParent = parent;
+        return rif;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,6 +85,7 @@ public class RepoInfoFragment extends RepoFragment {
             }, mRepo.getFullName());
         });
         if(mRepo != null) repoLoaded(mRepo);
+        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

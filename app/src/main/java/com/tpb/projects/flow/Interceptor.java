@@ -61,6 +61,7 @@ public class Interceptor extends Activity {
                     case 3:
                         if("projects".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
+                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_PROJECTS);
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();

@@ -77,6 +77,13 @@ public class Util {
         return -1;
     }
 
+    public static <T> int indexOf(@NonNull T[] values, @NonNull T key) {
+        for(int i = 0; i < values.length; i++) {
+            if(key.equals(values[i])) return i;
+        }
+        return -1;
+    }
+
     /**
      * Formats a size in kilobytes to a 2 d.p value for the largest valid unit suffix
      * @param kb The size in kilobytes

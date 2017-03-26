@@ -30,6 +30,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FabHideScrollListener;
@@ -69,6 +70,11 @@ public class RepoIssuesFragment extends RepoFragment {
 
     private Editor mEditor;
 
+    public static RepoIssuesFragment newInstance(RepoActivity parent) {
+        final RepoIssuesFragment rif = new RepoIssuesFragment();
+        rif.mParent = parent;
+        return rif;
+    }
 
     @Nullable
     @Override
@@ -108,6 +114,7 @@ public class RepoIssuesFragment extends RepoFragment {
         });
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
+        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 
@@ -127,11 +134,14 @@ public class RepoIssuesFragment extends RepoFragment {
             UI.setViewPositionForIntent(intent, fab);
             startActivityForResult(intent, IssueEditor.REQUEST_CODE_NEW_ISSUE);
         });
+
         if(mFabHideScrollListener == null) {
             mFabHideScrollListener = new FabHideScrollListener(fab);
             mRecyclerView.addOnScrollListener(mFabHideScrollListener);
         }
     }
+
+
 
     @OnClick(R.id.issues_filter_button)
     void filter(View v) {

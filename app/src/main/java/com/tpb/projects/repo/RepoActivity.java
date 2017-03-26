@@ -21,6 +21,7 @@ import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
 import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -34,6 +35,7 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
 
     public static final int PAGE_ISSUES = 1;
     public static final int PAGE_PROJECTS = 2;
+    private int mLaunchPage = 0;
 
     @BindView(R.id.title_repo) TextView mTitle;
     @BindView(R.id.repo_fragment_tabs) TabLayout mTabs;
@@ -64,7 +66,9 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
 
             @Override
             public void onPageSelected(int position) {
-                mAdapter.mFragments[position].handleFab(mFab);
+                if(mAdapter.mFragments[position].areViewViewsValid()) {
+                    mAdapter.mFragments[position].handleFab(mFab);
+                }
             }
 
             @Override
@@ -83,8 +87,13 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
                 loadComplete(launchIntent.getParcelableExtra(getString(R.string.intent_repo)));
             }
         } else {
+            if(launchIntent.hasExtra(getString(R.string.intent_pager_page))) {
+                mLaunchPage = launchIntent.getIntExtra(getString(R.string.intent_pager_page), 0);
+
+            }
             loader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
         }
+
     }
 
     @Override
@@ -110,6 +119,12 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
     public void onBackPressed() {
         mAdapter.notifyBackPressed();
         super.onBackPressed();
+    }
+
+    public void notifyFragmentViewCreated(RepoFragment fragment) {
+        if(mAdapter.indexOf(fragment) == mLaunchPage) {
+            mPager.setCurrentItem(mLaunchPage);
+        }
     }
 
     private class RepoFragmentAdapter extends FragmentPagerAdapter {
@@ -143,17 +158,21 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
             }
         }
 
+        int indexOf(RepoFragment rf) {
+            return Util.indexOf(mFragments, rf);
+        }
+
         @Override
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    mFragments[0] = new RepoInfoFragment();
+                    mFragments[0] = RepoInfoFragment.newInstance(RepoActivity.this);
                     break;
                 case 1:
-                    mFragments[1] = new RepoIssuesFragment();
+                    mFragments[1] = RepoIssuesFragment.newInstance(RepoActivity.this);
                     break;
                 case 2:
-                    mFragments[2] = new RepoProjectsFragment();
+                    mFragments[2] = RepoProjectsFragment.newInstance(RepoActivity.this);
                     break;
             }
             if(mRepo != null) mFragments[position].repoLoaded(mRepo);

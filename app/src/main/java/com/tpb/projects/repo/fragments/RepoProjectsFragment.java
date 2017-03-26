@@ -20,6 +20,7 @@ import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.ProjectEditor;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoProjectsAdapter;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FabHideScrollListener;
@@ -42,6 +43,12 @@ public class RepoProjectsFragment extends RepoFragment {
     private FabHideScrollListener mFabHideScrollListener;
     private RepoProjectsAdapter mAdapter;
 
+    public static RepoProjectsFragment newInstance(RepoActivity parent) {
+        final RepoProjectsFragment rpf = new RepoProjectsFragment();
+        rpf.mParent = parent;
+        return rpf;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,6 +61,7 @@ public class RepoProjectsFragment extends RepoFragment {
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
+        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

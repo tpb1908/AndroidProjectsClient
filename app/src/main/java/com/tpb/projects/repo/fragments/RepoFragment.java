@@ -16,6 +16,7 @@ import com.tpb.projects.util.fab.FloatingActionButton;
 public abstract class RepoFragment extends Fragment {
 
     protected Repository mRepo;
+    protected RepoActivity mParent;
     protected boolean mAreViewsValid;
 
     public abstract void repoLoaded(Repository repo);
@@ -23,6 +24,10 @@ public abstract class RepoFragment extends Fragment {
     public abstract void handleFab(FloatingActionButton fab);
 
     public abstract void notifyBackPressed();
+
+    public boolean areViewViewsValid() {
+        return mAreViewsValid;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
