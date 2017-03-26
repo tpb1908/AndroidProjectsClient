@@ -83,6 +83,19 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         }
     }
 
+    public void addProject(Project project) {
+        mProjects.add(0, project);
+        notifyItemInserted(0);
+    }
+
+    public void removeProject(Project project) {
+        final int index = mProjects.indexOf(project);
+        if(index != -1) {
+            mProjects.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_project, parent, false));

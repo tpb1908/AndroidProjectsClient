@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".repo.RepoActivityNew">
+        <activity android:name=".repo.RepoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -98,6 +98,9 @@
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 
         <activity android:name=".editors.MilestoneEditor"
+                  android:theme="@style/AppTheme.Transparent.Dark"/>
+
+        <activity android:name=".editors.ProjectEditor"
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 
         <activity android:name=".data.SettingsActivity"/>

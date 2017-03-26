@@ -15,7 +15,7 @@ import com.tpb.projects.issues.IssuesActivity;
 import com.tpb.projects.milestones.MilestoneActivity;
 import com.tpb.projects.milestones.MilestonesActivity;
 import com.tpb.projects.project.ProjectActivity;
-import com.tpb.projects.repo.RepoActivityNew;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.UserActivity;
@@ -54,14 +54,14 @@ public class Interceptor extends Activity {
                 putRepo(i, segments);
                 switch(segments.size()) {
                     case 2: //Repo
-                        i.setClass(Interceptor.this, RepoActivityNew.class);
+                        i.setClass(Interceptor.this, RepoActivity.class);
                         startActivity(i);
                         overridePendingTransition(R.anim.slide_up, R.anim.none);
                         finish();
                         break;
                     case 3:
                         if("projects".equals(segments.get(2))) {
-                            i.setClass(Interceptor.this, RepoActivityNew.class);
+                            i.setClass(Interceptor.this, RepoActivity.class);
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();

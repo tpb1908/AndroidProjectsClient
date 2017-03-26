@@ -17,7 +17,7 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
-import com.tpb.projects.repo.RepoActivityNew;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.RepositoriesAdapter;
 
 import butterknife.BindView;
@@ -70,7 +70,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
 
     @Override
     public void openRepo(Repository repo, View view) {
-        final Intent i = new Intent(getContext(), RepoActivityNew.class);
+        final Intent i = new Intent(getContext(), RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
         new Loader(getContext()).loadProjects(null, repo.getFullName());
         new Loader(getContext()).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);

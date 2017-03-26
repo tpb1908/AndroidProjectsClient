@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.repo.RepoActivityNew;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 /**
@@ -45,8 +45,8 @@ public abstract class RepoFragment extends Fragment {
         mAreViewsValid = false;
     }
 
-    protected RepoActivityNew getParent() {
-        return (RepoActivityNew) getActivity();
+    protected RepoActivity getParent() {
+        return (RepoActivity) getActivity();
     }
 
 }

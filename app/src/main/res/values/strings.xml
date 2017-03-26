@@ -252,6 +252,7 @@
     <string name="title_new_column">New column</string>
     <string name="title_delete_column">Delete column</string>
     <string name="title_delete_card">Delete card</string>
+    <string name="title_delete_project">Delete project</string>
 
     <string name="title_choose_issue">Choose issue</string>
     <string name="title_close_issue">Close issue</string>

@@ -1,10 +1,12 @@
 package com.tpb.projects.repo.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,9 @@ import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
+import com.tpb.projects.editors.ProjectEditor;
 import com.tpb.projects.repo.RepoProjectsAdapter;
+import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FabHideScrollListener;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
@@ -55,8 +59,10 @@ public class RepoProjectsFragment extends RepoFragment {
 
     @Override
     public void repoLoaded(Repository repo) {
-        if(!mAreViewsValid) return;;
+        mRepo = repo;
+        if(!mAreViewsValid) return;
         mAdapter.setRepository(repo);
+
     }
 
     @Override
@@ -66,6 +72,11 @@ public class RepoProjectsFragment extends RepoFragment {
             mFabHideScrollListener = new FabHideScrollListener(fab);
             mRecycler.addOnScrollListener(mFabHideScrollListener);
         }
+        fab.setOnClickListener(v -> {
+            final Intent i = new Intent(getContext(), ProjectEditor.class);
+            UI.setViewPositionForIntent(i, fab);
+            startActivityForResult(i, ProjectEditor.REQUEST_CODE_NEW_PROJECT);
+        });
     }
 
     private void toggleProjectState(Project project) {
@@ -75,7 +86,6 @@ public class RepoProjectsFragment extends RepoFragment {
             public void updated(Project updated) {
                 mRefresher.setRefreshing(false);
                 mAdapter.updateProject(updated);
-                Log.i(RepoProjectsFragment.class.getSimpleName(), "Returned project " + updated.toString());
             }
 
             @Override
@@ -91,11 +101,78 @@ public class RepoProjectsFragment extends RepoFragment {
     }
 
     private void deleteProject(Project project) {
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.title_delete_project)
+                .setMessage(R.string.text_delete_project_warning)
+                .setPositiveButton(R.string.action_ok, (dialog, which) -> {
+                    mRefresher.setRefreshing(true);
+                    new Editor(getContext()).deleteProject(
+                            new Editor.GITModelDeletionListener<Project>() {
+                                @Override
+                                public void deleted(Project project1) {
+                                    mRefresher.setRefreshing(false);
+                                    mAdapter.removeProject(project1);
+                                }
 
+                                @Override
+                                public void deletionError(APIHandler.APIError error){
+                                    mRefresher.setRefreshing(false);
+                                }
+                            }, project);
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 
-    private void editProject(Project project) {
+    private void editProject(Project project, View view) {
+        final Intent i = new Intent(getContext(), ProjectEditor.class);
+        i.putExtra(getString(R.string.parcel_project), project);
+        UI.setViewPositionForIntent(i, view);
+        startActivityForResult(i, ProjectEditor.REQUEST_CODE_EDIT_PROJECT);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK) {
+
+            if(requestCode == ProjectEditor.REQUEST_CODE_NEW_PROJECT) {
+                final String name = data.getStringExtra(getString(R.string.intent_name));
+                final String body = data.getStringExtra(getString(R.string.intent_markdown));
+                mRefresher.setRefreshing(true);
+                new Editor(getContext()).createProject(
+                        new Editor.GITModelCreationListener<Project>() {
+                            @Override
+                            public void created(Project project) {
+                                mRefresher.setRefreshing(false);
+                                mAdapter.addProject(project);
+                            }
+
+                            @Override
+                            public void creationError(APIHandler.APIError error) {
+                                mRefresher.setRefreshing(false);
+                            }
+                        }, name, body, mRepo.getFullName());
+            } else if(requestCode == ProjectEditor.REQUEST_CODE_EDIT_PROJECT) {
+                mRefresher.setRefreshing(true);
+                final int id = data.getIntExtra(getString(R.string.intent_project_number), -1);
+                final String name = data.getStringExtra(getString(R.string.intent_name));
+                final String body = data.getStringExtra(getString(R.string.intent_markdown));
+                new Editor(getContext()).updateProject(
+                        new Editor.GITModelUpdateListener<Project>() {
+                            @Override
+                            public void updated(Project project) {
+                                mRefresher.setRefreshing(false);
+                                mAdapter.updateProject(project);
+                            }
+
+                            @Override
+                            public void updateError(APIHandler.APIError error) {
+                                mRefresher.setRefreshing(false);
+                            }
+                        }, name, body, id);
+            }
+        }
     }
 
     public void showMenu(View view, Project project) {
@@ -112,7 +189,7 @@ public class RepoProjectsFragment extends RepoFragment {
                     toggleProjectState(project);
                     break;
                 case R.id.menu_edit_project:
-                    editProject(project);
+                    editProject(project, view);
                     break;
                 case R.id.menu_delete_project:
                     deleteProject(project);

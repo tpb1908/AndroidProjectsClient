@@ -57,14 +57,15 @@ public class Editor extends APIHandler {
         super(context);
     }
 
-    public void createProject(final @Nullable GITModelCreationListener<Project> listener, Project project, String repoFullName) {
+    public void createProject(final @Nullable GITModelCreationListener<Project> listener, String name, String body, String repoFullName) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put(NAME, project.getName());
-            obj.put(BODY, project.getBody());
+            obj.put(NAME, name);
+            obj.put(BODY, body);
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
+        Log.i(TAG, "createProject: " + GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS);
         AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
@@ -72,7 +73,6 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: " + response.toString());
                         if(listener != null) listener.created(Project.parse(response));
                     }
 
@@ -84,22 +84,21 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void updateProject(final @Nullable GITModelUpdateListener<Project> listener, Project project) {
+    public void updateProject(final @Nullable GITModelUpdateListener<Project> listener, String name, String body, int id) {
         final JSONObject obj = new JSONObject();
         try {
-            obj.put(NAME, project.getName());
-            obj.put(BODY, project.getBody());
+            obj.put(NAME, name);
+            obj.put(BODY, body);
         } catch(JSONException jse) {
-            Log.e(TAG, "createProject: ", jse);
+            Log.e(TAG, "updateProjects: ", jse);
         }
-        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + "/" + project.getId())
+        AndroidNetworking.patch(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: " + response.toString());
                         if(listener != null) listener.updated(Project.parse(response));
                     }
 
@@ -111,7 +110,7 @@ public class Editor extends APIHandler {
                 });
     }
 
-    public void deleteProject(final @Nullable GITModelDeletionListener<Project> listener, Project project) {
+    public void deleteProject(@NonNull GITModelDeletionListener<Project> listener, Project project) {
         /*
         It seems that on a successful deletion, this returns an error with null body
          */
@@ -127,9 +126,9 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        if(anError.getErrorCode() == 0 && anError.getErrorBody() == null && listener != null) {
+                        if(anError.getErrorCode() == 0 && anError.getErrorBody() == null) {
                             listener.deleted(project);
-                        } else if(listener != null) {
+                        } else {
                             listener.deletionError(parseError(anError));
                         }
                     }
