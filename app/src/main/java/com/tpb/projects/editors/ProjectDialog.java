@@ -41,7 +41,7 @@ public class ProjectDialog extends DialogFragment {
             builder.setTitle(R.string.title_edit_project);
             nameEdit.setText(project.getName());
             descriptionEdit.setText(project.getBody());
-            descriptionMarkDown.setMDText(project.getBody());
+            descriptionMarkDown.setMarkdown(project.getBody());
             isNewProject = false;
         } else {
             project = new Project();
@@ -74,7 +74,7 @@ public class ProjectDialog extends DialogFragment {
                 lastUpdated = System.currentTimeMillis();
                 updateHandler.postDelayed(() -> {
                     if(System.currentTimeMillis() - lastUpdated >= 190) {
-                        descriptionMarkDown.setMDText(descriptionEdit.getText().toString());
+                        descriptionMarkDown.setMarkdown(descriptionEdit.getText().toString());
                         descriptionMarkDown.reload();
                     }
                 }, 200);

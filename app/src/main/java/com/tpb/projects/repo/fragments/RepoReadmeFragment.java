@@ -79,7 +79,7 @@ public class RepoReadmeFragment extends RepoFragment {
                     public void loadComplete(String data) {
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
-                        mReadme.setMDText(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
+                        mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
                         mReadme.reload();
                     }
 
