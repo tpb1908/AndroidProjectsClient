@@ -70,7 +70,7 @@ public class IssueCommentsFragment extends IssueFragment {
         final View view = inflater.inflate(R.layout.fragment_issue_comments, container, false);
         unbinder = ButterKnife.bind(this, view);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

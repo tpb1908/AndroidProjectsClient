@@ -46,7 +46,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_form) CardView mLogin;
     @BindView(R.id.progress_spinner) ProgressBar mSpinner;
     @BindView(R.id.user_details) View mDetails;
-    @BindView(R.id.user_image) ANImageView mImage;
+    @BindView(R.id.user_avatar) ANImageView mImage;
     @BindView(R.id.user_name) TextView mName;
     @BindView(R.id.user_id) TextView mId;
     @BindView(R.id.user_stats) TextView mStats;

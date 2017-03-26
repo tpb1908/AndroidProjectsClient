@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/content_description_issue_state"
+            android:contentDescription="@string/content_description_menu"
             android:src="@drawable/ic_chevron_down"/>
 
         <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView

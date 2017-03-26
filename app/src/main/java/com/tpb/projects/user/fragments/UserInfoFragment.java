@@ -44,7 +44,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @BindView(R.id.user_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.user_contributions) ContributionsView mContributions;
-    @BindView(R.id.user_image) ANImageView mAvatar;
+    @BindView(R.id.user_avatar) ANImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.user_info_layout) LinearLayout mInfoList;
     @BindView(R.id.user_contributions_info) TextView mContributionsInfo;

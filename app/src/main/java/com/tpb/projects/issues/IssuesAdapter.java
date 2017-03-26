@@ -1,5 +1,6 @@
 package com.tpb.projects.issues;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -31,14 +32,14 @@ import butterknife.ButterKnife;
  * Created by theo on 27/01/17.
  */
 
-class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
+public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     private static final String TAG = IssuesAdapter.class.getSimpleName();
 
-    private final IssuesActivity mParent;
+    private final Activity mParent;
     private final ArrayList<Issue> mIssues = new ArrayList<>();
     private final ArrayList<SpannableString> mParseCache = new ArrayList<>();
 
-    IssuesAdapter(IssuesActivity parent) {
+    public IssuesAdapter(Activity parent) {
         mParent = parent;
     }
 
@@ -94,7 +95,6 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
         return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
     }
 
-    //TODO Move some of this binding to methods for use throughout the app
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
         final int pos = holder.getAdapterPosition();
@@ -135,7 +135,7 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
     }
 
     private void openMenu(View view, int pos) {
-        mParent.openMenu(view, mIssues.get(pos));
+      //  mParent.openMenu(view, mIssues.get(pos));
     }
 
     class IssueHolder extends RecyclerView.ViewHolder {
@@ -154,7 +154,5 @@ class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueHolder> {
             mTitle.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
         }
-
-
     }
 }

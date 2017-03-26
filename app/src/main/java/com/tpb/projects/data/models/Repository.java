@@ -78,6 +78,17 @@ public class Repository extends DataModel implements Parcelable {
     private static final String SOURCE = "source";
     private Repository source;
 
+    private static final String LICENSE = "license";
+    private static final String KEY = "key";
+    private String licenseKey;
+    private static final String LICENSE_NAME = "name";
+    private String licenseName;
+    private static final String SPDX_ID = "spdx_id";
+    private String licenseShortName;
+    private static final String LICENSE_URL = "url";
+    private String licenseUrl;
+
+
     public int getId() {
         return id;
     }
@@ -162,6 +173,34 @@ public class Repository extends DataModel implements Parcelable {
         return source;
     }
 
+    public static String getTAG() {
+        return TAG;
+    }
+
+    public boolean isHasIssues() {
+        return hasIssues;
+    }
+
+    public boolean hasLicense() {
+        return licenseName != null;
+    }
+
+    public String getLicenseKey() {
+        return licenseKey;
+    }
+
+    public String getLicenseName() {
+        return licenseName;
+    }
+
+    public String getLicenseShortName() {
+        return licenseShortName;
+    }
+
+    public String getLicenseUrl() {
+        return licenseUrl;
+    }
+
     @Override
     public long getCreatedAt() {
         return createdAt;
@@ -169,6 +208,7 @@ public class Repository extends DataModel implements Parcelable {
 
     public static Repository parse(JSONObject obj) {
         final Repository r = new Repository();
+
         try {
             r.id = obj.getInt(ID);
             r.userLogin = obj.getJSONObject(OWNER).getString(USER_LOGIN);
@@ -190,6 +230,13 @@ public class Repository extends DataModel implements Parcelable {
             r.size = obj.getInt(SIZE);
             if(obj.has(PARENT)) r.parent = Repository.parse(obj.getJSONObject(PARENT));
             if(obj.has(SOURCE)) r.source = Repository.parse(obj.getJSONObject(SOURCE));
+            if(obj.has(LICENSE) && !JSON_NULL.equals(obj.getString(LICENSE))) {
+                final JSONObject license = obj.getJSONObject(LICENSE);
+                r.licenseKey = license.getString(KEY);
+                r.licenseName = license.getString(LICENSE_NAME);
+                r.licenseShortName = license.getString(SPDX_ID);
+                r.licenseUrl = license.getString(LICENSE_URL);
+            }
             try {
                 r.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
                 r.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
@@ -242,28 +289,34 @@ public class Repository extends DataModel implements Parcelable {
     public String toString() {
         return "Repository{" +
                 "id=" + id +
-                "\n, name='" + name + '\'' +
-                "\n, updatedAt=" + updatedAt +
-                "\n, userLogin='" + userLogin + '\'' +
-                "\n, userAvatarUrl='" + userAvatarUrl + '\'' +
-                "\n, userId=" + userId +
-                "\n, fullName='" + fullName + '\'' +
-                "\n, description='" + description + '\'' +
-                "\n, isPrivate=" + isPrivate +
-                "\n, isFork=" + isFork +
-                "\n, url='" + url + '\'' +
-                "\n, htmlUrl='" + htmlUrl + '\'' +
-                "\n, language='" + language + '\'' +
-                "\n, hasIssues=" + hasIssues +
-                "\n, starGazers=" + starGazers +
-                "\n, forks=" + forks +
-                "\n, watchers=" + watchers +
-                "\n, issues=" + issues +
-                "\n, size=" + size +
-                "\n, parent=" + parent +
-                "\n, source=" + source +
+                ", name='" + name + '\'' +
+                ", updatedAt=" + updatedAt +
+                ", userLogin='" + userLogin + '\'' +
+                ", userAvatarUrl='" + userAvatarUrl + '\'' +
+                ", userId=" + userId +
+                ", fullName='" + fullName + '\'' +
+                ", description='" + description + '\'' +
+                ", isPrivate=" + isPrivate +
+                ", isFork=" + isFork +
+                ", url='" + url + '\'' +
+                ", htmlUrl='" + htmlUrl + '\'' +
+                ", language='" + language + '\'' +
+                ", hasIssues=" + hasIssues +
+                ", starGazers=" + starGazers +
+                ", forks=" + forks +
+                ", watchers=" + watchers +
+                ", issues=" + issues +
+                ", size=" + size +
+                ", parent=" + parent +
+                ", source=" + source +
+                ", licenseKey='" + licenseKey + '\'' +
+                ", licenseName='" + licenseName + '\'' +
+                ", licenseShortName='" + licenseShortName + '\'' +
+                ", licenseUrl='" + licenseUrl + '\'' +
                 '}';
     }
+
+
 
     public enum AccessLevel {
 
@@ -299,6 +352,10 @@ public class Repository extends DataModel implements Parcelable {
         dest.writeInt(this.size);
         dest.writeParcelable(this.parent, flags);
         dest.writeParcelable(this.source, flags);
+        dest.writeString(this.licenseKey);
+        dest.writeString(this.licenseName);
+        dest.writeString(this.licenseShortName);
+        dest.writeString(this.licenseUrl);
         dest.writeLong(this.createdAt);
     }
 
@@ -324,6 +381,10 @@ public class Repository extends DataModel implements Parcelable {
         this.size = in.readInt();
         this.parent = in.readParcelable(Repository.class.getClassLoader());
         this.source = in.readParcelable(Repository.class.getClassLoader());
+        this.licenseKey = in.readString();
+        this.licenseName = in.readString();
+        this.licenseShortName = in.readString();
+        this.licenseUrl = in.readString();
         this.createdAt = in.readLong();
     }
 

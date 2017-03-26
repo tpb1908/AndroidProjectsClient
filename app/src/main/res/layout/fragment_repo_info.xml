@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/repo_info_refresher"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:animateLayoutChanges="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:animateLayoutChanges="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_margin="16dp">
+
+                        <com.androidnetworking.widget.ANImageView
+                            android:id="@+id/user_avatar"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_horizontal"
+                            android:transitionName="@string/transition_user_image"/>
+
+                        <TextView
+                            android:id="@+id/user_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/text_placeholder"
+                            android:transitionName="@string/transition_username"
+                            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="*"
+                        android:layout_margin="8dp"
+                        android:background="?android:selectableItemBackground">
+
+                        <TableRow
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_database"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <ImageView
+                                android:id="@+id/repo_issues_drawable"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_issue"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_forked"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <ImageView
+                                android:id="@+id/repo_stars_drawable"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_stars"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <ImageView
+                                android:id="@+id/repo_license_drawable"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_license"
+                                android:background="?android:selectableItemBackground"/>
+
+
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_size"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_issues_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_issues"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_forks"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_stars_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_stars"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_license_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_license"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackgroundBorderless"/>
+
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/repo_size"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_placeholder"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_issues"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_placeholder"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_forks"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_placeholder"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_stars"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_placeholder"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                            <TextView
+                                android:id="@+id/repo_license"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_placeholder"
+                                android:textAlignment="center"
+                                android:background="?android:selectableItemBackground"/>
+
+                        </TableRow>
+
+                    </TableLayout>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/repo_collaborators"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_margin="8dp">
+
+                        </LinearLayout>
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <com.mittsu.markedview.MarkedView
+                android:id="@+id/repo_readme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:animateLayoutChanges="true"
+                android:visibility="gone"
+                android:nestedScrollingEnabled="false"/>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.v4.widget.SwipeRefreshLayout>

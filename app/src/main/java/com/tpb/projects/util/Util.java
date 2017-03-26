@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.text.format.DateFormat;
 import android.util.Base64;
 import android.widget.EditText;
@@ -13,6 +14,7 @@ import com.tpb.projects.data.models.Repository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -189,5 +191,13 @@ public class Util {
         final int start = Math.max(et.getSelectionStart(), 0);
         et.getText().insert(start, insert);
         et.setSelection(start + relativePosition);
+    }
+
+    public static int indexInPair(@NonNull Collection<? extends Pair> items, @NonNull Object o) {
+        int i = 0;
+        for(Pair p : items) {
+            if(o.equals(p.first) || o.equals(p.second)) return i;
+        }
+        return- 1;
     }
 }

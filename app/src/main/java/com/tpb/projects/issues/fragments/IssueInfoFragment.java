@@ -163,12 +163,12 @@ public class IssueInfoFragment extends IssueFragment {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
                 user.setId(i);
                 mAssigneesLayout.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_image);
-                imageView.setId(10 * i);
+                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
+                imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = (TextView) user.findViewById(R.id.user_login);
-                login.setId(20 * i); //Max 10 assignees
+                login.setId(View.generateViewId()); //Max 10 assignees
                 login.setText(issue.getAssignees()[i].getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);

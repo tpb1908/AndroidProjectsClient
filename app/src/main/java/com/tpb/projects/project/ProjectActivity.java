@@ -46,6 +46,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Project;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
@@ -92,7 +93,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     Project mProject;
     private Editor mEditor;
     private NavigationDragListener mNavListener;
-    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.NONE;
+    private Repository.AccessLevel mAccessLevel = Repository.AccessLevel.ADMIN;
     private int mLaunchCardId = -1;
     private int mLoadCount;
 
@@ -116,9 +117,14 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
 
         if(launchIntent.hasExtra(getString(R.string.parcel_project))) {
             loadComplete(launchIntent.getParcelableExtra(getString(R.string.parcel_project)));
-            mAccessLevel = (Repository.AccessLevel) launchIntent.getSerializableExtra(getString(R.string.intent_access_level));
-            if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
-                new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+            if(launchIntent.hasExtra(getString(R.string.intent_access_level))) {
+                mAccessLevel = (Repository.AccessLevel) launchIntent
+                        .getSerializableExtra(getString(R.string.intent_access_level));
+                if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
+                    new Handler().postDelayed(() -> mMenu.showMenuButton(true), 400);
+                }
+            } else {
+                checkAccess(mProject);
             }
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
@@ -263,6 +269,10 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mProject = project;
         mLoader.loadLabels(null, mProject.getRepoPath());
         mName.setText(mProject.getName());
+        mName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                project.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed,
+                0, 0, 0
+        );
 
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);

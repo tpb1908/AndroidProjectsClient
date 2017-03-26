@@ -30,7 +30,7 @@ public class OAuthHandler extends APIHandler {
     public static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
-    private static final String SCOPE = "user repo";
+    private static final String SCOPE = "user public_repo repo gist";
     private static final String RATE_LIMIT = "/rate_limit";
 
 

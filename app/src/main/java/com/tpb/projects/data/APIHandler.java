@@ -22,13 +22,15 @@ public abstract class APIHandler {
     private static final String ACCEPT_HEADER = "application/vnd.github.v3+json";
     private static final String ORGANIZATIONS_PREVIEW_ACCEPT_HEADER = "application/vnd.github.korra-preview";
     private static final String PROJECTS_PREVIEW_ACCEPT_HEADER = "application/vnd.github.inertia-preview+json";
+    private static final String REPO_LICENSE_PREVIEW_ACCEPT_HEADER = "application/vnd.github.drax-preview+json";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
     private static final String AUTHORIZATION_TOKEN_FORMAT = "token %1$s";
     private static GitHubSession mSession;
 
     protected static final HashMap<String, String> API_AUTH_HEADERS = new HashMap<>();
-    static final HashMap<String, String> PROJECTS_PREVIEW_API_AUTH_HEADERS = new HashMap<>();
-    static final HashMap<String, String> ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS = new HashMap<>();
+    static final HashMap<String, String> PROJECTS_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> ORGANIZATIONS_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> LICENSES_API_API_AUTH_HEADERS = new HashMap<>();
 
     static final String SEGMENT_USER = "/user";
     static final String SEGMENT_USERS = "/users";
@@ -59,12 +61,20 @@ public abstract class APIHandler {
     }
 
     protected void initHeaders() {
-        API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
-        PROJECTS_PREVIEW_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
-        PROJECTS_PREVIEW_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
-        ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
-        ORGANIZATIONS_PREVIEW_ACCEPT_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
+
+        ORGANIZATIONS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
+        ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
+
+        PROJECTS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        PROJECTS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
+        PROJECTS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
+
+        LICENSES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
+        LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REPO_LICENSE_PREVIEW_ACCEPT_HEADER);
     }
 
     public static boolean isNetworkAvailable(Context context) {

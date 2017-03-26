@@ -242,8 +242,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             }
         }
 
-
-
         @Override
         public int getCount() {
             return 2;
