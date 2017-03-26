@@ -126,7 +126,7 @@ public class Spanner {
 
         if(issue.getLabels() != null && issue.getLabels().length > 0) {
             builder.append("<br>");
-            appendLabels(builder, issue.getLabels(), "   ");
+            appendLabels(builder, issue.getLabels(), "&nbsp;");
         }
         if(issue.getComments() > 0) {
             builder.append("<br>");
@@ -220,9 +220,9 @@ public class Spanner {
             builder.append(String.format("#%06X", getTextColor((0xFFFFFF & label.getColor()))));
             builder.append("\" bgcolor=\"");
             builder.append(String.format("#%06X", (0xFFFFFF & label.getColor())));
-            builder.append("\">");
+            builder.append("\"> ");
             builder.append(label.getName());
-            builder.append("</font>");
+            builder.append(" </font>");
             builder.append(spacer);
         }
         builder.setLength(Math.max(0, builder.length() - spacer.length())); //Strip the last spacer
@@ -247,7 +247,7 @@ public class Spanner {
         } else {
             b = Math.pow((b+0.055)/1.055, 2.4);
         }
-        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.25 ? Color.BLACK : Color.WHITE;
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.35 ? Color.BLACK : Color.WHITE;
     }
 
 }

@@ -97,9 +97,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
      */
     public String overrideTags(@Nullable String html) {
-        final String replaced = StringUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
-        Log.i(TAG, String.format("Original %1$s \n\n\nReplaced %2$s", html, replaced));
-        return replaced;
+        return StringUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     /**
@@ -343,7 +341,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final ForegroundColor fgc = getLast(output, ForegroundColor.class);
                 final BackgroundColor bgc = getLast(output, BackgroundColor.class);
                 final Font f = getLast(output, Font.class);
-                Log.i(TAG, String.format("End tags are %1$s %2$s %3$s", fgc, bgc, f));
                 if(fgc != null) {
                     final int where = output.getSpanStart(fgc);
                     final int len = output.length();
