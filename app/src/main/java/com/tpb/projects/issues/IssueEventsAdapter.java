@@ -83,14 +83,44 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         if(events.length > 0) {
             int oldLength = mEvents.size();
             if(mPage == 1) mEvents.clear();
-            for(Event e : events) {
-                mEvents.add(new Pair<>(e, null));
+            for(DataModel dm : mergeEvents(events)) {
+                mEvents.add(new Pair<>(dm, null));
             }
             notifyItemRangeInserted(oldLength, mEvents.size());
         } else {
             mMaxPageReached = true;
         }
     }
+
+    private ArrayList<DataModel> mergeEvents(Event[] events) {
+        final ArrayList<DataModel> merged = new ArrayList<>();
+        ArrayList<Event> toMerge = new ArrayList<>();
+        Event last = new Event();
+        for(int i = 0; i < events.length; i++) {
+            //If we have two of the same event, happening at the same time
+            if(events[i].getCreatedAt() == last.getCreatedAt() && events[i].getEvent() == last.getEvent()) {
+                /*If multiple events (labels or assignees) were added as the first event,
+                * then we need to stop the first item being duplicated
+                 */
+                if(merged.size() == 1 && merged.get(0).equals(events[i-1])) merged.remove(0);
+                toMerge.add(events[i - 1]); //Add the previous event
+                int j = i;
+                //Loop until we find an event which shouldn't be merged
+                while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
+                    toMerge.add(events[j++]);
+                }
+                i = j - 1; //Jump to the end of the merged positions
+                merged.add(new MergedEvent(toMerge));
+                toMerge = new ArrayList<>(); //Reset the list of merged events
+            } else {
+                merged.add(events[i]);
+            }
+            last = events[i]; //Set the last event
+        }
+        return merged;
+
+    }
+
 
     @Override
     public void loadError(APIHandler.APIError error) {
