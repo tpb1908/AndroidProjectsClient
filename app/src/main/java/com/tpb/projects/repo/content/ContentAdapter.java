@@ -40,6 +40,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         mLoader = loader;
         mParent = parent;
         mRepo = repo;
+        mParent.mRefresher.setRefreshing(true);
         mLoader.loadDirectory(this, repo, path, null);
         mIsLoading = true;
     }
@@ -111,7 +112,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private void loadNode(int pos) {
         if(mIsLoading) return;
         final Node node = mCurrentNodes.get(pos);
-        Log.i(TAG, "loadNode: onClick " + node.toString());
         if(node.getType() == Node.NodeType.FILE) {
             ContentActivity.mLaunchNode = node;
             final Intent file = new Intent(mParent, FileActivity.class);

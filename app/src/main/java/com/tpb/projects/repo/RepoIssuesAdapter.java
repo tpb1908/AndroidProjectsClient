@@ -25,7 +25,7 @@ import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
-import com.tpb.projects.repo.fragment.RepoIssuesFragment;
+import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;

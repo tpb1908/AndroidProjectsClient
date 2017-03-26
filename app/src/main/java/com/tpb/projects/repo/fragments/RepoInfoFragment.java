@@ -1,4 +1,4 @@
-package com.tpb.projects.repo.fragment;
+package com.tpb.projects.repo.fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -24,6 +24,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
@@ -218,6 +219,16 @@ public class RepoInfoFragment extends RepoFragment {
                     ).toBundle()
             );
         }
+    }
+
+    @OnClick(R.id.repo_show_files)
+    void showFiles() {
+        if(mRepo != null) {
+            final Intent i = new Intent(getContext(), ContentActivity.class);
+            i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
+            startActivity(i);
+        }
+
     }
 
     @Override

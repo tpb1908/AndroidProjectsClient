@@ -1,4 +1,4 @@
-package com.tpb.projects.repo.fragment;
+package com.tpb.projects.repo.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -20,7 +20,7 @@ import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.project.ProjectActivity;
-import com.tpb.projects.repo.fragment.RepoProjectsFragment;
+import com.tpb.projects.repo.fragments.RepoProjectsFragment;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
