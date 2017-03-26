@@ -157,12 +157,16 @@ public class Markdown {
                 int srcEnd = s.indexOf("\"", srcStart);
                 if(srcEnd != -1) {
                     final String url = s.substring(srcStart, srcEnd);
-                    if(url.startsWith("./") || url.startsWith("/")) {
+                    int offset = -1;
+                    if(url.startsWith("./")) offset = 2;
+                    else if(url.startsWith("/")) offset = 1;
+                    else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
+                    if(offset != -1) {
                         s =
                                 s.substring(0, srcStart) +
                                         "https://raw.githubusercontent.com/" +
                                         fullRepoName +
-                                        "/master/" + url.substring(url.startsWith("./") ? 2 : 1) +
+                                        "/master/" + url.substring(offset) +
                                         s.substring(srcEnd);
 
                     }

@@ -11,6 +11,10 @@ android {
         versionName "1.0.4"
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     sourceSets{
         main{
             assets.srcDirs = ['src/main/assets']

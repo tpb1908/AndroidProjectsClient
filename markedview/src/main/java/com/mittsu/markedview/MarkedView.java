@@ -32,7 +32,7 @@ public final class MarkedView extends WebView {
     private static final String IMAGE_PATTERN = "!\\[(.*)\\]\\((.*)\\)";
 
     private String previewText;
-    private boolean codeScrollDisable;
+    private boolean codeScrollDisable = true;
     private boolean darkTheme = false;
 
     public MarkedView(Context context) {
