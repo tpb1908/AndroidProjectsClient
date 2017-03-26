@@ -24,6 +24,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
@@ -96,13 +97,24 @@ public class RepoInfoFragment extends RepoFragment {
         mRefresher.setRefreshing(false);
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
+        mReadme.setVisibility(View.VISIBLE);
 
         mLoader.loadReadMe(new Loader.GITModelLoader<String>() {
             @Override
             public void loadComplete(String data) {
-                mReadme.setVisibility(View.VISIBLE);
-                mReadme.setMDText(data);
-                mReadme.reload();
+                mLoader.renderMarkDown(new Loader.GITModelLoader<String>() {
+                    @Override
+                    public void loadComplete(String data) {
+                        mReadme.setVisibility(View.VISIBLE);
+                        mReadme.setMDText(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
+                        mReadme.reload();
+                    }
+
+                    @Override
+                    public void loadError(APIHandler.APIError error) {
+                        Toast.makeText(getContext(), R.string.error_rendering_readme, Toast.LENGTH_SHORT).show();
+                    }
+                }, data, mRepo.getDescription());
             }
 
             @Override

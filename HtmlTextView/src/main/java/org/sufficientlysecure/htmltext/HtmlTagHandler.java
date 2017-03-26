@@ -200,7 +200,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final String font = getAttribute("face", xmlReader, "");
                 final String fgColor = getAttribute("color", xmlReader, "");
                 final String bgColor = getAttribute("bgcolor", xmlReader, "");
-                Log.i(TAG, String.format("Found font tag %1$s %2$s %3$s", font, fgColor, bgColor));
                 if(font != null && !font.isEmpty()) {
                     start(output, new Font(font));
                 }

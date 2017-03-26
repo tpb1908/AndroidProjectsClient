@@ -58,6 +58,9 @@ repositories {
     maven {
         url "https://s3.amazonaws.com/repo.commonsware.com"
     }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {

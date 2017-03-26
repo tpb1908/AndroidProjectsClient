@@ -37,13 +37,16 @@ import java.util.regex.Pattern;
 
 public class Markdown {
 
-    private Markdown() {}
+    private Markdown() {
+    }
 
-    private static final List<Extension> extensions = Arrays.asList(TablesExtension.create(), StrikethroughExtension.create());
+    private static final List<Extension> extensions = Arrays
+            .asList(TablesExtension.create(), StrikethroughExtension.create());
     private static final HtmlRenderer renderer = HtmlRenderer.builder()
-            .nodeRendererFactory(CustomBlockRenderer::new)
-            .extensions(extensions)
-            .build();
+                                                             .nodeRendererFactory(
+                                                                     CustomBlockRenderer::new)
+                                                             .extensions(extensions)
+                                                             .build();
     private static final Parser parser = Parser.builder().extensions(extensions).build();
 
     private static class CustomBlockRenderer implements NodeRenderer {
@@ -51,6 +54,7 @@ public class Markdown {
         private final HtmlWriter html;
         private HtmlNodeRendererContext context;
         private static ArraySet<Class<? extends Node>> nodeTypes = new ArraySet<>();
+
         static { //Nodes to capture
             nodeTypes.add(FencedCodeBlock.class);
             nodeTypes.add(IndentedCodeBlock.class);
@@ -78,7 +82,9 @@ public class Markdown {
                 if(Util.instancesOf(block.getLiteral(), "\n") > 10) {
                     html.line();
                     html.tag("code");
-                    html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(), block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")));
+                    html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(),
+                            block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")
+                    ));
                     html.tag("/code");
                     html.tag("br");
                     html.line();
@@ -94,7 +100,9 @@ public class Markdown {
             } else if(node instanceof IndentedCodeBlock) {
                 final IndentedCodeBlock block = (IndentedCodeBlock) node;
                 html.tag("code");
-                html.text(String.format("[%1$s]\u0002%2$s", "", block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;")));
+                html.text(String.format("[%1$s]\u0002%2$s", "",
+                        block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;")
+                ));
                 html.tag("/code");
                 html.tag("br");
             } else if(node instanceof Code) {
@@ -118,8 +126,9 @@ public class Markdown {
         }
     }
 
-    
+
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
+
     static {
         ESCAPE_MAP.put("#", "&#35;"); //Hashes must be escaped first
         ESCAPE_MAP.put("@", "&#64;"); //Ignore tags and email addresses
@@ -127,15 +136,41 @@ public class Markdown {
         ESCAPE_MAP.put(">", "&#62;");
         ESCAPE_MAP.put("`", "&#96;"); //Code tags in titles
     }
+
     private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
-    
+
     /**
      * Escapes characters to stop parser mishandling them
+     *
      * @param s The string to escape
      * @return String with #, @, <, and > replaced with their HTML codes
      */
     public static String escape(@Nullable String s) {
         return StringUtils.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
+    }
+
+    public static String fixRelativeLinks(@NonNull String s, String fullRepoName) {
+        int next = s.indexOf("<img");
+        while(next != -1) {
+            int srcStart = s.indexOf("src=\"", next) + "src=\"".length();
+            if(srcStart > "src=".length()) {
+                int srcEnd = s.indexOf("\"", srcStart);
+                if(srcEnd != -1) {
+                    final String url = s.substring(srcStart, srcEnd);
+                    if(url.startsWith("./")) {
+                        s =
+                                s.substring(0, srcStart) +
+                                        "https://raw.githubusercontent.com/" +
+                                        fullRepoName +
+                                        "/master/" + url.substring(2) +
+                                        s.substring(srcEnd);
+
+                    }
+                }
+            }
+            next = s.indexOf("<img", next + 1);
+        }
+        return s;
     }
 
     public static String parseMD(@NonNull String s, @Nullable String fullRepoName) {
@@ -184,7 +219,7 @@ public class Markdown {
                 }
                 builder.append("\u2610"); //☐ ballot box
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
-                if(i- 4 >= 0 && chars[i - 4] == '-') {
+                if(i - 4 >= 0 && chars[i - 4] == '-') {
                     builder.setLength(builder.length() - 4);
                     builder.append("<br>");
                 } else {
@@ -225,6 +260,7 @@ public class Markdown {
     /**
      * Formats a username as a link, appends it to a StringBuilder, and returns the position
      * after the username in cs
+     *
      * @return The position after the username
      */
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
@@ -240,7 +276,8 @@ public class Markdown {
                 nameBuilder.append(cs[i]);
                 p = cs[i];
                 //nameBuilder.length() > 0 stop us linking a single @
-            } else if((cs[i] == ' ' || cs[i] == '\n' || cs[i] == '\r' || i == cs.length - 1) && nameBuilder.length() > 0) {
+            } else if((cs[i] == ' ' || cs[i] == '\n' || cs[i] == '\r' || i == cs.length - 1) && nameBuilder
+                    .length() > 0) {
                 if(i == cs.length - 1) {
                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
                 }
@@ -268,6 +305,7 @@ public class Markdown {
     /**
      * Formats an Issue reference as a link, appends it to a StringBuilder, and returns the
      * position after the Issue reference in cs
+     *
      * @return The position after the Issue number
      */
     private static int parseIssue(StringBuilder builder, char[] cs, int pos, String fullRepoPath) {

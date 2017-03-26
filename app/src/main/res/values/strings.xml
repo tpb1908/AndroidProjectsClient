@@ -20,6 +20,7 @@
     <string name="error_repo_not_found">Repository not found</string>
     <string name="error_no_application_for_picture">No camera</string>
     <string name="error_readme_not_found">Readme not found</string>
+    <string name="error_rendering_readme">Couldn\'t render readme</string>
 
     <!-- Network errors -->
     <string name="error_no_connection">No connection</string>
