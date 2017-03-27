@@ -19,6 +19,7 @@ import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,28 +56,35 @@ public class CharacterActivity extends BaseActivity {
         });
         AsyncTask.execute(() -> {
             final ArrayList<Pair<String, String>> characters = new ArrayList<>();
+            final int length = Character.MAX_CODE_POINT - Character.MIN_CODE_POINT;
+            int lastIndex = 0;
             for(int i = Character.MIN_CODE_POINT; i < Character.MAX_CODE_POINT; i++) {
                 if(Character.isDefined(i) && !Character.isISOControl(i)) {
                     characters.add(Pair.create(String.valueOf((char) i), Character.getName(i)));
+                    // 50 gives ~10 chunks
+                    if((characters.size() - lastIndex) > length / 50) {
+                        final int start = lastIndex;
+                        adapter.addCharacters(characters.subList(start, characters.size()));
+                        lastIndex = characters.size();
+                    }
                 }
             }
-            CharacterActivity.this.runOnUiThread(() -> adapter.setCharacters(characters));
+
         });
     }
 
     class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
 
-        private ArrayList<Pair<String, String>> mCharacters = new ArrayList<>();
-        private ArrayList<Pair<String, String>> mFilteredCharacters = new ArrayList<>();
+        private final ArrayList<Pair<String, String>> mCharacters = new ArrayList<>();
+        private final ArrayList<Pair<String, String>> mFilteredCharacters = new ArrayList<>();
 
-        CharacterAdapter() {
-
-        }
-
-        void setCharacters(ArrayList<Pair<String, String>> characters) {
-            mCharacters = characters;
-            mFilteredCharacters.addAll(mCharacters);
-            notifyDataSetChanged();
+        void addCharacters(List<Pair<String, String>> characters) {
+            mCharacters.addAll(characters);
+            final int originalSize = mFilteredCharacters.size();
+            mFilteredCharacters.addAll(characters);
+            CharacterActivity.this.runOnUiThread(() -> {
+                notifyItemRangeInserted(originalSize, mFilteredCharacters.size());
+            });
         }
 
         void filter(String query) {
@@ -86,7 +94,6 @@ public class CharacterActivity extends BaseActivity {
             }
             mFilteredCharacters.clear();
             for(Pair<String, String> p : mCharacters) {
-
                 if(p.second.contains(query)) mFilteredCharacters.add(p);
             }
             notifyDataSetChanged();
@@ -94,7 +101,6 @@ public class CharacterActivity extends BaseActivity {
 
         private void choose(int pos) {
             CharacterActivity.this.choose(mFilteredCharacters.get(pos).first);
-           // EmojiActivity.this.choose(mFilteredCharacters.get(pos).getAliases().get(0));
         }
 
         @Override
