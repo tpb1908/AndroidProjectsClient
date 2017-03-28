@@ -19,6 +19,7 @@
 
 package org.sufficientlysecure.htmltext;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,6 +37,7 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.sufficientlysecure.htmltext.handlers.CodeClickHandler;
 import org.sufficientlysecure.htmltext.handlers.LinkClickHandler;
@@ -48,6 +50,7 @@ import org.sufficientlysecure.htmltext.spans.HorizontalRuleSpan;
 import org.sufficientlysecure.htmltext.spans.InlineCodeSpan;
 import org.sufficientlysecure.htmltext.spans.NumberSpan;
 import org.sufficientlysecure.htmltext.spans.QuoteSpan;
+import org.sufficientlysecure.htmltext.spans.RoundedBackgroundEndSpan;
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;
@@ -68,7 +71,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String BLOCKQUOTE_TAG = "ESCAPED_BLOCKQUOTE_TAG";
     private static final String A_TAG = "ESCAPED_A_TAG";
     private static final String FONT_TAG = "ESCAPED_FONT_TAG";
-    
+
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
     static {
         ESCAPE_MAP.put("<ul", "<" + UNORDERED_LIST_TAG);
@@ -125,9 +128,11 @@ public class HtmlTagHandler implements Html.TagHandler {
     private final TextPaint mTextPaint;
     private LinkClickHandler mLinkHandler;
     private CodeClickHandler mCodeHandler;
+    private Context mContext;
 
-    public HtmlTagHandler(TextPaint paint, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
-        mTextPaint = paint;
+    public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
+        mContext = tv.getContext();
+        mTextPaint = tv.getPaint();
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
     }
@@ -351,8 +356,14 @@ public class HtmlTagHandler implements Html.TagHandler {
                     final int where = output.getSpanStart(bgc);
                     final int len = output.length();
                     output.removeSpan(bgc);
-                    output.setSpan(new BackgroundColorSpan(safelyParseColor(bgc.color)), where, len,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.insert(len, " ");
+                    output.insert(where, " ");
+                    final int color = safelyParseColor(bgc.color);
+                    output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new BackgroundColorSpan(color), where+1, len,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
                 }
                 if(f != null) {
                     final int where = output.getSpanStart(f);

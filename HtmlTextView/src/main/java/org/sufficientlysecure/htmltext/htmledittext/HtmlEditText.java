@@ -134,7 +134,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint(), mLinkHandler, mCodeHandler);
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlEditText.this, mLinkHandler, mCodeHandler);
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 

@@ -150,7 +150,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(getPaint(), mLinkHandler, mCodeHandler);
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlTextView.this, mLinkHandler, mCodeHandler);
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
