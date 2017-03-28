@@ -9,9 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -19,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.error.ANError;
@@ -32,16 +28,17 @@ import com.tpb.projects.data.models.Card;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-import com.tpb.projects.markdown.Markdown;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +62,7 @@ public class IssueEditor extends EditorActivity {
     @BindView(R.id.issue_body_edit) HtmlEditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
-    @BindView(R.id.issue_labels_text) TextView mLabelsText;
+    @BindView(R.id.issue_labels_text) HtmlTextView mLabelsText;
     @BindView(R.id.issue_assignees_text) HtmlTextView mAssigneesText;
     @BindView(R.id.issue_information_layout) View mInfoLayout;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -332,19 +329,19 @@ public class IssueEditor extends EditorActivity {
     }
 
     private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {
-        final SpannableStringBuilder builder = new SpannableStringBuilder();
+        final StringBuilder builder = new StringBuilder();
         mSelectedLabels.clear();
+        builder.append("<ul bulleted=\"false\">");
         for(int i = 0; i < names.size(); i++) {
             mSelectedLabels.add(names.get(i));
-            final SpannableString s = new SpannableString(names.get(i));
-            //Set the colour span on the text span
-            s.setSpan(new ForegroundColorSpan(colors.get(i)), 0, names.get(i).length(), 0);
-            builder.append(s);
-            builder.append('\n');
+            builder.append("<li>");
+            builder.append(Spanner.getLabelString(names.get(i), colors.get(i)));
+            builder.append("</li>");
         }
+        builder.append("</ul>");
         if(builder.length() > 0) {
             mLabelsText.setVisibility(View.VISIBLE);
-            mLabelsText.setText(builder, TextView.BufferType.SPANNABLE);
+            mLabelsText.setHtml(builder.toString());
         } else {
             mLabelsText.setVisibility(View.GONE);
         }
