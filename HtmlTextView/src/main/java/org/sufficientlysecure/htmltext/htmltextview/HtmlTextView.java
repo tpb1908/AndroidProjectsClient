@@ -95,7 +95,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
         mLinkHandler = handler;
     }
 
-    public void setParseHandler(Handler parseHandler) {
+    public void setParseHandler(@Nullable Handler parseHandler) {
         mParseHandler = parseHandler;
     }
 
