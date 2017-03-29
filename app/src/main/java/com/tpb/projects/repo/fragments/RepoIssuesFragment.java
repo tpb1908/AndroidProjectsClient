@@ -141,8 +141,6 @@ public class RepoIssuesFragment extends RepoFragment {
         }
     }
 
-
-
     @OnClick(R.id.issues_filter_button)
     void filter(View v) {
         final PopupMenu menu = new PopupMenu(getContext(), v);

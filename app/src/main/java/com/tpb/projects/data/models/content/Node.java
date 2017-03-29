@@ -1,4 +1,4 @@
-package com.tpb.projects.data.models.files;
+package com.tpb.projects.data.models.content;
 
 import android.os.Parcel;
 import android.os.Parcelable;

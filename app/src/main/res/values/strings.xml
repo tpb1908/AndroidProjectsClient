@@ -74,6 +74,18 @@
     <!-- Gist stuff -->
     <string name="text_gist_viewholder_title">%1$s/%2$s</string>
 
+
+    <!-- Commit stuff -->
+    <string name="text_committed_by">%1$s committed on %2$s</string>
+    <plurals name="text_commit_additions">
+        <item quantity="one">%d addition</item>
+        <item quantity="other">%d additions</item>
+    </plurals>
+    <plurals name="text_commit_deletions">
+        <item quantity="one">%d deletions</item>
+        <item quantity="other">%d deletions</item>
+    </plurals>
+
     <!-- Content activity -->
     <string name="text_ribbon_root">/</string>
 
@@ -287,6 +299,7 @@
 
     <string name="title_repo_info">Info</string>
     <string name="title_repo_readme">Readme</string>
+    <string name="title_repo_commits">Commits</string>
     <string name="title_repo_issues">Issues</string>
     <string name="title_repo_projects">Projects</string>
 

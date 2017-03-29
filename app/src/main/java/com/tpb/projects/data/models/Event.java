@@ -74,7 +74,7 @@ public class Event extends DataModel implements Parcelable {
     }
 
     public String getShortCommitId() {
-        return (commitId == null || DataModel.JSON_NULL.equals(commitId)) ? null : commitId.substring(0, 7);
+        return Util.shortenSha(commitId);
     }
 
     public String getCommitUrl() {

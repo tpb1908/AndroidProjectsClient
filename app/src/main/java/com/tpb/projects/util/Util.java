@@ -4,11 +4,13 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.text.format.DateFormat;
 import android.util.Base64;
 import android.widget.EditText;
 
+import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Repository;
 
 import java.text.ParseException;
@@ -55,6 +57,10 @@ public class Util {
         if(value.length() == 0) return ints;
         for(int i = 0; i < values.length; i++) ints[i] = Integer.parseInt(values[i]);
         return ints;
+    }
+    
+    public static String shortenSha(@Nullable String sha) {
+        return (sha == null || DataModel.JSON_NULL.equals(sha)) ? null : sha.substring(0, 7);
     }
 
     /**
