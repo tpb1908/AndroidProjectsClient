@@ -8,12 +8,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.fragments.RepoFragment;
 import com.tpb.projects.repo.fragments.RepoInfoFragment;
@@ -24,6 +26,8 @@ import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -102,6 +106,17 @@ public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<
         mRepo = repo;
         mAdapter.notifyRepoLoaded();
         mTitle.setText(repo.getName());
+        new Loader(this).loadCommits(new Loader.GITModelsLoader<Commit>() {
+            @Override
+            public void loadComplete(Commit[] commits) {
+                Log.i(RepoActivity.class.getSimpleName(), "loadComplete: " + Arrays.toString(commits));
+            }
+
+            @Override
+            public void loadError(APIHandler.APIError error) {
+                Log.i(RepoActivity.class.getSimpleName(), "loadError: " + error);
+            }
+        }, repo.getFullName(), 1);
     }
 
     @Override
