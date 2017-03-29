@@ -16,7 +16,7 @@ import com.pddstudio.highlightjs.models.Theme;
 import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.data.models.content.Node;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

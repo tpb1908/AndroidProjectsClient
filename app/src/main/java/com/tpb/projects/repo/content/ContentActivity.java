@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.data.models.content.Node;
 import com.tpb.projects.util.BaseActivity;
 import com.tpb.projects.util.UI;
 

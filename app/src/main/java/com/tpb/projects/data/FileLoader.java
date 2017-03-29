@@ -9,7 +9,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
-import com.tpb.projects.data.models.files.Node;
+import com.tpb.projects.data.models.content.Node;
 
 import org.json.JSONArray;
 import org.json.JSONException;
