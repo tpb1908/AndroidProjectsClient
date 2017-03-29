@@ -382,18 +382,27 @@ public class ColumnFragment extends Fragment {
                     showIssueEditor(view, card);
                     break;
                 case R.id.menu_delete_issue_card:
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle(R.string.title_close_issue);
-                    builder.setMessage(R.string.text_close_issue_on_delete);
-                    builder.setPositiveButton(R.string.action_yes, (dialogInterface, j) -> {
-                        mEditor.closeIssue(null, mParent.mProject.getRepoPath(), card.getIssue().getNumber());
+                    if(!card.getIssue().isClosed()) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle(R.string.title_close_issue);
+                        builder.setMessage(R.string.text_close_issue_on_delete);
+                        builder.setPositiveButton(R.string.action_yes, (dialogInterface, j) -> {
+                            mEditor.closeIssue(null, mParent.mProject.getRepoPath(),
+                                    card.getIssue().getNumber()
+                            );
+                            mParent.deleteCard(card, false);
+                        });
+                        builder.setNeutralButton(R.string.action_cancel, null);
+                        builder.setNegativeButton(R.string.action_no,
+                                (dialogInterface, j) -> mParent.deleteCard(card, false)
+                        );
+                        final Dialog deleteDialog = builder.create();
+                        deleteDialog.getWindow()
+                                    .getAttributes().windowAnimations = R.style.DialogAnimation;
+                        deleteDialog.show();
+                    } else {
                         mParent.deleteCard(card, false);
-                    });
-                    builder.setNeutralButton(R.string.action_cancel, null);
-                    builder.setNegativeButton(R.string.action_no, (dialogInterface, j) -> mParent.deleteCard(card, false));
-                    final Dialog deleteDialog = builder.create();
-                    deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-                    deleteDialog.show();
+                    }
                     break;
                 case 1:
                     toggleIssueState(card);
