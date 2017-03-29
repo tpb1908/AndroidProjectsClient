@@ -3,6 +3,7 @@ package com.tpb.projects.repo.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +78,6 @@ public class RepoReadmeFragment extends RepoFragment {
                 mLoader.renderMarkDown(new Loader.GITModelLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
-                        data = data.replaceAll("\\s<code>", "<pre><code>").replaceAll("</code>\\s", "</code></pre>");
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
                         mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
