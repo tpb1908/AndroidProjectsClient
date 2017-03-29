@@ -15,6 +15,10 @@ android {
         abortOnError false
     }
 
+    dependencies {
+        compile 'com.android.support:appcompat-v7:25.3.0'
+    }
+
     sourceSets{
         main{
             assets.srcDirs = ['src/main/assets']

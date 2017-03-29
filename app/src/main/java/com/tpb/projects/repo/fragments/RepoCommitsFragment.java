@@ -8,10 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoCommitsAdapter;
@@ -25,7 +28,7 @@ import butterknife.Unbinder;
  * Created by theo on 29/03/17.
  */
 
-public class RepoCommitsFragment extends RepoFragment {
+public class RepoCommitsFragment extends RepoFragment implements Loader.GITModelsLoader<String> {
 
     private Unbinder unbinder;
 
@@ -34,6 +37,7 @@ public class RepoCommitsFragment extends RepoFragment {
     @BindView(R.id.repo_commits_refresher) SwipeRefreshLayout mRefresher;
 
     private RepoCommitsAdapter mAdapter;
+    private String[] mBranches;
 
     public static RepoCommitsFragment newInstance(RepoActivity parent) {
         final RepoCommitsFragment rcf = new RepoCommitsFragment();
@@ -46,7 +50,6 @@ public class RepoCommitsFragment extends RepoFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_repo_commits, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAreViewsValid = true;
         mRefresher.setRefreshing(true);
         mAdapter = new RepoCommitsAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
@@ -62,7 +65,9 @@ public class RepoCommitsFragment extends RepoFragment {
                 }
             }
         });
+        mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
+        if(mBranches != null) loadComplete(mBranches);
         mParent.notifyFragmentViewCreated(this);
         return view;
     }
@@ -70,8 +75,25 @@ public class RepoCommitsFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
+        new Loader(getContext()).loadBranches(this, mRepo.getFullName());
         if(!mAreViewsValid) return;
         mAdapter.setRepo(mRepo);
+    }
+
+    @Override
+    public void loadComplete(String[] branches) {
+        mBranches = branches;
+        if(!mAreViewsValid) return;
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, mBranches
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mBranchSpinner.setAdapter(adapter);
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
     }
 
     @Override

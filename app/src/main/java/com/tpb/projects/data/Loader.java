@@ -54,6 +54,7 @@ public class Loader extends APIHandler {
     private static final String CONTENT = "content";
     private static final String SEGMENT_MARKDOWN = "/markdown";
     private static final String SEGMENT_COMMITS = "/commits";
+    private static final String SEGMENT_BRANCHES = "/branches";
 
     public Loader(Context context) {
         super(context);
@@ -223,6 +224,31 @@ public class Loader extends APIHandler {
                 }
             });
         }
+    }
+
+    public void loadBranches(@NonNull GITModelsLoader<String> loader, String repoFullName) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_BRANCHES)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final String[] branches = new String[response.length()];
+                        try {
+                            for(int i = response.length(); i >= 0 ; i++) {
+                                branches[i] = response.getJSONObject(i).getString("name");
+                            }
+                            loader.loadComplete(branches);
+                        } catch(JSONException jse) {
+                            loader.loadError(APIError.UNPROCESSABLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        loader.loadError(parseError(anError));
+                    }
+                });
     }
 
     public void loadGists(GITModelsLoader<Gist> loader, int page) {
