@@ -977,7 +977,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadCommits(@NonNull GITModelsLoader<Commit> loader, String repoFullName, int page) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS)
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + appendPage(page))
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
                          .getAsJSONArray(new JSONArrayRequestListener() {

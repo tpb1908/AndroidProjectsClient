@@ -5,9 +5,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,7 +19,7 @@ public final class MarkedView extends WebView {
     private static final String TAG = MarkedView.class.getSimpleName();
 
     private String previewText;
-    private boolean codeScrollDisable = true;
+    private boolean codeScrollDisable = false;
     private boolean darkTheme = false;
     private float mLastXDown = 0;
 
@@ -43,7 +40,7 @@ public final class MarkedView extends WebView {
     @SuppressLint("SetJavaScriptEnabled")
     private void init(){
         setWebViewClient(new WebViewClient(){
-            public void onPageFinished(WebView view, String url){
+            public void onPageFinished(WebView view, String url) {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                     loadUrl(previewText);
                 } else {
@@ -64,43 +61,14 @@ public final class MarkedView extends WebView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getPointerCount() > 1) {
-                    //Multi touch detected
-                    return true;
-                }
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        // save the x
-                        mLastXDown = event.getX();
-                    }
-                    break;
-
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_CANCEL:
-                    case MotionEvent.ACTION_UP: {
-                        // set x so that it doesn't move
-                        event.setLocation(mLastXDown, event.getY());
-                    }
-                    break;
-
-                }
-
-                return false;
-            }
-        });
     }
 
-    public void setMarkdown(String mdText){
+    public void setMarkdown(String mdText) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             previewText = String.format("javascript:preview('%s', %b)", escape(mdText), isCodeScrollDisable());
         } else {
             previewText = String.format("preview('%s', %b)", escape(mdText), isCodeScrollDisable());
         }
-        Log.i(MarkedView.class.getSimpleName(), "Text: " + previewText);
     }
 
     private String escape(String mdText){
