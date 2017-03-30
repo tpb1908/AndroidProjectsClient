@@ -39,6 +39,7 @@ import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -168,7 +169,7 @@ public class CardEditor extends EditorActivity {
                 private int selectedIssuePosition = 0;
 
                 @Override
-                public void loadComplete(Issue[] loadedIssues) {
+                public void listLoadComplete(List<Issue> loadedIssues) {
                     if(isClosing()) return; // There is no window to attach to
                     pd.dismiss();
 
@@ -204,7 +205,7 @@ public class CardEditor extends EditorActivity {
                 }
 
                 @Override
-                public void loadError(APIHandler.APIError error) {
+                public void listLoadError(APIHandler.APIError error) {
                     if(isClosing()) return;
                     pd.dismiss();
                     Toast.makeText(CardEditor.this, error.resId, Toast.LENGTH_SHORT).show();

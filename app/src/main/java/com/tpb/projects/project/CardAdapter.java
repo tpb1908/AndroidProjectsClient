@@ -36,6 +36,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -112,16 +113,16 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     @Override
-    public void loadComplete(Card[] data) {
+    public void listLoadComplete(List<Card> cards) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(data.length > 0) {
+        if(cards.size() > 0) {
             int oldLength = mCards.size();
             if(mPage == 1){
                 mParent.mParent.notifyFragmentLoaded();
                 mCards.clear();
             }
-            for(Card c : data) {
+            for(Card c : cards) {
                 mCards.add(new Pair<>(c, null));
             }
             notifyItemRangeInserted(oldLength, mCards.size());
@@ -131,7 +132,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

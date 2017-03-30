@@ -58,7 +58,6 @@ import com.tpb.projects.util.fab.FloatingActionButton;
 import com.tpb.projects.util.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -187,8 +186,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             int projectLoadAttempts = 0;
 
             @Override
-            public void loadComplete(Project[] data) {
-                for(Project p : data) {
+            public void listLoadComplete(List<Project> projects) {
+                for(Project p : projects) {
                     if(number == p.getNumber()) {
                         ProjectActivity.this.loadComplete(p);
                         checkAccess(p);
@@ -200,7 +199,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -280,8 +279,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         mLoadCount = 0;
         mLoader.loadColumns(new Loader.ListLoader<Column>() {
             @Override
-            public void loadComplete(Column[] columns) {
-                if(columns.length > 0) {
+            public void listLoadComplete(List<Column> columns) {
+                if(columns.size() > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
 
@@ -290,13 +289,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                         id = mAdapter.getCurrentFragment().mColumn.getId();
                     }
                     mCurrentPosition = 0;
-                    mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
+                    mAdapter.columns = new ArrayList<>(columns);
                     if(mAdapter.getCount() != 0) {
                         for(int i = mAdapter.getCount() - 1; i >= 0; i--) mAdapter.remove(i);
                     }
-                    for(int i = 0; i < columns.length; i++) {
-                        mAdapter.add(new ColumnPageDescriptor(columns[i]));
-                        if(columns[i].getId() == id) {
+                    for(int i = 0; i < columns.size(); i++) {
+                        mAdapter.add(new ColumnPageDescriptor(columns.get(i)));
+                        if(columns.get(i).getId() == id) {
                             mCurrentPosition = i;
                         }
                     }
@@ -315,12 +314,12 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
 
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.length + 1);
+                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.size() + 1);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);

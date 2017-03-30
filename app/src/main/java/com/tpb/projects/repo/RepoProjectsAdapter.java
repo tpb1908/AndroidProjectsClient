@@ -26,7 +26,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,15 +63,15 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
     }
 
     @Override
-    public void loadComplete(Project[] data) {
+    public void listLoadComplete(List<Project> projects) {
         mProjects.clear();
-        mProjects.addAll(Arrays.asList(data));
+        mProjects.addAll(projects);
         notifyItemRangeChanged(0, mProjects.size());
         mRefresher.setRefreshing(false);
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

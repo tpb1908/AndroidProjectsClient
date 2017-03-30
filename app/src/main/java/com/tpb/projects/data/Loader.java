@@ -3,6 +3,7 @@ package com.tpb.projects.data;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
@@ -33,7 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -116,24 +117,22 @@ public class Loader extends APIHandler {
         } else {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
-                public void onResponse(JSONArray jsa) {
+                public void onResponse(JSONArray response) {
                     try {
-                        final Repository[] repos = new Repository[jsa.length()];
-                        for(int i = 0; i < repos.length; i++) {
-                            repos[i] = Repository.parse(jsa.getJSONObject(i));
+                        final List<Repository> repos = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
+                            repos.add(Repository.parse(response.getJSONObject(i)));
                         }
-                        Log.i(TAG, "onResponse: successfully parsed repos");
-                        loader.loadComplete(repos);
+                        loader.listLoadComplete(repos);
                     } catch(JSONException jse) {
-                        Log.i(TAG, "onResponse: " + jsa.toString());
-                        Log.e(TAG, "onResponse: ", jse);
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
                 }
 
                 @Override
                 public void onError(ANError anError) {
                     Log.i(TAG, "onError: " + anError.getErrorBody());
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -149,15 +148,15 @@ public class Loader extends APIHandler {
         } else {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
-                public void onResponse(JSONArray jsa) {
+                public void onResponse(JSONArray response) {
                     try {
-                        final Repository[] repos = new Repository[jsa.length()];
-                        for(int i = 0; i < repos.length; i++) {
-                            repos[i] = Repository.parse(jsa.getJSONObject(i));
+                        final List<Repository> repos = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
+                            repos.add(Repository.parse(response.getJSONObject(i)));
                         }
-                        loader.loadComplete(repos);
+                        loader.listLoadComplete(repos);
                     } catch(JSONException jse) {
-                        Log.i(TAG, "onResponse: " + jsa.toString());
+                        Log.i(TAG, "onResponse: " + response.toString());
                         Log.e(TAG, "onResponse: ", jse);
                     }
                 }
@@ -165,7 +164,7 @@ public class Loader extends APIHandler {
                 @Override
                 public void onError(ANError anError) {
                     Log.i(TAG, "onError: User repos" + anError.getErrorBody());
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -181,15 +180,15 @@ public class Loader extends APIHandler {
         } else {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
-                public void onResponse(JSONArray jsa) {
+                public void onResponse(JSONArray response) {
                     try {
-                        final Repository[] repos = new Repository[jsa.length()];
-                        for(int i = 0; i < repos.length; i++) {
-                            repos[i] = Repository.parse(jsa.getJSONObject(i));
+                        final List<Repository> repos = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
+                            repos.add(Repository.parse(response.getJSONObject(i)));
                         }
-                        loader.loadComplete(repos);
+                        loader.listLoadComplete(repos);
                     } catch(JSONException jse) {
-                        Log.i(TAG, "onResponse: " + jsa.toString());
+                        Log.i(TAG, "onResponse: " + response.toString());
                         Log.e(TAG, "onResponse: ", jse);
                     }
                 }
@@ -197,7 +196,7 @@ public class Loader extends APIHandler {
                 @Override
                 public void onError(ANError anError) {
                     Log.i(TAG, "onError: User repos" + anError.getErrorBody());
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -226,27 +225,31 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadBranches(@NonNull ListLoader<String> loader, String repoFullName) {
+    public void loadBranches(@NonNull ListLoader<android.support.v4.util.Pair<String, String>> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_BRANCHES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final String[] branches = new String[response.length()];
+                        final List<Pair<String, String>> branches = new ArrayList<>();
                         try {
-                            for(int i = response.length(); i >= 0 ; i++) {
-                                branches[i] = response.getJSONObject(i).getString("name");
+                            for(int i = 0; i < response.length(); i++) {
+                                branches.set(i,Pair.create(
+                                            response.getJSONObject(i).getString("name"),
+                                            response.getJSONObject(i).getJSONObject("commit").getString("sha")
+                                        )
+                                );
                             }
-                            loader.loadComplete(branches);
+                            loader.listLoadComplete(branches);
                         } catch(JSONException jse) {
-                            loader.loadError(APIError.UNPROCESSABLE);
+                            loader.listLoadError(APIError.UNPROCESSABLE);
                         }
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        loader.loadError(parseError(anError));
+                        loader.listLoadError(parseError(anError));
                     }
                 });
     }
@@ -258,19 +261,19 @@ public class Loader extends APIHandler {
                          .getAsJSONArray(new JSONArrayRequestListener() {
                              @Override
                              public void onResponse(JSONArray response) {
-                                 final Gist[] gists = new Gist[response.length()];
+                                 final List<Gist> gists = new ArrayList<>(response.length());
                                  for(int i = 0; i < response.length(); i++) {
                                      try {
-                                         gists[i] = Gist.parse(response.getJSONObject(i));
+                                         gists.add(Gist.parse(response.getJSONObject(i)));
                                      } catch(JSONException ignored) {
                                      }
                                  }
-                                 if(loader != null) loader.loadComplete(gists);
+                                 if(loader != null) loader.listLoadComplete(gists);
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(loader != null) loader.loadError(parseError(anError));
+                                 if(loader != null) loader.listLoadError(parseError(anError));
                              }
                          });
 
@@ -284,19 +287,19 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final Gist[] gists = new Gist[response.length()];
+                        final List<Gist> gists = new ArrayList<>(response.length());
                         for(int i = 0; i < response.length(); i++) {
                             try {
-                                gists[i] = Gist.parse(response.getJSONObject(i));
+                                gists.add(Gist.parse(response.getJSONObject(i)));
                             } catch(JSONException ignored) {
                             }
                         }
-                        if(loader != null) loader.loadComplete(gists);
+                        if(loader != null) loader.listLoadComplete(gists);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.loadError(parseError(anError));
+                        if(loader != null) loader.listLoadError(parseError(anError));
                     }
                 });
 
@@ -336,20 +339,20 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final User[] collabs = new User[response.length()];
-                    for(int i = 0; i < collabs.length; i++) {
+                    final List<User> collabs = new ArrayList<>(response.length());
+                    for(int i = 0; i < response.length(); i++) {
                         try {
-                            collabs[i] = User.parse(response.getJSONObject(i));
+                            collabs.add(User.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);
                         }
                     }
-                    loader.loadComplete(collabs);
+                    loader.listLoadComplete(collabs);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -367,21 +370,21 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final Label[] labels = new Label[response.length()];
-                    for(int i = 0; i < labels.length; i++) {
+                    final List<Label> labels = new ArrayList<>(response.length());
+                    for(int i = 0; i < labels.size(); i++) {
                         try {
-                            labels[i] = Label.parse(response.getJSONObject(i));
+                            labels.add(Label.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: Label parsing: ", jse);
                         }
                     }
-                    loader.loadComplete(labels);
+                    loader.listLoadComplete(labels);
                 }
 
                 @Override
                 public void onError(ANError anError) {
                     Log.i(TAG, "onError: Labels: " + anError.getErrorBody());
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -422,17 +425,17 @@ public class Loader extends APIHandler {
                 @Override
                 public void onResponse(JSONArray response) {
                     try {
-                        final Project[] projects = new Project[response.length()];
+                        final List<Project> projects = new ArrayList<>(response.length());
                         for(int i = 0; i < response.length(); i++) {
-                            projects[i] = Project.parse(response.getJSONObject(i));
+                            projects.add(Project.parse(response.getJSONObject(i)));
                         }
-                        Arrays.sort(projects, (p1, p2) -> {
+                        Collections.sort(projects, (p1, p2) -> {
                             if(p1.getState() == State.OPEN && p2.getState() != State.OPEN)
                                 return -1;
                             if(p2.getState() == State.OPEN && p1.getState() != State.OPEN) return 1;
                             return p1.getUpdatedAt() > p2.getUpdatedAt() ? -1 : 1;
                         });
-                        loader.loadComplete(projects);
+                        loader.listLoadComplete(projects);
                     } catch(JSONException jse) {
                         Log.e(TAG, "onResponse: ", jse);
                     }
@@ -440,7 +443,7 @@ public class Loader extends APIHandler {
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -458,20 +461,20 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final Column[] columns = new Column[response.length()];
-                    for(int i = 0; i < columns.length; i++) {
+                    final List<Column> columns = new ArrayList<>(response.length());
+                    for(int i = 0; i < response.length(); i++) {
                         try {
-                            columns[i] = Column.parse(response.getJSONObject(i));
+                            columns.add(Column.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);
                         }
                     }
-                    loader.loadComplete(columns);
+                    loader.listLoadComplete(columns);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -487,20 +490,20 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final Card[] cards = new Card[response.length()];
-                        for(int i = 0; i < cards.length; i++) {
+                        final List<Card> cards = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             try {
-                                cards[i] = Card.parse(response.getJSONObject(i));
+                                cards.add(Card.parse(response.getJSONObject(i)));
                             } catch(JSONException jse) {
                                 Log.e(TAG, "onResponse: ", jse);
                             }
                         }
-                        if(loader != null) loader.loadComplete(cards);
+                        if(loader != null) loader.listLoadComplete(cards);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.loadError(parseError(anError));
+                        if(loader != null) loader.listLoadError(parseError(anError));
                     }
                 });
     }
@@ -537,7 +540,7 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final ArrayList<Issue> issues = new ArrayList<>();
+                    final List<Issue> issues = new ArrayList<>();
                     for(int i = 0; i < response.length(); i++) {
                         try {
                             final Issue is = Issue.parse(response.getJSONObject(i));
@@ -546,13 +549,13 @@ public class Loader extends APIHandler {
                             Log.e(TAG, "onResponse: Parsing open issues", jse);
                         }
                     }
-                    loader.loadComplete(issues.toArray(new Issue[0]));
+                    loader.listLoadComplete(issues);
                 }
 
                 @Override
                 public void onError(ANError anError) {
                     Log.i(TAG, "onError: Issue load: " + anError.getErrorBody());
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -590,7 +593,7 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final ArrayList<Issue> issues = new ArrayList<>();
+                    final List<Issue> issues = new ArrayList<>();
                     for(int i = 0; i < response.length(); i++) {
                         try {
                             if(!response.getJSONObject(i).has("pull_request")) {
@@ -600,12 +603,12 @@ public class Loader extends APIHandler {
                             Log.e(TAG, "onResponse: Parsing open issues", jse);
                         }
                     }
-                    loader.loadComplete(issues.toArray(new Issue[issues.size()]));
+                    loader.listLoadComplete(issues);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -623,20 +626,20 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final Comment[] comments = new Comment[response.length()];
+                    final List<Comment> comments = new ArrayList<>(response.length());
                     for(int i = 0; i < response.length(); i++) {
                         try {
-                            comments[i] = Comment.parse(response.getJSONObject(i));
+                            comments.add(Comment.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: ", jse);
                         }
                     }
-                    loader.loadComplete(comments);
+                    loader.listLoadComplete(comments);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -654,21 +657,21 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final Event[] events = new Event[response.length()];
+                    final List<Event> events = new ArrayList<>(response.length());
                     for(int i = 0; i < response.length(); i++) {
                         try {
-                            events[i] = Event.parse(response.getJSONObject(i));
+                            events.add(Event.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: Events: ", jse);
                         }
                     }
-                    Arrays.sort(events, (e1, e2) -> e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0);
-                    loader.loadComplete(events);
+                    Collections.sort(events, (e1, e2) -> e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0);
+                    loader.listLoadComplete(events);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -709,19 +712,19 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final Milestone[] milestones = new Milestone[response.length()];
+                    final List<Milestone> milestones = new ArrayList<>(response.length());
                     for(int i = 0; i < response.length(); i++) {
                         try {
-                            milestones[i] = Milestone.parse(response.getJSONObject(i));
+                            milestones.add(Milestone.parse(response.getJSONObject(i)));
                         } catch(JSONException ignored) {
                         }
                     }
-                    loader.loadComplete(milestones);
+                    loader.listLoadComplete(milestones);
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    loader.loadError(parseError(anError));
+                    loader.listLoadError(parseError(anError));
                 }
             });
         }
@@ -735,19 +738,19 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final User[] users = new User[response.length()];
-                        for(int i = 0; i < users.length; i++) {
+                        final List<User> users = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             try {
-                                users[i] = User.parse(response.getJSONObject(i));
+                                users.add(User.parse(response.getJSONObject(i)));
                             } catch(JSONException ignored) {
                             }
                         }
-                        loader.loadComplete(users);
+                        loader.listLoadComplete(users);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        loader.loadError(parseError(anError));
+                        loader.listLoadError(parseError(anError));
                     }
                 });
     }
@@ -760,19 +763,19 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final User[] users = new User[response.length()];
-                        for(int i = 0; i < users.length; i++) {
+                        final List<User> users = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             try {
-                                users[i] = User.parse(response.getJSONObject(i));
+                                users.add(User.parse(response.getJSONObject(i)));
                             } catch(JSONException ignored) {
                             }
                         }
-                        loader.loadComplete(users);
+                        loader.listLoadComplete(users);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        loader.loadError(parseError(anError));
+                        loader.listLoadError(parseError(anError));
                     }
                 });
     }
@@ -1009,21 +1012,21 @@ public class Loader extends APIHandler {
                          .getAsJSONArray(new JSONArrayRequestListener() {
                              @Override
                              public void onResponse(JSONArray response) {
-                                 final Commit[] commits = new Commit[response.length()];
+                                 final List<Commit> commits = new ArrayList<>(response.length());
                                  try {
                                      for(int i = 0; i < response.length(); i++) {
-                                         commits[i] = new Commit(response.getJSONObject(i));
+                                         commits.add(new Commit(response.getJSONObject(i)));
                                      }
-                                     loader.loadComplete(commits);
+                                     loader.listLoadComplete(commits);
                                  } catch(JSONException jse) {
-                                     loader.loadError(APIError.UNPROCESSABLE);
+                                     loader.listLoadError(APIError.UNPROCESSABLE);
                                  }
 
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 loader.loadError(parseError(anError));
+                                 loader.listLoadError(parseError(anError));
                              }
                          });
     }
@@ -1034,9 +1037,9 @@ public class Loader extends APIHandler {
 
     public interface ListLoader<T> {
 
-        void loadComplete(T[] data);
+        void listLoadComplete(List<T> data);
 
-        void loadError(APIError error);
+        void listLoadError(APIError error);
 
     }
 

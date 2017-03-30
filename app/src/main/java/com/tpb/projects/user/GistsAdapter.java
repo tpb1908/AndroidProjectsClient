@@ -17,7 +17,7 @@ import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Gist;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -92,13 +92,13 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     }
 
     @Override
-    public void loadComplete(Gist[] gists) {
+    public void listLoadComplete(List<Gist> gists) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(gists.length > 0) {
+        if(gists.size() > 0) {
             int oldLength = mGists.size();
             if(mPage == 1) mGists.clear();
-            mGists.addAll(Arrays.asList(gists));
+            mGists.addAll(gists);
             notifyItemRangeInserted(oldLength, mGists.size());
         } else {
             mMaxPageReached = true;
@@ -106,7 +106,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
         mIsLoading = false;
     }
 

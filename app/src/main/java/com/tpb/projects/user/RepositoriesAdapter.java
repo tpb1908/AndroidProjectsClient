@@ -154,14 +154,14 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     @Override
-    public void loadComplete(Repository[] repos) {
+    public void listLoadComplete(List<Repository> repos) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(repos.length > 0) {
+        if(repos.size() > 0) {
             int oldLength = mRepos.size();
             if(mPage == 1) mRepos.clear();
             if(mIsShowingStars) {
-                mRepos.addAll(Arrays.asList(repos));
+                mRepos.addAll(repos);
             } else {
                 if(mPage == 1) {
                     for(Repository r : repos) {
@@ -171,7 +171,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
                             mRepos.add(r);
                         }
                     }
-                    mPinChecker.setInitialPositions(mRepos.toArray(new Repository[0]));
+                    mPinChecker.setInitialPositions(mRepos);
                     ensureLoadOfPinnedRepos();
                 } else {
                     for(Repository repo : repos) {
@@ -188,7 +188,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
         mIsLoading = false;
     }
 
@@ -275,12 +275,12 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             prefs.edit().putString(KEY, Util.stringArrayForPrefs(pins)).apply();
         }
 
-        void setInitialPositions(Repository[] repos) {
+        void setInitialPositions(List<Repository> repos) {
             mInitialPositions.clear();
             for(Repository r : repos) mInitialPositions.add(r.getFullName());
         }
 
-        void appendInitialPositions(Repository[] repos) {
+        void appendInitialPositions(List<Repository> repos) {
             for(Repository r : repos) mInitialPositions.add(r.getFullName());
         }
 

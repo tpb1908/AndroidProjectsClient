@@ -2,14 +2,14 @@
 <android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/commit_events_refresher"
+    android:id="@+id/commit_info_refresher"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/commit_scrollview"
+        android:id="@+id/commit_info_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -30,7 +30,6 @@
 
                 <RelativeLayout
                     xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/viewholder_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp">
@@ -57,9 +56,7 @@
                             android:layout_weight="1"
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
-                            android:layout_gravity="top"
-                            android:maxLines="3"
-                            android:ellipsize="end"/>
+                            android:layout_gravity="top"/>
 
                     </LinearLayout>
 
@@ -74,7 +71,7 @@
             </android.support.v7.widget.CardView>
             
             <com.tpb.animatingrecyclerview.AnimatingRecyclerView
-                android:id="@+id/commit_events_recycler"
+                android:id="@+id/commit_diff_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </LinearLayout>

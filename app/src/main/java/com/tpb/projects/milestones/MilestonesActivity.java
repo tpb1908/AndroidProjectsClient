@@ -26,6 +26,8 @@ import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -136,11 +138,11 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     }
 
     @Override
-    public void loadComplete(Milestone[] milestones) {
+    public void listLoadComplete(List<Milestone> milestones) {
         if(mPage == 1) {
             mAdapter.setMilestones(milestones);
         } else {
-            if(milestones.length > 0) {
+            if(milestones.size() > 0) {
                 mAdapter.addMilestones(milestones);
             } else {
                 mMaxPageReached = true;
@@ -151,8 +153,8 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
-        Log.i(TAG, "loadError: " + error.toString());
+    public void listLoadError(APIHandler.APIError error) {
+        Log.i(TAG, "listLoadError: " + error.toString());
     }
 
     @OnClick(R.id.milestones_filter_button)

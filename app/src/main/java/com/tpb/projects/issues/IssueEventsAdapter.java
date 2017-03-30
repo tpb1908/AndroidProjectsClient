@@ -29,6 +29,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,10 +78,10 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     @Override
-    public void loadComplete(Event[] events) {
+    public void listLoadComplete(List<Event> events) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(events.length > 0) {
+        if(events.size() > 0) {
             int oldLength = mEvents.size();
             if(mPage == 1) mEvents.clear();
             for(DataModel dm : mergeEvents(events)) {
@@ -92,30 +93,30 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         }
     }
 
-    private ArrayList<DataModel> mergeEvents(Event[] events) {
+    private ArrayList<DataModel> mergeEvents(List<Event> events) {
         final ArrayList<DataModel> merged = new ArrayList<>();
         ArrayList<Event> toMerge = new ArrayList<>();
         Event last = new Event();
-        for(int i = 0; i < events.length; i++) {
+        for(int i = 0; i < events.size(); i++) {
             //If we have two of the same event, happening at the same time
-            if(events[i].getCreatedAt() == last.getCreatedAt() && events[i].getEvent() == last.getEvent()) {
+            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i).getEvent() == last.getEvent()) {
                 /*If multiple events (labels or assignees) were added as the first event,
                 * then we need to stop the first item being duplicated
                  */
-                if(merged.size() == 1 && merged.get(0).equals(events[i-1])) merged.remove(0);
-                toMerge.add(events[i - 1]); //Add the previous event
+                if(merged.size() == 1 && merged.get(0).equals(events.get(i-1))) merged.remove(0);
+                toMerge.add(events.get(i - 1)); //Add the previous event
                 int j = i;
                 //Loop until we find an event which shouldn't be merged
-                while(j < events.length && events[j].getCreatedAt() == last.getCreatedAt() && events[j].getEvent() == last.getEvent()) {
-                    toMerge.add(events[j++]);
+                while(j < events.size() && events.get(j).getCreatedAt() == last.getCreatedAt() && events.get(j).getEvent() == last.getEvent()) {
+                    toMerge.add(events.get(j++));
                 }
                 i = j - 1; //Jump to the end of the merged positions
                 merged.add(new MergedEvent(toMerge));
                 toMerge = new ArrayList<>(); //Reset the list of merged events
             } else {
-                merged.add(events[i]);
+                merged.add(events.get(i));
             }
-            last = events[i]; //Set the last event
+            last = events.get(i); //Set the last event
         }
         return merged;
 
@@ -123,7 +124,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

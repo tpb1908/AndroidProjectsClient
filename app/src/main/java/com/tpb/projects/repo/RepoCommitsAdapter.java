@@ -24,6 +24,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,12 +81,11 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         mLoader.loadCommits(this, mRepo.getFullName(), mPage);
     }
 
-
     @Override
-    public void loadComplete(Commit[] commits) {
+    public void listLoadComplete(List<Commit> commits) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(commits.length > 0) {
+        if(commits.size()> 0) {
             final int oldLength = mCommits.size();
             if(mPage == 1) mCommits.clear();
             for(Commit c: commits) {
@@ -98,7 +98,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

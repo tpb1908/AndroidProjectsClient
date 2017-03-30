@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
+import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
@@ -31,6 +35,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     @BindView(R.id.commit_fragment_tabs) TabLayout mTabs;
     @BindView(R.id.commit_content_viewpager) ViewPager mPager;
 
+    private CommitPagerAdapter mAdapter;
+
     private Commit mCommit;
     private boolean mHadInitialCommit = false;
 
@@ -42,6 +48,23 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_commit);
         ButterKnife.bind(this);
+
+        mAdapter = new CommitPagerAdapter(getSupportFragmentManager());
+
+        mPager.setOffscreenPageLimit(2);
+        mPager.setAdapter(mAdapter);
+        mTabs.setupWithViewPager(mPager);
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(position == 1) {
+                    mFab.show(true);
+                } else {
+                    mFab.hide(true);
+                }
+            }
+        });
 
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_commit))) {
@@ -56,6 +79,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
 
     @Override
     public void loadComplete(Commit data) {
+        mCommit = data;
+        mAdapter.setCommit();
         if(mHadInitialCommit) {
             //TODO Only bind diff info
             mHadInitialCommit = false;
@@ -68,4 +93,30 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     public void loadError(APIHandler.APIError error) {
 
     }
+
+    private class CommitPagerAdapter extends FragmentPagerAdapter {
+
+        private CommitInfoFragment mInfoFragment;
+
+        public CommitPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        void setCommit() {
+            if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            mInfoFragment = CommitInfoFragment.getInstance(CommitActivity.this);
+            if(mCommit != null) mInfoFragment.commitLoaded(mCommit);
+            return mInfoFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+    }
+
 }

@@ -29,6 +29,8 @@ import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -97,12 +99,12 @@ public class RepoInfoFragment extends RepoFragment {
         
         mLoader.loadCollaborators(new Loader.ListLoader<User>() {
             @Override
-            public void loadComplete(User[] collaborators) {
+            public void listLoadComplete(List<User> collaborators) {
                 displayCollaborators(collaborators);
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
 
             }
         }, mRepo.getFullName());
@@ -122,9 +124,9 @@ public class RepoInfoFragment extends RepoFragment {
         fab.hide(true);
     }
 
-    private void displayCollaborators(User[] collaborators) {
+    private void displayCollaborators(List<User> collaborators) {
         mCollaborators.removeAllViews();
-        if(collaborators.length > 1) {
+        if(collaborators.size() > 1) {
             mCollaborators.setVisibility(View.VISIBLE);
             for(final User u : collaborators) {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
