@@ -198,13 +198,13 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         }
         if(total > 0) {
 
-            final String info = getResources().getQuantityString(R.plurals.text_user_commits, total, total) +
+            final String info = getResources().getQuantityString(R.plurals.text_user_contributions, total, total) +
                     "\n" +
                     String.format(getString(R.string.text_user_average), (float) total / daysTotal) +
                     "\n" +
                     String.format(getString(R.string.text_user_average_active), ((float) total / daysActive)) +
                     "\n" +
-                    String.format(getString(R.string.text_user_max_commits), max) +
+                    String.format(getString(R.string.text_user_max_contributions), max) +
                     "\n" +
                     String.format(getString(R.string.text_user_streak), maxStreak);
             final boolean isEmpty = mContributionsInfo.getText().toString().isEmpty();
@@ -218,7 +218,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 ).setDuration(200).start();
             }
         } else {
-            mContributionsInfo.setText(getString(R.string.text_user_no_commits));
+            mContributionsInfo.setText(getString(R.string.text_user_no_contributions));
         }
     }
 

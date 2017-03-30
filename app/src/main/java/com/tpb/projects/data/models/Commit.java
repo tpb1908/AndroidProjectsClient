@@ -138,6 +138,11 @@ public class Commit extends DataModel implements Parcelable {
         return files;
     }
 
+    public String getFullRepoName() {
+        final int repoStart = url.indexOf("repos") + "repos/".length();
+        return url.substring(repoStart, url.indexOf('/', url.indexOf('/', repoStart)+1));
+    }
+
     @Override
     public String toString() {
         return "Commit{" +

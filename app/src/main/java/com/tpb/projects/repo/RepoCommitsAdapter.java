@@ -15,6 +15,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
 import com.tpb.projects.util.Util;
@@ -49,14 +50,11 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         mParent = parent;
         mRefresher = refresher;
         mLoader = new Loader(parent.getContext());
-        mRefresher.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                final int oldSize = mCommits.size();
-                mCommits.clear();
-                notifyItemRangeRemoved(0, oldSize);
-                loadCommits(true);
-            }
+        mRefresher.setOnRefreshListener(() -> {
+            final int oldSize = mCommits.size();
+            mCommits.clear();
+            notifyItemRangeRemoved(0, oldSize);
+            loadCommits(true);
         });
     }
 
@@ -134,6 +132,9 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         } else {
             holder.mInfo.setText(mCommits.get(position).second);
         }
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar, c.getCommitter().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, c);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mInfo, c);
     }
 
     @Override
@@ -141,9 +142,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         return mCommits.size();
     }
 
-
-
-    class CommitViewHolder extends RecyclerView.ViewHolder {
+    static class CommitViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.commit_user_avatar) ANImageView mAvatar;
         @BindView(R.id.commit_title) HtmlTextView mTitle;

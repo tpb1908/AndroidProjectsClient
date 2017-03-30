@@ -12,6 +12,8 @@ import android.view.View;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
+import com.tpb.projects.commits.CommitActivity;
+import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.editors.MilestoneEditor;
@@ -79,6 +81,16 @@ public class IntentHandler {
             }
         });
         addOnClickHandler(activity, iv, login);
+    }
+
+    public static void addOnClickHandler(Activity activity, View view, Commit commit) {
+        view.setOnClickListener(v -> openCommit(activity, commit));
+    }
+
+    public static void openCommit(Activity activity, Commit commit) {
+        final Intent intent = new Intent(activity, CommitActivity.class);
+        intent.putExtra(activity.getString(R.string.parcel_commit), commit);
+        activity.startActivity(intent);
     }
 
     private static void openIssue(Activity activity, View view, String url) {
