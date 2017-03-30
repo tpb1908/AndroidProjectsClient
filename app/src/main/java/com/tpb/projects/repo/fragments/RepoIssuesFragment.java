@@ -192,7 +192,7 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadLabels(new Loader.GITModelsLoader<Label>() {
+        new Loader(getContext()).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
@@ -248,7 +248,7 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadCollaborators(new Loader.GITModelsLoader<User>() {
+        new Loader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void loadComplete(User[] collaborators) {
                 final String[] collabNames = new String[collaborators.length + 2];
@@ -315,7 +315,7 @@ public class RepoIssuesFragment extends RepoFragment {
     }
 
     private void toggleIssueState(Issue issue) {
-        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
+        final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
             @Override
             public void updated(Issue toggled) {
                 mAdapter.updateIssue(toggled);
@@ -377,7 +377,7 @@ public class RepoIssuesFragment extends RepoFragment {
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
 
                 mRefresher.setRefreshing(true);
-                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                mEditor.createIssue(new Editor.CreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
                         mRefresher.setRefreshing(false);
@@ -392,7 +392,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, mRepo.getFullName(), issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -419,7 +419,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, mRepo.getFullName(), issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+                mEditor.createComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         mRefresher.setRefreshing(false);

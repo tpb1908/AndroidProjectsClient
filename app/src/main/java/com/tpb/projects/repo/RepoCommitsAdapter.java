@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by theo on 29/03/17.
  */
 
-public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.CommitViewHolder> implements Loader.GITModelsLoader<Commit> {
+public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.CommitViewHolder> implements Loader.ListLoader<Commit> {
 
     private RepoCommitsFragment mParent;
     private Repository mRepo;

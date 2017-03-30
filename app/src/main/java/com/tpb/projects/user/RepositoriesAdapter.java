@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/12/16.
  */
 
-public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.RepoHolder> implements Loader.GITModelsLoader<Repository> {
+public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.RepoHolder> implements Loader.ListLoader<Repository> {
     private static final String TAG = RepositoriesAdapter.class.getSimpleName();
 
     private final Loader mLoader;
@@ -194,7 +194,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     private void ensureLoadOfPinnedRepos() {
         for(String repo : mPinChecker.findNonLoadedPinnedRepositories()) {
-            mLoader.loadRepository(new Loader.GITModelLoader<Repository>() {
+            mLoader.loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     if(!mRepos.contains(data)) {

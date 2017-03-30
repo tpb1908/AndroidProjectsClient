@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/03/17.
  */
 
-public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.IssueHolder> implements Loader.GITModelsLoader<Issue> {
+public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.IssueHolder> implements Loader.ListLoader<Issue> {
 
     private final RepoIssuesFragment mParent;
     private final SwipeRefreshLayout mRefresher;

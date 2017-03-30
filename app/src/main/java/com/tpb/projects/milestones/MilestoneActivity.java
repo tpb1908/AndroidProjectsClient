@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by theo on 04/03/17.
  */
 
-public class MilestoneActivity extends CircularRevealActivity implements Loader.GITModelLoader<Milestone>, Loader.GITModelsLoader<Issue> {
+public class MilestoneActivity extends CircularRevealActivity implements Loader.ItemLoader<Milestone>, Loader.ListLoader<Issue> {
 
     @BindView(R.id.milestone_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.milestone_issues_recycler) RecyclerView mRecycler;

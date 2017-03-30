@@ -3,7 +3,6 @@ package com.tpb.projects.repo.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class RepoReadmeFragment extends RepoFragment {
         mRefresher.setRefreshing(true);
         mLoader = new Loader(getContext());
         mRefresher.setOnRefreshListener(() -> {
-            new Loader(getContext()).loadRepository(new Loader.GITModelLoader<Repository>() {
+            new Loader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     repoLoaded(data);
@@ -72,10 +71,10 @@ public class RepoReadmeFragment extends RepoFragment {
     public void repoLoaded(Repository repo) {
         mRepo = repo;
         if(!mAreViewsValid) return;
-        mLoader.loadReadMe(new Loader.GITModelLoader<String>() {
+        mLoader.loadReadMe(new Loader.ItemLoader<String>() {
             @Override
             public void loadComplete(String data) {
-                mLoader.renderMarkDown(new Loader.GITModelLoader<String>() {
+                mLoader.renderMarkDown(new Loader.ItemLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
                         mRefresher.setRefreshing(false);

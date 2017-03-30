@@ -112,7 +112,7 @@ public class IssueInfoFragment extends IssueFragment {
         mInfo.setConsumeNonUrlClicks(false);
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
-            new Loader(getContext()).loadIssue(new Loader.GITModelLoader<Issue>() {
+            new Loader(getContext()).loadIssue(new Loader.ItemLoader<Issue>() {
                 @Override
                 public void loadComplete(Issue issue) {
                     issueLoaded(issue);
@@ -277,7 +277,7 @@ public class IssueInfoFragment extends IssueFragment {
 
     public void updateIssue(Issue issue, String[] assignees, String[] labels) {
         mRefresher.setRefreshing(true);
-        mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
+        mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
             int issueCreationAttempts = 0;
 
             @Override
@@ -325,7 +325,7 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void toggleIssueState() {
-        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
+        final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
             @Override
             public void updated(Issue issue) {
                 mIssue = issue;

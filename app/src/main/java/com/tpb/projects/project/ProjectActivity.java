@@ -70,7 +70,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends BaseActivity implements Loader.GITModelLoader<Project> {
+public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
@@ -183,7 +183,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
-        mLoader.loadProjects(new Loader.GITModelsLoader<Project>() {
+        mLoader.loadProjects(new Loader.ListLoader<Project>() {
             int projectLoadAttempts = 0;
 
             @Override
@@ -219,7 +219,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
+        mLoader.checkAccessToRepository(new Loader.ItemLoader<Repository.AccessLevel>() {
             int accessCheckAttempts = 0;
 
             @Override
@@ -278,7 +278,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
-        mLoader.loadColumns(new Loader.GITModelsLoader<Column>() {
+        mLoader.loadColumns(new Loader.ListLoader<Column>() {
             @Override
             public void loadComplete(Column[] columns) {
                 if(columns.length > 0) {
@@ -336,7 +336,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId, Column column) {
+    void loadIssue(Loader.ItemLoader<Issue> loader, int issueId, Column column) {
         mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 
@@ -361,7 +361,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
             }
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
-                mEditor.addColumn(new Editor.GITModelCreationListener<Column>() {
+                mEditor.addColumn(new Editor.CreationListener<Column>() {
                     int addColumnAttempts = 0;
 
                     @Override
@@ -448,7 +448,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
-                    mEditor.deleteColumn(new Editor.GITModelDeletionListener<Integer>() {
+                    mEditor.deleteColumn(new Editor.DeletionListener<Integer>() {
                         int deleteColumnAttempts = 0;
 
                         @Override
@@ -507,7 +507,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
-        mEditor.moveColumn(new Editor.GITModelUpdateListener<Integer>() {
+        mEditor.moveColumn(new Editor.UpdateListener<Integer>() {
             @Override
             public void updated(Integer integer) {
 
@@ -521,7 +521,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     }
 
     void deleteCard(Card card, boolean showWarning) {
-        final Editor.GITModelDeletionListener<Card> listener = new Editor.GITModelDeletionListener<Card>() {
+        final Editor.DeletionListener<Card> listener = new Editor.DeletionListener<Card>() {
             @Override
             public void deleted(Card card) {
                 mRefresher.setRefreshing(false);
@@ -685,7 +685,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                     labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
                 }
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                mEditor.createIssue(new Editor.CreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
                         mAdapter.getCurrentFragment().createIssueCard(issue);
@@ -716,7 +716,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+                mEditor.createComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();

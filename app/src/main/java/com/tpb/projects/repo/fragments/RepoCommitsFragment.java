@@ -28,7 +28,7 @@ import butterknife.Unbinder;
  * Created by theo on 29/03/17.
  */
 
-public class RepoCommitsFragment extends RepoFragment implements Loader.GITModelsLoader<String> {
+public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoader<String> {
 
     private Unbinder unbinder;
 

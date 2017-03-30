@@ -39,7 +39,7 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.GITModelLoader<Issue> {
+public class IssueActivity extends CircularRevealActivity implements Loader.ItemLoader<Issue> {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://raw.githubusercontent.com/tpb1908/AndroidProjectsClient/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -112,7 +112,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.GITM
             mAccessLevel = Repository.AccessLevel.ADMIN;
             if(mAdapter.mInfoFragment != null) mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
         } else {
-            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
+            mLoader.checkIfCollaborator(new Loader.ItemLoader<Repository.AccessLevel>() {
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;

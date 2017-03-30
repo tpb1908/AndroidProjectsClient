@@ -45,7 +45,7 @@ import butterknife.OnClick;
  * Created by theo on 20/12/16.
  */
 
-class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implements Loader.GITModelsLoader<Card> {
+class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implements Loader.ListLoader<Card> {
     private static final String TAG = CardAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<Card, SpannableString>> mCards = new ArrayList<>();
@@ -243,7 +243,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
         if(card.requiresLoadingFromIssue()) {
             holder.mSpinner.setVisibility(View.VISIBLE);
-            mParent.loadIssue(new Loader.GITModelLoader<Issue>() {
+            mParent.loadIssue(new Loader.ItemLoader<Issue>() {
                 int loadCount = 0;
 
                 @Override

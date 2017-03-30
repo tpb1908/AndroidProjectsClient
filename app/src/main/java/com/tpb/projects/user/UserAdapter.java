@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
  * Created by theo on 19/03/17.
  */
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> implements Loader.GITModelsLoader<User> {
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> implements Loader.ListLoader<User> {
 
     private ArrayList<User> mUsers = new ArrayList<>();
 

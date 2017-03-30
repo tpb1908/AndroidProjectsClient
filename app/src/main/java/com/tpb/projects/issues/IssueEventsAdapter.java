@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.GITModelsLoader<Event> {
+public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.ListLoader<Event> {
     private static final String TAG = IssueEventsAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();

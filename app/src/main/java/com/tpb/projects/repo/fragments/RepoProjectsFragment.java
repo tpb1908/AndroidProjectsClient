@@ -89,7 +89,7 @@ public class RepoProjectsFragment extends RepoFragment {
 
     private void toggleProjectState(Project project) {
         mRefresher.setRefreshing(true);
-        final Editor.GITModelUpdateListener<Project> listener = new Editor.GITModelUpdateListener<Project>() {
+        final Editor.UpdateListener<Project> listener = new Editor.UpdateListener<Project>() {
             @Override
             public void updated(Project updated) {
                 mRefresher.setRefreshing(false);
@@ -115,7 +115,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 .setPositiveButton(R.string.action_ok, (dialog, which) -> {
                     mRefresher.setRefreshing(true);
                     new Editor(getContext()).deleteProject(
-                            new Editor.GITModelDeletionListener<Project>() {
+                            new Editor.DeletionListener<Project>() {
                                 @Override
                                 public void deleted(Project project1) {
                                     mRefresher.setRefreshing(false);
@@ -149,7 +149,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 final String body = data.getStringExtra(getString(R.string.intent_markdown));
                 mRefresher.setRefreshing(true);
                 new Editor(getContext()).createProject(
-                        new Editor.GITModelCreationListener<Project>() {
+                        new Editor.CreationListener<Project>() {
                             @Override
                             public void created(Project project) {
                                 mRefresher.setRefreshing(false);
@@ -167,7 +167,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 final String name = data.getStringExtra(getString(R.string.intent_name));
                 final String body = data.getStringExtra(getString(R.string.intent_markdown));
                 new Editor(getContext()).updateProject(
-                        new Editor.GITModelUpdateListener<Project>() {
+                        new Editor.UpdateListener<Project>() {
                             @Override
                             public void updated(Project project) {
                                 mRefresher.setRefreshing(false);

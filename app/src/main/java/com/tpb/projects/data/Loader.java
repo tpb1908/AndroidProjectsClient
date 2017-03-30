@@ -44,7 +44,7 @@ import okhttp3.Response;
  */
 
 public class Loader extends APIHandler {
-    private static final String TAG = Loader.class.getSimpleName();
+    private static final String TAG = com.tpb.projects.data.Loader.class.getSimpleName();
 
     private static final String PERMISSION = "permission";
     private static final String PERMISSION_NONE = "none";
@@ -60,7 +60,7 @@ public class Loader extends APIHandler {
         super(context);
     }
 
-    public void loadAuthenticatedUser(@Nullable GITModelLoader<User> loader) {
+    public void loadAuthenticatedUser(@Nullable ItemLoader<User> loader) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER)
                          .addHeaders(API_AUTH_HEADERS)
                          .setPriority(Priority.IMMEDIATE)
@@ -81,7 +81,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void loadUser(@Nullable GITModelLoader<User> loader, String username) {
+    public void loadUser(@Nullable ItemLoader<User> loader, String username) {
         final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_USERS + "/" + username)
                                                .addHeaders(API_AUTH_HEADERS)
                                                .build();
@@ -105,7 +105,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadRepositories(@Nullable GITModelsLoader<Repository> loader, String user, int page) {
+    public void loadRepositories(@Nullable ListLoader<Repository> loader, String user, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + "?sort=updated" + appendPage(
                         page))
@@ -139,7 +139,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadRepositories(@Nullable GITModelsLoader<Repository> loader, int page) {
+    public void loadRepositories(@Nullable ListLoader<Repository> loader, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + "?sort=updated" + appendPage(page))
                 .addHeaders(LICENSES_API_API_AUTH_HEADERS)
@@ -171,7 +171,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadStarredRepositories(@Nullable GITModelsLoader<Repository> loader, String user, int page) {
+    public void loadStarredRepositories(@Nullable ListLoader<Repository> loader, String user, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_STARRED + appendPage(page))
                 .addHeaders(LICENSES_API_API_AUTH_HEADERS)
@@ -203,7 +203,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadRepository(@Nullable GITModelLoader<Repository> loader, String repoFullName) {
+    public void loadRepository(@Nullable ItemLoader<Repository> loader, String repoFullName) {
         final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName)
                                                .addHeaders(LICENSES_API_API_AUTH_HEADERS)
                                                .build();
@@ -226,7 +226,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadBranches(@NonNull GITModelsLoader<String> loader, String repoFullName) {
+    public void loadBranches(@NonNull ListLoader<String> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_BRANCHES)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -251,7 +251,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadGists(GITModelsLoader<Gist> loader, int page) {
+    public void loadGists(ListLoader<Gist> loader, int page) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_GISTS + appendPage(page))
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
@@ -276,7 +276,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadGists(GITModelsLoader<Gist> loader, String user, int page) {
+    public void loadGists(ListLoader<Gist> loader, String user, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_GISTS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
@@ -302,7 +302,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadReadMe(@Nullable GITModelLoader<String> loader, String repoFullName) {
+    public void loadReadMe(@Nullable ItemLoader<String> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_README)
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
@@ -325,7 +325,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void loadCollaborators(@Nullable GITModelsLoader<User> loader, String repoFullName) {
+    public void loadCollaborators(@Nullable ListLoader<User> loader, String repoFullName) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
@@ -355,7 +355,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadLabels(@Nullable GITModelsLoader<Label> loader, String repoFullName) {
+    public void loadLabels(@Nullable ListLoader<Label> loader, String repoFullName) {
         final ANRequest req =
                 AndroidNetworking
                         .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_LABELS)
@@ -387,7 +387,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadProject(@Nullable GITModelLoader<Project> loader, int id) {
+    public void loadProject(@Nullable ItemLoader<Project> loader, int id) {
         final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
                                                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                                                .build();
@@ -408,7 +408,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadProjects(@Nullable GITModelsLoader<Project> loader, String repoFullName) {
+    public void loadProjects(@Nullable ListLoader<Project> loader, String repoFullName) {
         final ANRequest req =
                 AndroidNetworking
                         .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
@@ -446,7 +446,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadColumns(@Nullable GITModelsLoader<Column> loader, int projectId) {
+    public void loadColumns(@Nullable ListLoader<Column> loader, int projectId) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
@@ -477,7 +477,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadCards(@Nullable GITModelsLoader<Card> loader, int columnId, int page) {
+    public void loadCards(@Nullable ListLoader<Card> loader, int columnId, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + appendPage(
                         page))
@@ -505,7 +505,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadIssue(@Nullable GITModelLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
+    public void loadIssue(@Nullable ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
@@ -525,7 +525,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadOpenIssues(@Nullable GITModelsLoader<Issue> loader, String repoFullName) {
+    public void loadOpenIssues(@Nullable ListLoader<Issue> loader, String repoFullName) {
         final ANRequest req =
                 AndroidNetworking
                         .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
@@ -559,7 +559,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadIssues(@Nullable GITModelsLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
+    public void loadIssues(@Nullable ListLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {
@@ -611,7 +611,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadComments(@Nullable GITModelsLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
+    public void loadComments(@Nullable ListLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS + appendPage(
                         page))
@@ -642,7 +642,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadEvents(@Nullable GITModelsLoader<Event> loader, String repoFullName, int issueNumber, int page) {
+    public void loadEvents(@Nullable ListLoader<Event> loader, String repoFullName, int issueNumber, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS + appendPage(
                         page))
@@ -675,7 +675,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadMilestone(@Nullable GITModelLoader<Milestone> loader, String repoFullName, int number) {
+    public void loadMilestone(@Nullable ItemLoader<Milestone> loader, String repoFullName, int number) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + "/" + number)
                 .addHeaders(API_AUTH_HEADERS)
@@ -695,7 +695,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadMilestones(@Nullable GITModelsLoader<Milestone> loader, String repoFullName, State state, int page) {
+    public void loadMilestones(@Nullable ListLoader<Milestone> loader, String repoFullName, State state, int page) {
         final ANRequest req =
                 AndroidNetworking
                         .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + appendPage(
@@ -727,7 +727,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadFollowers(GITModelsLoader<User> loader, String user, int page) {
+    public void loadFollowers(ListLoader<User> loader, String user, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_FOLLOWERS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
@@ -752,7 +752,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadFollowing(GITModelsLoader<User> loader, String user, int page) {
+    public void loadFollowing(ListLoader<User> loader, String user, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_FOLLOWING + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
@@ -777,7 +777,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkAccessToRepository(@Nullable GITModelLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public void checkAccessToRepository(@Nullable ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
@@ -828,7 +828,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfCollaborator(@Nullable GITModelLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public void checkIfCollaborator(@Nullable ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
@@ -855,7 +855,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfStarred(@Nullable GITModelLoader<Boolean> listener, String repoFullName) {
+    public void checkIfStarred(@Nullable ItemLoader<Boolean> listener, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + repoFullName)
                          .addHeaders(API_AUTH_HEADERS)
                          .setPriority(Priority.IMMEDIATE)
@@ -878,7 +878,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void checkIfWatched(@Nullable GITModelLoader<Boolean> listener, String repoFullName) {
+    public void checkIfWatched(@Nullable ItemLoader<Boolean> listener, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_SUBSCRIPTION)
                          .addHeaders(API_AUTH_HEADERS)
                          .setPriority(Priority.IMMEDIATE)
@@ -909,7 +909,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void renderMarkDown(@Nullable GITModelLoader<String> loader, String markdown) {
+    public void renderMarkDown(@Nullable ItemLoader<String> loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -933,7 +933,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void renderMarkDown(@Nullable GITModelLoader<String> loader, String markdown, String context) {
+    public void renderMarkDown(@Nullable ItemLoader<String> loader, String markdown, String context) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -958,7 +958,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void loadLicenseBody(@NonNull GITModelLoader<String> loader, @NonNull String path) {
+    public void loadLicenseBody(@NonNull ItemLoader<String> loader, @NonNull String path) {
         AndroidNetworking.get(path)
                          .addHeaders(LICENSES_API_API_AUTH_HEADERS)
                          .build()
@@ -984,7 +984,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadCommit(@NonNull GITModelLoader<Commit> loader, String repoFullName, String sha) {
+    public void loadCommit(@NonNull ItemLoader<Commit> loader, String repoFullName, String sha) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha)
                 .addHeaders(API_AUTH_HEADERS)
@@ -1002,7 +1002,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadCommits(@NonNull GITModelsLoader<Commit> loader, String repoFullName, int page) {
+    public void loadCommits(@NonNull ListLoader<Commit> loader, String repoFullName, int page) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + appendPage(page))
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
@@ -1032,7 +1032,7 @@ public class Loader extends APIHandler {
         return page > 1 ? "?page=" + page : "";
     }
 
-    public interface GITModelsLoader<T> {
+    public interface ListLoader<T> {
 
         void loadComplete(T[] data);
 
@@ -1040,7 +1040,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public interface GITModelLoader<T> {
+    public interface ItemLoader<T> {
 
         void loadComplete(T data);
 

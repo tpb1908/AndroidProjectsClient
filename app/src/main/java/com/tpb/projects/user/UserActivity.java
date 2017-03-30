@@ -77,7 +77,7 @@ public class UserActivity extends CircularRevealActivity {
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             user = getIntent().getStringExtra(getString(R.string.intent_username));
             mTitle.setText(user);
-            loader.loadUser(new Loader.GITModelLoader<User>() {
+            loader.loadUser(new Loader.ItemLoader<User>() {
                 @Override
                 public void loadComplete(User u) {
                     mUser = u;
@@ -96,7 +96,7 @@ public class UserActivity extends CircularRevealActivity {
             }
             final GitHubSession session = GitHubSession.getSession(this);
             mTitle.setText(session.getUserLogin());
-            loader.loadAuthenticatedUser(new Loader.GITModelLoader<User>() {
+            loader.loadAuthenticatedUser(new Loader.ItemLoader<User>() {
                 @Override
                 public void loadComplete(User user) {
                     mUser = user;

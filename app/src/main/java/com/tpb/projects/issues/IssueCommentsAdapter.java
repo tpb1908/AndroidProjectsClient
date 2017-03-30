@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/03/17.
  */
 
-public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdapter.CommentHolder> implements Loader.GITModelsLoader<Comment> {
+public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdapter.CommentHolder> implements Loader.ListLoader<Comment> {
 
     private final ArrayList<Pair<Comment, SpannableString>> mComments = new ArrayList<>();
     private Issue mIssue;

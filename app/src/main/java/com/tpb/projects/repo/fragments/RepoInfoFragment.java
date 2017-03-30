@@ -70,7 +70,7 @@ public class RepoInfoFragment extends RepoFragment {
         mRefresher.setRefreshing(true);
         mLoader = new Loader(getContext());
         mRefresher.setOnRefreshListener(() -> {
-            new Loader(getContext()).loadRepository(new Loader.GITModelLoader<Repository>() {
+            new Loader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     repoLoaded(data);
@@ -95,7 +95,7 @@ public class RepoInfoFragment extends RepoFragment {
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
         
-        mLoader.loadCollaborators(new Loader.GITModelsLoader<User>() {
+        mLoader.loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void loadComplete(User[] collaborators) {
                 displayCollaborators(collaborators);
@@ -172,7 +172,7 @@ public class RepoInfoFragment extends RepoFragment {
             pd.setTitle(R.string.title_loading_license);
             pd.setMessage(mRepo.getLicenseName());
             pd.show();
-            mLoader.loadLicenseBody(new Loader.GITModelLoader<String>() {
+            mLoader.loadLicenseBody(new Loader.ItemLoader<String>() {
                 @Override
                 public void loadComplete(String data) {
                     pd.dismiss();

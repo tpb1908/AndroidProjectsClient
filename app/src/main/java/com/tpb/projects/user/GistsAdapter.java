@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
  * Created by theo on 11/03/17.
  */
 
-public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> implements Loader.GITModelsLoader<Gist> {
+public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> implements Loader.ListLoader<Gist> {
 
     private String mUser;
     private String mAuthenticatedUser;

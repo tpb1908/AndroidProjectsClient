@@ -35,7 +35,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/03/17.
  */
 
-public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapter.ProjectViewHolder> implements  Loader.GITModelsLoader<Project> {
+public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapter.ProjectViewHolder> implements Loader.ListLoader<Project> {
 
     private ArrayList<Project> mProjects = new ArrayList<>();
     private Loader mLoader;

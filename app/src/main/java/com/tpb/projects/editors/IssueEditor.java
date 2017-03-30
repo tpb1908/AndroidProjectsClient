@@ -205,7 +205,7 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.GITModelsLoader<User>() {
+        new Loader(this).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void loadComplete(User[] collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
@@ -258,7 +258,7 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.GITModelsLoader<Label>() {
+        new Loader(this).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void loadComplete(Label[] labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();

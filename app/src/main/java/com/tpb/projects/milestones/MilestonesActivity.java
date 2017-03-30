@@ -34,7 +34,7 @@ import butterknife.OnClick;
  * Created by theo on 04/03/17.
  */
 
-public class MilestonesActivity extends CircularRevealActivity implements Loader.GITModelsLoader<Milestone> {
+public class MilestonesActivity extends CircularRevealActivity implements Loader.ListLoader<Milestone> {
     private static final String TAG = MilestonesActivity.class.getSimpleName();
 
     @BindView(R.id.milestones_recycler) AnimatingRecyclerView mRecycler;
@@ -75,7 +75,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             mIsLoading = true;
             mRefresher.setOnRefreshListener(this::refresh);
 
-            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
+            mLoader.checkIfCollaborator(new Loader.ItemLoader<Repository.AccessLevel>() {
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
@@ -209,7 +209,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             final long dueOn = data.getLongExtra(getString(R.string.intent_milestone_due_on), -1);
 
             if(requestCode == MilestoneEditor.REQUEST_CODE_NEW_MILESTONE) {
-                mEditor.createMilestone(new Editor.GITModelCreationListener<Milestone>() {
+                mEditor.createMilestone(new Editor.CreationListener<Milestone>() {
                     @Override
                     public void created(Milestone milestone) {
                         Log.i(TAG, "created: Milestone created");
@@ -224,7 +224,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                     }
                 }, mRepo, title, description, dueOn > 0 ? Util.toISO8061FromMilliseconds(dueOn) : null);
             } else if(requestCode == MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE) {
-                mEditor.updateMilestone(new Editor.GITModelUpdateListener<Milestone>() {
+                mEditor.updateMilestone(new Editor.UpdateListener<Milestone>() {
                     @Override
                     public void updated(Milestone milestone) {
                         mRefresher.setRefreshing(false);

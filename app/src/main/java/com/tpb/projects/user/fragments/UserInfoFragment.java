@@ -68,7 +68,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 return true;
             }
         });
-        mRefresher.setOnRefreshListener(() -> new Loader(getContext()).loadUser(new Loader.GITModelLoader<User>() {
+        mRefresher.setOnRefreshListener(() -> new Loader(getContext()).loadUser(new Loader.ItemLoader<User>() {
             @Override
             public void loadComplete(User data) {
                 userLoaded(data);
