@@ -8,6 +8,7 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.webkit.JavascriptInterface;
@@ -30,6 +31,8 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     private int mNestedOffsetY;
     private NestedScrollingChildHelper mChildHelper;
     private boolean mInterceptTouchEvent = false;
+
+    private SwipeRefreshLayout mParent;
 
     private String previewText;
     private boolean codeScrollDisable = false;
@@ -78,7 +81,9 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
         }
     }
 
-
+    public void setParent(SwipeRefreshLayout parent) {
+        mParent = parent;
+    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {

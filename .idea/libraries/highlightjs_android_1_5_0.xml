@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="highlightjs-android-1.5.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/c1e2a4a438daa1a6ec96caef51f62086d32cf088/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/c1e2a4a438daa1a6ec96caef51f62086d32cf088/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pddstudio/highlightjs-android/1.5.0/18f2a9807a07b8199bed4ccf6634ab62b3b4acd2/highlightjs-android-1.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

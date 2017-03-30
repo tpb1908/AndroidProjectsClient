@@ -43,6 +43,8 @@ public class FileActivity extends AppCompatActivity {
         if(prefs.isDarkThemeEnabled()) {
             mWebView.setTheme(Theme.ANDROID_STUDIO);
         }
+        mWebView.setZoomSupportEnabled(true);
+        mWebView.setShowLineNumbers(true);
         mWebView.setOnContentChangedListener(() -> {
             mSpinner.setVisibility(View.GONE);
             mWebView.setVisibility(View.VISIBLE);
