@@ -45,6 +45,7 @@ public class FileActivity extends AppCompatActivity {
         }
         mWebView.setZoomSupportEnabled(true);
         mWebView.setShowLineNumbers(true);
+        mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.setOnContentChangedListener(() -> {
             mSpinner.setVisibility(View.GONE);
             mWebView.setVisibility(View.VISIBLE);
@@ -52,7 +53,7 @@ public class FileActivity extends AppCompatActivity {
         final StringRequestListener fileLoadListener = new StringRequestListener() {
             @Override
             public void onResponse(String response) {
-                mWebView.setSource(response);
+                mWebView.setSource(response.replace("&#", "&#38;&#35;"));
             }
 
             @Override
