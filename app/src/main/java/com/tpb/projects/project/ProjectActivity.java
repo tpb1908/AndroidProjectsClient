@@ -58,7 +58,6 @@ import com.tpb.projects.util.fab.FloatingActionButton;
 import com.tpb.projects.util.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -70,7 +69,7 @@ import butterknife.OnClick;
  * Created by theo on 19/12/16.
  */
 
-public class ProjectActivity extends BaseActivity implements Loader.GITModelLoader<Project> {
+public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
 
@@ -183,12 +182,12 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
-        mLoader.loadProjects(new Loader.GITModelsLoader<Project>() {
+        mLoader.loadProjects(new Loader.ListLoader<Project>() {
             int projectLoadAttempts = 0;
 
             @Override
-            public void loadComplete(Project[] data) {
-                for(Project p : data) {
+            public void listLoadComplete(List<Project> projects) {
+                for(Project p : projects) {
                     if(number == p.getNumber()) {
                         ProjectActivity.this.loadComplete(p);
                         checkAccess(p);
@@ -200,7 +199,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mRefresher.setRefreshing(false);
                     Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -219,7 +218,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     }
 
     private void checkAccess(Project project) {
-        mLoader.checkAccessToRepository(new Loader.GITModelLoader<Repository.AccessLevel>() {
+        mLoader.checkAccessToRepository(new Loader.ItemLoader<Repository.AccessLevel>() {
             int accessCheckAttempts = 0;
 
             @Override
@@ -278,10 +277,10 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
-        mLoader.loadColumns(new Loader.GITModelsLoader<Column>() {
+        mLoader.loadColumns(new Loader.ListLoader<Column>() {
             @Override
-            public void loadComplete(Column[] columns) {
-                if(columns.length > 0) {
+            public void listLoadComplete(List<Column> columns) {
+                if(columns.size() > 0) {
                     mAddCard.setVisibility(View.INVISIBLE);
                     mAddIssue.setVisibility(View.INVISIBLE);
 
@@ -290,13 +289,13 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                         id = mAdapter.getCurrentFragment().mColumn.getId();
                     }
                     mCurrentPosition = 0;
-                    mAdapter.columns = new ArrayList<>(Arrays.asList(columns));
+                    mAdapter.columns = new ArrayList<>(columns);
                     if(mAdapter.getCount() != 0) {
                         for(int i = mAdapter.getCount() - 1; i >= 0; i--) mAdapter.remove(i);
                     }
-                    for(int i = 0; i < columns.length; i++) {
-                        mAdapter.add(new ColumnPageDescriptor(columns[i]));
-                        if(columns[i].getId() == id) {
+                    for(int i = 0; i < columns.size(); i++) {
+                        mAdapter.add(new ColumnPageDescriptor(columns.get(i)));
+                        if(columns.get(i).getId() == id) {
                             mCurrentPosition = i;
                         }
                     }
@@ -315,12 +314,12 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
 
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.length + 1);
+                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.size() + 1);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
@@ -336,7 +335,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
     }
 
-    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId, Column column) {
+    void loadIssue(Loader.ItemLoader<Issue> loader, int issueId, Column column) {
         mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
     }
 
@@ -361,7 +360,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
             }
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
-                mEditor.addColumn(new Editor.GITModelCreationListener<Column>() {
+                mEditor.addColumn(new Editor.CreationListener<Column>() {
                     int addColumnAttempts = 0;
 
                     @Override
@@ -448,7 +447,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
-                    mEditor.deleteColumn(new Editor.GITModelDeletionListener<Integer>() {
+                    mEditor.deleteColumn(new Editor.DeletionListener<Integer>() {
                         int deleteColumnAttempts = 0;
 
                         @Override
@@ -507,7 +506,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
-        mEditor.moveColumn(new Editor.GITModelUpdateListener<Integer>() {
+        mEditor.moveColumn(new Editor.UpdateListener<Integer>() {
             @Override
             public void updated(Integer integer) {
 
@@ -521,7 +520,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
     }
 
     void deleteCard(Card card, boolean showWarning) {
-        final Editor.GITModelDeletionListener<Card> listener = new Editor.GITModelDeletionListener<Card>() {
+        final Editor.DeletionListener<Card> listener = new Editor.DeletionListener<Card>() {
             @Override
             public void deleted(Card card) {
                 mRefresher.setRefreshing(false);
@@ -685,7 +684,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
                     labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
                 }
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                mEditor.createIssue(new Editor.CreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
                         mAdapter.getCurrentFragment().createIssueCard(issue);
@@ -716,7 +715,7 @@ public class ProjectActivity extends BaseActivity implements Loader.GITModelLoad
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+                mEditor.createComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();

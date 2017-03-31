@@ -142,15 +142,15 @@
     <string name="text_user_activity">Activity</string>
     <string name="text_user_created_at">Created %1$s</string>
     <string name="text_commit">commit %1$s</string>
-    <string name="text_user_no_commits">No commits</string>
-    <plurals name="text_user_commits">
-        <item quantity="zero">No commits in the last year</item>
-        <item quantity="one">%d commit in the last year</item>
-        <item quantity="other">%d commits in the last year</item>
+    <string name="text_user_no_contributions">No contributions</string>
+    <plurals name="text_user_contributions">
+        <item quantity="zero">No contributions in the last year</item>
+        <item quantity="one">%d contribution in the last year</item>
+        <item quantity="other">%d contributions in the last year</item>
     </plurals>
-    <string name="text_user_average">Average commits per day: %1$.1f</string>
-    <string name="text_user_average_active">Average commits on active days: %1$.1f</string>
-    <string name="text_user_max_commits">Most commits in a day: %1$d</string>
+    <string name="text_user_average">Average contributions per day: %1$.1f</string>
+    <string name="text_user_average_active">Average contributions on active days: %1$.1f</string>
+    <string name="text_user_max_contributions">Most contributions in a day: %1$d</string>
     <string name="text_user_streak">Longest streak: %1$d days</string>
     <plurals name="text_user_repositories">
         <item quantity="zero">No repositories</item>
@@ -392,6 +392,7 @@
     <string name="intent_emoji" translatable="false">disgusting_emoji</string>
     <string name="intent_character" translatable="false">character</string>
     <string name="intent_pager_page" translatable="false">page</string>
+    <string name="intent_commit_sha" translatable="false">commit_sha</string>
 
     <!-- Constants for models passed as parcels -->
     <string name="parcel_project" translatable="false">project</string>
@@ -401,6 +402,7 @@
     <string name="parcel_comment" translatable="false">comment</string>
     <string name="parcel_milestone" translatable="false">milestone</string>
     <string name="parcel_user" translatable="false">user</string>
+    <string name="parcel_commit" translatable="false">commit</string>
 
     <!--Constants for shared element transitions -->
     <string name="transition_name" translatable="false">name</string>

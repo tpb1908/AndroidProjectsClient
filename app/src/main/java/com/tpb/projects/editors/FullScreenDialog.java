@@ -29,7 +29,7 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_markdown))) {
             final String markdown = getArguments().getString(getString(R.string.intent_markdown));
 
-            final Loader.GITModelLoader<String> loader = new Loader.GITModelLoader<String>() {
+            final Loader.ItemLoader<String> loader = new Loader.ItemLoader<String>() {
                 @Override
                 public void loadComplete(String data) {
                     ad.setContentView(wv);

@@ -130,7 +130,7 @@ public class ColumnFragment extends Fragment {
                     Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
                     mName.setText(mColumn.getName());
                 } else {
-                    mEditor.updateColumnName(new Editor.GITModelUpdateListener<Column>() {
+                    mEditor.updateColumnName(new Editor.UpdateListener<Column>() {
                         int loadCount = 0;
                         @Override
                         public void updated(Column column) {
@@ -233,7 +233,7 @@ public class ColumnFragment extends Fragment {
         mParent.deleteColumn(mColumn);
     }
 
-    void loadIssue(Loader.GITModelLoader<Issue> loader, int issueId) {
+    void loadIssue(Loader.ItemLoader<Issue> loader, int issueId) {
         mParent.loadIssue(loader, issueId, mColumn);
     }
 
@@ -249,7 +249,7 @@ public class ColumnFragment extends Fragment {
 
     void recreateCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
+        mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
             int createAttempts = 0;
 
             @Override
@@ -325,7 +325,7 @@ public class ColumnFragment extends Fragment {
             case IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD:
                 final Card oldCard = data.getParcelableExtra(getString(R.string.parcel_card));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                mEditor.createIssue(new Editor.CreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
                         convertCardToIssue(oldCard, issue);
@@ -423,7 +423,7 @@ public class ColumnFragment extends Fragment {
 
     void newCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
+        mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
             int createAttempts = 0;
 
             @Override
@@ -460,7 +460,7 @@ public class ColumnFragment extends Fragment {
     void editCard(Card card) {
         Log.i(TAG, "editCard: Updating card: " + card.toString());
         mParent.mRefresher.setRefreshing(true);
-        mEditor.updateCard(new Editor.GITModelUpdateListener<Card>() {
+        mEditor.updateCard(new Editor.UpdateListener<Card>() {
             int updateAttempts = 0;
 
             @Override
@@ -496,7 +496,7 @@ public class ColumnFragment extends Fragment {
     }
 
     private void toggleIssueState(Card card) {
-        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
+        final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
             int stateChangeAttempts = 0;
 
             @Override
@@ -573,7 +573,7 @@ public class ColumnFragment extends Fragment {
 
     public void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
+        mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
             int issueCreationAttempts = 0;
 
             @Override
@@ -611,7 +611,7 @@ public class ColumnFragment extends Fragment {
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {
-        mEditor.deleteCard(new Editor.GITModelDeletionListener<Card>() {
+        mEditor.deleteCard(new Editor.DeletionListener<Card>() {
             int cardDeletionAttempts = 0;
             @Override
             public void deleted(Card card) {
@@ -650,7 +650,7 @@ public class ColumnFragment extends Fragment {
 
     private void createIssueCard(Issue issue, int oldCardId) {
         mParent.mRefresher.setRefreshing(true);
-        mEditor.createCard(new Editor.GITModelCreationListener<Pair<Integer, Card>>() {
+        mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
             int issueCardCreationAttempts = 0;
 
             @Override

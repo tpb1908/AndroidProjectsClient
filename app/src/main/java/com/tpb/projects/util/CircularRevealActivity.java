@@ -106,7 +106,7 @@ public abstract class CircularRevealActivity extends BaseActivity {
         circularClose.start();
     }
 
-    public boolean isClosing() {
+    public final boolean isClosing() {
         return mIsClosing;
     }
 

@@ -29,6 +29,8 @@ import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -70,7 +72,7 @@ public class RepoInfoFragment extends RepoFragment {
         mRefresher.setRefreshing(true);
         mLoader = new Loader(getContext());
         mRefresher.setOnRefreshListener(() -> {
-            new Loader(getContext()).loadRepository(new Loader.GITModelLoader<Repository>() {
+            new Loader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     repoLoaded(data);
@@ -95,14 +97,14 @@ public class RepoInfoFragment extends RepoFragment {
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
         
-        mLoader.loadCollaborators(new Loader.GITModelsLoader<User>() {
+        mLoader.loadCollaborators(new Loader.ListLoader<User>() {
             @Override
-            public void loadComplete(User[] collaborators) {
+            public void listLoadComplete(List<User> collaborators) {
                 displayCollaborators(collaborators);
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
 
             }
         }, mRepo.getFullName());
@@ -122,9 +124,9 @@ public class RepoInfoFragment extends RepoFragment {
         fab.hide(true);
     }
 
-    private void displayCollaborators(User[] collaborators) {
+    private void displayCollaborators(List<User> collaborators) {
         mCollaborators.removeAllViews();
-        if(collaborators.length > 1) {
+        if(collaborators.size() > 1) {
             mCollaborators.setVisibility(View.VISIBLE);
             for(final User u : collaborators) {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
@@ -172,7 +174,7 @@ public class RepoInfoFragment extends RepoFragment {
             pd.setTitle(R.string.title_loading_license);
             pd.setMessage(mRepo.getLicenseName());
             pd.show();
-            mLoader.loadLicenseBody(new Loader.GITModelLoader<String>() {
+            mLoader.loadLicenseBody(new Loader.ItemLoader<String>() {
                 @Override
                 public void loadComplete(String data) {
                     pd.dismiss();

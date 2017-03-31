@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.FileLoader;
 import com.tpb.projects.data.SettingsActivity;
@@ -33,7 +33,7 @@ public class ContentActivity extends BaseActivity {
     @BindView(R.id.content_title) TextView mTitle;
     @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibbonScrollView;
     @BindView(R.id.content_file_ribbon) LinearLayout mRibbon;
-    @BindView(R.id.content_recycler) RecyclerView mRecycler;
+    @BindView(R.id.content_recycler) AnimatingRecyclerView mRecycler;
     @BindView(R.id.content_refresher) SwipeRefreshLayout mRefresher;
 
     public static Node mLaunchNode;
@@ -56,6 +56,7 @@ public class ContentActivity extends BaseActivity {
         mTitle.setText(repo.substring(repo.indexOf('/') + 1));
 
         mAdapter = new ContentAdapter(new FileLoader(this), this, repo, null);
+        mRecycler.enableLineDecoration();
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());

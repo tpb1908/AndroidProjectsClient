@@ -22,6 +22,7 @@ import com.tpb.projects.markdown.Markdown;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,7 +49,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         notifyDataSetChanged();
     }
 
-    void setMilestones(Milestone[] milestones) {
+    void setMilestones(List<Milestone> milestones) {
         mMilestones.clear();
         mParseCache.clear();
         for(Milestone m : milestones) {
@@ -58,7 +59,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         notifyItemRangeInserted(0, mMilestones.size());
     }
 
-    void addMilestones(Milestone[] milestones) {
+    void addMilestones(List<Milestone> milestones) {
         final int oldSize = mMilestones.size();
         for(Milestone m : milestones) {
             mMilestones.add(m);

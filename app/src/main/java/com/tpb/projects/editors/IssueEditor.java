@@ -42,6 +42,7 @@ import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -205,18 +206,18 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.GITModelsLoader<User>() {
+        new Loader(this).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
-            public void loadComplete(User[] collaborators) {
+            public void listLoadComplete(List<User> collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
                 mcd.setArguments(b);
 
-                final String[] names = new String[collaborators.length];
+                final String[] names = new String[collaborators.size()];
                 final boolean[] checked = new boolean[names.length];
                 for(int i = 0; i < names.length; i++) {
-                    names[i] = collaborators[i].getLogin();
+                    names[i] = collaborators.get(i).getLogin();
                     if(mAssignees.indexOf(names[i]) != -1) {
                         checked[i] = true;
                     }
@@ -244,7 +245,7 @@ public class IssueEditor extends EditorActivity {
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();
@@ -258,22 +259,22 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.GITModelsLoader<Label>() {
+        new Loader(this).loadLabels(new Loader.ListLoader<Label>() {
             @Override
-            public void loadComplete(Label[] labels) {
+            public void listLoadComplete(List<Label> labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_labels);
                 mcd.setArguments(b);
 
-                final String[] labelTexts = new String[labels.length];
-                final int[] colors = new int[labels.length];
-                final boolean[] choices = new boolean[labels.length];
-                for(int i = 0; i < labels.length; i++) {
-                    labelTexts[i] = labels[i].getName();
-                    colors[i] = labels[i].getColor();
-                    choices[i] = mSelectedLabels.indexOf(labels[i].getName()) != -1;
+                final String[] labelTexts = new String[labels.size()];
+                final int[] colors = new int[labels.size()];
+                final boolean[] choices = new boolean[labels.size()];
+                for(int i = 0; i < labels.size(); i++) {
+                    labelTexts[i] = labels.get(i).getName();
+                    colors[i] = labels.get(i).getColor();
+                    choices[i] = mSelectedLabels.indexOf(labels.get(i).getName()) != -1;
                 }
 
                 mcd.setChoices(labelTexts, choices);
@@ -306,7 +307,7 @@ public class IssueEditor extends EditorActivity {
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 if(isClosing()) return;
                 pd.dismiss();
                 Toast.makeText(IssueEditor.this, error.resId, Toast.LENGTH_SHORT).show();

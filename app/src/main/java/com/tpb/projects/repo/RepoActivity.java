@@ -33,7 +33,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/03/17.
  */
 
-public class RepoActivity extends BaseActivity implements Loader.GITModelLoader<Repository> {
+public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repository> {
 
     public static final int PAGE_README = 1;
     public static final int PAGE_COMMITS = 2;

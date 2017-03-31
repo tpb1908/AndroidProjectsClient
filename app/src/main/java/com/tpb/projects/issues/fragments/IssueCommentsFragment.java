@@ -122,7 +122,7 @@ public class IssueCommentsFragment extends IssueFragment {
 
     private void createComment(Comment comment) {
         mRefresher.setRefreshing(true);
-        mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+        mEditor.createComment(new Editor.CreationListener<Comment>() {
             @Override
             public void created(Comment comment) {
                 mRefresher.setRefreshing(false);
@@ -142,7 +142,7 @@ public class IssueCommentsFragment extends IssueFragment {
     }
 
     private void editComment(Comment comment) {
-        mEditor.updateComment(new Editor.GITModelUpdateListener<Comment>() {
+        mEditor.updateComment(new Editor.UpdateListener<Comment>() {
             @Override
             public void updated(Comment comment) {
                 mRefresher.setRefreshing(false);
@@ -204,7 +204,7 @@ public class IssueCommentsFragment extends IssueFragment {
 
     void removeComment(Comment comment) {
         mRefresher.setRefreshing(true);
-        mEditor.deleteComment(new Editor.GITModelDeletionListener<Integer>() {
+        mEditor.deleteComment(new Editor.DeletionListener<Integer>() {
             @Override
             public void deleted(Integer id) {
                 mRefresher.setRefreshing(false);

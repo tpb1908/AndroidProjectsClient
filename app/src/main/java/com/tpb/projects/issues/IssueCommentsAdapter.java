@@ -26,6 +26,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +35,7 @@ import butterknife.ButterKnife;
  * Created by theo on 14/03/17.
  */
 
-public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdapter.CommentHolder> implements Loader.GITModelsLoader<Comment> {
+public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdapter.CommentHolder> implements Loader.ListLoader<Comment> {
 
     private final ArrayList<Pair<Comment, SpannableString>> mComments = new ArrayList<>();
     private Issue mIssue;
@@ -74,10 +75,10 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     @Override
-    public void loadComplete(Comment[] data) {
+    public void listLoadComplete(List<Comment> data) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(data.length > 0) {
+        if(data.size() > 0) {
             int oldLength = mComments.size();
             if(mPage == 1) mComments.clear();
             for(Comment c : data) {
@@ -90,7 +91,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

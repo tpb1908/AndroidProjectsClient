@@ -2,6 +2,7 @@ package com.tpb.projects.repo.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,8 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoCommitsAdapter;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -28,7 +31,7 @@ import butterknife.Unbinder;
  * Created by theo on 29/03/17.
  */
 
-public class RepoCommitsFragment extends RepoFragment implements Loader.GITModelsLoader<String> {
+public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoader<Pair<String, String>> {
 
     private Unbinder unbinder;
 
@@ -37,7 +40,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.GITModel
     @BindView(R.id.repo_commits_refresher) SwipeRefreshLayout mRefresher;
 
     private RepoCommitsAdapter mAdapter;
-    private String[] mBranches;
+    private List<Pair<String, String>> mBranches;
 
     public static RepoCommitsFragment newInstance(RepoActivity parent) {
         final RepoCommitsFragment rcf = new RepoCommitsFragment();
@@ -67,7 +70,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.GITModel
         });
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
-        if(mBranches != null) loadComplete(mBranches);
+        if(mBranches != null) listLoadComplete(mBranches);
         mParent.notifyFragmentViewCreated(this);
         return view;
     }
@@ -80,19 +83,29 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.GITModel
         mAdapter.setRepo(mRepo);
     }
 
+
+
     @Override
-    public void loadComplete(String[] branches) {
+    public void listLoadComplete(List<Pair<String, String>> branches) {
         mBranches = branches;
         if(!mAreViewsValid) return;
+        final String[] branchNames = new String[mBranches.size()];
+        for(int i = 0; i < mBranches.size(); i++) {
+            branchNames[i] = mBranches.get(i).first;
+        }
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item, mBranches
+                android.R.layout.simple_spinner_item, branchNames
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBranchSpinner.setAdapter(adapter);
     }
 
+    public void bindBranches(String sha) {
+
+    }
+
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

@@ -15,6 +15,7 @@ import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
 import com.tpb.projects.util.Util;
@@ -23,6 +24,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +33,7 @@ import butterknife.ButterKnife;
  * Created by theo on 29/03/17.
  */
 
-public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.CommitViewHolder> implements Loader.GITModelsLoader<Commit> {
+public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.CommitViewHolder> implements Loader.ListLoader<Commit> {
 
     private RepoCommitsFragment mParent;
     private Repository mRepo;
@@ -49,14 +51,11 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         mParent = parent;
         mRefresher = refresher;
         mLoader = new Loader(parent.getContext());
-        mRefresher.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                final int oldSize = mCommits.size();
-                mCommits.clear();
-                notifyItemRangeRemoved(0, oldSize);
-                loadCommits(true);
-            }
+        mRefresher.setOnRefreshListener(() -> {
+            final int oldSize = mCommits.size();
+            mCommits.clear();
+            notifyItemRangeRemoved(0, oldSize);
+            loadCommits(true);
         });
     }
 
@@ -82,12 +81,11 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         mLoader.loadCommits(this, mRepo.getFullName(), mPage);
     }
 
-
     @Override
-    public void loadComplete(Commit[] commits) {
+    public void listLoadComplete(List<Commit> commits) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(commits.length > 0) {
+        if(commits.size()> 0) {
             final int oldLength = mCommits.size();
             if(mPage == 1) mCommits.clear();
             for(Commit c: commits) {
@@ -100,7 +98,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 
@@ -134,6 +132,9 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         } else {
             holder.mInfo.setText(mCommits.get(position).second);
         }
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar, c.getCommitter().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, c);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mInfo, c);
     }
 
     @Override
@@ -141,9 +142,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         return mCommits.size();
     }
 
-
-
-    class CommitViewHolder extends RecyclerView.ViewHolder {
+    static class CommitViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.commit_user_avatar) ANImageView mAvatar;
         @BindView(R.id.commit_title) HtmlTextView mTitle;

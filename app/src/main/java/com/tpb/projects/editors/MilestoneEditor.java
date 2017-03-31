@@ -46,7 +46,7 @@ import butterknife.OnClick;
  * Created by theo on 25/02/17.
  */
 
-public class MilestoneEditor extends EditorActivity implements Loader.GITModelLoader<Milestone> {
+public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader<Milestone> {
     private static final String TAG = MilestoneEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_MILESTONE = 810;

@@ -16,7 +16,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.flow.IntentHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
  * Created by theo on 19/03/17.
  */
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> implements Loader.GITModelsLoader<User> {
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> implements Loader.ListLoader<User> {
 
     private ArrayList<User> mUsers = new ArrayList<>();
 
@@ -84,13 +84,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
     }
 
     @Override
-    public void loadComplete(User[] users) {
+    public void listLoadComplete(List<User> users) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(users.length > 0) {
+        if(users.size() > 0) {
             int oldLength = mUsers.size();
             if(mPage == 1) mUsers.clear();
-            mUsers.addAll(Arrays.asList(users));
+            mUsers.addAll(users);
             notifyItemRangeInserted(oldLength, mUsers.size());
         } else {
             mMaxPageReached = true;
@@ -98,7 +98,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
         mIsLoading = false;
     }
 

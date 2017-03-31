@@ -39,6 +39,7 @@ import com.tpb.projects.util.fab.FloatingActionButton;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -192,22 +193,22 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadLabels(new Loader.GITModelsLoader<Label>() {
+        new Loader(getContext()).loadLabels(new Loader.ListLoader<Label>() {
             @Override
-            public void loadComplete(Label[] labels) {
+            public void listLoadComplete(List<Label> labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_labels);
                 mcd.setArguments(b);
 
-                final String[] labelTexts = new String[labels.length];
-                final int[] colors = new int[labels.length];
-                final boolean[] choices = new boolean[labels.length];
-                for(int i = 0; i < labels.length; i++) {
-                    labelTexts[i] = labels[i].getName();
-                    colors[i] = labels[i].getColor();
-                    choices[i] = mLabelsFilter.indexOf(labels[i].getName()) != -1;
+                final String[] labelTexts = new String[labels.size()];
+                final int[] colors = new int[labels.size()];
+                final boolean[] choices = new boolean[labels.size()];
+                for(int i = 0; i < labels.size(); i++) {
+                    labelTexts[i] = labels.get(i).getName();
+                    colors[i] = labels.get(i).getColor();
+                    choices[i] = mLabelsFilter.indexOf(labels.get(i).getName()) != -1;
                 }
 
 
@@ -236,7 +237,7 @@ public class RepoIssuesFragment extends RepoFragment {
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepo.getFullName());
@@ -248,15 +249,15 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadCollaborators(new Loader.GITModelsLoader<User>() {
+        new Loader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
-            public void loadComplete(User[] collaborators) {
-                final String[] collabNames = new String[collaborators.length + 2];
+            public void listLoadComplete(List<User> collaborators) {
+                final String[] collabNames = new String[collaborators.size()+ 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
                 int pos = 0;
                 for(int i = 2; i < collabNames.length; i++) {
-                    collabNames[i] = collaborators[i - 2].getLogin();
+                    collabNames[i] = collaborators.get(i - 2).getLogin();
                     if(collabNames[i].equals(mAssigneeFilter)) {
                         pos = i;
                     }
@@ -272,7 +273,7 @@ public class RepoIssuesFragment extends RepoFragment {
             }
 
             @Override
-            public void loadError(APIHandler.APIError error) {
+            public void listLoadError(APIHandler.APIError error) {
                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepo.getFullName());
@@ -315,7 +316,7 @@ public class RepoIssuesFragment extends RepoFragment {
     }
 
     private void toggleIssueState(Issue issue) {
-        final Editor.GITModelUpdateListener<Issue> listener = new Editor.GITModelUpdateListener<Issue>() {
+        final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
             @Override
             public void updated(Issue toggled) {
                 mAdapter.updateIssue(toggled);
@@ -377,7 +378,7 @@ public class RepoIssuesFragment extends RepoFragment {
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
 
                 mRefresher.setRefreshing(true);
-                mEditor.createIssue(new Editor.GITModelCreationListener<Issue>() {
+                mEditor.createIssue(new Editor.CreationListener<Issue>() {
                     @Override
                     public void created(Issue issue) {
                         mRefresher.setRefreshing(false);
@@ -392,7 +393,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, mRepo.getFullName(), issue.getTitle(), issue.getBody(), assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
                 mRefresher.setRefreshing(true);
-                mEditor.updateIssue(new Editor.GITModelUpdateListener<Issue>() {
+                mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
                     int issueCreationAttempts = 0;
 
                     @Override
@@ -419,7 +420,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, mRepo.getFullName(), issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.GITModelCreationListener<Comment>() {
+                mEditor.createComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         mRefresher.setRefreshing(false);

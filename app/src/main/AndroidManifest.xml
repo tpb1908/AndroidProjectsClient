@@ -76,6 +76,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".commits.CommitActivity" />
+
         <activity android:name=".editors.IssueEditor"
                   android:theme="@style/AppTheme.Transparent.Dark"/>
 

@@ -33,6 +33,7 @@ import com.tpb.projects.util.search.FuzzyStringSearcher;
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +42,7 @@ import butterknife.ButterKnife;
  * Created by theo on 25/03/17.
  */
 
-public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.IssueHolder> implements Loader.GITModelsLoader<Issue> {
+public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.IssueHolder> implements Loader.ListLoader<Issue> {
 
     private final RepoIssuesFragment mParent;
     private final SwipeRefreshLayout mRefresher;
@@ -114,10 +115,10 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     }
 
     @Override
-    public void loadComplete(Issue[] issues) {
+    public void listLoadComplete(List<Issue> issues) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(issues.length > 0) {
+        if(issues.size() > 0) {
             final int oldLength = mIssues.size();
             if(mPage == 1) mIssues.clear();
             for(Issue i : issues) {
@@ -130,7 +131,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
+    public void listLoadError(APIHandler.APIError error) {
 
     }
 

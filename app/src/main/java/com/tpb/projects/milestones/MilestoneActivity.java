@@ -17,12 +17,14 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.State;
-import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +33,7 @@ import butterknife.ButterKnife;
  * Created by theo on 04/03/17.
  */
 
-public class MilestoneActivity extends CircularRevealActivity implements Loader.GITModelLoader<Milestone>, Loader.GITModelsLoader<Issue> {
+public class MilestoneActivity extends CircularRevealActivity implements Loader.ItemLoader<Milestone>, Loader.ListLoader<Issue> {
 
     @BindView(R.id.milestone_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.milestone_issues_recycler) RecyclerView mRecycler;
@@ -155,7 +157,12 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
     }
 
     @Override
-    public void loadComplete(Issue[] data) {
+    public void listLoadError(APIHandler.APIError error) {
+
+    }
+
+    @Override
+    public void listLoadComplete(List<Issue> data) {
         
     }
 }

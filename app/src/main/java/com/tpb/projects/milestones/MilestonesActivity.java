@@ -26,6 +26,8 @@ import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,7 +36,7 @@ import butterknife.OnClick;
  * Created by theo on 04/03/17.
  */
 
-public class MilestonesActivity extends CircularRevealActivity implements Loader.GITModelsLoader<Milestone> {
+public class MilestonesActivity extends CircularRevealActivity implements Loader.ListLoader<Milestone> {
     private static final String TAG = MilestonesActivity.class.getSimpleName();
 
     @BindView(R.id.milestones_recycler) AnimatingRecyclerView mRecycler;
@@ -75,7 +77,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             mIsLoading = true;
             mRefresher.setOnRefreshListener(this::refresh);
 
-            mLoader.checkIfCollaborator(new Loader.GITModelLoader<Repository.AccessLevel>() {
+            mLoader.checkIfCollaborator(new Loader.ItemLoader<Repository.AccessLevel>() {
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
@@ -136,11 +138,11 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     }
 
     @Override
-    public void loadComplete(Milestone[] milestones) {
+    public void listLoadComplete(List<Milestone> milestones) {
         if(mPage == 1) {
             mAdapter.setMilestones(milestones);
         } else {
-            if(milestones.length > 0) {
+            if(milestones.size() > 0) {
                 mAdapter.addMilestones(milestones);
             } else {
                 mMaxPageReached = true;
@@ -151,8 +153,8 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
-        Log.i(TAG, "loadError: " + error.toString());
+    public void listLoadError(APIHandler.APIError error) {
+        Log.i(TAG, "listLoadError: " + error.toString());
     }
 
     @OnClick(R.id.milestones_filter_button)
@@ -209,7 +211,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             final long dueOn = data.getLongExtra(getString(R.string.intent_milestone_due_on), -1);
 
             if(requestCode == MilestoneEditor.REQUEST_CODE_NEW_MILESTONE) {
-                mEditor.createMilestone(new Editor.GITModelCreationListener<Milestone>() {
+                mEditor.createMilestone(new Editor.CreationListener<Milestone>() {
                     @Override
                     public void created(Milestone milestone) {
                         Log.i(TAG, "created: Milestone created");
@@ -224,7 +226,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                     }
                 }, mRepo, title, description, dueOn > 0 ? Util.toISO8061FromMilliseconds(dueOn) : null);
             } else if(requestCode == MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE) {
-                mEditor.updateMilestone(new Editor.GITModelUpdateListener<Milestone>() {
+                mEditor.updateMilestone(new Editor.UpdateListener<Milestone>() {
                     @Override
                     public void updated(Milestone milestone) {
                         mRefresher.setRefreshing(false);
