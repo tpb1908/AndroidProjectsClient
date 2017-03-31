@@ -20,7 +20,8 @@
             <Spinner
                 android:id="@+id/repo_commits_branch_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"/>
 
         </android.support.v7.widget.Toolbar>
 
