@@ -49,7 +49,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
         mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;
-            notifyDataSetChanged();
+            final int oldSize = mUsers.size();
+            mUsers.clear();
+            notifyItemRangeRemoved(0, oldSize);
             loadUsers(true);
         });
     }

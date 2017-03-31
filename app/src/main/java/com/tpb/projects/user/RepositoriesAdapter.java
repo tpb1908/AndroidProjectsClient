@@ -55,10 +55,11 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
-            mRepos.clear();
             mPage = 1;
             mMaxPageReached = false;
-            notifyDataSetChanged();
+            final int oldSize = mRepos.size();
+            mRepos.clear();
+            notifyItemRangeRemoved(0, oldSize);
             loadReposForUser(true);
         });
         mPinChecker = new RepoPinChecker(context);

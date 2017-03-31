@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.androidnetworking.AndroidNetworking;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -212,11 +213,6 @@ public class UserActivity extends CircularRevealActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //TODO Pass to fragment
         getMenuInflater().inflate(R.menu.menu_activity, menu);
@@ -269,4 +265,9 @@ public class UserActivity extends CircularRevealActivity {
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AndroidNetworking.cancelAll();
+    }
 }

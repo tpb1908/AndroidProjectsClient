@@ -13,6 +13,7 @@ import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserAdapter;
+import com.tpb.projects.util.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +36,7 @@ public class UserFollowersFragment extends UserFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_user_followers, container, false);
         unbinder = ButterKnife.bind(this, view);
-        final LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mAdapter = new UserAdapter(getActivity(), mRefresher);
         mRecycler.enableLineDecoration();
@@ -49,9 +50,14 @@ public class UserFollowersFragment extends UserFragment {
                 }
             }
         });
-
         mAreViewsValid = true;
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        mRecycler.getRecycledViewPool().clear();
+        super.onResume();
     }
 
     @Override

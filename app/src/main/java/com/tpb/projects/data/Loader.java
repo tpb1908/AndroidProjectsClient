@@ -235,7 +235,7 @@ public class Loader extends APIHandler {
                         final List<Pair<String, String>> branches = new ArrayList<>();
                         try {
                             for(int i = 0; i < response.length(); i++) {
-                                branches.set(i,Pair.create(
+                                branches.add(Pair.create(
                                             response.getJSONObject(i).getString("name"),
                                             response.getJSONObject(i).getJSONObject("commit").getString("sha")
                                         )
