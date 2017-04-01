@@ -149,7 +149,7 @@ public class IntentHandler {
     public static void openUser(Activity activity, NetworkImageView iv, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
-        if(iv.getDrawable() != null) {
+        if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
             i.putExtra(activity.getString(R.string.intent_drawable), ((BitmapDrawable) iv.getDrawable()).getBitmap());
         }
         activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
