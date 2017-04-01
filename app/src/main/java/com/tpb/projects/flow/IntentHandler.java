@@ -171,4 +171,8 @@ public class IntentHandler {
         activity.startActivityForResult(i, MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE);
     }
 
+    public static String getUserUrl(String login) {
+        return "https://github.com/" + login;
+    }
+
 }

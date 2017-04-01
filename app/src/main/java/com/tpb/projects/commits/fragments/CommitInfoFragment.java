@@ -61,9 +61,18 @@ public class CommitInfoFragment extends CommitFragment {
         mCommit = commit;
         if(!mAreViewsValid) return;
         mTitle.setHtml(Spanner.bold(Markdown.escape(mCommit.getMessage())));
-        mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
+        final String user;
+        if(mCommit.getCommitter() != null) {
+            mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
+            user = String.format(getString(R.string.text_md_link),
+                    mCommit.getCommitter().getLogin(),
+                    mCommit.getCommitter().getHtmlUrl()
+            );
+        } else {
+            user = mCommit.getCommitterName();
+        }
         if(mCommit.getFiles() != null) {
-            final String builder =
+            String builder =
                     "<br>" +
                     getResources()
                     .getQuantityString(R.plurals.text_commit_additions, mCommit.getAdditions(),
@@ -76,10 +85,7 @@ public class CommitInfoFragment extends CommitFragment {
                     "<br><br>" +
                     String.format(
                             getString(R.string.text_committed_by),
-                            String.format(getString(R.string.text_md_link),
-                                    mCommit.getCommitter().getLogin(),
-                                    mCommit.getCommitter().getHtmlUrl()
-                            ),
+                            user,
                             Util.formatDateLocally(getContext(), new Date(mCommit.getCreatedAt()))
                     );
             mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));

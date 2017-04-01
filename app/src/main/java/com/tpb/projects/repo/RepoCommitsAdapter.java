@@ -129,18 +129,32 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     @Override
     public void onBindViewHolder(CommitViewHolder holder, int position) {
         final Commit c = mCommits.get(position).first;
-        holder.mAvatar.setImageUrl(c.getCommitter().getAvatarUrl());
+        if(c.getCommitter() != null) {
+            holder.mAvatar.setImageUrl(c.getCommitter().getAvatarUrl());
+        }
         holder.mTitle.setHtml(Markdown.parseMD(c.getMessage(), mRepo.getFullName()));
+        final String userName;
+        final String userUrl;
+
+        if(c.getCommitter() != null) {
+            userName = c.getCommitter().getLogin();
+            userUrl = c.getCommitter().getHtmlUrl();
+        } else {
+            userName = c.getCommitterName();
+            userUrl = IntentHandler.getUserUrl(userName);
+
+        }
         if(mCommits.get(position).second == null) {
             final StringBuilder builder = new StringBuilder();
             final Resources res = holder.itemView.getResources();
+
             builder.append(
                     String.format(
                             res.getString(R.string.text_committed_by),
                             String.format(
                                     res.getString(R.string.text_md_link),
-                                        c.getCommitter().getLogin(),
-                                        c.getCommitter().getHtmlUrl()
+                                    userName,
+                                    userUrl
                             ),
                             Util.formatDateLocally(holder.itemView.getContext(), new Date(c.getCreatedAt()))
                     )
@@ -151,7 +165,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         } else {
             holder.mInfo.setText(mCommits.get(position).second);
         }
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar, c.getCommitter().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar, userName);
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, c);
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mInfo, c);
     }
