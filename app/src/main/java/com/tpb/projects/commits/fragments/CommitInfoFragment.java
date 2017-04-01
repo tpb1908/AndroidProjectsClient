@@ -14,6 +14,8 @@ import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.commits.CommitDiffAdapter;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
@@ -62,6 +64,20 @@ public class CommitInfoFragment extends CommitFragment {
         mAdapter = new CommitDiffAdapter();
         mRecyclerView.setLayoutManager(new FixedLinearLayoutManger(getContext()));
         mRecyclerView.setAdapter(mAdapter);
+        mRefresher.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            new Loader(getContext()).loadCommit(new Loader.ItemLoader<Commit>() {
+                @Override
+                public void loadComplete(Commit commit) {
+                    commitLoaded(commit);
+                }
+
+                @Override
+                public void loadError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, mCommit.getFullRepoName(), mCommit.getSha());
+        });
         checkSharedElementEntry();
         mAreViewsValid = true;
         if(mCommit != null) commitLoaded(mCommit);
@@ -101,9 +117,10 @@ public class CommitInfoFragment extends CommitFragment {
                             Util.formatDateLocally(getContext(), new Date(mCommit.getCreatedAt()))
                     );
             mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));
+            mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
         }
-        mRefresher.setRefreshing(false);
+
     }
 
     private void checkSharedElementEntry() {
