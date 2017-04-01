@@ -19,7 +19,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginBottom="4dp">
 
-        <com.androidnetworking.widget.ANImageView
+        <com.tpb.projects.util.NetworkImageView
             android:id="@+id/commit_user_avatar"
             android:layout_width="24dp"
             android:layout_height="24dp"

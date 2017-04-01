@@ -28,7 +28,7 @@
                     android:orientation="horizontal"
                     android:layout_margin="16dp">
 
-                    <com.androidnetworking.widget.ANImageView
+                    <com.tpb.projects.util.NetworkImageView
                         android:id="@+id/user_avatar"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
@@ -41,6 +41,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
                         android:text="@string/text_placeholder"
                         android:transitionName="@string/transition_username"
                         android:textAppearance="@android:style/TextAppearance.Material.Title"/>
@@ -189,12 +190,49 @@
 
                 </TableLayout>
 
+                <TextView
+                    android:id="@+id/repo_collaborators_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/text_collaborators"
+                    android:visibility="gone"/>
+
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:id="@+id/repo_collaborators"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_margin="8dp"
+                        android:visibility="gone">
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/repo_contributors_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/text_contributors"/>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/repo_contributors"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitCommentsAdapter;
+import com.tpb.projects.data.APIHandler;
+import com.tpb.projects.data.Editor;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Commit;
@@ -35,12 +38,15 @@ import butterknife.Unbinder;
  */
 
 public class CommitCommentsFragment extends CommitFragment {
+    private static final String TAG = CommitCommentsFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
     @BindView(R.id.commit_comments_recycler) RecyclerView mRecycler;
     @BindView(R.id.commit_comments_refresher) SwipeRefreshLayout mRefresher;
     private FloatingActionButton mFab;
+
+    private Editor mEditor;
 
     private CommitCommentsAdapter mAdapter;
 
@@ -55,6 +61,7 @@ public class CommitCommentsFragment extends CommitFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_commit_comments, container, false);
         unbinder = ButterKnife.bind(this, view);
+        mEditor = new Editor(getContext());
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mAdapter = new CommitCommentsAdapter(this, mRefresher);
         mRecycler.setLayoutManager(manager);
@@ -73,6 +80,11 @@ public class CommitCommentsFragment extends CommitFragment {
                 }
             }
         });
+        mFab.setOnClickListener(v -> {
+            final Intent i = new Intent(getContext(), CommentEditor.class);
+            UI.setViewPositionForIntent(i, mFab);
+            startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
+        });
         mAreViewsValid = true;
         if(mCommit != null) commitLoaded(mCommit);
         return view;
@@ -83,6 +95,54 @@ public class CommitCommentsFragment extends CommitFragment {
         mCommit = commit;
         if(!mAreViewsValid) return;
         mAdapter.setCommit(mCommit);
+    }
+
+    private void createComment(Comment comment) {
+        mRefresher.setRefreshing(true);
+        mEditor.createCommitComment(new Editor.CreationListener<Comment>() {
+            @Override
+            public void created(Comment comment) {
+                mRefresher.setRefreshing(false);
+                mAdapter.addComment(comment);
+                mRecycler.post(() -> mRecycler.smoothScrollToPosition(mAdapter.getItemCount()));
+            }
+
+            @Override
+            public void creationError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+            }
+        },  mCommit.getFullRepoName(), mCommit.getSha(), comment.getBody());
+    }
+
+    private void editComment(Comment comment) {
+        mEditor.updateCommitComment(new Editor.UpdateListener<Comment>() {
+            @Override
+            public void updated(Comment comment) {
+                mRefresher.setRefreshing(false);
+                mAdapter.updateComment(comment);
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+            }
+        }, mCommit.getFullRepoName(), comment.getId(), comment.getBody());
+    }
+
+    void removeComment(Comment comment) {
+        mRefresher.setRefreshing(true);
+        mEditor.deleteCommitComment(new Editor.DeletionListener<Integer>() {
+            @Override
+            public void deleted(Integer id) {
+                mRefresher.setRefreshing(false);
+                mAdapter.removeComment(id);
+            }
+
+            @Override
+            public void deletionError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+            }
+        }, mCommit.getFullRepoName(), comment.getId());
     }
 
     public void displayCommentMenu(View view, Comment comment) {
@@ -102,7 +162,7 @@ public class CommitCommentsFragment extends CommitFragment {
                     startActivityForResult(i, CommentEditor.REQUEST_CODE_EDIT_COMMENT);
                     break;
                 case R.id.menu_delete_comment:
-                    //removeComment(comment);
+                    removeComment(comment);
                     break;
                 case R.id.menu_copy_comment_text:
                     final ClipboardManager cm = (ClipboardManager) getActivity().getSystemService(
@@ -114,6 +174,20 @@ public class CommitCommentsFragment extends CommitFragment {
             return false;
         });
         menu.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == AppCompatActivity.RESULT_OK) {
+            final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
+            if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
+                createComment(comment);
+            } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
+                mRefresher.setRefreshing(true);
+                editComment(comment);
+            }
+        }
     }
 
     @Override

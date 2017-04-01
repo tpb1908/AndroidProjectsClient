@@ -19,6 +19,7 @@ import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.NetworkImageView;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
@@ -93,7 +94,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     public void notifyBottomReached() {
@@ -196,7 +197,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.event_comment_avatar) ANImageView mAvatar;
+        @BindView(R.id.event_comment_avatar) NetworkImageView mAvatar;
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
 

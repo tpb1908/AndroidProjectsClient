@@ -37,6 +37,12 @@ public class Commit extends DataModel implements Parcelable {
     private static final String COMMITTER = "committer";
     private User committer;
 
+    private String authorName;
+    private String authorEmail;
+    private static final String EMAIL = "email";
+    private String committerName;
+    private String committerEmail;
+
     private static final String STATS = "stats";
     private static final String ADDITIONS = "additions";
     private int additions;
@@ -57,14 +63,23 @@ public class Commit extends DataModel implements Parcelable {
             final JSONObject commit = obj.getJSONObject(COMMIT);
             message = commit.getString(MESSAGE);
             try {
+                committerName = commit.getJSONObject(COMMITTER).getString(NAME);
+                committerEmail = commit.getJSONObject(COMMITTER).getString(EMAIL);
+                authorName = commit.getJSONObject(AUTHOR).getString(NAME);
+                authorEmail = commit.getJSONObject(AUTHOR).getString(EMAIL);
+            } catch(JSONException ignored) {}
+            try {
                 createdAt = Util.toCalendar(commit.getJSONObject(AUTHOR).getString(DATE)).getTimeInMillis();
             } catch(ParseException pe) {
 
             }
             commentCount = commit.getInt(COMMENT_COUNT);
-            author = User.parse(obj.getJSONObject(AUTHOR));
-            committer = User.parse(obj.getJSONObject(COMMITTER));
-
+            if(obj.has(AUTHOR)) {
+                author = User.parse(obj.getJSONObject(AUTHOR));
+            }
+            if(obj.has(COMMITTER)) {
+                committer = User.parse(obj.getJSONObject(COMMITTER));
+            }
             if(obj.has(PARENTS)) {
                 final JSONArray ps = obj.getJSONArray(PARENTS);
                 parents = new String[ps.length()];
@@ -138,6 +153,22 @@ public class Commit extends DataModel implements Parcelable {
         return files;
     }
 
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public String getCommitterName() {
+        return committerName;
+    }
+
+    public String getCommitterEmail() {
+        return committerEmail;
+    }
+
     public String getFullRepoName() {
         final int repoStart = url.indexOf("repos") + "repos/".length();
         return url.substring(repoStart, url.indexOf('/', url.indexOf('/', repoStart)+1));
@@ -153,6 +184,10 @@ public class Commit extends DataModel implements Parcelable {
                 ", commentCount=" + commentCount +
                 ", author=" + author +
                 ", committer=" + committer +
+                ", authorName='" + authorName + '\'' +
+                ", authorEmail='" + authorEmail + '\'' +
+                ", committerName='" + committerName + '\'' +
+                ", committerEmail='" + committerEmail + '\'' +
                 ", additions=" + additions +
                 ", deletions=" + deletions +
                 ", parents=" + Arrays.toString(parents) +
@@ -175,6 +210,10 @@ public class Commit extends DataModel implements Parcelable {
         dest.writeInt(this.commentCount);
         dest.writeParcelable(this.author, flags);
         dest.writeParcelable(this.committer, flags);
+        dest.writeString(this.authorName);
+        dest.writeString(this.authorEmail);
+        dest.writeString(this.committerName);
+        dest.writeString(this.committerEmail);
         dest.writeInt(this.additions);
         dest.writeInt(this.deletions);
         dest.writeStringArray(this.parents);
@@ -190,6 +229,10 @@ public class Commit extends DataModel implements Parcelable {
         this.commentCount = in.readInt();
         this.author = in.readParcelable(User.class.getClassLoader());
         this.committer = in.readParcelable(User.class.getClassLoader());
+        this.authorName = in.readString();
+        this.authorEmail = in.readString();
+        this.committerName = in.readString();
+        this.committerEmail = in.readString();
         this.additions = in.readInt();
         this.deletions = in.readInt();
         this.parents = in.createStringArray();
@@ -197,7 +240,7 @@ public class Commit extends DataModel implements Parcelable {
         this.createdAt = in.readLong();
     }
 
-    public static final Parcelable.Creator<Commit> CREATOR = new Parcelable.Creator<Commit>() {
+    public static final Creator<Commit> CREATOR = new Creator<Commit>() {
         @Override
         public Commit createFromParcel(Parcel source) {
             return new Commit(source);

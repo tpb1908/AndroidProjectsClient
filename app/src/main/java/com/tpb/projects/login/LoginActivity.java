@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.widget.ANImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
@@ -28,6 +27,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -46,7 +46,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_form) CardView mLogin;
     @BindView(R.id.progress_spinner) ProgressBar mSpinner;
     @BindView(R.id.user_details) View mDetails;
-    @BindView(R.id.user_avatar) ANImageView mImage;
+    @BindView(R.id.user_avatar) NetworkImageView mImage;
     @BindView(R.id.user_name) TextView mName;
     @BindView(R.id.user_id) TextView mId;
     @BindView(R.id.user_stats) TextView mStats;

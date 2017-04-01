@@ -53,9 +53,10 @@ public class Loader extends APIHandler {
     private static final String PERMISSION_WRITE = "write";
     private static final String PERMISSION_READ = "read";
     private static final String CONTENT = "content";
+
     private static final String SEGMENT_MARKDOWN = "/markdown";
-    private static final String SEGMENT_COMMITS = "/commits";
     private static final String SEGMENT_BRANCHES = "/branches";
+    private static final String SEGMENT_CONTRIBUTORS = "/contributors";
 
     public Loader(Context context) {
         super(context);
@@ -333,6 +334,36 @@ public class Loader extends APIHandler {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
+                .build();
+        if(loader == null) {
+            req.prefetch();
+        } else {
+            req.getAsJSONArray(new JSONArrayRequestListener() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    final List<User> collabs = new ArrayList<>(response.length());
+                    for(int i = 0; i < response.length(); i++) {
+                        try {
+                            collabs.add(User.parse(response.getJSONObject(i)));
+                        } catch(JSONException jse) {
+                            Log.e(TAG, "onResponse: ", jse);
+                        }
+                    }
+                    loader.listLoadComplete(collabs);
+                }
+
+                @Override
+                public void onError(ANError anError) {
+                    loader.listLoadError(parseError(anError));
+                }
+            });
+        }
+    }
+
+    public void loadContributors(@Nullable ListLoader<User> loader, String repoFullName) {
+        final ANRequest req = AndroidNetworking
+                .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_CONTRIBUTORS)
+                .addHeaders(API_AUTH_HEADERS)
                 .build();
         if(loader == null) {
             req.prefetch();

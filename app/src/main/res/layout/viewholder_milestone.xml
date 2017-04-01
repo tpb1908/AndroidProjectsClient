@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/content_description_issue_state"/>
 
-            <com.androidnetworking.widget.ANImageView
+            <com.tpb.projects.util.NetworkImageView
                 android:id="@+id/milestone_user_avatar"
                 android:layout_width="16dp"
                 android:layout_height="16dp"

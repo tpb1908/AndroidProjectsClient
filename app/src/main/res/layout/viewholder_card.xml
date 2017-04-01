@@ -46,7 +46,7 @@
                 android:layout_gravity="top"
                 android:contentDescription="@string/content_description_issue_state"/>
 
-            <com.androidnetworking.widget.ANImageView
+            <com.tpb.projects.util.NetworkImageView
                 android:id="@+id/card_user_avatar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

@@ -121,7 +121,7 @@ public class IssueCommentsFragment extends IssueFragment {
 
     private void createComment(Comment comment) {
         mRefresher.setRefreshing(true);
-        mEditor.createComment(new Editor.CreationListener<Comment>() {
+        mEditor.createIssueComment(new Editor.CreationListener<Comment>() {
             @Override
             public void created(Comment comment) {
                 mRefresher.setRefreshing(false);
@@ -141,7 +141,7 @@ public class IssueCommentsFragment extends IssueFragment {
     }
 
     private void editComment(Comment comment) {
-        mEditor.updateComment(new Editor.UpdateListener<Comment>() {
+        mEditor.updateIssueComment(new Editor.UpdateListener<Comment>() {
             @Override
             public void updated(Comment comment) {
                 mRefresher.setRefreshing(false);
@@ -153,6 +153,22 @@ public class IssueCommentsFragment extends IssueFragment {
                 mRefresher.setRefreshing(false);
             }
         }, mIssue.getRepoFullName(), comment.getId(), comment.getBody());
+    }
+
+    void removeComment(Comment comment) {
+        mRefresher.setRefreshing(true);
+        mEditor.deleteIssueComment(new Editor.DeletionListener<Integer>() {
+            @Override
+            public void deleted(Integer id) {
+                mRefresher.setRefreshing(false);
+                mAdapter.removeComment(id);
+            }
+
+            @Override
+            public void deletionError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+            }
+        }, mIssue.getRepoFullName(), comment.getId());
     }
 
     public void displayCommentMenu(View view, Comment comment) {
@@ -199,22 +215,6 @@ public class IssueCommentsFragment extends IssueFragment {
                 createCommentForState(comment);
             }
         }
-    }
-
-    void removeComment(Comment comment) {
-        mRefresher.setRefreshing(true);
-        mEditor.deleteComment(new Editor.DeletionListener<Integer>() {
-            @Override
-            public void deleted(Integer id) {
-                mRefresher.setRefreshing(false);
-                mAdapter.removeComment(id);
-            }
-
-            @Override
-            public void deletionError(APIHandler.APIError error) {
-                mRefresher.setRefreshing(false);
-            }
-        }, mIssue.getRepoFullName(), comment.getId());
     }
 
     @Override

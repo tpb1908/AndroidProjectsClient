@@ -26,7 +26,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -44,6 +43,7 @@ import com.tpb.projects.issues.IssueEventsAdapter;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -68,7 +68,7 @@ public class IssueInfoFragment extends IssueFragment {
     @BindView(R.id.issue_events_recycler) RecyclerView mRecycler;
     @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout; //http://stackoverflow.com/a/29430226/4191572
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
-    @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
+    @BindView(R.id.issue_user_avatar) NetworkImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
     @BindView(R.id.issue_title) HtmlTextView mTitle;
     @BindView(R.id.issue_info) HtmlTextView mInfo;
@@ -163,11 +163,11 @@ public class IssueInfoFragment extends IssueFragment {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
                 user.setId(i);
                 mAssigneesLayout.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
+                final NetworkImageView imageView = ButterKnife.findById(user, R.id.user_avatar);
                 imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                final TextView login = (TextView) user.findViewById(R.id.user_login);
+                final TextView login = ButterKnife.findById(user, R.id.user_login);
                 login.setId(View.generateViewId()); //Max 10 assignees
                 login.setText(issue.getAssignees()[i].getLogin());
                 user.setOnClickListener((v) -> {
@@ -196,7 +196,7 @@ public class IssueInfoFragment extends IssueFragment {
             final Milestone milestone = mIssue.getMilestone();
             final HtmlTextView tv = ButterKnife.findById(mMilestoneCard, R.id.milestone_content_markdown);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
-            final ANImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
+            final NetworkImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
             IntentHandler.addOnClickHandler(getActivity(), tv, user, milestone.getCreator().getLogin());
             IntentHandler.addOnClickHandler(getActivity(), user, milestone.getCreator().getLogin());
             status.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);

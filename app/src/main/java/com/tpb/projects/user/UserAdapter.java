@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.util.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,13 +121,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
         return mUsers.size();
     }
 
-    private void openUser(int pos, ANImageView iv) {
+    private void openUser(int pos, NetworkImageView iv) {
         IntentHandler.openUser(mLauncher, iv, mUsers.get(pos).getLogin());
     }
 
     class UserHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.user_avatar) ANImageView mAvatar;
+        @BindView(R.id.user_avatar) NetworkImageView mAvatar;
         @BindView(R.id.user_name) TextView mName;
 
         UserHolder(View itemView) {

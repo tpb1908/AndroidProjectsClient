@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -26,10 +25,12 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,9 +48,10 @@ public class RepoInfoFragment extends RepoFragment {
     private Loader mLoader;
 
     @BindView(R.id.repo_info_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_avatar) ANImageView mAvatar;
+    @BindView(R.id.user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
+    @BindView(R.id.repo_contributors) LinearLayout mContributors;
 
     @BindView(R.id.repo_size) TextView mSize;
     @BindView(R.id.repo_stars) TextView mStars;
@@ -96,18 +98,6 @@ public class RepoInfoFragment extends RepoFragment {
         mRefresher.setRefreshing(false);
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
-        
-        mLoader.loadCollaborators(new Loader.ListLoader<User>() {
-            @Override
-            public void listLoadComplete(List<User> collaborators) {
-                displayCollaborators(collaborators);
-            }
-
-            @Override
-            public void listLoadError(APIHandler.APIError error) {
-
-            }
-        }, mRepo.getFullName());
         mIssues.setText(String.valueOf(repo.getIssues()));
         mForks.setText(String.valueOf(repo.getForks()));
         mSize.setText(Util.formatKB(repo.getSize()));
@@ -117,6 +107,7 @@ public class RepoInfoFragment extends RepoFragment {
         } else {
             mLicense.setText(R.string.text_no_license);
         }
+        loadRelevantUsers();
     }
 
     @Override
@@ -124,47 +115,97 @@ public class RepoInfoFragment extends RepoFragment {
         fab.hide(true);
     }
 
+    private void loadRelevantUsers() {
+        mLoader.loadCollaborators(new Loader.ListLoader<User>() {
+            @Override
+            public void listLoadComplete(List<User> collaborators) {
+                displayCollaborators(collaborators);
+            }
+
+            @Override
+            public void listLoadError(APIHandler.APIError error) {
+                mCollaborators.setVisibility(View.GONE);
+                ButterKnife.findById(getActivity(), R.id.repo_collaborators_text)
+                           .setVisibility(View.GONE);
+            }
+        }, mRepo.getFullName());
+        mLoader.loadContributors(new Loader.ListLoader<User>() {
+            @Override
+            public void listLoadComplete(List<User> contributors) {
+                displayContributors(contributors);
+            }
+
+            @Override
+            public void listLoadError(APIHandler.APIError error) {
+                mContributors.setVisibility(View.GONE);
+                ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.GONE);
+            }
+        }, mRepo.getFullName());
+    }
+
     private void displayCollaborators(List<User> collaborators) {
         mCollaborators.removeAllViews();
         if(collaborators.size() > 1) {
             mCollaborators.setVisibility(View.VISIBLE);
-            for(final User u : collaborators) {
-                final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
-                                                                      .inflate(R.layout.shard_user,
-                                                                              mCollaborators, false
-                                                                      );
-                user.setId(View.generateViewId());
-                mCollaborators.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
-                imageView.setId(View.generateViewId());
-                imageView.setImageUrl(u.getAvatarUrl());
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                final TextView login = (TextView) user.findViewById(R.id.user_login);
-                login.setId(View.generateViewId());
-                login.setText(u.getLogin());
-                user.setOnClickListener((v) -> {
-                    final Intent us = new Intent(getActivity(), UserActivity.class);
-                    us.putExtra(getString(R.string.intent_username), u.getLogin());
-
-                    if(imageView.getDrawable() != null) {
-                        us.putExtra(getString(R.string.intent_drawable),
-                                ((BitmapDrawable) imageView.getDrawable()).getBitmap()
-                        );
-                    }
-                    getActivity().startActivity(us,
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    getActivity(),
-                                    Pair.create(login, getString(R.string.transition_username)),
-                                    Pair.create(imageView,
-                                            getString(R.string.transition_user_image)
-                                    )
-                            ).toBundle()
-                    );
-                });
-            }
+            ButterKnife.findById(getActivity(), R.id.repo_collaborators_text)
+                       .setVisibility(View.VISIBLE);
+            for(final User u : collaborators) mCollaborators.addView(getUserView(u));
         } else {
             mCollaborators.setVisibility(View.GONE);
+            ButterKnife.findById(getActivity(), R.id.repo_collaborators_text)
+                       .setVisibility(View.GONE);
         }
+    }
+
+    private void displayContributors(List<User> contributors) {
+        mContributors.removeAllViews();
+        if(contributors.size() > 1) {
+            mContributors.setVisibility(View.VISIBLE);
+            ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.VISIBLE);
+            for(final User u : contributors) mContributors.addView(getUserView(u));
+        } else {
+            mContributors.setVisibility(View.GONE);
+            ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.GONE);
+        }
+    }
+
+    private View getUserView(User u) {
+        final LinearLayout layout = (LinearLayout)
+                        getActivity()
+                        .getLayoutInflater()
+                        .inflate(R.layout.shard_user, mCollaborators, false);
+        layout.setId(View.generateViewId());
+        final NetworkImageView imageView = ButterKnife.findById(layout, R.id.user_avatar);
+        imageView.setId(View.generateViewId());
+        imageView.setImageUrl(u.getAvatarUrl());
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        final TextView login = ButterKnife.findById(layout, R.id.user_login);
+        login.setId(View.generateViewId());
+        if(u.getContributions() > 0) {
+            login.setText(String.format(Locale.getDefault(), "%1$s\n%2$d", u.getLogin(), u.getContributions()));
+        } else {
+            login.setText(u.getLogin());
+        }
+        layout.setOnClickListener((v) -> {
+            final Intent us = new Intent(getActivity(), UserActivity.class);
+            us.putExtra(getString(R.string.intent_username), u.getLogin());
+
+            if(imageView.getDrawable() != null) {
+                us.putExtra(getString(R.string.intent_drawable),
+                        ((BitmapDrawable) imageView.getDrawable()).getBitmap()
+                );
+            }
+            getActivity().startActivity(us,
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            getActivity(),
+                            Pair.create(login, getString(R.string.transition_username)),
+                            Pair.create(imageView,
+                                    getString(R.string.transition_user_image)
+                            )
+                    ).toBundle()
+            );
+        });
+        return layout;
     }
 
     @OnClick({R.id.repo_license, R.id.repo_license_drawable, R.id.repo_license_text})
@@ -189,7 +230,8 @@ public class RepoInfoFragment extends RepoFragment {
                 @Override
                 public void loadError(APIHandler.APIError error) {
                     pd.dismiss();
-                    Toast.makeText(getContext(), R.string.error_loading_license, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_loading_license, Toast.LENGTH_SHORT)
+                         .show();
                 }
             }, mRepo.getLicenseUrl());
         }
@@ -201,7 +243,9 @@ public class RepoInfoFragment extends RepoFragment {
             final Intent i = new Intent(getContext(), UserActivity.class);
             i.putExtra(getString(R.string.intent_username), mRepo.getUserLogin());
             if(mAvatar.getDrawable() != null) {
-                i.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) mAvatar.getDrawable()).getBitmap());
+                i.putExtra(getString(R.string.intent_drawable),
+                        ((BitmapDrawable) mAvatar.getDrawable()).getBitmap()
+                );
             }
             startActivity(i,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(

@@ -89,4 +89,9 @@
         <attr name="menu_fab_hide_animation" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="NetworkImageView">
+        <attr name="default_image_resource" format="reference" />
+        <attr name="error_image_resource" format="reference" />
+    </declare-styleable>
+
 </resources>
