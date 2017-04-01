@@ -16,10 +16,13 @@ import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.SettingsActivity;
+import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.fab.FloatingActionButton;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +32,7 @@ import butterknife.ButterKnife;
  */
 
 public class CommitActivity extends CircularRevealActivity implements Loader.ItemLoader<Commit> {
+    private static final String TAG = CommitActivity.class.getSimpleName();
 
     @BindView(R.id.commit_hash) TextView mHash;
     @BindView(R.id.commit_comment_fab) FloatingActionButton mFab;
@@ -73,6 +77,17 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
             loadComplete(mCommit);
             Log.i(this.getClass().getSimpleName(), "onCreate: Repo url is " + mCommit.getFullRepoName());
             new Loader(this).loadCommit(this, mCommit.getFullRepoName(), mCommit.getSha());
+            new Loader(this).loadCommitComments(new Loader.ListLoader<Comment>() {
+                @Override
+                public void listLoadComplete(List<Comment> data) {
+                    Log.i(TAG, "listLoadComplete: " + data.toString());
+                }
+
+                @Override
+                public void listLoadError(APIHandler.APIError error) {
+                    Log.i(TAG, "listLoadError: " + error);
+                }
+            }, mCommit.getFullRepoName(), mCommit.getSha());
         }
 
     }

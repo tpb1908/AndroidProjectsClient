@@ -57,7 +57,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 //            mPage = 1;
 //            mMaxPageReached = false;
 //            notifyDataSetChanged();
-//            loadComments(true);
+//            loadIssueComments(true);
 //        });
     }
 
@@ -71,7 +71,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mIssue = issue;
         mComments.clear();
         mPage = 1;
-        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
+        mLoader.loadIssueComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
+        mLoader.loadIssueComments(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
     }
 
     public void addComment(Comment comment) {

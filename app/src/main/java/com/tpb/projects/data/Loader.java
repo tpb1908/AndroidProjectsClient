@@ -615,7 +615,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadComments(@Nullable ListLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
+    public void loadIssueComments(@Nullable ListLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS + appendPage(
                         page))
@@ -1028,6 +1028,31 @@ public class Loader extends APIHandler {
                             loader.listLoadError(APIError.UNPROCESSABLE);
                         }
 
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        loader.listLoadError(parseError(anError));
+                    }
+                });
+    }
+
+    public void loadCommitComments(@NonNull ListLoader<Comment> loader, String repoFullName, String sha) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final List<Comment> comments = new ArrayList<>();
+                        try {
+                            for(int i = 0; i < response.length(); i++) {
+                                comments.add(Comment.parse(response.getJSONObject(i)));
+                            }
+                            loader.listLoadComplete(comments);
+                        } catch(JSONException jse) {
+                            loader.listLoadError(APIError.UNPROCESSABLE);
+                        }
                     }
 
                     @Override
