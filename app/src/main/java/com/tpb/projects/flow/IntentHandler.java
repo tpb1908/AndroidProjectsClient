@@ -84,13 +84,18 @@ public class IntentHandler {
     }
 
     public static void addOnClickHandler(Activity activity, View view, Commit commit) {
-        view.setOnClickListener(v -> openCommit(activity, commit));
+        view.setOnClickListener(v -> openCommit(activity, v, commit));
     }
 
-    public static void openCommit(Activity activity, Commit commit) {
+    private static void openCommit(Activity activity, View view, Commit commit) {
         final Intent intent = new Intent(activity, CommitActivity.class);
         intent.putExtra(activity.getString(R.string.parcel_commit), commit);
-        activity.startActivity(intent);
+        intent.putExtra(activity.getString(R.string.transition_card), "");
+        activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity,
+                Pair.create(view, activity.getString(R.string.transition_card)),
+                UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+        );
     }
 
     private static void openIssue(Activity activity, View view, String url) {

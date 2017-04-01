@@ -153,7 +153,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         mLoader.loadIssues(this, mRepo.getFullName(), mFilter, mAssigneeFilter, mLabelsFilter, mPage);
     }
 
-
     public void addIssue(Issue issue) {
         mIssues.add(0, Pair.create(issue, null));
         notifyItemInserted(0);

@@ -1,9 +1,16 @@
 package com.tpb.projects.markdown;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.IntRange;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.format.DateUtils;
+import android.text.style.LineBackgroundSpan;
+import android.text.style.TypefaceSpan;
 
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
@@ -204,6 +211,49 @@ public class Spanner {
         return builder;
     }
 
+    public static SpannableStringBuilder buildDiffSpan(String diff) {
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
+
+        int oldLength = 0;
+        for(String line : diff.split("\n")) {
+            oldLength = builder.length();
+            if(line.startsWith("+")) {
+                builder.append(line);
+                builder.setSpan(new FullWidthBackgroundColorSpan(Color.parseColor("#8BC34A")), oldLength, builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else if(line.startsWith("-")) {
+                builder.append(line);
+                builder.setSpan(new FullWidthBackgroundColorSpan(Color.parseColor("#F44336")), oldLength, builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                builder.append(line);
+                builder.setSpan(new FullWidthBackgroundColorSpan(Color.parseColor("#9E9E9E")), oldLength, builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            builder.append("\n");
+        }
+        builder.setSpan(new TypefaceSpan("monospace"), 0, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return builder;
+    }
+
+    private static class FullWidthBackgroundColorSpan implements LineBackgroundSpan {
+        private final int color;
+
+        public FullWidthBackgroundColorSpan(int color) {
+            this.color = color;
+        }
+
+        @Override
+        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
+                                   int bottom, CharSequence text, int start, int end, int lnum) {
+            final int paintColor = p.getColor();
+            p.setColor(color);
+            p.setAlpha(128);
+            c.drawRect(new Rect(left, top, right, bottom), p);
+            p.setColor(paintColor);
+        }
+    }
+
     public static String bold(String s) {
         return "<b>" + Markdown.escape(s) + "</b>";
     }
@@ -228,7 +278,8 @@ public class Spanner {
                 String.format("#%06X", getTextColor((0xFFFFFF & color))) +
                 "\" bgcolor=\"" +
                 String.format("#%06X", (0xFFFFFF & color)) +
-                "\"> " +
+                "\" " +
+                " rounded=\"true\">" +
                 name +
                 " </font>";
     }

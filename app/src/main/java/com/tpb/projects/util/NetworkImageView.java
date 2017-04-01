@@ -110,7 +110,7 @@ public class NetworkImageView extends AppCompatImageView {
                         if(response.getBitmap() != null) {
                             setImageBitmap(response.getBitmap());
                         } else if(mDefaultImageResId != 0) {
-                            setImageResource(mDefaultImageResId);
+                            setDefaultImage();
                         }
                     }
 

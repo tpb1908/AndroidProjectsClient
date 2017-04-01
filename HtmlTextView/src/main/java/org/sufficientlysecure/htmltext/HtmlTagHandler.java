@@ -215,6 +215,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final String font = getAttribute("face", xmlReader, "");
                 final String fgColor = getAttribute("color", xmlReader, "");
                 final String bgColor = getAttribute("bgcolor", xmlReader, "");
+                final boolean rounded = safelyParseBoolean(getAttribute("rounded", xmlReader, ""), false);
                 if(font != null && !font.isEmpty()) {
                     start(output, new Font(font));
                 }
@@ -222,7 +223,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                     start(output, new ForegroundColor(fgColor));
                 }
                 if(bgColor != null && !bgColor.isEmpty()) {
-                    start(output, new BackgroundColor(bgColor));
+                    start(output, new BackgroundColor(bgColor, rounded));
                 }
              }
         } else {
@@ -381,13 +382,25 @@ public class HtmlTagHandler implements Html.TagHandler {
                     final int where = output.getSpanStart(bgc);
                     final int len = output.length();
                     output.removeSpan(bgc);
-                    output.insert(len, " ");
-                    output.insert(where, " ");
+
                     final int color = safelyParseColor(bgc.color);
-                    output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    output.setSpan(new BackgroundColorSpan(color), where+1, len,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    if(bgc.rounded) {
+                        output.insert(len, " ");
+                        output.insert(where, " ");
+                        output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where + 1,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
+                        output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len + 1,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
+                        output.setSpan(new BackgroundColorSpan(color), where + 1, len,
+                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        );
+                    } else {
+                        output.setSpan(new BackgroundColorSpan(color), where, len,
+                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        );
+                    }
 
                 }
                 if(f != null) {
@@ -644,9 +657,11 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static class BackgroundColor {
         String color;
+        boolean rounded;
 
-        BackgroundColor(String color) {
+        BackgroundColor(String color, boolean rounded) {
             this.color = color;
+            this.rounded = rounded;
         }
     }
 

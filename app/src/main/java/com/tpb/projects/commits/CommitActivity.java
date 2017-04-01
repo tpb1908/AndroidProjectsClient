@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
@@ -21,6 +22,8 @@ import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +43,6 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     private CommitPagerAdapter mAdapter;
 
     private Commit mCommit;
-    private boolean mHadInitialCommit = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,10 +71,12 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         });
 
         final Intent launchIntent = getIntent();
+        if(launchIntent.hasExtra(getString(R.string.transition_card))) {
+            postponeEnterTransition();
+        }
         if(launchIntent.hasExtra(getString(R.string.parcel_commit))) {
             mCommit = launchIntent.getParcelableExtra(getString(R.string.parcel_commit));
             loadComplete(mCommit);
-            mHadInitialCommit = true;
             new Loader(this).loadCommit(this, mCommit.getFullRepoName(), mCommit.getSha());
         }
 
@@ -82,14 +86,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     public void loadComplete(Commit data) {
         mCommit = data;
         mHash.setText(Util.shortenSha(mCommit.getSha()));
-        if(mHadInitialCommit) {
-            //TODO Only bind diff info
-            mAdapter.setCommitInfo();
-            mHadInitialCommit = false;
-        } else {
-            mAdapter.setCommit();
-            //TODO Bind everything
-        }
+        mAdapter.setCommit();
+        Log.i(TAG, "loadComplete: Files " + Arrays.toString(mCommit.getFiles()));
     }
 
     @Override
@@ -108,11 +106,7 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
 
         void setCommit() {
             if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
-            if(mCommentsFragment != null && !mHadInitialCommit) mCommentsFragment.commitLoaded(mCommit);
-        }
-
-        void setCommitInfo() {
-            if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
+            if(mCommentsFragment != null) mCommentsFragment.commitLoaded(mCommit);
         }
 
         @Override

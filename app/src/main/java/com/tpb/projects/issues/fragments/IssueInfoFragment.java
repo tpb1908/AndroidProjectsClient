@@ -450,7 +450,7 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     public void checkSharedElementExit() {
-        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+//        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
 //            mCount.setVisibility(View.INVISIBLE);
 //            mTitle.setHtml(Spanner.bold(mIssue.getTitle()));
 //            mInfo.setHtml(
@@ -466,7 +466,7 @@ public class IssueInfoFragment extends IssueFragment {
 //                        ).toString()
 //                    )
 //            );
-        }
+//        }
     }
 
     @Override
