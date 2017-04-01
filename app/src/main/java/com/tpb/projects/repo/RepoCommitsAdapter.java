@@ -98,6 +98,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     @Override
     public void listLoadComplete(List<Commit> commits) {
+        if(!mParent.areViewsValid()) return;
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(commits.size()> 0) {

@@ -25,7 +25,7 @@ public abstract class RepoFragment extends Fragment {
 
     public abstract void notifyBackPressed();
 
-    public boolean areViewViewsValid() {
+    public boolean areViewsValid() {
         return mAreViewsValid;
     }
 

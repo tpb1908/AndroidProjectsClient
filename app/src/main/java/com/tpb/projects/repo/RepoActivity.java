@@ -70,7 +70,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
 
             @Override
             public void onPageSelected(int position) {
-                if(mAdapter.mFragments[position].areViewViewsValid()) {
+                if(mAdapter.mFragments[position].areViewsValid()) {
                     mAdapter.mFragments[position].handleFab(mFab);
                 }
             }

@@ -233,6 +233,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mDescription.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
             if(mIsShowingStars) {
                 mPin.setVisibility(View.GONE);

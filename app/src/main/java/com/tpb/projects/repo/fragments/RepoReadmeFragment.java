@@ -77,6 +77,7 @@ public class RepoReadmeFragment extends RepoFragment {
                 mLoader.renderMarkDown(new Loader.ItemLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
+                        if(!mAreViewsValid) return;
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
                         mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
