@@ -1,4 +1,4 @@
-package com.tpb.projects.issues;
+package com.tpb.projects.commits;
 
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,12 +12,12 @@ import android.widget.ImageButton;
 
 import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
+import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Comment;
-import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.projects.markdown.Markdown;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
@@ -32,14 +32,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by theo on 14/03/17.
+ * Created by theo on 01/04/17.
  */
 
-public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdapter.CommentHolder> implements Loader.ListLoader<Comment> {
+public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAdapter.CommentHolder> implements Loader.ListLoader<Comment> {
+    private static final String TAG = CommitCommentsAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<Comment, SpannableString>> mComments = new ArrayList<>();
-    private Issue mIssue;
-    private final IssueCommentsFragment mParent;
+    private Commit mCommit;
+    private final CommitCommentsFragment mParent;
 
     private int mPage = 1;
     private boolean mIsLoading = false;
@@ -47,12 +48,11 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
-    
-    public IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
+
+    public CommitCommentsAdapter(CommitCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
-        mLoader = new Loader(parent.getContext());
         mRefresher = refresher;
-        mRefresher.setRefreshing(true);
+        mLoader = new Loader(mParent.getContext());
         mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;
@@ -61,27 +61,28 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         });
     }
 
+
     public void clear() {
         final int oldSize = mComments.size();
         mComments.clear();
         notifyItemRangeRemoved(0, oldSize);
     }
-    
-    public void setIssue(Issue issue) {
-        mIssue = issue;
+
+    public void setCommit(Commit commit) {
+        mCommit = commit;
         clear();
         mPage = 1;
-        mLoader.loadIssueComments(this, mIssue.getRepoFullName(), mIssue.getNumber(), mPage);
+        mLoader.loadCommitComments(this, mCommit.getFullRepoName(), mCommit.getSha(), mPage);
     }
 
     @Override
-    public void listLoadComplete(List<Comment> data) {
+    public void listLoadComplete(List<Comment> comments) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(data.size() > 0) {
+        if(comments.size() > 0) {
             if(mPage == 1) mComments.clear();
             int oldLength = mComments.size();
-            for(Comment c : data) {
+            for(Comment c : comments) {
                 mComments.add(new Pair<>(c, null));
             }
             notifyItemRangeInserted(oldLength, mComments.size());
@@ -101,7 +102,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             loadComments(false);
         }
     }
-    
+
     private void loadComments(boolean resetPage) {
         mIsLoading = true;
         mRefresher.setRefreshing(true);
@@ -109,7 +110,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadIssueComments(this, mIssue.getRepoFullName(), mIssue.getNumber(), mPage);
+        mLoader.loadCommitComments(this, mCommit.getFullRepoName(), mCommit.getSha(), mPage);
     }
 
     public void addComment(Comment comment) {
@@ -172,7 +173,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
                 builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
-            builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
+            builder.append(Markdown.formatMD(comment.getBody(), mCommit.getFullRepoName()));
             commentHolder.mText.setHtml(
                     Markdown.parseMD(builder.toString()),
                     new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
@@ -205,7 +206,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             mText.setImageHandler(new ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-           // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
+            // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }

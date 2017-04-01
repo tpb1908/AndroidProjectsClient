@@ -31,14 +31,14 @@ public class Spanner {
         }
 
         if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
-            builder.append(Markdown.formatMD(issue.getBody().replaceFirst("\\s++$", ""), issue.getRepoPath()));
+            builder.append(Markdown.formatMD(issue.getBody().replaceFirst("\\s++$", ""), issue.getRepoFullName()));
         }
         builder.append("\n\n");
         if(showNumberedLink) {
             builder.append(String.format(context.getString(R.string.text_issue_opened_by),
                     String.format(context.getString(R.string.text_md_link),
                             "#" + Integer.toString(issue.getNumber()),
-                            "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
+                            "https://github.com/" + issue.getRepoFullName() + "/issues/" + Integer.toString(issue.getNumber())
                     ),
                     String.format(context.getString(R.string.text_md_link),
                             issue.getOpenedBy().getLogin(),
@@ -95,7 +95,7 @@ public class Spanner {
         builder.append(String.format(context.getString(R.string.text_issue_opened_by),
                 String.format(context.getString(R.string.text_md_link),
                         "#" + Integer.toString(issue.getNumber()),
-                        "https://github.com/" + issue.getRepoPath() + "/issues/" + Integer.toString(issue.getNumber())
+                        "https://github.com/" + issue.getRepoFullName() + "/issues/" + Integer.toString(issue.getNumber())
                 ),
                 String.format(context.getString(R.string.text_md_link),
                         issue.getOpenedBy().getLogin(),

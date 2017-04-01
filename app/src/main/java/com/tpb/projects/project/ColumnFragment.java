@@ -538,9 +538,9 @@ public class ColumnFragment extends Fragment {
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
             if(card.getIssue().isClosed()) {
-                mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                mEditor.openIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
             } else {
-                mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
             }
             final Intent i = new Intent(getContext(), CommentEditor.class);
             i.putExtra(getString(R.string.parcel_issue), card.getIssue());
@@ -549,9 +549,9 @@ public class ColumnFragment extends Fragment {
         });
         builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
             if(card.getIssue().isClosed()) {
-                mEditor.openIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                mEditor.openIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
             } else {
-                mEditor.closeIssue(listener, card.getIssue().getRepoPath(), card.getIssue().getNumber());
+                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
             }
         });
         builder.setNeutralButton(R.string.action_cancel, null);
@@ -596,7 +596,7 @@ public class ColumnFragment extends Fragment {
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
-                        mEditor.updateIssue(this, issue.getRepoPath(), issue, assignees, labels);
+                        mEditor.updateIssue(this, issue.getRepoFullName(), issue, assignees, labels);
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mParent.mRefresher.setRefreshing(false);
@@ -607,7 +607,7 @@ public class ColumnFragment extends Fragment {
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
                 mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
             }
-        }, card.getIssue().getRepoPath(), issue, assignees, labels);
+        }, card.getIssue().getRepoFullName(), issue, assignees, labels);
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {

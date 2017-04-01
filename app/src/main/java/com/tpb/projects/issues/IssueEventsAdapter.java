@@ -74,7 +74,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         mIssue = issue;
         mEvents.clear();
         mPage = 1;
-        mLoader.loadEvents(this, issue.getRepoPath(), issue.getNumber(), mPage);
+        mLoader.loadEvents(this, issue.getRepoFullName(), issue.getNumber(), mPage);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadEvents(this, mIssue.getRepoPath(), mIssue.getNumber(), mPage);
+        mLoader.loadEvents(this, mIssue.getRepoFullName(), mIssue.getNumber(), mPage);
     }
 
     void addEvent(Event event) {
@@ -258,7 +258,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 for(Event e : me.getEvents()) {
                     commits.append("<br>");
                     commits.append(String.format(res.getString(R.string.text_href),
-                            "https://github.com/" + mIssue.getRepoPath() + "/commit/" + e.getCommitId(),
+                            "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + e.getCommitId(),
                             String.format(res.getString(R.string.text_commit), e.getShortCommitId())));
                 }
                 commits.append("<br>");
@@ -327,7 +327,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                                     event.getActor().getHtmlUrl(),
                                     event.getActor().getLogin()),
                             String.format(res.getString(R.string.text_href),
-                                    "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                    "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + event.getCommitId(),
                                     String.format(res.getString(R.string.text_commit), event.getShortCommitId())));
                 } else {
                     text = String.format(res.getString(R.string.text_event_closed),
@@ -354,14 +354,14 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()),
                         String.format(res.getString(R.string.text_href),
-                                "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + event.getCommitId(),
                                 String.format(res.getString(R.string.text_commit), event.getShortCommitId()))
                 );
                 break;
             case REFERENCED:
                 text = String.format(res.getString(R.string.text_event_referenced),
                         String.format(res.getString(R.string.text_href),
-                                "https://github.com/" + mIssue.getRepoPath() + "/commit/" + event.getCommitId(),
+                                "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + event.getCommitId(),
                                 String.format(res.getString(R.string.text_commit), event.getShortCommitId())));
                 break;
             case MENTIONED:

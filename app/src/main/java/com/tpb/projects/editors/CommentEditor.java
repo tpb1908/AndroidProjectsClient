@@ -107,7 +107,7 @@ public class CommentEditor extends EditorActivity {
                 if(mEditor.isEditing()) {
                     mEditor.saveText();
                     String repo = null;
-                    if(mIssue != null) repo = mIssue.getRepoPath();
+                    if(mIssue != null) repo = mIssue.getRepoFullName();
                     mEditor.disableEditing();
                     mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
                 } else {

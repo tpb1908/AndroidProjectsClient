@@ -310,6 +310,9 @@
     <string name="title_issue_info_fragment">Details</string>
     <string name="title_issue_comments_fragment">Comments</string>
 
+    <string name="title_commit_info">Info</string>
+    <string name="title_commit_comments">Comments</string>
+
     <string name="title_loading_license">Loading</string>
 
     <!-- Menu items -->

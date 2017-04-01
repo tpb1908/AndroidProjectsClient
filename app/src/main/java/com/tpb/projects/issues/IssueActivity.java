@@ -123,7 +123,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 public void loadError(APIHandler.APIError error) {
 
                 }
-            }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoPath());
+            }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoFullName());
         }
 
         mAdapter.setIssue();
@@ -167,7 +167,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 if(mIssue != null) {
                     final Intent share = new Intent();
                     share.setAction(Intent.ACTION_SEND);
-                    share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mIssue.getRepoPath() + "/issues/" + mIssue.getNumber());
+                    share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mIssue.getRepoFullName() + "/issues/" + mIssue.getNumber());
                     share.setType("text/plain");
                     startActivity(share);
                 }
@@ -182,7 +182,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 dialog.setArguments(args);
                 dialog.setListener((name, iconFlag) -> {
                     final Intent i = new Intent(getApplicationContext(), IssueActivity.class);
-                    i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
+                    i.putExtra(getString(R.string.intent_repo), mIssue.getRepoFullName());
                     i.putExtra(getString(R.string.intent_issue_number), mIssue.getNumber());
 
                     final Intent add = new Intent();
