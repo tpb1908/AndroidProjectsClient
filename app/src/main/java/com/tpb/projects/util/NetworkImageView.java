@@ -126,6 +126,7 @@ public class NetworkImageView extends AppCompatImageView {
     }
 
     private void setDefaultImage() {
+        if(getDrawable() != null) return; //Drawable has been set manually
         if(mDefaultImageResId != 0) {
             setImageResource(mDefaultImageResId);
         } else {

@@ -69,6 +69,9 @@ public class User extends DataModel implements Parcelable {
     private static final String GISTS = "public_gists";
     private int gists;
 
+    private static final String CONTRIBUTIONS = "contributions";
+    private int contributions;
+
     public int getId() {
         return id;
     }
@@ -135,6 +138,10 @@ public class User extends DataModel implements Parcelable {
         return following;
     }
 
+    public int getContributions() {
+        return contributions;
+    }
+
     @Override
     public long getCreatedAt() {
         return createdAt;
@@ -171,6 +178,7 @@ public class User extends DataModel implements Parcelable {
             if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY))) u.company = obj.getString(COMPANY);
             if(obj.has(GISTS)) u.gists = obj.getInt(GISTS);
             if(obj.has(FOLLOWING)) u.following = obj.getInt(FOLLOWING);
+            if(obj.has(CONTRIBUTIONS)) u.contributions = obj.getInt(CONTRIBUTIONS);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
@@ -222,6 +230,7 @@ public class User extends DataModel implements Parcelable {
                 ", company='" + company + '\'' +
                 ", blog='" + blog + '\'' +
                 ", gists=" + gists +
+                ", contributions=" + contributions +
                 '}';
     }
 
@@ -248,6 +257,7 @@ public class User extends DataModel implements Parcelable {
         dest.writeString(this.company);
         dest.writeString(this.blog);
         dest.writeInt(this.gists);
+        dest.writeInt(this.contributions);
         dest.writeLong(this.createdAt);
     }
 
@@ -268,6 +278,7 @@ public class User extends DataModel implements Parcelable {
         this.company = in.readString();
         this.blog = in.readString();
         this.gists = in.readInt();
+        this.contributions = in.readInt();
         this.createdAt = in.readLong();
     }
 
