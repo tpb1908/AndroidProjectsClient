@@ -34,15 +34,16 @@ import butterknife.ButterKnife;
  */
 
 public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.CommitViewHolder> implements Loader.ListLoader<Commit> {
+    private static final String TAG = RepoCommitsAdapter.class.getSimpleName();
 
     private RepoCommitsFragment mParent;
     private Repository mRepo;
+    private String mBranch;
     private ArrayList<Pair<Commit, SpannableString>> mCommits = new ArrayList<>();
 
     private int mPage = 1;
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
-
 
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
@@ -64,6 +65,20 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         loadCommits(true);
     }
 
+    public void setBranch(String branch) {
+       if(!branch.equals(mBranch)) {
+           if(mBranch != null) {
+               mBranch = branch;
+               mCommits.clear();
+               notifyDataSetChanged();
+               loadCommits(true);
+           } else {
+               mBranch = branch;
+           }
+
+       }
+    }
+
     public void notifyBottomReached() {
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;
@@ -78,16 +93,20 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadCommits(this, mRepo.getFullName(), mPage);
+        mLoader.loadCommits(this, mRepo.getFullName(), mBranch, mPage);
     }
 
     @Override
     public void listLoadComplete(List<Commit> commits) {
+        if(!mParent.areViewsValid()) return;
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(commits.size()> 0) {
+        if(commits.size() > 0) {
             final int oldLength = mCommits.size();
-            if(mPage == 1) mCommits.clear();
+            if(mPage == 1) {
+                mParent.setLatestSHA(commits.get(0).getSha());
+                mCommits.clear();
+            }
             for(Commit c: commits) {
                 mCommits.add(Pair.create(c, null));
             }
@@ -99,7 +118,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     @Override

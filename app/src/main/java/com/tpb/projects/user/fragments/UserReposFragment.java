@@ -19,6 +19,7 @@ import com.tpb.projects.data.models.State;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.RepositoriesAdapter;
+import com.tpb.projects.util.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +44,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
         final View view = inflater.inflate(R.layout.fragment_user_repos, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        final LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mRecycler.enableLineDecoration();
         mAdapter = new RepositoriesAdapter(getContext(), this, mRefresher);

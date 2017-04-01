@@ -60,7 +60,7 @@ public class Issue extends DataModel implements Parcelable {
     private int comments;
 
     private static final String REPOSITORY_URL = "repository_url";
-    private String repoPath;
+    private String repoFullName;
 
     private static final String LOCKED = "locked";
     private boolean isLocked;
@@ -117,8 +117,8 @@ public class Issue extends DataModel implements Parcelable {
         return createdAt;
     }
 
-    public String getRepoPath() {
-        return repoPath;
+    public String getRepoFullName() {
+        return repoFullName;
     }
 
     public boolean isLocked() {
@@ -160,7 +160,7 @@ public class Issue extends DataModel implements Parcelable {
             i.comments = obj.getInt(COMMENTS);
             i.isLocked = obj.getBoolean(LOCKED);
             //https://api.github.com/repos/user/repo
-            i.repoPath = obj.getString(REPOSITORY_URL).substring(29);
+            i.repoFullName = obj.getString(REPOSITORY_URL).substring(29);
             if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
                     i.closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
@@ -242,7 +242,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", assignees=" + Arrays.toString(assignees) +
                 ", labels=" + Arrays.toString(labels) +
                 ", comments=" + comments +
-                ", repoPath='" + repoPath + '\'' +
+                ", repoFullName='" + repoFullName + '\'' +
                 ", isLocked=" + isLocked +
                 ", milestone=" + milestone +
                 '}';
@@ -268,7 +268,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeTypedArray(this.assignees, flags);
         dest.writeTypedArray(this.labels, flags);
         dest.writeInt(this.comments);
-        dest.writeString(this.repoPath);
+        dest.writeString(this.repoFullName);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.milestone, flags);
         dest.writeLong(this.createdAt);
@@ -289,7 +289,7 @@ public class Issue extends DataModel implements Parcelable {
         this.assignees = in.createTypedArray(User.CREATOR);
         this.labels = in.createTypedArray(Label.CREATOR);
         this.comments = in.readInt();
-        this.repoPath = in.readString();
+        this.repoFullName = in.readString();
         this.isLocked = in.readByte() != 0;
         this.milestone = in.readParcelable(Milestone.class.getClassLoader());
         this.createdAt = in.readLong();

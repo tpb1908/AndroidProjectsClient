@@ -77,10 +77,9 @@ public class IssueCommentsFragment extends IssueFragment {
                 if(manager.findFirstVisibleItemPosition() + 20 > manager.getItemCount()) {
                     mAdapter.notifyBottomReached();
                 }
-                mFab.show(true);
                 if(dy > 10) {
                     mFab.hide(true);
-                } else if(dy < -10) {
+                } else if(dy < -10 && mIssue != null && !mIssue.isLocked()) {
                     mFab.show(true);
                 }
             }
@@ -114,7 +113,7 @@ public class IssueCommentsFragment extends IssueFragment {
     @Override
     public void setAccessLevel(Repository.AccessLevel level) {
         mAccessLevel = level;
-        if(mAccessLevel == Repository.AccessLevel.ADMIN) {
+        if(mAccessLevel == Repository.AccessLevel.ADMIN && mIssue != null && !mIssue.isLocked()) {
             mFab.setVisibility(View.VISIBLE);
             mFab.show(true);
         }
@@ -134,7 +133,7 @@ public class IssueCommentsFragment extends IssueFragment {
             public void creationError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
             }
-        }, mIssue.getRepoPath(), mIssue.getNumber(), comment.getBody());
+        }, mIssue.getRepoFullName(), mIssue.getNumber(), comment.getBody());
     }
 
     public void createCommentForState(Comment comment) {
@@ -153,7 +152,7 @@ public class IssueCommentsFragment extends IssueFragment {
             public void updateError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
             }
-        }, mIssue.getRepoPath(), comment.getId(), comment.getBody());
+        }, mIssue.getRepoFullName(), comment.getId(), comment.getBody());
     }
 
     public void displayCommentMenu(View view, Comment comment) {
@@ -215,7 +214,7 @@ public class IssueCommentsFragment extends IssueFragment {
             public void deletionError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
             }
-        }, mIssue.getRepoPath(), comment.getId());
+        }, mIssue.getRepoFullName(), comment.getId());
     }
 
     @Override

@@ -122,7 +122,7 @@ public class IssueInfoFragment extends IssueFragment {
                 public void loadError(APIHandler.APIError error) {
 
                 }
-            }, mIssue.getRepoPath(), mIssue.getNumber(), true);
+            }, mIssue.getRepoFullName(), mIssue.getNumber(), true);
         });
         checkSharedElementEntry();
         if(mIssue != null) issueLoaded(mIssue);
@@ -268,7 +268,7 @@ public class IssueInfoFragment extends IssueFragment {
                     builder.append("</font>");
                 }
             }
-            tv.setHtml(Markdown.formatMD(builder.toString(), mIssue.getRepoPath()));
+            tv.setHtml(Markdown.formatMD(builder.toString(), mIssue.getRepoFullName()));
 
         } else {
             mMilestoneCard.setVisibility(View.GONE);
@@ -306,19 +306,19 @@ public class IssueInfoFragment extends IssueFragment {
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
-                        mEditor.updateIssue(this, mIssue.getRepoPath(), issue, assignees, labels);
+                        mEditor.updateIssue(this, mIssue.getRepoFullName(), issue, assignees, labels);
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mRefresher.setRefreshing(false);
                     }
                 }
             }
-        }, mIssue.getRepoPath(), issue, assignees, labels);
+        }, mIssue.getRepoFullName(), issue, assignees, labels);
     }
 
     private void editIssue(View view) {
         final Intent i = new Intent(getContext(), IssueEditor.class);
-        i.putExtra(getString(R.string.intent_repo), mIssue.getRepoPath());
+        i.putExtra(getString(R.string.intent_repo), mIssue.getRepoFullName());
         i.putExtra(getString(R.string.parcel_issue), mIssue);
         UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, IssueEditor.REQUEST_CODE_EDIT_ISSUE);
@@ -349,17 +349,17 @@ public class IssueInfoFragment extends IssueFragment {
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
             mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
-                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                mEditor.openIssue(listener, mIssue.getRepoFullName(), mIssue.getNumber());
             } else {
-                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                mEditor.closeIssue(listener, mIssue.getRepoFullName(), mIssue.getNumber());
             }
         });
         builder.setNeutralButton(R.string.action_no, (dialog, which) -> {
             mRefresher.setRefreshing(true);
             if(mIssue.isClosed()) {
-                mEditor.openIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                mEditor.openIssue(listener, mIssue.getRepoFullName(), mIssue.getNumber());
             } else {
-                mEditor.closeIssue(listener, mIssue.getRepoPath(), mIssue.getNumber());
+                mEditor.closeIssue(listener, mIssue.getRepoFullName(), mIssue.getNumber());
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);

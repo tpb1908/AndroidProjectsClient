@@ -68,6 +68,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         mRefresher.setOnRefreshListener(() -> {
             final int oldSize = mIssues.size();
             mIssues.clear();
+            mIsSearching = false;
             notifyItemRangeRemoved(0, oldSize);
             loadIssues(true);
         });
@@ -186,7 +187,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mContent, holder.mUserAvatar, null, issue);
         if(mIssues.get(pos).second == null) {
             holder.mContent.setHtml(Markdown.parseMD(
-                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoPath()),
+                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoFullName()),
                     null,
                     text -> mIssues.set(pos, Pair.create(issue, text))
             );

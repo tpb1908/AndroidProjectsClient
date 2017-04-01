@@ -77,6 +77,7 @@ public class RepoReadmeFragment extends RepoFragment {
                 mLoader.renderMarkDown(new Loader.ItemLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
+                        if(!mAreViewsValid) return;
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
                         mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
@@ -92,8 +93,12 @@ public class RepoReadmeFragment extends RepoFragment {
 
             @Override
             public void loadError(APIHandler.APIError error) {
+                if(!mAreViewsValid) return;
+                mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NOT_FOUND) {
                     Toast.makeText(getContext(), R.string.error_readme_not_found, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                 }
             }
         }, mRepo.getFullName());

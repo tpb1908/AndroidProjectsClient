@@ -8,10 +8,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
+import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
  */
 
 public class CommitActivity extends CircularRevealActivity implements Loader.ItemLoader<Commit> {
+    private static final String TAG = CommitActivity.class.getSimpleName();
 
     @BindView(R.id.commit_hash) TextView mHash;
     @BindView(R.id.commit_comment_fab) FloatingActionButton mFab;
@@ -71,7 +72,6 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
             mCommit = launchIntent.getParcelableExtra(getString(R.string.parcel_commit));
             mHadInitialCommit = true;
             loadComplete(mCommit);
-            Log.i(this.getClass().getSimpleName(), "onCreate: Repo url is " + mCommit.getFullRepoName());
             new Loader(this).loadCommit(this, mCommit.getFullRepoName(), mCommit.getSha());
         }
 
@@ -97,25 +97,42 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     private class CommitPagerAdapter extends FragmentPagerAdapter {
 
         private CommitInfoFragment mInfoFragment;
+        private CommitCommentsFragment mCommentsFragment;
 
-        public CommitPagerAdapter(FragmentManager fm) {
+        CommitPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         void setCommit() {
             if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
+            if(mCommentsFragment != null && !mHadInitialCommit) mCommentsFragment.commitLoaded(mCommit);
         }
 
         @Override
         public Fragment getItem(int position) {
-            mInfoFragment = CommitInfoFragment.getInstance(CommitActivity.this);
-            if(mCommit != null) mInfoFragment.commitLoaded(mCommit);
-            return mInfoFragment;
+            if(position == 0) {
+                mInfoFragment = CommitInfoFragment.getInstance(CommitActivity.this);
+                if(mCommit != null) mInfoFragment.commitLoaded(mCommit);
+                return mInfoFragment;
+            } else {
+                mCommentsFragment = CommitCommentsFragment.getInstance(mFab);
+                if(mCommit != null) mCommentsFragment.commitLoaded(mCommit);
+                return mCommentsFragment;
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if(position == 0) {
+                return getString(R.string.title_commit_info);
+            } else {
+                return getString(R.string.title_commit_comments);
+            }
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
     }
 

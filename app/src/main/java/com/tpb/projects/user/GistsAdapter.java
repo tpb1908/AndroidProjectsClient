@@ -50,7 +50,9 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;
-            notifyDataSetChanged();
+            final int oldSize = mGists.size();
+            mGists.clear();
+            notifyItemRangeRemoved(0, oldSize);
             loadGistsForUser(true);
         });
         mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();

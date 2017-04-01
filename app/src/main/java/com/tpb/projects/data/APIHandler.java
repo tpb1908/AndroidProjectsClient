@@ -112,13 +112,16 @@ public abstract class APIHandler {
 
     private static final int HTTP_NOT_ALLOWED_405 = 405; //Not allowed (managed server)
 
-    public static final int HTTP_419 = 419; //This function can only be executed with an CL-account
+    private static final int HTTP_409 = 409; //Returned when loading commits for empty repo
+
+    private static final int HTTP_419 = 419; //This function can only be executed with an CL-account
 
     public static final String ERROR_MESSAGE_UNPROCESSABLE = "Validation Failed";
     public static final String ERROR_MESSAGE_VALIDATION_MISSING = "missing";
     public static final String ERROR_MESSAGE_VALIDATION_MISSING_FIELD = "missing_field";
     public static final String ERROR_MESSAGE_VALIDATION_INVALID = "invalid";
     public static final String ERROR_MESSAGE_VALIDATION_ALREADY_EXISTS = "already_exists";
+    public static final String ERROR_MESSAGE_EMPTY_REPOSITORY = "Git Repository is empty.";
     private static final int HTTP_UNPROCESSABLE_422 = 422; // Validation failed
 
     //600 codes are server codes https://github.com/GleSYS/API/wiki/API-Error-codes#6xx---server
@@ -184,6 +187,10 @@ public abstract class APIHandler {
                 return APIError.NOT_FOUND;
             case HTTP_UNPROCESSABLE_422:
                 return APIError.UNPROCESSABLE;
+            case HTTP_409:
+                if(error.getErrorBody() != null && error.getErrorBody().contains(ERROR_MESSAGE_EMPTY_REPOSITORY)) {
+                    return APIError.EMPTY_REPOSITORY;
+                }
         }
 
         return APIError.UNKNOWN;
@@ -202,7 +209,8 @@ public abstract class APIHandler {
         UNPROCESSABLE(R.string.error_unprocessable),
         BAD_CREDENTIALS(R.string.error_bad_credentials),
         NOT_ALLOWED(R.string.error_not_allowed),
-        BAD_REQUEST(R.string.error_bad_request);
+        BAD_REQUEST(R.string.error_bad_request),
+        EMPTY_REPOSITORY(R.string.error_empty_repository);
 
         @StringRes
         public final int resId;

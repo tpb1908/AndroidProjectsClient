@@ -304,8 +304,8 @@ public class RepoIssuesFragment extends RepoFragment {
         intent.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
         intent.putExtra(getString(R.string.parcel_issue), issue);
         final Loader loader = new Loader(getContext());
-        loader.loadLabels(null, issue.getRepoPath());
-        loader.loadCollaborators(null, issue.getRepoPath());
+        loader.loadLabels(null, issue.getRepoFullName());
+        loader.loadCollaborators(null, issue.getRepoFullName());
         if(view instanceof HtmlTextView) {
             UI.setClickPositionForIntent(getActivity(), intent, ((HtmlTextView) view).getLastClickPosition());
         } else {
@@ -340,18 +340,18 @@ public class RepoIssuesFragment extends RepoFragment {
             i.putExtra(getString(R.string.parcel_issue), issue);
             startActivityForResult(i, CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE);
             if(issue.isClosed()) {
-                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+                mEditor.openIssue(listener, issue.getRepoFullName(), issue.getNumber());
             } else {
-                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+                mEditor.closeIssue(listener, issue.getRepoFullName(), issue.getNumber());
             }
 
         });
         builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
             mRefresher.setRefreshing(true);
             if(issue.isClosed()) {
-                mEditor.openIssue(listener, issue.getRepoPath(), issue.getNumber());
+                mEditor.openIssue(listener, issue.getRepoFullName(), issue.getNumber());
             } else {
-                mEditor.closeIssue(listener, issue.getRepoPath(), issue.getNumber());
+                mEditor.closeIssue(listener, issue.getRepoFullName(), issue.getNumber());
             }
         });
         builder.setNeutralButton(R.string.action_cancel, null);
@@ -433,7 +433,7 @@ public class RepoIssuesFragment extends RepoFragment {
                             Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }, issue.getRepoPath(), issue.getNumber(), comment.getBody());
+                }, issue.getRepoFullName(), issue.getNumber(), comment.getBody());
             }
         }
     }

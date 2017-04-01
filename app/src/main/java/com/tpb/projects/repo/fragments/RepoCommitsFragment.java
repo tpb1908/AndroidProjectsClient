@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -21,6 +22,7 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoCommitsAdapter;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,6 +34,7 @@ import butterknife.Unbinder;
  */
 
 public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoader<Pair<String, String>> {
+    private static final String TAG = RepoCommitsFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -41,6 +44,8 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
 
     private RepoCommitsAdapter mAdapter;
     private List<Pair<String, String>> mBranches;
+    private boolean mIsLoadingBranches = false;
+    private String mLatestSHA;
 
     public static RepoCommitsFragment newInstance(RepoActivity parent) {
         final RepoCommitsFragment rcf = new RepoCommitsFragment();
@@ -79,34 +84,62 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
     public void repoLoaded(Repository repo) {
         mRepo = repo;
         new Loader(getContext()).loadBranches(this, mRepo.getFullName());
+        mIsLoadingBranches = true;
         if(!mAreViewsValid) return;
         mAdapter.setRepo(mRepo);
     }
 
-
-
     @Override
     public void listLoadComplete(List<Pair<String, String>> branches) {
+        mIsLoadingBranches = false;
         mBranches = branches;
         if(!mAreViewsValid) return;
-        final String[] branchNames = new String[mBranches.size()];
-        for(int i = 0; i < mBranches.size(); i++) {
-            branchNames[i] = mBranches.get(i).first;
+        if(mLatestSHA != null) bindBranches();
+    }
+
+    public void setLatestSHA(String sha) {
+        if(mLatestSHA == null) {
+            mLatestSHA = sha;
+            if(mBranches != null && !mBranches.isEmpty()) {
+                bindBranches();
+            } else if(!mIsLoadingBranches) {
+                new Loader(getContext()).loadBranches(this, mRepo.getFullName());
+            }
+        }
+    }
+
+    public void bindBranches() {
+        final List<String> branchNames = new ArrayList<>(mBranches.size());
+        for(Pair<String, String> p : mBranches) {
+            if(mLatestSHA.equals(p.second)) {
+                branchNames.add(0, p.first);
+            } else {
+                branchNames.add(p.first);
+            }
         }
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, branchNames
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBranchSpinner.setAdapter(adapter);
-    }
+        if(mBranchSpinner.getOnItemSelectedListener() == null) {
+            mBranchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    mAdapter.setBranch(branchNames.get(position));
+                }
 
-    public void bindBranches(String sha) {
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
+                }
+            });
+        }
     }
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mIsLoadingBranches = false;
     }
 
     @Override

@@ -76,6 +76,12 @@ public class Interceptor extends Activity {
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
+                        } else if("commits".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, RepoActivity.class);
+                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_COMMITS);
+                            startActivity(i);
+                            overridePendingTransition(R.anim.slide_up, R.anim.none);
+                            finish();
                         } else {
                             fail();
                         }

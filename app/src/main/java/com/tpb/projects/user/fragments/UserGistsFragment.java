@@ -16,6 +16,7 @@ import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.GistsAdapter;
+import com.tpb.projects.util.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +41,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
         final View view = inflater.inflate(R.layout.fragment_user_gists, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        final LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mRecycler.enableLineDecoration();
         mAdapter = new GistsAdapter(getContext(), this, mRefresher);

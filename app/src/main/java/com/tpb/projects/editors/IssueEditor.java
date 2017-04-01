@@ -186,7 +186,7 @@ public class IssueEditor extends EditorActivity {
                 if(mBodyEdit.isEditing()) {
                     mBodyEdit.saveText();
                     String repo = null;
-                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoPath();
+                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoFullName();
                     mBodyEdit.disableEditing();
                     mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
                     mInfoLayout.setVisibility(View.GONE);

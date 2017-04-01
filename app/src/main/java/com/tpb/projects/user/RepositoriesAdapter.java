@@ -19,7 +19,10 @@ import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Repository;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.Util;
+
+import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,10 +58,11 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
-            mRepos.clear();
             mPage = 1;
             mMaxPageReached = false;
-            notifyDataSetChanged();
+            final int oldSize = mRepos.size();
+            mRepos.clear();
+            notifyItemRangeRemoved(0, oldSize);
             loadReposForUser(true);
         });
         mPinChecker = new RepoPinChecker(context);
@@ -119,7 +123,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         }
         if(!DataModel.JSON_NULL.equals(r.getDescription())) {
             holder.mDescription.setVisibility(View.VISIBLE);
-            holder.mDescription.setText(r.getDescription());
+            holder.mDescription.setHtml(Markdown.parseMD(r.getDescription(), r.getFullName()));
         } else {
             holder.mDescription.setVisibility(View.GONE);
         }
@@ -218,7 +222,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     class RepoHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.repo_name) TextView mName;
-        @BindView(R.id.repo_description) TextView mDescription;
+        @BindView(R.id.repo_description) HtmlTextView mDescription;
         @BindView(R.id.repo_forks) TextView mForks;
         @BindView(R.id.repo_stars) TextView mStars;
         @BindView(R.id.repo_language) TextView mLanguage;
@@ -229,6 +233,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            mDescription.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
             if(mIsShowingStars) {
                 mPin.setVisibility(View.GONE);
