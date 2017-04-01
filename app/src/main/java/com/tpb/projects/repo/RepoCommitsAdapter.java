@@ -101,7 +101,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         if(!mParent.areViewsValid()) return;
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(commits.size()> 0) {
+        if(commits.size() > 0) {
             final int oldLength = mCommits.size();
             if(mPage == 1) {
                 mParent.setLatestSHA(commits.get(0).getSha());
@@ -118,7 +118,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     @Override

@@ -21,6 +21,9 @@
     <string name="error_no_application_for_picture">No camera</string>
     <string name="error_readme_not_found">Readme not found</string>
     <string name="error_rendering_readme">Couldn\'t render readme</string>
+    <string name="error_readme_not_found_placeholder"><![CDATA[
+        # README not found
+    ]]></string>
 
     <!-- Network errors -->
     <string name="error_no_connection">No connection</string>
@@ -34,6 +37,7 @@
     <string name="error_bad_credentials">Error bad credentials</string>
     <string name="error_not_allowed">Error: Not allowed</string>
     <string name="error_bad_request">Error: Bad request</string>
+    <string name="error_empty_repository">Error: Empty repository</string>
     <string name="error_unknown">Unknown error</string>
 
     <string name="error_loading_license">Couldn\'t load license</string>

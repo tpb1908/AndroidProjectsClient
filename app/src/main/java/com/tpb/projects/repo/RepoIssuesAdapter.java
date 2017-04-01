@@ -68,6 +68,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         mRefresher.setOnRefreshListener(() -> {
             final int oldSize = mIssues.size();
             mIssues.clear();
+            mIsSearching = false;
             notifyItemRangeRemoved(0, oldSize);
             loadIssues(true);
         });
