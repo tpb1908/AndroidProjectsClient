@@ -128,6 +128,7 @@ public class RepoInfoFragment extends RepoFragment {
         mCollaborators.removeAllViews();
         if(collaborators.size() > 1) {
             mCollaborators.setVisibility(View.VISIBLE);
+            ButterKnife.findById(getActivity(), R.id.repo_collaborators_text).setVisibility(View.VISIBLE);
             for(final User u : collaborators) {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
                                                                       .inflate(R.layout.shard_user,
@@ -164,6 +165,7 @@ public class RepoInfoFragment extends RepoFragment {
             }
         } else {
             mCollaborators.setVisibility(View.GONE);
+            ButterKnife.findById(getActivity(), R.id.repo_collaborators_text).setVisibility(View.GONE);
         }
     }
 
