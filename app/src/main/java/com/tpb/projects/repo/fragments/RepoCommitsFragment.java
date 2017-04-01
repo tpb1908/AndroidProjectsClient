@@ -6,7 +6,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
 
     private RepoCommitsAdapter mAdapter;
     private List<Pair<String, String>> mBranches;
+    private boolean mIsLoadingBranches = false;
     private String mLatestSHA;
 
     public static RepoCommitsFragment newInstance(RepoActivity parent) {
@@ -84,12 +84,14 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
     public void repoLoaded(Repository repo) {
         mRepo = repo;
         new Loader(getContext()).loadBranches(this, mRepo.getFullName());
+        mIsLoadingBranches = true;
         if(!mAreViewsValid) return;
         mAdapter.setRepo(mRepo);
     }
 
     @Override
     public void listLoadComplete(List<Pair<String, String>> branches) {
+        mIsLoadingBranches = false;
         mBranches = branches;
         if(!mAreViewsValid) return;
         if(mLatestSHA != null) bindBranches();
@@ -100,6 +102,8 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
             mLatestSHA = sha;
             if(mBranches != null && !mBranches.isEmpty()) {
                 bindBranches();
+            } else if(!mIsLoadingBranches) {
+                new Loader(getContext()).loadBranches(this, mRepo.getFullName());
             }
         }
     }
@@ -135,7 +139,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mIsLoadingBranches = false;
     }
 
     @Override
