@@ -420,7 +420,7 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, mRepo.getFullName(), issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
-                mEditor.createComment(new Editor.CreationListener<Comment>() {
+                mEditor.createIssueComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         mRefresher.setRefreshing(false);

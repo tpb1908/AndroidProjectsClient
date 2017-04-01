@@ -8,13 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.androidnetworking.widget.ANImageView;
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.Util;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +34,7 @@ public class CommitInfoFragment extends CommitFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.commit_title) HtmlTextView mTitle;
+    @BindView(R.id.commit_user_avatar) ANImageView mAvatar;
     @BindView(R.id.commit_info) HtmlTextView mInfo;
     @BindView(R.id.commit_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.commit_info_scrollview) NestedScrollView mScrollView;
@@ -54,7 +60,30 @@ public class CommitInfoFragment extends CommitFragment {
     public void commitLoaded(Commit commit) {
         mCommit = commit;
         if(!mAreViewsValid) return;
-        mTitle.setHtml(Markdown.escape(mCommit.getMessage()));
+        mTitle.setHtml(Spanner.bold(Markdown.escape(mCommit.getMessage())));
+        mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
+        if(mCommit.getFiles() != null) {
+            final String builder =
+                    "<br>" +
+                    getResources()
+                    .getQuantityString(R.plurals.text_commit_additions, mCommit.getAdditions(),
+                            mCommit.getAdditions()
+                    ) +
+                    "<br>" +
+                    getResources().getQuantityString(R.plurals.text_commit_deletions,
+                            mCommit.getDeletions(), mCommit.getDeletions()
+                    ) +
+                    "<br><br>" +
+                    String.format(
+                            getString(R.string.text_committed_by),
+                            String.format(getString(R.string.text_md_link),
+                                    mCommit.getCommitter().getLogin(),
+                                    mCommit.getCommitter().getHtmlUrl()
+                            ),
+                            Util.formatDateLocally(getContext(), new Date(mCommit.getCreatedAt()))
+                    );
+            mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));
+        }
     }
 
     @Override

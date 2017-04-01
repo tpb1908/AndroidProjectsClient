@@ -65,9 +65,6 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        Log.i(TAG,
-                "createProject: " + GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS
-        );
         AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                          .addHeaders(PROJECTS_API_AUTH_HEADERS)
                          .addJSONObjectBody(obj)
@@ -80,7 +77,6 @@ public class Editor extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: " + anError.getErrorBody());
                                  if(listener != null) listener.creationError(parseError(anError));
                              }
                          });
@@ -106,7 +102,6 @@ public class Editor extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: " + anError.getErrorBody());
                                  if(listener != null) listener.updateError(parseError(anError));
                              }
                          });
@@ -122,7 +117,6 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: " + response.toString());
                                  listener.deletionError(APIError.UNKNOWN);
                              }
 
@@ -199,13 +193,11 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: Column update: " + response.toString());
                                  if(listener != null) listener.updated(Column.parse(response));
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: Column update: " + anError.getErrorBody());
                                  if(listener != null) listener.updateError(parseError(anError));
                              }
                          });
@@ -225,13 +217,11 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: Column created " + response.toString());
                                  if(listener != null) listener.created(Column.parse(response));
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: " + anError.getErrorBody());
                                  if(listener != null) listener.creationError(parseError(anError));
                              }
                          });
@@ -261,7 +251,6 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Column not moved: " + anError.getErrorBody());
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
@@ -274,14 +263,11 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: Column delete: " + response.toString());
                                  if(listener != null) listener.deletionError(APIError.UNKNOWN);
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: Column delete: " + anError.getErrorBody());
-                                 Log.i(TAG, "onError: Column delete: " + anError.getErrorCode());
                                  if(listener != null) {
                                      if(anError.getErrorCode() == 0) {
                                          listener.deleted(columnId);
@@ -308,14 +294,12 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Card: " + response.toString());
                         if(listener != null)
                             listener.created(new Pair<>(columnId, Card.parse(response)));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Card: " + anError.getErrorBody());
                         if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
@@ -337,14 +321,12 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Card: " + response.toString());
                         if(listener != null)
                             listener.created(new Pair<>(columnId, Card.parse(response)));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Card: " + anError.getErrorBody());
                         if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
@@ -387,7 +369,6 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "moveCard: ", jse);
         }
-        Log.i(TAG, "moveCard: " + obj.toString() + ", card " + cardId);
         AndroidNetworking
                 .post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId + SEGMENT_MOVES)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
@@ -396,7 +377,6 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Card moved " + response.toString());
                         if(listener != null) listener.updated(cardId);
                     }
 
@@ -440,7 +420,6 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
-        Log.i(TAG, "createIssue: " + obj.toString());
         AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                          .addHeaders(API_AUTH_HEADERS)
                          .addJSONObjectBody(obj)
@@ -448,19 +427,17 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: Issue created ");
                                  if(listener != null) listener.created(Issue.parse(response));
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: Issue not created " + anError.getErrorBody());
                                  if(listener != null) listener.creationError(parseError(anError));
                              }
                          });
     }
 
-    public void closeIssue(@Nullable UpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
+    public void closeIssue(@Nullable UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_CLOSED);
@@ -468,26 +445,24 @@ public class Editor extends APIHandler {
             Log.e(TAG, "closeIssue: ", jse);
         }
         AndroidNetworking
-                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber)
+                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Issue closed " + response.toString());
                         if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Issue close error " + anError.getErrorBody());
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void openIssue(@Nullable UpdateListener<Issue> listener, String fullRepoPath, int issueNumber) {
+    public void openIssue(@Nullable UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_OPEN);
@@ -495,26 +470,24 @@ public class Editor extends APIHandler {
             Log.e(TAG, "openIssue: ", jse);
         }
         AndroidNetworking
-                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber)
+                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Issue opened " + response.toString());
                         if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Issue open error " + anError.getErrorBody());
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void updateIssue(@Nullable UpdateListener<Issue> listener, String fullRepoPath, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+    public void updateIssue(@Nullable UpdateListener<Issue> listener, String fullRepoName, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -525,7 +498,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createIssue: ", jse);
         }
         AndroidNetworking
-                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issue
+                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issue
                         .getNumber())
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
@@ -533,54 +506,50 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Issue edited " + response.toString());
                         if(listener != null) listener.updated(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Issue not edited");
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void createComment(@Nullable CreationListener<Comment> listener, String fullRepoPath, int issueNumber, String body) {
+    public void createIssueComment(@Nullable CreationListener<Comment> listener, String fullRepoName, int issueNumber, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
         } catch(JSONException jse) {
-            Log.e(TAG, "createComment: ", jse);
+            Log.e(TAG, "createIssueComment: ", jse);
         }
         AndroidNetworking
-                .post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
+                .post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i(TAG, "onResponse: Comment created: " + response.toString());
                         if(listener != null) listener.created(Comment.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Comment not created: " + anError.getErrorBody());
                         if(listener != null) listener.creationError(parseError(anError));
                     }
                 });
     }
 
-    public void updateComment(@Nullable UpdateListener<Comment> listener, String fullRepoPath, int commentId, String body) {
+    public void updateIssueComment(@Nullable UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
         } catch(JSONException jse) {
-            Log.e(TAG, "createComment: ", jse);
+            Log.e(TAG, "createIssueComment: ", jse);
         }
         AndroidNetworking
-                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -592,15 +561,88 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Comment not edited " + anError.getErrorBody());
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
     }
 
-    public void deleteComment(@Nullable DeletionListener<Integer> listener, String fullRepoPath, int commentId) {
+    public void deleteIssueComment(@Nullable DeletionListener<Integer> listener, String fullRepoName, int commentId) {
         AndroidNetworking
-                .delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoPath + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+                .delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.deletionError(APIError.UNKNOWN);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(anError.getErrorCode() == 0 && listener != null) {
+                            listener.deleted(commentId);
+                        } else if(listener != null) {
+                            listener.deletionError(parseError(anError));
+                        }
+                    }
+                });
+
+    }
+
+    public void createCommitComment(@Nullable CreationListener<Comment> listener, String fullRepoName, String sha, String body) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(BODY, body);
+        } catch(JSONException jse) {
+            Log.e(TAG, "createCommitComment: ", jse);
+        }
+        AndroidNetworking
+                .post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.created(Comment.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.creationError(parseError(anError));
+                    }
+                });
+    }
+
+    public void updateCommitComment(@Nullable UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(BODY, body);
+        } catch(JSONException jse) {
+            Log.e(TAG, "updateCommitComment: ", jse);
+        }
+        AndroidNetworking
+                .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMENTS + "/" + commentId)
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.updated(Comment.parse(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "onError: Update error " + anError.getErrorBody() + ", " + anError.getErrorDetail() + ", " + anError.getErrorCode() + ", " + anError.getMessage());
+                        if(listener != null) listener.updateError(parseError(anError));
+                    }
+                });
+    }
+
+    public void deleteCommitComment(@Nullable DeletionListener<Integer> listener, String fullRepoName, int commentId) {
+        AndroidNetworking
+                .delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -621,7 +663,7 @@ public class Editor extends APIHandler {
                 });
 
     }
-
+    
     public void starRepo(@Nullable UpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                          .addHeaders(API_AUTH_HEADERS)
@@ -702,9 +744,6 @@ public class Editor extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG,
-                                         "onResponse: Subscription change " + response.toString()
-                                 );
                                  try {
                                      if(response.has("subscribed")) {
                                          if(listener != null)

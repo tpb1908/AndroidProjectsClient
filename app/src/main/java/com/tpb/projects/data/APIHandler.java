@@ -52,6 +52,7 @@ public abstract class APIHandler {
     static final String SEGMENT_GISTS = "/gists";
     static final String SEGMENT_FOLLOWING = "/following";
     static final String SEGMENT_FOLLOWERS = "/followers";
+    static final String SEGMENT_COMMITS = "/commits";
 
     protected APIHandler(Context context) {
         if(mSession == null) {

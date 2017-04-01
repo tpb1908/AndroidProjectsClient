@@ -93,7 +93,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     public void notifyBottomReached() {

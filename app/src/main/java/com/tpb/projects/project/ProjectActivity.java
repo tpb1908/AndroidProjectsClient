@@ -715,7 +715,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createComment(new Editor.CreationListener<Comment>() {
+                mEditor.createIssueComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
                         Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();

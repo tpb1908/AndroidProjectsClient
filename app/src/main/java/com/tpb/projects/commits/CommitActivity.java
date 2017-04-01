@@ -19,6 +19,7 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -70,8 +71,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.parcel_commit))) {
             mCommit = launchIntent.getParcelableExtra(getString(R.string.parcel_commit));
-            mHadInitialCommit = true;
             loadComplete(mCommit);
+            mHadInitialCommit = true;
             new Loader(this).loadCommit(this, mCommit.getFullRepoName(), mCommit.getSha());
         }
 
@@ -80,11 +81,13 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     @Override
     public void loadComplete(Commit data) {
         mCommit = data;
-        mAdapter.setCommit();
+        mHash.setText(Util.shortenSha(mCommit.getSha()));
         if(mHadInitialCommit) {
             //TODO Only bind diff info
+            mAdapter.setCommitInfo();
             mHadInitialCommit = false;
         } else {
+            mAdapter.setCommit();
             //TODO Bind everything
         }
     }
@@ -106,6 +109,10 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         void setCommit() {
             if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
             if(mCommentsFragment != null && !mHadInitialCommit) mCommentsFragment.commitLoaded(mCommit);
+        }
+
+        void setCommitInfo() {
+            if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
         }
 
         @Override

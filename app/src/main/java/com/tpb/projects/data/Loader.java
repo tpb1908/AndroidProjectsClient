@@ -54,7 +54,6 @@ public class Loader extends APIHandler {
     private static final String PERMISSION_READ = "read";
     private static final String CONTENT = "content";
     private static final String SEGMENT_MARKDOWN = "/markdown";
-    private static final String SEGMENT_COMMITS = "/commits";
     private static final String SEGMENT_BRANCHES = "/branches";
 
     public Loader(Context context) {
