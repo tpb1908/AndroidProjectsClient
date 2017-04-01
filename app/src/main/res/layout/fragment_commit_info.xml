@@ -74,7 +74,8 @@
             <com.tpb.animatingrecyclerview.AnimatingRecyclerView
                 android:id="@+id/commit_diff_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"/>
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

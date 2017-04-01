@@ -13,9 +13,11 @@ import android.view.ViewTreeObserver;
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
+import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.FixedLinearLayoutManger;
 import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.Util;
 
@@ -43,6 +45,8 @@ public class CommitInfoFragment extends CommitFragment {
     @BindView(R.id.commit_info_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.commit_diff_recycler) AnimatingRecyclerView mRecyclerView;
 
+    private CommitDiffAdapter mAdapter;
+
     public static CommitInfoFragment getInstance(CommitActivity parent) {
         final CommitInfoFragment cif = new CommitInfoFragment();
         cif.mParent = parent;
@@ -55,6 +59,9 @@ public class CommitInfoFragment extends CommitFragment {
         final View view = inflater.inflate(R.layout.fragment_commit_info, container, false);
         unbinder = ButterKnife.bind(this, view);
         mRefresher.setRefreshing(true);
+        mAdapter = new CommitDiffAdapter();
+        mRecyclerView.setLayoutManager(new FixedLinearLayoutManger(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
         checkSharedElementEntry();
         mAreViewsValid = true;
         if(mCommit != null) commitLoaded(mCommit);
@@ -92,9 +99,9 @@ public class CommitInfoFragment extends CommitFragment {
                             getString(R.string.text_committed_by),
                             user,
                             Util.formatDateLocally(getContext(), new Date(mCommit.getCreatedAt()))
-                    ) +
-                    Spanner.buildDiffSpan(mCommit.getFiles()[0].getPatch());
+                    );
             mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));
+            mAdapter.setDiffs(mCommit.getFiles());
         }
         mRefresher.setRefreshing(false);
     }

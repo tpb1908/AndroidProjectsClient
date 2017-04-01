@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
@@ -22,8 +21,6 @@ import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
-
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,7 +84,6 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         mCommit = data;
         mHash.setText(Util.shortenSha(mCommit.getSha()));
         mAdapter.setCommit();
-        Log.i(TAG, "loadComplete: Files " + Arrays.toString(mCommit.getFiles()));
     }
 
     @Override
