@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -19,6 +18,7 @@ import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.NetworkImageView;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
@@ -195,7 +195,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     class CommentHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.event_comment_avatar) ANImageView mAvatar;
+        @BindView(R.id.event_comment_avatar) NetworkImageView mAvatar;
         @BindView(R.id.comment_text) HtmlTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
 

@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.data.models.State;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.NetworkImageView;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 
@@ -184,7 +184,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
     public class MilestoneHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.milestone_drawable) ImageView mState;
-        @BindView(R.id.milestone_user_avatar) ANImageView mAvatar;
+        @BindView(R.id.milestone_user_avatar) NetworkImageView mAvatar;
         @BindView(R.id.milestone_content_markdown) HtmlTextView mContent;
         @BindView(R.id.milestone_menu_button) ImageButton mMenu;
 

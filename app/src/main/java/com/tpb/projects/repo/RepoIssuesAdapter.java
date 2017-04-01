@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -26,6 +25,7 @@ import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
@@ -221,7 +221,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
         @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
         @BindView(R.id.issue_state_drawable) ImageView mIssueIcon;
-        @BindView(R.id.issue_user_avatar) ANImageView mUserAvatar;
+        @BindView(R.id.issue_user_avatar) NetworkImageView mUserAvatar;
 
         IssueHolder(View view) {
             super(view);

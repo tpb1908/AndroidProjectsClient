@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.auth.GitHubSession;
 import com.tpb.projects.data.models.DataModel;
 import com.tpb.projects.data.models.Gist;
+import com.tpb.projects.util.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +152,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
 
         @BindView(R.id.gist_title) TextView mTitle;
         @BindView(R.id.gist_info) TextView mInfo;
-        @BindView(R.id.gist_user_avatar) ANImageView mAvatar;
+        @BindView(R.id.gist_user_avatar) NetworkImageView mAvatar;
 
         public GistHolder(View itemView) {
             super(itemView);

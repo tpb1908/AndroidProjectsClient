@@ -8,13 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.Util;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -34,7 +34,7 @@ public class CommitInfoFragment extends CommitFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.commit_title) HtmlTextView mTitle;
-    @BindView(R.id.commit_user_avatar) ANImageView mAvatar;
+    @BindView(R.id.commit_user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.commit_info) HtmlTextView mInfo;
     @BindView(R.id.commit_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.commit_info_scrollview) NestedScrollView mScrollView;

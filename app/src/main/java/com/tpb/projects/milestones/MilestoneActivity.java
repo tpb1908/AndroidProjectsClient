@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -20,6 +19,7 @@ import com.tpb.projects.data.models.State;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -37,7 +37,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
 
     @BindView(R.id.milestone_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.milestone_issues_recycler) RecyclerView mRecycler;
-    @BindView(R.id.milestone_user_avatar) ANImageView mAvatar;
+    @BindView(R.id.milestone_user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.milestone_drawable) ImageView mStateImage;
     @BindView(R.id.milestone_content_markdown) HtmlTextView mContent;
     

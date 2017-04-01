@@ -34,8 +34,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.util.Util;
 import com.tpb.projects.util.UI;
+import com.tpb.projects.util.Util;
 
 
 /**
@@ -93,33 +93,44 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         TypedArray attr = context.obtainStyledAttributes(attrs,
-                R.styleable.FloatingActionButton, defStyleAttr, 0);
+                R.styleable.FloatingActionButton, defStyleAttr, 0
+        );
         mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal,
-                0xFFDA4336);
+                0xFFDA4336
+        );
         mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed,
-                0xFFE75043);
+                0xFFE75043
+        );
         mColorDisabled = attr.getColor(R.styleable.FloatingActionButton_fab_colorDisabled,
-                0xFFAAAAAA);
+                0xFFAAAAAA
+        );
         mColorRipple = attr.getColor(R.styleable.FloatingActionButton_fab_colorRipple,
-                0x99FFFFFF);
+                0x99FFFFFF
+        );
         mShowShadow = attr.getBoolean(R.styleable.FloatingActionButton_fab_showShadow, true);
         mShadowColor = attr.getColor(R.styleable.FloatingActionButton_fab_shadowColor,
-                0x66000000);
+                0x66000000
+        );
         mShadowRadius =
-                attr.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_shadowRadius, mShadowRadius);
+                attr.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_shadowRadius,
+                        mShadowRadius
+                );
         mShadowXOffset =
                 attr.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_shadowXOffset,
-                        mShadowXOffset);
+                        mShadowXOffset
+                );
         mShadowYOffset =
                 attr.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_shadowYOffset,
-                        mShadowYOffset);
+                        mShadowYOffset
+                );
         mFabSize = attr.getInt(R.styleable.FloatingActionButton_fab_size, SIZE_NORMAL);
         mLabelText = attr.getString(R.styleable.FloatingActionButton_fab_label);
 
-        if (attr.hasValue(R.styleable.FloatingActionButton_fab_elevationCompat)) {
+        if(attr.hasValue(R.styleable.FloatingActionButton_fab_elevationCompat)) {
             float elevation =
-                    attr.getDimensionPixelOffset(R.styleable.FloatingActionButton_fab_elevationCompat, 0);
-            if (isInEditMode()) {
+                    attr.getDimensionPixelOffset(
+                            R.styleable.FloatingActionButton_fab_elevationCompat, 0);
+            if(isInEditMode()) {
                 setElevation(elevation);
             } else {
                 setElevationCompat(elevation);
@@ -135,13 +146,17 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     private void initShowAnimation(TypedArray attr) {
         int resourceId =
-                attr.getResourceId(R.styleable.FloatingActionButton_fab_showAnimation, R.anim.fab_scale_up);
+                attr.getResourceId(R.styleable.FloatingActionButton_fab_showAnimation,
+                        R.anim.fab_scale_up
+                );
         mShowAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
     }
 
     private void initHideAnimation(TypedArray attr) {
         int resourceId =
-                attr.getResourceId(R.styleable.FloatingActionButton_fab_hideAnimation, R.anim.fab_scale_down);
+                attr.getResourceId(R.styleable.FloatingActionButton_fab_hideAnimation,
+                        R.anim.fab_scale_down
+                );
         mHideAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
     }
 
@@ -190,11 +205,10 @@ public class FloatingActionButton extends AppCompatImageButton {
     }
 
 
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         saveButtonOriginalPosition();
-        if (mShouldUpdateButtonPosition) {
+        if(mShouldUpdateButtonPosition) {
             updateButtonPosition();
             mShouldUpdateButtonPosition = false;
         }
@@ -206,7 +220,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void setLayoutParams(ViewGroup.LayoutParams params) {
-        if (params instanceof ViewGroup.MarginLayoutParams && mUsingElevationCompat) {
+        if(params instanceof ViewGroup.MarginLayoutParams && mUsingElevationCompat) {
             ((ViewGroup.MarginLayoutParams) params).leftMargin += getShadowX();
             ((ViewGroup.MarginLayoutParams) params).topMargin += getShadowY();
             ((ViewGroup.MarginLayoutParams) params).rightMargin += getShadowX();
@@ -217,23 +231,24 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     void updateBackground() {
         LayerDrawable layerDrawable;
-        if (hasShadow()) {
-            layerDrawable = new LayerDrawable(new Drawable[]{
+        if(hasShadow()) {
+            layerDrawable = new LayerDrawable(new Drawable[] {
                     new FloatingActionButton.Shadow(),
                     createFillDrawable(),
                     getIconDrawable()
             });
         } else {
-            layerDrawable = new LayerDrawable(new Drawable[]{
+            layerDrawable = new LayerDrawable(new Drawable[] {
                     createFillDrawable(),
                     getIconDrawable()
             });
         }
 
         int iconSize = -1;
-        if (getIconDrawable() != null) {
+        if(getIconDrawable() != null) {
             iconSize = Math.max(getIconDrawable().getIntrinsicWidth(),
-                    getIconDrawable().getIntrinsicHeight());
+                    getIconDrawable().getIntrinsicHeight()
+            );
         }
         int iconOffset = (getCircleSize() - (iconSize > 0 ? iconSize : mIconSize)) / 2;
         int circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) :
@@ -259,7 +274,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     }
 
     protected Drawable getIconDrawable() {
-        if (mIcon != null) {
+        if(mIcon != null) {
             return mIcon;
         } else {
             return new ColorDrawable(Color.TRANSPARENT);
@@ -270,14 +285,17 @@ public class FloatingActionButton extends AppCompatImageButton {
     private Drawable createFillDrawable() {
         StateListDrawable drawable = new StateListDrawable();
         drawable.addState(new int[] {-android.R.attr.state_enabled},
-                createCircleDrawable(mColorDisabled));
+                createCircleDrawable(mColorDisabled)
+        );
         drawable.addState(new int[] {android.R.attr.state_pressed},
-                createCircleDrawable(mColorPressed));
-        drawable.addState(new int[]{}, createCircleDrawable(mColorNormal));
+                createCircleDrawable(mColorPressed)
+        );
+        drawable.addState(new int[] {}, createCircleDrawable(mColorNormal));
 
-        if (Util.hasLollipop() && mUsingRipple) {
-            RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][]{{}},
-                    new int[]{mColorRipple}), drawable, null);
+        if(Util.hasLollipop() && mUsingRipple) {
+            RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][] {{}},
+                    new int[] {mColorRipple}
+            ), drawable, null);
             setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(View view, Outline outline) {
@@ -306,12 +324,12 @@ public class FloatingActionButton extends AppCompatImageButton {
     }
 
     private void saveButtonOriginalPosition() {
-        if (!mButtonPositionSaved) {
-            if (mOriginalX == -1) {
+        if(!mButtonPositionSaved) {
+            if(mOriginalX == -1) {
                 mOriginalX = getX();
             }
 
-            if (mOriginalY == -1) {
+            if(mOriginalY == -1) {
                 mOriginalY = getY();
             }
 
@@ -351,13 +369,13 @@ public class FloatingActionButton extends AppCompatImageButton {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onActionDown() {
         if(!mUsingRipple) return;
-        if (mBackgroundDrawable instanceof StateListDrawable) {
+        if(mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
-            drawable.setState(new int[]{android.R.attr.state_enabled,
+            drawable.setState(new int[] {android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
-        } else if (Util.hasLollipop()) {
+        } else if(Util.hasLollipop()) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
-            ripple.setState(new int[]{android.R.attr.state_enabled,
+            ripple.setState(new int[] {android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
             ripple.setHotspot(calculateCenterX(), calculateCenterY());
             ripple.setVisible(true, true);
@@ -367,12 +385,12 @@ public class FloatingActionButton extends AppCompatImageButton {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onActionUp() {
         if(!mUsingRipple) return;
-        if (mBackgroundDrawable instanceof StateListDrawable) {
+        if(mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
-            drawable.setState(new int[]{android.R.attr.state_enabled});
-        } else if (Util.hasLollipop()) {
+            drawable.setState(new int[] {android.R.attr.state_enabled});
+        } else if(Util.hasLollipop()) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
-            ripple.setState(new int[]{android.R.attr.state_enabled});
+            ripple.setState(new int[] {android.R.attr.state_enabled});
             ripple.setHotspot(calculateCenterX(), calculateCenterY());
             ripple.setVisible(true, true);
         }
@@ -406,7 +424,7 @@ public class FloatingActionButton extends AppCompatImageButton {
                 @Override
                 public boolean onDown(MotionEvent e) {
                     Label label = (Label) getTag(R.id.fab_label);
-                    if (label != null) {
+                    if(label != null) {
                         label.onActionDown();
                     }
                     onActionDown();
@@ -416,14 +434,13 @@ public class FloatingActionButton extends AppCompatImageButton {
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
                     Label label = (Label) getTag(R.id.fab_label);
-                    if (label != null) {
+                    if(label != null) {
                         label.onActionUp();
                     }
                     onActionUp();
                     return super.onSingleTapUp(e);
                 }
             });
-
 
 
     private class CircleDrawable extends ShapeDrawable {
@@ -466,9 +483,10 @@ public class FloatingActionButton extends AppCompatImageButton {
 
             mErase.setXfermode(PORTER_DUFF_CLEAR);
 
-            if (!isInEditMode()) {
+            if(!isInEditMode()) {
                 mPaint.setShadowLayer(mShadowRadius, mShadowXOffset, mShadowYOffset,
-                        mShadowColor);
+                        mShadowColor
+                );
             }
 
             mRadius = getCircleSize() / 2;
@@ -501,7 +519,7 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     @Override
     public void setImageDrawable(Drawable drawable) {
-        if (mIcon != drawable) {
+        if(mIcon != drawable) {
             mIcon = drawable;
             updateBackground();
         }
@@ -510,7 +528,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     @Override
     public void setImageResource(int resId) {
         Drawable drawable = getResources().getDrawable(resId);
-        if (mIcon != drawable) {
+        if(mIcon != drawable) {
             mIcon = drawable;
             updateBackground();
         }
@@ -521,9 +539,9 @@ public class FloatingActionButton extends AppCompatImageButton {
         super.setOnClickListener(l);
         mClickListener = l;
         View label = (View) getTag(R.id.fab_label);
-        if (label != null) {
+        if(label != null) {
             label.setOnClickListener(v -> {
-                if (mClickListener != null) {
+                if(mClickListener != null) {
                     mClickListener.onClick(FloatingActionButton.this);
                 }
             });
@@ -531,7 +549,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     }
 
     public void setColorNormal(int color) {
-        if (mColorNormal != color) {
+        if(mColorNormal != color) {
             mColorNormal = color;
             updateBackground();
         }
@@ -542,7 +560,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     }
 
     public void setColorPressed(int color) {
-        if (color != mColorPressed) {
+        if(color != mColorPressed) {
             mColorPressed = color;
             updateBackground();
         }
@@ -554,7 +572,7 @@ public class FloatingActionButton extends AppCompatImageButton {
 
 
     public void setColorRipple(int color) {
-        if (color != mColorRipple) {
+        if(color != mColorRipple) {
             mColorRipple = color;
             updateBackground();
         }
@@ -598,13 +616,13 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     /**
      * Makes the <b>FloatingActionButton</b> to appear and sets its visibility to {@link
-    #VISIBLE}
+     * #VISIBLE}
      *
      * @param animate if true - plays "show animation"
      */
     public void show(boolean animate) {
-        if (isHidden()) {
-            if (animate) {
+        if(isHidden()) {
+            if(animate) {
                 playShowAnimation();
             }
             super.setVisibility(VISIBLE);
@@ -613,13 +631,13 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     /**
      * Makes the <b>FloatingActionButton</b> to disappear and sets its visibility to {@link
-    #INVISIBLE}
+     * #INVISIBLE}
      *
      * @param animate if true - plays "hide animation"
      */
     public void hide(boolean animate) {
-        if (!isHidden()) {
-            if (animate) {
+        if(!isHidden()) {
+            if(animate) {
                 playHideAnimation();
             }
             super.setVisibility(INVISIBLE);
@@ -629,7 +647,7 @@ public class FloatingActionButton extends AppCompatImageButton {
     public void setLabelText(String text) {
         mLabelText = text;
         TextView labelView = getLabelView();
-        if (labelView != null) {
+        if(labelView != null) {
             labelView.setText(text);
         }
     }
@@ -648,9 +666,9 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     @Override
     public void setElevation(float elevation) {
-        if (Util.hasLollipop() && elevation > 0) {
+        if(Util.hasLollipop() && elevation > 0) {
             super.setElevation(elevation);
-            if (!isInEditMode()) {
+            if(!isInEditMode()) {
                 mUsingElevation = true;
                 mShowShadow = false;
             }
@@ -660,9 +678,9 @@ public class FloatingActionButton extends AppCompatImageButton {
 
     /**
      * Sets the shadow color and radius to mimic the native elevation.
-     *
+     * <p>
      * <p><b>API 21+</b>: Sets the native elevation of this view, in pixels. Updates margins
-     to
+     * to
      * make the view hold its position in layout across different platform versions.</p>
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -672,14 +690,14 @@ public class FloatingActionButton extends AppCompatImageButton {
         mShadowXOffset = 0;
         mShadowYOffset = Math.round(mFabSize == SIZE_NORMAL ? elevation : elevation / 2);
 
-        if (Util.hasLollipop()) {
+        if(Util.hasLollipop()) {
             super.setElevation(elevation);
             mUsingElevationCompat = true;
             mShowShadow = false;
             updateBackground();
 
             ViewGroup.LayoutParams layoutParams = getLayoutParams();
-            if (layoutParams != null) {
+            if(layoutParams != null) {
                 setLayoutParams(layoutParams);
             }
         } else {

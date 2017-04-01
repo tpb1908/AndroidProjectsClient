@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
@@ -24,6 +23,7 @@ import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.NetworkImageView;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
@@ -526,7 +526,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     class EventHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_text) HtmlTextView mText;
-        @BindView(R.id.event_user_avatar) ANImageView mAvatar;
+        @BindView(R.id.event_user_avatar) NetworkImageView mAvatar;
 
         EventHolder(View view) {
             super(view);

@@ -10,7 +10,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.view.View;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.data.models.Commit;
@@ -19,6 +18,7 @@ import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
@@ -44,7 +44,7 @@ public class IntentHandler {
         });
     }
 
-    public static void addOnClickHandler(Activity activity, ANImageView iv, String login) {
+    public static void addOnClickHandler(Activity activity, NetworkImageView iv, String login) {
         iv.setOnClickListener(v -> openUser(activity, iv, login));
     }
 
@@ -52,7 +52,7 @@ public class IntentHandler {
         view.setOnClickListener(v -> openIssue(activity, parent, issue));
     }
 
-    public static void addOnClickHandler(Activity activity, HtmlTextView tv, ANImageView iv, @Nullable CardView cv, Issue issue) {
+    public static void addOnClickHandler(Activity activity, HtmlTextView tv, NetworkImageView iv, @Nullable CardView cv, Issue issue) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
@@ -69,7 +69,7 @@ public class IntentHandler {
         });
     }
 
-    public static void addOnClickHandler(Activity activity, HtmlTextView tv, ANImageView iv, String login) {
+    public static void addOnClickHandler(Activity activity, HtmlTextView tv, NetworkImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 openUser(activity, iv, login);
@@ -146,7 +146,7 @@ public class IntentHandler {
         activity.startActivity(i);
     }
 
-    public static void openUser(Activity activity, ANImageView iv, String login) {
+    public static void openUser(Activity activity, NetworkImageView iv, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
         if(iv.getDrawable() != null) {

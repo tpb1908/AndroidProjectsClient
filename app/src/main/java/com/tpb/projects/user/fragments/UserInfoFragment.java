@@ -2,7 +2,6 @@ package com.tpb.projects.user.fragments;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -15,13 +14,13 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.User;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
@@ -44,7 +43,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @BindView(R.id.user_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.user_contributions) ContributionsView mContributions;
-    @BindView(R.id.user_avatar) ANImageView mAvatar;
+    @BindView(R.id.user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.user_info_layout) LinearLayout mInfoList;
     @BindView(R.id.user_contributions_info) TextView mContributionsInfo;
@@ -62,7 +61,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 if(getActivity().getIntent() != null && getActivity().getIntent().hasExtra(getString(R.string.intent_drawable))) {
                     final Bitmap bm = getActivity().getIntent().getParcelableExtra(getString(R.string.intent_drawable));
                     mUserName.setText(getActivity().getIntent().getStringExtra(getString(R.string.intent_username)));
-                    mAvatar.setBackgroundDrawable(new BitmapDrawable(getResources(), bm));
+                    mAvatar.setImageBitmap(bm);
                 }
                 getActivity().startPostponedEnterTransition();
                 return true;

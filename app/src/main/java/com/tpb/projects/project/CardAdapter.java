@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Editor;
@@ -29,6 +28,7 @@ import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.NetworkImageView;
 
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
@@ -351,7 +351,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         @BindView(R.id.card_menu_button) View mMenuButton;
         @BindView(R.id.card_drawable_wrapper) View mTitleLayout;
         @BindView(R.id.card_issue_drawable) ImageView mIssueIcon;
-        @BindView(R.id.card_user_avatar) ANImageView mUserAvatar;
+        @BindView(R.id.card_user_avatar) NetworkImageView mUserAvatar;
 
         @OnClick(R.id.card_menu_button)
         void onMenuClick(View v) {

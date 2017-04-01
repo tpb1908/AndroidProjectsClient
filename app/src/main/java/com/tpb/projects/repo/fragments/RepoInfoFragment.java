@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
@@ -26,6 +25,7 @@ import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
@@ -47,7 +47,7 @@ public class RepoInfoFragment extends RepoFragment {
     private Loader mLoader;
 
     @BindView(R.id.repo_info_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_avatar) ANImageView mAvatar;
+    @BindView(R.id.user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
 
@@ -136,11 +136,11 @@ public class RepoInfoFragment extends RepoFragment {
                                                                       );
                 user.setId(View.generateViewId());
                 mCollaborators.addView(user);
-                final ANImageView imageView = (ANImageView) user.findViewById(R.id.user_avatar);
+                final NetworkImageView imageView = ButterKnife.findById(user, R.id.user_avatar);
                 imageView.setId(View.generateViewId());
                 imageView.setImageUrl(u.getAvatarUrl());
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                final TextView login = (TextView) user.findViewById(R.id.user_login);
+                final TextView login = ButterKnife.findById(user, R.id.user_login);
                 login.setId(View.generateViewId());
                 login.setText(u.getLogin());
                 user.setOnClickListener((v) -> {

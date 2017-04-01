@@ -17,7 +17,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <com.androidnetworking.widget.ANImageView
+        <com.tpb.projects.util.NetworkImageView
             android:id="@+id/event_user_avatar"
             android:layout_gravity="start"
             android:layout_width="24dp"
