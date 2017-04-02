@@ -17,6 +17,7 @@ import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.data.APIHandler;
 import com.tpb.projects.data.Loader;
 import com.tpb.projects.data.models.Commit;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.FixedLinearLayoutManger;
@@ -92,13 +93,16 @@ public class CommitInfoFragment extends CommitFragment {
         final String user;
         if(mCommit.getCommitter() != null) {
             mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
+            IntentHandler.addOnClickHandler(getActivity(), mAvatar, mCommit.getCommitter().getLogin());
             user = String.format(getString(R.string.text_md_link),
                     mCommit.getCommitter().getLogin(),
                     mCommit.getCommitter().getHtmlUrl()
             );
         } else {
             user = mCommit.getCommitterName();
+            IntentHandler.addOnClickHandler(getActivity(), mAvatar, user);
         }
+
         if(mCommit.getFiles() != null) {
             String builder =
                     "<br>" +
