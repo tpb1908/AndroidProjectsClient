@@ -1,6 +1,7 @@
 package com.tpb.projects.commits;
 
 import android.animation.ObjectAnimator;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,12 +43,17 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
     @Override
     public void onBindViewHolder(DiffHolder holder, int position) {
         holder.mFileName.setText(mDiffs[position].getFileName());
+        final Resources res = holder.itemView.getResources();
         holder.mInfo.setText(
                 String.format(
-                        holder.itemView.getResources().getString(R.string.text_diff_changes),
+                        res.getString(R.string.text_diff_changes),
                         mDiffs[position].getStatus(),
-                        mDiffs[position].getAdditions(),
-                        mDiffs[position].getDeletions()
+                        res.getQuantityString(R.plurals.text_commit_additions,
+                                mDiffs[position].getAdditions(), mDiffs[position].getAdditions()
+                        ),
+                        res.getQuantityString(R.plurals.text_commit_deletions,
+                                mDiffs[position].getDeletions(), mDiffs[position].getDeletions()
+                        )
                 )
         );
         if(mDiffs[position].getPatch() != null) {
@@ -63,9 +69,7 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
                                 "maxLines",
                                 3,
                                 maxLines
-                        ).setDuration(holder.itemView.getContext().getResources()
-                                                     .getInteger(
-                                                             android.R.integer.config_mediumAnimTime))
+                        ).setDuration(res.getInteger(android.R.integer.config_mediumAnimTime))
                                       .start();
                     } else {
                         ObjectAnimator.ofInt(
@@ -73,9 +77,7 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
                                 "maxLines",
                                 maxLines,
                                 3
-                        ).setDuration(holder.itemView.getContext().getResources()
-                                                     .getInteger(
-                                                             android.R.integer.config_mediumAnimTime))
+                        ).setDuration(res.getInteger(android.R.integer.config_mediumAnimTime))
                                       .start();
                     }
                 });
