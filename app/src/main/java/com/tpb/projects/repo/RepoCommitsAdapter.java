@@ -153,11 +153,16 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
             builder.append(
                     String.format(
-                            res.getString(R.string.text_committed_by),
+                            res.getString(R.string.text_committed_by_with_has),
                             String.format(
                                     res.getString(R.string.text_md_link),
                                     userName,
                                     userUrl
+                            ),
+                            String.format(
+                                    res.getString(R.string.text_md_link),
+                                    Util.shortenSha(c.getSha()),
+                                    c.getHtmlUrl()
                             ),
                             Util.formatDateLocally(holder.itemView.getContext(),
                                     new Date(c.getCreatedAt())

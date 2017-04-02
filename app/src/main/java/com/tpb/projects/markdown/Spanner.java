@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -233,7 +234,7 @@ public class Spanner {
         return builder;
     }
 
-    public static SpannableStringBuilder buildDiffSpan(String diff) {
+    public static SpannableStringBuilder buildDiffSpan(@NonNull String diff) {
         final SpannableStringBuilder builder = new SpannableStringBuilder();
 
         int oldLength = 0;

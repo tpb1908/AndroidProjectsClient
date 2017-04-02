@@ -44,37 +44,44 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
     @Override
     public void onBindViewHolder(DiffHolder holder, int position) {
         holder.mFileName.setText(mDiffs[position].getFileName());
-        holder.itemView.setOnClickListener(v -> {
-            if(holder.mDiff.getLineCount() > 1) {
-                final ObjectAnimator anim = ObjectAnimator.ofInt(
-                        holder.mDiff,
-                        "maxLines",
-                        holder.mDiff.getLineCount(),
-                        1
-                ).setDuration(holder.itemView.getContext().getResources()
-                                             .getInteger(android.R.integer.config_mediumAnimTime));
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        holder.mDiff.setText(R.string.text_placeholder);
-                        holder.mDiff.setMaxLines(Integer.MAX_VALUE);
-                        super.onAnimationEnd(animation);
-                    }
-                });
-                anim.start();
+        if(mDiffs[position].getPatch() != null) {
+            holder.mDiff.setVisibility(View.VISIBLE);
+            holder.itemView.setOnClickListener(v -> {
+                if(holder.mDiff.getLineCount() > 1) {
+                    final ObjectAnimator anim = ObjectAnimator.ofInt(
+                            holder.mDiff,
+                            "maxLines",
+                            holder.mDiff.getLineCount(),
+                            1
+                    ).setDuration(holder.itemView.getContext().getResources()
+                                                 .getInteger(
+                                                         android.R.integer.config_mediumAnimTime));
+                    anim.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            holder.mDiff.setText(R.string.text_placeholder);
+                            holder.mDiff.setMaxLines(Integer.MAX_VALUE);
+                            super.onAnimationEnd(animation);
+                        }
+                    });
+                    anim.start();
 
-            } else {
-                holder.mDiff.setText(Spanner.buildDiffSpan(mDiffs[position].getPatch()));
-                ObjectAnimator.ofInt(
-                        holder.mDiff,
-                        "maxLines",
-                        1,
-                        holder.mDiff.getLineCount()
-                ).setDuration(holder.itemView.getContext().getResources()
-                                             .getInteger(android.R.integer.config_mediumAnimTime))
-                              .start();
-            }
-        });
+                } else {
+                    holder.mDiff.setText(Spanner.buildDiffSpan(mDiffs[position].getPatch()));
+                    ObjectAnimator.ofInt(
+                            holder.mDiff,
+                            "maxLines",
+                            1,
+                            holder.mDiff.getLineCount()
+                    ).setDuration(holder.itemView.getContext().getResources()
+                                                 .getInteger(
+                                                         android.R.integer.config_mediumAnimTime))
+                                  .start();
+                }
+            });
+        } else {
+            holder.mDiff.setVisibility(View.GONE);
+        }
     }
 
     @Override
