@@ -10,11 +10,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
 import com.tpb.projects.repo.fragments.RepoFragment;
 import com.tpb.projects.repo.fragments.RepoInfoFragment;
@@ -22,6 +21,7 @@ import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
 import com.tpb.projects.repo.fragments.RepoReadmeFragment;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
@@ -52,7 +52,8 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_repo);
@@ -95,7 +96,9 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
                 mLaunchPage = launchIntent.getIntExtra(getString(R.string.intent_pager_page), 0);
 
             }
-            loader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
+            loader.loadRepository(this,
+                    launchIntent.getStringExtra(getString(R.string.intent_repo))
+            );
         }
 
     }
@@ -194,16 +197,21 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         @Override
         public CharSequence getPageTitle(int position) {
             switch(position) {
-                case 0: return getString(R.string.title_repo_info);
-                case 1: return getString(R.string.title_repo_readme);
-                case 2: return getString(R.string.title_repo_commits);
-                case 3: return getString(R.string.title_repo_issues);
-                case 4: return getString(R.string.title_repo_projects);
-                default: return "";
+                case 0:
+                    return getString(R.string.title_repo_info);
+                case 1:
+                    return getString(R.string.title_repo_readme);
+                case 2:
+                    return getString(R.string.title_repo_commits);
+                case 3:
+                    return getString(R.string.title_repo_issues);
+                case 4:
+                    return getString(R.string.title_repo_projects);
+                default:
+                    return "";
             }
         }
     }
-
 
 
 }

@@ -56,7 +56,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <include layout="@layout/viewholder_milestone" />
+                <include layout="@layout/viewholder_milestone"/>
 
                 <com.tpb.animatingrecyclerview.AnimatingRecyclerView
                     android:id="@+id/milestone_issues_recycler"

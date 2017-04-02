@@ -44,7 +44,8 @@ public class CodeDialog implements CodeClickHandler {
         wv.setSource(code);
         final Dialog dialog = builder.create();
 
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow()
+              .setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.show();
     }

@@ -22,9 +22,10 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false"/>
 
-        <activity android:name=".user.UserActivity"
-                  android:theme="@style/AppTheme.Transparent.Dark"
-                  android:label="@string/app_name">
+        <activity
+            android:name=".user.UserActivity"
+            android:theme="@style/AppTheme.Transparent.Dark"
+            android:label="@string/app_name">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -56,8 +57,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".issues.IssueActivity"
-                  android:theme="@style/AppTheme.Transparent.Dark">
+        <activity
+            android:name=".issues.IssueActivity"
+            android:theme="@style/AppTheme.Transparent.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -69,37 +71,45 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".milestones.MilestoneActivity"
-                  android:theme="@style/AppTheme.Transparent.Dark">
+        <activity
+            android:name=".milestones.MilestoneActivity"
+            android:theme="@style/AppTheme.Transparent.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".commits.CommitActivity" />
-
-        <activity android:name=".editors.IssueEditor"
-                  android:theme="@style/AppTheme.Transparent.Dark"/>
-
-        <activity android:name=".editors.CardEditor"
+        <activity
+            android:name=".commits.CommitActivity"
             android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".editors.CommentEditor"
-                  android:theme="@style/AppTheme.Transparent.Dark"/>
+        <activity
+            android:name=".editors.IssueEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".editors.MilestoneEditor"
-                  android:theme="@style/AppTheme.Transparent.Dark"/>
+        <activity
+            android:name=".editors.CardEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".editors.ProjectEditor"
-                  android:theme="@style/AppTheme.Transparent.Dark"/>
+        <activity
+            android:name=".editors.CommentEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".data.SettingsActivity"/>
+        <activity
+            android:name=".editors.MilestoneEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
+
+        <activity
+            android:name=".editors.ProjectEditor"
+            android:theme="@style/AppTheme.Transparent.Dark"/>
+
+        <activity android:name=".util.SettingsActivity"/>
 
         <activity android:name=".repo.content.FileActivity"/>
 
-        <activity android:name=".editors.EmojiActivity" />
+        <activity android:name=".editors.EmojiActivity"/>
 
-        <activity android:name=".editors.CharacterActivity" />
+        <activity android:name=".editors.CharacterActivity"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

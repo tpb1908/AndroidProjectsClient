@@ -17,13 +17,13 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.models.Comment;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.Comment;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.IssueCommentsAdapter;
 import com.tpb.projects.util.UI;
@@ -176,8 +176,11 @@ public class IssueCommentsFragment extends IssueFragment {
         menu.inflate(R.menu.menu_comment);
         if(comment.getUser().getLogin().equals(
                 GitHubSession.getSession(getContext()).getUserLogin())) {
-            menu.getMenu().add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
-            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE, getString(R.string.menu_delete_comment));
+            menu.getMenu()
+                .add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
+            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE,
+                    getString(R.string.menu_delete_comment)
+            );
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
@@ -191,9 +194,12 @@ public class IssueCommentsFragment extends IssueFragment {
                     removeComment(comment);
                     break;
                 case R.id.menu_copy_comment_text:
-                    final ClipboardManager cm = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    final ClipboardManager cm = (ClipboardManager) getActivity()
+                            .getSystemService(Context.CLIPBOARD_SERVICE);
                     cm.setPrimaryClip(ClipData.newPlainText("Comment", comment.getBody()));
-                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board),
+                            Toast.LENGTH_SHORT
+                    ).show();
                     break;
             }
             return false;

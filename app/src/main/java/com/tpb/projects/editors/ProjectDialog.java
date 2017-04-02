@@ -12,8 +12,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.mittsu.markedview.MarkedView;
+import com.tpb.github.data.models.Project;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Project;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 
 /**
@@ -30,13 +30,16 @@ public class ProjectDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle bundle) {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_project, null);
         final EditText nameEdit = (EditText) view.findViewById(R.id.project_name_edit);
-        final EditText descriptionEdit = (EditText) view.findViewById(R.id.project_description_edit);
-        final MarkedView descriptionMarkDown = (MarkedView) view.findViewById(R.id.project_description_markdwon);
+        final EditText descriptionEdit = (EditText) view
+                .findViewById(R.id.project_description_edit);
+        final MarkedView descriptionMarkDown = (MarkedView) view
+                .findViewById(R.id.project_description_markdwon);
         final Project project;
         final boolean isNewProject;
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);
 
-        if(getArguments() != null && getArguments().getParcelable(getContext().getString(R.string.parcel_project)) != null) {
+        if(getArguments() != null && getArguments()
+                .getParcelable(getContext().getString(R.string.parcel_project)) != null) {
             project = getArguments().getParcelable(getContext().getString(R.string.parcel_project));
             builder.setTitle(R.string.title_edit_project);
             nameEdit.setText(project.getName());
@@ -83,7 +86,8 @@ public class ProjectDialog extends DialogFragment {
 
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {
-            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(nameEdit, InputMethodManager.SHOW_IMPLICIT);
         });
 

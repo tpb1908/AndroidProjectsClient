@@ -13,12 +13,12 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.models.Project;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.models.Project;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.ProjectEditor;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoProjectsAdapter;
@@ -123,7 +123,7 @@ public class RepoProjectsFragment extends RepoFragment {
                                 }
 
                                 @Override
-                                public void deletionError(APIHandler.APIError error){
+                                public void deletionError(APIHandler.APIError error) {
                                     mRefresher.setRefreshing(false);
                                 }
                             }, project);

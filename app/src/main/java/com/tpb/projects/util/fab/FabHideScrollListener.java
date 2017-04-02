@@ -24,7 +24,7 @@ public class FabHideScrollListener extends RecyclerView.OnScrollListener {
         if(mFab == null) return;
         if(dy > 10) {
             mFab.hide(true);
-        } else if(dy < -10){
+        } else if(dy < -10) {
             mFab.show(true);
         }
     }

@@ -50,12 +50,13 @@ public class StringUtils {
         boolean hasMatches = false;
         final Matcher m = pattern.matcher(spannable);
 
-        while (m.find()) {
+        while(m.find()) {
             spannable.setSpan(
                     new CleanURLSpan(m.group(0)),
                     m.start(),
                     m.end(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
             hasMatches = true;
         }
 

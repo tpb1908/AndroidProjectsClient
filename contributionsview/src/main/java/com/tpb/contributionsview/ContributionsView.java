@@ -89,7 +89,9 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     private void initView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         rect = new Rect();
 
-        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ContributionsView, defStyleAttr, defStyleRes);
+        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.ContributionsView, defStyleAttr, defStyleRes
+        );
         useAttributes(attributes);
 
         textPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -99,7 +101,9 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
 
     private void useAttributes(TypedArray ta) {
         shouldDisplayMonths = ta.getBoolean(R.styleable.ContributionsView_showMonths, true);
-        backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor, 0xD6E685); //GitHub default color
+        backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor,
+                0xD6E685
+        ); //GitHub default color
         textColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
         textSize = ta.getDimensionPixelSize(R.styleable.ContributionsView_textSize, 7);
         if(ta.getString(R.styleable.ContributionsView_username) != null && !isInEditMode()) {
@@ -119,7 +123,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         final int w = rect.width();
         final int h = rect.height();
 
-        final int hnum = contribs.size() == 0 ? 52 : (int) Math.ceil(contribs.size() / 7d); //The number of days to show horizontally
+        final int hnum = contribs.size() == 0 ? 52 : (int) Math
+                .ceil(contribs.size() / 7d); //The number of days to show horizontally
 
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
@@ -202,8 +207,11 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 final int row = (int) (pcc * 7);
                 final int pos = (7 * col) + row;
                 if(pos < contribs.size() && pos >= 0) {
-                    final String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date(contribs.get(pos).date));
-                    Toast.makeText(getContext(), String.format("%1$d contributions on %2$s", contribs.get(pos).contributions, date), Toast.LENGTH_SHORT).show();
+                    final String date = new SimpleDateFormat("dd-MM-yyyy")
+                            .format(new Date(contribs.get(pos).date));
+                    Toast.makeText(getContext(), String.format("%1$d contributions on %2$s",
+                            contribs.get(pos).contributions, date
+                    ), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -232,7 +240,8 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     public void onResponse(ArrayList<ContributionsLoader.GitDay> contributions) {
         contribs = contributions;
         invalidate();
-        if(listener != null && listener.get() != null) listener.get().contributionsLoaded(contributions);
+        if(listener != null && listener.get() != null)
+            listener.get().contributionsLoaded(contributions);
     }
 
     @Override
@@ -298,6 +307,7 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                     public ContribState createFromParcel(Parcel in) {
                         return new ContribState(in);
                     }
+
                     public ContribState[] newArray(int size) {
                         return new ContribState[size];
                     }

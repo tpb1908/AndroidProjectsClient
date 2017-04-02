@@ -54,17 +54,19 @@ public class ContributionsLoader {
     void beginRequest(Context context, String login) {
         final String URL = String.format(IMAGE_BASE, login);
         // Load the svg as a string
-        final StringRequest req = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                parse(response);
-            }
-        }, new Response.ErrorListener() {
+        final StringRequest req = new StringRequest(Request.Method.GET, URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parse(response);
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if(mListener.get() != null) mListener.get().onError(error);
             }
-        });
+        }
+        );
         Volley.newRequestQueue(context).add(req);
     }
 
@@ -104,7 +106,6 @@ public class ContributionsLoader {
             }
             //Log.i(TAG, "GitDay: Contributions" + color + ", " + date + ", " + contributions);
         }
-
 
 
         @Override

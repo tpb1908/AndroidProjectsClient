@@ -12,12 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Label;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Label;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.search.ArrayFilter;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
-import com.tpb.projects.markdown.Markdown;
 
 import java.util.ArrayList;
 
@@ -76,7 +76,10 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         if(convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_search_suggestion, parent, false);
+            convertView = LayoutInflater.from(parent.getContext())
+                                        .inflate(R.layout.viewholder_search_suggestion, parent,
+                                                false
+                                        );
         }
         bindView(position, convertView);
         return convertView;
@@ -86,16 +89,24 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
         final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
         if(parseCache[dataPos] == null) {
             if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(" #" + data.get(dataPos).getIssue().getNumber() + " " + Markdown.parseMD(data.get(dataPos).getIssue().getTitle()));
+                parseCache[dataPos] = Html.fromHtml(
+                        " #" + data.get(dataPos).getIssue().getNumber() + " " + Markdown
+                                .parseMD(data.get(dataPos).getIssue().getTitle()));
             } else {
-                parseCache[dataPos] = Html.fromHtml(Markdown.formatMD(data.get(dataPos).getNote(), null));
+                parseCache[dataPos] = Html
+                        .fromHtml(Markdown.formatMD(data.get(dataPos).getNote(), null));
             }
         }
         if(data.get(dataPos).hasIssue()) {
-            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dataPos).getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open, 0, 0, 0);
+            ((TextView) view.findViewById(R.id.suggestion_text))
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dataPos).getIssue()
+                                                                         .isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open,
+                            0, 0, 0
+                    );
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         } else {
-            ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            ((TextView) view.findViewById(R.id.suggestion_text))
+                    .setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             //Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
             ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
         }

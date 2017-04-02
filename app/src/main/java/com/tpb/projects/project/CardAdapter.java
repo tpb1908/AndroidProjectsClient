@@ -17,13 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
@@ -118,7 +118,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         mIsLoading = false;
         if(cards.size() > 0) {
             int oldLength = mCards.size();
-            if(mPage == 1){
+            if(mPage == 1) {
                 mParent.mParent.notifyFragmentLoaded();
                 mCards.clear();
             }
@@ -217,7 +217,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
     @Override
     public CardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CardHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_card, parent, false));
+        return new CardHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_card, parent, false));
     }
 
     @Override
@@ -237,7 +238,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                 view.setVisibility(View.INVISIBLE);
                 return true;
             });
-            holder.mCardView.setOnDragListener(new CardDragListener(mParent.getContext(), mNavListener));
+            holder.mCardView
+                    .setOnDragListener(new CardDragListener(mParent.getContext(), mNavListener));
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }
@@ -306,12 +308,21 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         holder.mIssueIcon.setVisibility(View.VISIBLE);
         holder.mUserAvatar.setVisibility(View.VISIBLE);
         final Card card = mCards.get(pos).first;
-        holder.mIssueIcon.setImageResource(card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
+        holder.mIssueIcon.setImageResource(
+                card.getIssue().isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(card.getIssue().getOpenedBy().getAvatarUrl());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar, card.getIssue().getOpenedBy().getLogin());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar, holder.mCardView, card.getIssue());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mIssueIcon, holder.mCardView, card.getIssue());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, holder.mCardView, card.getIssue());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar,
+                card.getIssue().getOpenedBy().getLogin()
+        );
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar,
+                holder.mCardView, card.getIssue()
+        );
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mIssueIcon, holder.mCardView,
+                card.getIssue()
+        );
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, holder.mCardView,
+                card.getIssue()
+        );
         holder.mTitleLayout.setVisibility(View.VISIBLE);
 
         holder.mTitle.setHtml(Spanner.bold(card.getIssue().getTitle()));
@@ -319,13 +330,13 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             holder.mText.setHtml(
                     Markdown.parseMD(
                             Spanner.buildIssueSpan(
-                                holder.itemView.getContext(),
-                                card.getIssue(),
-                                false,
-                                true,
-                                true,
-                                true,
-                                true
+                                    holder.itemView.getContext(),
+                                    card.getIssue(),
+                                    false,
+                                    true,
+                                    true,
+                                    true,
+                                    true
                             ).toString()
                     ),
                     new HtmlHttpImageGetter(holder.mText, holder.mText),

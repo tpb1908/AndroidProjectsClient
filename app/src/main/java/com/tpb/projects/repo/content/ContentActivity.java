@@ -11,11 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
-import com.tpb.projects.data.FileLoader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.content.Node;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;
@@ -43,7 +43,8 @@ public class ContentActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_content);
@@ -63,7 +64,8 @@ public class ContentActivity extends BaseActivity {
     }
 
     private void initRibbon() {
-        final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
+        final TextView view = (TextView) getLayoutInflater()
+                .inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText(R.string.text_ribbon_root);
         view.setOnClickListener((v) -> {
             mRibbon.removeAllViews();
@@ -74,7 +76,8 @@ public class ContentActivity extends BaseActivity {
     }
 
     void addRibbonItem(final Node node) {
-        final TextView view = (TextView) getLayoutInflater().inflate(R.layout.shard_ribbon_item, mRibbon, false);
+        final TextView view = (TextView) getLayoutInflater()
+                .inflate(R.layout.shard_ribbon_item, mRibbon, false);
         view.setText(node.getName());
         view.setFocusable(false);
         view.setOnClickListener(v -> {

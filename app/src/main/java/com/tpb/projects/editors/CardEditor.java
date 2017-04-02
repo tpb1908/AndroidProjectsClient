@@ -19,15 +19,16 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.Uploader;
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Issue;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.Uploader;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -71,8 +72,10 @@ public class CardEditor extends EditorActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
-        setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
+        setTheme(
+                prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
         setContentView(R.layout.activity_markdown_editor);
 
         final ViewStub stub = (ViewStub) findViewById(R.id.editor_stub);
@@ -91,50 +94,59 @@ public class CardEditor extends EditorActivity {
             addFromIssueButtonListeners(launchIntent);
         }
 
-        new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
-            @Override
-            public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
-                    final int start = Math.max(mEditor.getSelectionStart(), 0);
-                    mEditor.getText().insert(start, snippet);
-                    mEditor.setSelection(start + relativePosition);
-                }
-            }
+        new MarkdownButtonAdapter(this, mEditButtons,
+                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                    @Override
+                    public void snippetEntered(String snippet, int relativePosition) {
+                        if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
+                            final int start = Math.max(mEditor.getSelectionStart(), 0);
+                            mEditor.getText().insert(start, snippet);
+                            mEditor.setSelection(start + relativePosition);
+                        }
+                    }
 
-            @Override
-            public String getText() {
-                return mEditor.getInputText().toString();
-            }
+                    @Override
+                    public String getText() {
+                        return mEditor.getInputText().toString();
+                    }
 
-            @Override
-            public void previewCalled() {
-                if(mEditor.isEditing()) {
-                    mEditor.saveText();
-                    mEditor.disableEditing();
-                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), null), new HtmlHttpImageGetter(mEditor, mEditor));
-                } else {
-                    mEditor.restoreText();
-                    mEditor.enableEditing();
+                    @Override
+                    public void previewCalled() {
+                        if(mEditor.isEditing()) {
+                            mEditor.saveText();
+                            mEditor.disableEditing();
+                            mEditor.setHtml(
+                                    Markdown.parseMD(mEditor.getInputText().toString(), null),
+                                    new HtmlHttpImageGetter(mEditor, mEditor)
+                            );
+                        } else {
+                            mEditor.restoreText();
+                            mEditor.enableEditing();
+                        }
+                    }
                 }
-            }
-        });
+        );
 
         final View content = findViewById(android.R.id.content);
         content.setVisibility(View.VISIBLE);
 
-        mKeyBoardChecker = new KeyBoardVisibilityChecker(content, new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
-            @Override
-            public void keyboardShown() {
-                mIssueButton.setVisibility(View.GONE);
-            }
+        mKeyBoardChecker = new KeyBoardVisibilityChecker(content,
+                new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
+                    @Override
+                    public void keyboardShown() {
+                        mIssueButton.setVisibility(View.GONE);
+                    }
 
-            @Override
-            public void keyboardHidden() {
-                if(mIssueButton.hasOnClickListeners()) {
-                    mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE), 100);
+                    @Override
+                    public void keyboardHidden() {
+                        if(mIssueButton.hasOnClickListeners()) {
+                            mIssueButton.postDelayed(() -> mIssueButton.setVisibility(View.VISIBLE),
+                                    100
+                            );
+                        }
+                    }
                 }
-            }
-        });
+        );
 
         mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
             @Override
@@ -149,7 +161,8 @@ public class CardEditor extends EditorActivity {
 
     private void bindIssue(Issue issue) {
         mEditor.setHtml(
-                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, true, true, true, false).toString()),
+                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, true, true, true, false)
+                                        .toString()),
                 new HtmlHttpImageGetter(mEditor, mEditor)
         );
 
@@ -157,7 +170,8 @@ public class CardEditor extends EditorActivity {
 
     private void addFromIssueButtonListeners(Intent launchIntent) {
         final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
-        final ArrayList<Integer> invalidIds = launchIntent.getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
+        final ArrayList<Integer> invalidIds = launchIntent
+                .getIntegerArrayListExtra(getString(R.string.intent_int_arraylist));
 
         mIssueButton.setVisibility(View.VISIBLE);
         mIssueButton.setOnClickListener(v -> {
@@ -179,19 +193,24 @@ public class CardEditor extends EditorActivity {
                         if(invalidIds.indexOf(i.getId()) == -1) validIssues.add(i);
                     }
                     if(validIssues.isEmpty()) {
-                        Toast.makeText(CardEditor.this, R.string.error_no_issues, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CardEditor.this, R.string.error_no_issues,
+                                Toast.LENGTH_SHORT
+                        ).show();
                         return;
                     }
 
                     final String[] issues = new String[validIssues.size()];
                     for(int i = 0; i < validIssues.size(); i++) {
                         issues[i] = String.format(getString(R.string.text_issue_single_line),
-                                validIssues.get(i).getNumber(), validIssues.get(i).getTitle());
+                                validIssues.get(i).getNumber(), validIssues.get(i).getTitle()
+                        );
                     }
 
                     final AlertDialog.Builder scBuilder = new AlertDialog.Builder(CardEditor.this);
                     scBuilder.setTitle(R.string.title_choose_issue);
-                    scBuilder.setSingleChoiceItems(issues, 0, (dialogInterface, i) -> selectedIssuePosition = i);
+                    scBuilder.setSingleChoiceItems(issues, 0,
+                            (dialogInterface, i) -> selectedIssuePosition = i
+                    );
                     scBuilder.setPositiveButton(R.string.action_ok, ((dialogInterface, i) -> {
                         mCard.setFromIssue(validIssues.get(selectedIssuePosition));
                         mEditor.setFilters(new InputFilter[] {}); //Remove the length filter
@@ -200,7 +219,9 @@ public class CardEditor extends EditorActivity {
                         mEditor.setFocusable(false);
                         mClearButton.setVisibility(View.VISIBLE); //Enable clearing
                     }));
-                    scBuilder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+                    scBuilder.setNegativeButton(R.string.action_cancel,
+                            (dialogInterface, i) -> dialogInterface.dismiss()
+                    );
                     scBuilder.create().show();
                 }
 
@@ -215,7 +236,8 @@ public class CardEditor extends EditorActivity {
 
         mClearButton.setOnClickListener((v) -> {
             mEditor.setText(null);
-            mEditor.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)}); //Re-enable filter
+            mEditor.setFilters(
+                    new InputFilter[] {new InputFilter.LengthFilter(250)}); //Re-enable filter
             mEditorWrapper.setCounterEnabled(true);
             mCard = new Card();
             mClearButton.setVisibility(View.GONE);
@@ -227,21 +249,23 @@ public class CardEditor extends EditorActivity {
         //Ensure that we are on UI thread
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-            @Override
-            public void imageUploaded(String link) {
-                mUploadDialog.dismiss();
-                //Format the link and insert at currently selected position
-                final String snippet = String.format(getString(R.string.text_image_link), link);
-                final int start = Math.max(mEditor.getSelectionStart(), 0);
-                mEditor.getText().insert(start, snippet);
-                mEditor.setSelection(start + snippet.indexOf("]"));
-            }
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           mUploadDialog.dismiss();
+                                           //Format the link and insert at currently selected position
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           final int start = Math.max(mEditor.getSelectionStart(), 0);
+                                           mEditor.getText().insert(start, snippet);
+                                           mEditor.setSelection(start + snippet.indexOf("]"));
+                                       }
 
-            @Override
-            public void uploadError(ANError error) {
-                //TODO Tell the user
-            }
-        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
+                                       @Override
+                                       public void uploadError(ANError error) {
+                                           //TODO Tell the user
+                                       }
+                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
     @Override
@@ -280,7 +304,8 @@ public class CardEditor extends EditorActivity {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             });
@@ -290,7 +315,8 @@ public class CardEditor extends EditorActivity {
             deleteDialog.show();
         } else {
             if(mKeyBoardChecker.isKeyboardOpen()) {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             } else {

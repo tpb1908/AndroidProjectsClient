@@ -2,8 +2,8 @@ package com.tpb.projects.commits.fragments;
 
 import android.support.v4.app.Fragment;
 
+import com.tpb.github.data.models.Commit;
 import com.tpb.projects.commits.CommitActivity;
-import com.tpb.projects.data.models.Commit;
 
 /**
  * Created by theo on 30/03/17.

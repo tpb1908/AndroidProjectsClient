@@ -3,9 +3,6 @@ package com.tpb.projects.util.search;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.util.search.FuzzyStringSearcher;
-
 import java.util.ArrayList;
 
 /**
@@ -34,7 +31,7 @@ public class ArrayFilter<T> extends Filter {
     protected FilterResults performFiltering(CharSequence charSequence) {
         final FilterResults results = new FilterResults();
         if(charSequence == null) {
-            results.values = new ArrayList<Card>();
+            results.values = new ArrayList<T>();
             results.count = 0;
         } else {
             final ArrayList<Integer> positions = searcher.search(charSequence.toString());

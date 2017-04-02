@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
@@ -32,7 +32,8 @@ public abstract class RepoFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.intent_repo))) {
+        if(savedInstanceState != null && savedInstanceState
+                .containsKey(getString(R.string.intent_repo))) {
             mRepo = savedInstanceState.getParcelable(getString(R.string.intent_repo));
             repoLoaded(mRepo);
         }

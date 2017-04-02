@@ -9,7 +9,7 @@ import android.util.Log;
 public class Logger {
 
     public static void logLong(String TAG, String s) {
-        if (s.length() > 4000) {
+        if(s.length() > 4000) {
             Log.d(TAG, s.substring(0, 4000));
             logLong(TAG, s.substring(4000));
         } else

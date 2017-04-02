@@ -19,11 +19,11 @@ import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.tpb.github.data.auth.OAuthHandler;
+import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.OAuthHandler;
-import com.tpb.projects.data.models.DataModel;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.BaseActivity;
@@ -53,7 +53,8 @@ public class LoginActivity extends BaseActivity {
 
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT);
+            ViewGroup.LayoutParams.FILL_PARENT
+    );
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -66,7 +67,8 @@ public class LoginActivity extends BaseActivity {
         mAnalytics = FirebaseAnalytics.getInstance(this);
 
         mOAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
+                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL
+        );
         mOAuthHandler.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
@@ -92,7 +94,9 @@ public class LoginActivity extends BaseActivity {
                 mId.setText(user.getLogin());
                 String details = "";
                 if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
-                mStats.setText(String.format(getString(R.string.text_user_info), details, user.getLocation(), user.getRepos(), user.getFollowers()));
+                mStats.setText(String.format(getString(R.string.text_user_info), details,
+                        user.getLocation(), user.getRepos(), user.getFollowers()
+                ));
 
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
@@ -128,17 +132,11 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    public interface OAuthLoginListener {
-
-        void onCodeCollected(String code);
-
-        void onError(String error);
-    }
 
     private class OAuthWebViewClient extends WebViewClient {
-        private final OAuthLoginListener mListener;
+        private final OAuthHandler.OAuthLoginListener mListener;
 
-        OAuthWebViewClient(OAuthLoginListener listener) {
+        OAuthWebViewClient(OAuthHandler.OAuthLoginListener listener) {
             mListener = listener;
         }
 

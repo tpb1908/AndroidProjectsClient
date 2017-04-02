@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
 
 /**
  * Created by theo on 24/12/16.
@@ -22,11 +22,14 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final WebView wv = new WebView(getContext());
-        wv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        wv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
         final ProgressBar pb = new ProgressBar(getContext());
 
         final AlertDialog ad = new AlertDialog.Builder(getActivity()).setView(pb).create();
-        if(getArguments() != null && getArguments().containsKey(getString(R.string.intent_markdown))) {
+        if(getArguments() != null && getArguments()
+                .containsKey(getString(R.string.intent_markdown))) {
             final String markdown = getArguments().getString(getString(R.string.intent_markdown));
 
             final Loader.ItemLoader<String> loader = new Loader.ItemLoader<String>() {
@@ -61,7 +64,9 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
         super.onStart();
         final Dialog dialog = getDialog();
         if(dialog != null) {
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
         }
     }
 }

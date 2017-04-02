@@ -9,11 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Commit;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
@@ -66,17 +66,17 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     }
 
     public void setBranch(String branch) {
-       if(!branch.equals(mBranch)) {
-           if(mBranch != null) {
-               mBranch = branch;
-               mCommits.clear();
-               notifyDataSetChanged();
-               loadCommits(true);
-           } else {
-               mBranch = branch;
-           }
+        if(!branch.equals(mBranch)) {
+            if(mBranch != null) {
+                mBranch = branch;
+                mCommits.clear();
+                notifyDataSetChanged();
+                loadCommits(true);
+            } else {
+                mBranch = branch;
+            }
 
-       }
+        }
     }
 
     public void notifyBottomReached() {
@@ -107,7 +107,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                 mParent.setLatestSHA(commits.get(0).getSha());
                 mCommits.clear();
             }
-            for(Commit c: commits) {
+            for(Commit c : commits) {
                 mCommits.add(Pair.create(c, null));
             }
             notifyItemRangeInserted(oldLength, mCommits.size());
@@ -123,7 +123,10 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     @Override
     public CommitViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CommitViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_commit, parent, false));
+        return new CommitViewHolder(LayoutInflater.from(parent.getContext())
+                                                  .inflate(R.layout.viewholder_commit, parent,
+                                                          false
+                                                  ));
     }
 
     @Override
@@ -150,13 +153,20 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
             builder.append(
                     String.format(
-                            res.getString(R.string.text_committed_by),
+                            res.getString(R.string.text_committed_by_with_has),
                             String.format(
                                     res.getString(R.string.text_md_link),
                                     userName,
                                     userUrl
                             ),
-                            Util.formatDateLocally(holder.itemView.getContext(), new Date(c.getCreatedAt()))
+                            String.format(
+                                    res.getString(R.string.text_md_link),
+                                    com.tpb.github.data.Util.shortenSha(c.getSha()),
+                                    c.getHtmlUrl()
+                            ),
+                            Util.formatDateLocally(holder.itemView.getContext(),
+                                    new Date(c.getCreatedAt())
+                            )
                     )
             );
             holder.mInfo.setHtml(Markdown.parseMD(builder.toString(), mRepo.getFullName()), null,

@@ -17,11 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
@@ -138,7 +138,8 @@ public class RepoInfoFragment extends RepoFragment {
             @Override
             public void listLoadError(APIHandler.APIError error) {
                 mContributors.setVisibility(View.GONE);
-                ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.GONE);
+                ButterKnife.findById(getActivity(), R.id.repo_contributors_text)
+                           .setVisibility(View.GONE);
             }
         }, mRepo.getFullName());
     }
@@ -161,17 +162,19 @@ public class RepoInfoFragment extends RepoFragment {
         mContributors.removeAllViews();
         if(contributors.size() > 1) {
             mContributors.setVisibility(View.VISIBLE);
-            ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.VISIBLE);
+            ButterKnife.findById(getActivity(), R.id.repo_contributors_text)
+                       .setVisibility(View.VISIBLE);
             for(final User u : contributors) mContributors.addView(getUserView(u));
         } else {
             mContributors.setVisibility(View.GONE);
-            ButterKnife.findById(getActivity(), R.id.repo_contributors_text).setVisibility(View.GONE);
+            ButterKnife.findById(getActivity(), R.id.repo_contributors_text)
+                       .setVisibility(View.GONE);
         }
     }
 
     private View getUserView(User u) {
         final LinearLayout layout = (LinearLayout)
-                        getActivity()
+                getActivity()
                         .getLayoutInflater()
                         .inflate(R.layout.shard_user, mCollaborators, false);
         layout.setId(View.generateViewId());
@@ -182,7 +185,9 @@ public class RepoInfoFragment extends RepoFragment {
         final TextView login = ButterKnife.findById(layout, R.id.user_login);
         login.setId(View.generateViewId());
         if(u.getContributions() > 0) {
-            login.setText(String.format(Locale.getDefault(), "%1$s\n%2$d", u.getLogin(), u.getContributions()));
+            login.setText(String.format(Locale.getDefault(), "%1$s\n%2$d", u.getLogin(),
+                    u.getContributions()
+            ));
         } else {
             login.setText(u.getLogin());
         }

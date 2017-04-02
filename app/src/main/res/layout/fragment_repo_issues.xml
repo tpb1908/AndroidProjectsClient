@@ -45,7 +45,6 @@
             </LinearLayout>
 
 
-
         </android.support.v7.widget.Toolbar>
 
         <com.tpb.animatingrecyclerview.AnimatingRecyclerView

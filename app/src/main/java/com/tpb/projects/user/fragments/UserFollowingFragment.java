@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserAdapter;
 import com.tpb.projects.util.FixedLinearLayoutManger;
 

@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.Gist;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.DataModel;
-import com.tpb.projects.data.models.Gist;
 import com.tpb.projects.util.NetworkImageView;
 
 import java.util.ArrayList;
@@ -114,7 +114,8 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
 
     @Override
     public GistHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GistHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_gist, parent, false));
+        return new GistHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_gist, parent, false));
     }
 
     @Override
@@ -123,7 +124,8 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         if(mIsShowingPublic) {
             holder.mTitle.setText(
                     String.format(
-                            holder.itemView.getResources().getString(R.string.text_gist_viewholder_title),
+                            holder.itemView.getResources()
+                                           .getString(R.string.text_gist_viewholder_title),
                             g.getOwner().getLogin(),
                             g.getFiles()[0].getName()
                     )

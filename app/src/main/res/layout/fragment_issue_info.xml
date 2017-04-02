@@ -109,7 +109,9 @@
 
             </HorizontalScrollView>
 
-            <include layout="@layout/viewholder_milestone" android:visibility="gone"/>
+            <include
+                layout="@layout/viewholder_milestone"
+                android:visibility="gone"/>
 
             <com.tpb.animatingrecyclerview.AnimatingRecyclerView
                 android:id="@+id/issue_events_recycler"
@@ -118,7 +120,6 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-
 
 
 </android.support.v4.widget.SwipeRefreshLayout>

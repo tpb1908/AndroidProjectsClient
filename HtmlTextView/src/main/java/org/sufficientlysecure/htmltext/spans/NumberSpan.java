@@ -31,9 +31,9 @@ public class NumberSpan implements LeadingMarginSpan {
     public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline,
                                   int bottom, CharSequence text, int start, int end,
                                   boolean first, Layout l) {
-        if (text instanceof Spanned) {
+        if(text instanceof Spanned) {
             int spanStart = ((Spanned) text).getSpanStart(this);
-            if (spanStart == start) {
+            if(spanStart == start) {
                 c.drawText(mNumber, x, baseline, p);
             }
         }

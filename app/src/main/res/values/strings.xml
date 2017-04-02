@@ -1,4 +1,3 @@
-
 <resources>
     <string name="app_name">Projects</string>
 
@@ -25,20 +24,6 @@
         # README not found
     ]]></string>
 
-    <!-- Network errors -->
-    <string name="error_no_connection">No connection</string>
-    <string name="error_unauthorized">Error: Unauthorized</string>
-    <string name="error_forbidden">Error: Forbidden</string>
-    <string name="error_not_found">Error: Not found</string>
-    <string name="error_rate_limit">Error: You have reached the API rate limit. Try again later</string>
-    <string name="error_abuse_limit">Error: GitHub has flagged you for API abuse</string>
-    <string name="error_max_login_attempts">Error: Maximum number of login attempts reached. Try again later</string>
-    <string name="error_unprocessable">Error: There was an error processing your request</string>
-    <string name="error_bad_credentials">Error bad credentials</string>
-    <string name="error_not_allowed">Error: Not allowed</string>
-    <string name="error_bad_request">Error: Bad request</string>
-    <string name="error_empty_repository">Error: Empty repository</string>
-    <string name="error_unknown">Unknown error</string>
 
     <string name="error_loading_license">Couldn\'t load license</string>
 
@@ -83,12 +68,14 @@
 
     <!-- Commit stuff -->
     <string name="text_committed_by">%1$s committed on %2$s</string>
+    <string name="text_committed_by_with_has">%1$s committed %2$s on with %3$s</string>
+    <string name="text_diff_changes">%1$s with %2$s and %3$s</string>
     <plurals name="text_commit_additions">
         <item quantity="one">%d addition</item>
         <item quantity="other">%d additions</item>
     </plurals>
     <plurals name="text_commit_deletions">
-        <item quantity="one">%d deletions</item>
+        <item quantity="one">%d deletion</item>
         <item quantity="other">%d deletions</item>
     </plurals>
 

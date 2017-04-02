@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 
 import java.util.ArrayList;
@@ -39,7 +39,8 @@ public class CharacterActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_simple_search);
         ButterKnife.bind(this);
@@ -105,7 +106,10 @@ public class CharacterActivity extends BaseActivity {
 
         @Override
         public CharacterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new CharacterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_text, parent, false));
+            return new CharacterViewHolder(LayoutInflater.from(parent.getContext())
+                                                         .inflate(R.layout.viewholder_text, parent,
+                                                                 false
+                                                         ));
         }
 
         @Override

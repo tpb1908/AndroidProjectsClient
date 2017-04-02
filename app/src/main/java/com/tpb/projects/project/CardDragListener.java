@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
+import com.tpb.github.data.models.Card;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Card;
 
 /**
  * Created by theo on 22/12/16.
@@ -76,7 +76,8 @@ class CardDragListener implements View.OnDragListener {
                         sourceAdapter.moveCardFromDrag(sourcePosition, targetPosition);
                     }
 
-                } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0) {
+                } else if(view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter()
+                                                                                       .getItemCount() == 0) {
                     sourceAdapter.removeCard(card);
                     targetAdapter.addCardFromDrag(card);
                 }
@@ -87,7 +88,8 @@ class CardDragListener implements View.OnDragListener {
             case DragEvent.ACTION_DRAG_ENTERED:
                 //  Log.i(TAG, "onDrag: Drag entered");
                 if(view.getId() == R.id.viewholder_card
-                        || (view.getId() == R.id.column_recycler && ((RecyclerView) view).getAdapter().getItemCount() == 0)) {
+                        || (view.getId() == R.id.column_recycler && ((RecyclerView) view)
+                        .getAdapter().getItemCount() == 0)) {
                     selectedBG = view.getBackground();
                     view.setBackgroundColor(accent);
                 }

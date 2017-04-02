@@ -41,7 +41,6 @@ captures/
 # Keystore files
 *.jks
 
-github
 github.pub
 github_projects
 github_projects.pub
@@ -50,3 +49,5 @@ github_projects.pub
 animatingrecycler/libs/
 animatingrecycler/src/main/res/drawable/
 app/google-services.json
+!/github/
+!/github/src/main/java/

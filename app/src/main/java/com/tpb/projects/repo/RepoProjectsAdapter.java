@@ -11,13 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.Project;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.DataModel;
-import com.tpb.projects.data.models.Project;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
@@ -98,7 +98,10 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_project, parent, false));
+        return new ProjectViewHolder(LayoutInflater.from(parent.getContext())
+                                                   .inflate(R.layout.viewholder_project, parent,
+                                                           false
+                                                   ));
     }
 
     @Override
@@ -107,7 +110,8 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         holder.mName.setText(p.getName());
         holder.mName.setCompoundDrawablesWithIntrinsicBounds(
                 p.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed,
-                0, 0, 0);
+                0, 0, 0
+        );
         holder.mLastUpdate.setText(
                 String.format(
                         holder.itemView.getContext().getString(R.string.text_last_updated),

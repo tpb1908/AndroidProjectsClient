@@ -61,13 +61,17 @@ public class Interceptor extends Activity {
                     case 3:
                         if("projects".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
-                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_PROJECTS);
+                            i.putExtra(getString(R.string.intent_pager_page),
+                                    RepoActivity.PAGE_PROJECTS
+                            );
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
-                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_ISSUES);
+                            i.putExtra(getString(R.string.intent_pager_page),
+                                    RepoActivity.PAGE_ISSUES
+                            );
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
@@ -78,7 +82,9 @@ public class Interceptor extends Activity {
                             finish();
                         } else if("commits".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
-                            i.putExtra(getString(R.string.intent_pager_page), RepoActivity.PAGE_COMMITS);
+                            i.putExtra(getString(R.string.intent_pager_page),
+                                    RepoActivity.PAGE_COMMITS
+                            );
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
@@ -89,28 +95,40 @@ public class Interceptor extends Activity {
                     case 4: //Project
                         if("projects".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, ProjectActivity.class);
-                            i.putExtra(getString(R.string.intent_project_number), safelyExtractInt(segments.get(3)));
+                            i.putExtra(getString(R.string.intent_project_number),
+                                    safelyExtractInt(segments.get(3))
+                            );
                             final String path = getIntent().getDataString();
                             final StringBuilder id = new StringBuilder();
-                            for(int j = path.indexOf('#', path.indexOf(segments.get(3))) + 6; j < path.length(); j++) {
-                                if(path.charAt(j) >= '0' && path.charAt(j) <= '9') id.append(path.charAt(j));
+                            for(int j = path
+                                    .indexOf('#', path.indexOf(segments.get(3))) + 6; j < path
+                                    .length(); j++) {
+                                if(path.charAt(j) >= '0' && path.charAt(j) <= '9')
+                                    id.append(path.charAt(j));
                             }
                             try {
-                                i.putExtra(getString(R.string.intent_card_id), safelyExtractInt(id.toString()));
-                            } catch(Exception ignored) {}
+                                i.putExtra(getString(R.string.intent_card_id),
+                                        safelyExtractInt(id.toString())
+                                );
+                            } catch(Exception ignored) {
+                            }
 
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, IssueActivity.class);
-                            i.putExtra(getString(R.string.intent_issue_number), safelyExtractInt(segments.get(3)));
+                            i.putExtra(getString(R.string.intent_issue_number),
+                                    safelyExtractInt(segments.get(3))
+                            );
                             startActivity(i);
                             overridePendingTransition(R.anim.slide_up, R.anim.none);
                             finish();
                         } else if("milestone".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, MilestonesActivity.class);
-                            i.putExtra(getString(R.string.intent_milestone_number), safelyExtractInt(segments.get(3)));
+                            i.putExtra(getString(R.string.intent_milestone_number),
+                                    safelyExtractInt(segments.get(3))
+                            );
                             startActivity(i);
                             finish();
                         } else {
@@ -120,7 +138,9 @@ public class Interceptor extends Activity {
                     default:
                         if("tree".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, ContentActivity.class);
-                            i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
+                            i.putExtra(getString(R.string.intent_repo),
+                                    segments.get(0) + "/" + segments.get(1)
+                            );
                             final StringBuilder path = new StringBuilder();
                             for(int j = 3; j < segments.size(); j++) {
                                 path.append(segments.get(j));
@@ -144,7 +164,9 @@ public class Interceptor extends Activity {
                         } else if("milestone".equals(segments.get(2))) {
                             //TODO Deal with number and edit suffix
                             i.setClass(Interceptor.this, MilestoneActivity.class);
-                            i.putExtra(getString(R.string.intent_milestone_number), safelyExtractInt(segments.get(3)));
+                            i.putExtra(getString(R.string.intent_milestone_number),
+                                    safelyExtractInt(segments.get(3))
+                            );
                             startActivity(i);
                             finish();
                         } else {
@@ -217,7 +239,8 @@ public class Interceptor extends Activity {
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-            final List<ResolveInfo> resolvedInfo = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            final List<ResolveInfo> resolvedInfo = getPackageManager()
+                    .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
             if(!resolvedInfo.isEmpty()) {
                 final List<Intent> targetedShareIntents = new ArrayList<>();
@@ -230,9 +253,12 @@ public class Interceptor extends Activity {
                         targetedShareIntents.add(targetedShareIntent);
                     }
                 }
-                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), getString(R.string.text_interceptor_open_with));
+                final Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0),
+                        getString(R.string.text_interceptor_open_with)
+                );
                 if(targetedShareIntents.size() > 0) {
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[targetedShareIntents.size()]));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents
+                            .toArray(new Parcelable[targetedShareIntents.size()]));
                 }
                 return chooserIntent;
             }

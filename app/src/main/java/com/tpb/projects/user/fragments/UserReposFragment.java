@@ -12,11 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.RepositoriesAdapter;
 import com.tpb.projects.util.FixedLinearLayoutManger;

@@ -13,12 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.DataModel;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.Util;
 
@@ -104,7 +104,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     @Override
     public RepoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RepoHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_repo, parent, false));
+        return new RepoHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_repo, parent, false));
     }
 
     @SuppressLint("SetTextI18n")
@@ -113,7 +114,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         final int pos = holder.getAdapterPosition();
         final Repository r = mRepos.get(pos);
         holder.mName.setText(
-                (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r.isFork() ? " (Forked) " : "")
+                (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r
+                        .isFork() ? " (Forked) " : "")
         );
         if(!DataModel.JSON_NULL.equals(r.getLanguage())) {
             holder.mLanguage.setVisibility(View.VISIBLE);
@@ -234,14 +236,16 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             super(view);
             ButterKnife.bind(this, view);
             mDescription.setConsumeNonUrlClicks(false);
-            view.setOnClickListener((v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
+            view.setOnClickListener(
+                    (v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
             if(mIsShowingStars) {
                 mPin.setVisibility(View.GONE);
             } else {
                 mPin.setOnClickListener((v) -> {
                     togglePin(getAdapterPosition());
                     isPinned = !isPinned;
-                    mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+                    mPin.setImageResource(
+                            isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
                 });
             }
         }

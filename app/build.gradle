@@ -88,6 +88,7 @@ dependencies {
     compile project(':contributionsview')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile project(':markedview')
+    compile project(':gitapi')
 }
 
 def gitInfo() {
@@ -112,9 +113,10 @@ def gitInfo() {
     }
     return [commitCount: commitCount, revision: revision]
 }
+
 println(gitInfo())
 
 println(System.getenv("TRAVIS"))
-if(System.getenv("TRAVIS") != "true") {
+if (System.getenv("TRAVIS") != "true") {
     apply plugin: 'com.google.gms.google-services'
 }

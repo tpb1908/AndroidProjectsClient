@@ -32,11 +32,11 @@ public class RoundedBackgroundEndSpan extends ReplacementSpan {
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         mRectF = new RectF(x, top, x + mCharacterWidth, bottom);
         paint.setColor(mBgColor);
-        canvas.drawRoundRect(mRectF, (bottom-top), (bottom-top), paint);
+        canvas.drawRoundRect(mRectF, (bottom - top), (bottom - top), paint);
         if(mIsEndSpan) {
-            mRectF = new RectF(x , top, (x + x + mCharacterWidth)/2, bottom);
+            mRectF = new RectF(x, top, (x + x + mCharacterWidth) / 2, bottom);
         } else {
-            mRectF = new RectF((x + x + mCharacterWidth)/2, top, x + mCharacterWidth, bottom);
+            mRectF = new RectF((x + x + mCharacterWidth) / 2, top, x + mCharacterWidth, bottom);
         }
         canvas.drawRect(mRectF, paint);
     }

@@ -26,15 +26,15 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
@@ -91,7 +91,7 @@ public class IssueInfoFragment extends IssueFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_issue_info, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAccessLevel = ((IssueActivity)getActivity()).mAccessLevel;
+        mAccessLevel = ((IssueActivity) getActivity()).mAccessLevel;
         mEditor = new Editor(getContext());
         mAdapter = new IssueEventsAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
@@ -144,7 +144,8 @@ public class IssueInfoFragment extends IssueFragment {
                         ).toString()
                 ), new HtmlHttpImageGetter(mInfo, mInfo), null);
 
-        mUserAvatar.setOnClickListener(v -> IntentHandler.openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
+        mUserAvatar.setOnClickListener(v -> IntentHandler
+                .openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
         mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
         mImageState.setOnClickListener(v -> toggleIssueState());
         if(issue.isClosed()) {
@@ -160,7 +161,10 @@ public class IssueInfoFragment extends IssueFragment {
             mAssigneesLayout.setVisibility(View.VISIBLE);
             for(int i = 0; i < issue.getAssignees().length; i++) {
                 final User u = issue.getAssignees()[i];
-                final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.shard_user, null);
+                final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
+                                                                      .inflate(R.layout.shard_user,
+                                                                              null
+                                                                      );
                 user.setId(i);
                 mAssigneesLayout.addView(user);
                 final NetworkImageView imageView = ButterKnife.findById(user, R.id.user_avatar);
@@ -175,14 +179,17 @@ public class IssueInfoFragment extends IssueFragment {
                     us.putExtra(getString(R.string.intent_username), u.getLogin());
 
                     if(imageView.getDrawable() != null) {
-                        us.putExtra(getString(R.string.intent_drawable), ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                        us.putExtra(getString(R.string.intent_drawable),
+                                ((BitmapDrawable) imageView.getDrawable()).getBitmap()
+                        );
                     }
                     getActivity().startActivity(us,
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     getActivity(),
                                     new Pair<>(login, getString(R.string.transition_username)),
                                     new Pair<>(imageView, getString(R.string.transition_user_image))
-                            ).toBundle());
+                            ).toBundle()
+                    );
                 });
             }
         } else {
@@ -194,12 +201,16 @@ public class IssueInfoFragment extends IssueFragment {
         if(mIssue.getMilestone() != null) {
             mMilestoneCard.setVisibility(View.VISIBLE);
             final Milestone milestone = mIssue.getMilestone();
-            final HtmlTextView tv = ButterKnife.findById(mMilestoneCard, R.id.milestone_content_markdown);
+            final HtmlTextView tv = ButterKnife
+                    .findById(mMilestoneCard, R.id.milestone_content_markdown);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
-            final NetworkImageView user = ButterKnife.findById(mMilestoneCard, R.id.milestone_user_avatar);
-            IntentHandler.addOnClickHandler(getActivity(), tv, user, milestone.getCreator().getLogin());
+            final NetworkImageView user = ButterKnife
+                    .findById(mMilestoneCard, R.id.milestone_user_avatar);
+            IntentHandler
+                    .addOnClickHandler(getActivity(), tv, user, milestone.getCreator().getLogin());
             IntentHandler.addOnClickHandler(getActivity(), user, milestone.getCreator().getLogin());
-            status.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
+            status.setImageResource(milestone
+                    .getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
             user.setImageUrl(milestone.getCreator().getAvatarUrl());
 
             final StringBuilder builder = new StringBuilder();
@@ -213,7 +224,9 @@ public class IssueInfoFragment extends IssueFragment {
                 builder.append(String.format(getString(R.string.text_milestone_completion),
                         milestone.getOpenIssues(),
                         milestone.getClosedIssues(),
-                        Math.round(100f * milestone.getClosedIssues()/(milestone.getOpenIssues() + milestone.getClosedIssues())))
+                        Math.round(100f * milestone.getClosedIssues() / (milestone
+                                .getOpenIssues() + milestone.getClosedIssues()))
+                        )
                 );
             }
             builder.append("<br>");
@@ -221,7 +234,8 @@ public class IssueInfoFragment extends IssueFragment {
                     String.format(
                             getString(R.string.text_milestone_opened_by),
                             String.format(getString(R.string.text_href),
-                                    "https://github.com/" + mIssue.getMilestone().getCreator().getLogin(),
+                                    "https://github.com/" + mIssue.getMilestone().getCreator()
+                                                                  .getLogin(),
                                     mIssue.getMilestone().getCreator().getLogin()
                             ),
                             DateUtils.getRelativeTimeSpanString(milestone.getCreatedAt())
@@ -248,7 +262,8 @@ public class IssueInfoFragment extends IssueFragment {
             if(milestone.getDueOn() > 0) {
                 builder.append("<br>");
                 if(System.currentTimeMillis() < milestone.getDueOn() ||
-                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {
+                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone
+                                .getDueOn())) {
                     builder.append(
                             String.format(
                                     getString(R.string.text_milestone_due_on),
@@ -289,7 +304,8 @@ public class IssueInfoFragment extends IssueFragment {
                             if(u.equals(v)) matchCount++;
                         }
                     }
-                    if(matchCount != mIssue.getAssignees().length || matchCount != issue.getAssignees().length) {
+                    if(matchCount != mIssue.getAssignees().length || matchCount != issue
+                            .getAssignees().length) {
                         displayAssignees(issue);
                     }
                 }
@@ -306,7 +322,9 @@ public class IssueInfoFragment extends IssueFragment {
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
-                        mEditor.updateIssue(this, mIssue.getRepoFullName(), issue, assignees, labels);
+                        mEditor.updateIssue(this, mIssue.getRepoFullName(), issue, assignees,
+                                labels
+                        );
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mRefresher.setRefreshing(false);
@@ -329,7 +347,8 @@ public class IssueInfoFragment extends IssueFragment {
             @Override
             public void updated(Issue issue) {
                 mIssue = issue;
-                mImageState.setImageResource(mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
+                mImageState.setImageResource(
+                        mIssue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
             }
 
             @Override
@@ -375,7 +394,8 @@ public class IssueInfoFragment extends IssueFragment {
                 final String[] assignees;
                 final String[] labels;
                 if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
-                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                    assignees = data
+                            .getStringArrayExtra(getString(R.string.intent_issue_assignees));
                 } else {
                     assignees = null;
                 }
@@ -393,13 +413,15 @@ public class IssueInfoFragment extends IssueFragment {
     void onHeaderClick() {
         if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(mInfo);
     }
-    
+
     @OnClick(R.id.issue_menu_button)
     public void displayIssueMenu(View view) {
         final PopupMenu menu = new PopupMenu(getContext(), view);
         menu.inflate(R.menu.menu_issue);
         if(mAccessLevel == Repository.AccessLevel.ADMIN) {
-            menu.getMenu().add(0, 1, Menu.NONE, mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            menu.getMenu().add(0, 1, Menu.NONE,
+                    mIssue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue
+            );
             menu.getMenu().add(0, 2, Menu.NONE, R.string.menu_edit_issue);
         }
         menu.setOnMenuItemClickListener(menuItem -> {
@@ -435,22 +457,24 @@ public class IssueInfoFragment extends IssueFragment {
     private void checkSharedElementEntry() {
         final Intent i = getActivity().getIntent();
         if(i.hasExtra(getString(R.string.transition_card))) {
-            mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
-                    if(i.hasExtra(getString(R.string.intent_drawable))) {
-                        mUserAvatar.setImageBitmap(i.getParcelableExtra(getString(R.string.intent_drawable)));
-                    }
-                    getActivity().startPostponedEnterTransition();
-                    return true;
-                }
-            });
+            mHeader.getViewTreeObserver()
+                   .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                       @Override
+                       public boolean onPreDraw() {
+                           mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
+                           if(i.hasExtra(getString(R.string.intent_drawable))) {
+                               mUserAvatar.setImageBitmap(
+                                       i.getParcelableExtra(getString(R.string.intent_drawable)));
+                           }
+                           getActivity().startPostponedEnterTransition();
+                           return true;
+                       }
+                   });
         }
     }
 
     public void checkSharedElementExit() {
-        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
+//        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
 //            mCount.setVisibility(View.INVISIBLE);
 //            mTitle.setHtml(Spanner.bold(mIssue.getTitle()));
 //            mInfo.setHtml(
@@ -466,7 +490,7 @@ public class IssueInfoFragment extends IssueFragment {
 //                        ).toString()
 //                    )
 //            );
-        }
+//        }
     }
 
     @Override

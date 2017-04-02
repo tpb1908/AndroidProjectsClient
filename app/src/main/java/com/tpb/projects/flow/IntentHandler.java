@@ -10,11 +10,11 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.view.View;
 
+import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Milestone;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
-import com.tpb.projects.data.models.Commit;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
@@ -84,13 +84,19 @@ public class IntentHandler {
     }
 
     public static void addOnClickHandler(Activity activity, View view, Commit commit) {
-        view.setOnClickListener(v -> openCommit(activity, commit));
+        view.setOnClickListener(v -> openCommit(activity, v, commit));
     }
 
-    public static void openCommit(Activity activity, Commit commit) {
+    private static void openCommit(Activity activity, View view, Commit commit) {
         final Intent intent = new Intent(activity, CommitActivity.class);
         intent.putExtra(activity.getString(R.string.parcel_commit), commit);
-        activity.startActivity(intent);
+        intent.putExtra(activity.getString(R.string.transition_card), "");
+        activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity,
+                Pair.create(view, activity.getString(R.string.transition_card)),
+                UI.getSafeNavigationBarTransitionPair(activity)
+                ).toBundle()
+        );
     }
 
     private static void openIssue(Activity activity, View view, String url) {
@@ -106,7 +112,8 @@ public class IntentHandler {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     Pair.create(view, activity.getString(R.string.transition_card)),
-                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+                    UI.getSafeNavigationBarTransitionPair(activity)
+                    ).toBundle()
             );
         } else {
             UI.setViewPositionForIntent(i, view);
@@ -126,7 +133,8 @@ public class IntentHandler {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     Pair.create(view, activity.getString(R.string.transition_card)),
-                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+                    UI.getSafeNavigationBarTransitionPair(activity)
+                    ).toBundle()
             );
         } else {
             UI.setViewPositionForIntent(i, view);
@@ -149,8 +157,10 @@ public class IntentHandler {
     public static void openUser(Activity activity, NetworkImageView iv, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
-        if(iv.getDrawable() != null) {
-            i.putExtra(activity.getString(R.string.intent_drawable), ((BitmapDrawable) iv.getDrawable()).getBitmap());
+        if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
+            i.putExtra(activity.getString(R.string.intent_drawable),
+                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
+            );
         }
         activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 activity,

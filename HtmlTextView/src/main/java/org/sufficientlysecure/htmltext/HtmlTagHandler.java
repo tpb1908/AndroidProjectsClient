@@ -74,6 +74,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String FONT_TAG = "ESCAPED_FONT_TAG";
 
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
+
     static {
         ESCAPE_MAP.put("<ul", "<" + UNORDERED_LIST_TAG);
         ESCAPE_MAP.put("</ul>", "</" + UNORDERED_LIST_TAG + ">");
@@ -88,6 +89,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         ESCAPE_MAP.put("<font", "<" + FONT_TAG);
         ESCAPE_MAP.put("</font>", "</" + FONT_TAG + ">");
     }
+
     private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
 
     /**
@@ -151,14 +153,18 @@ public class HtmlTagHandler implements Html.TagHandler {
                 lists.push(
                         Pair.create(
                                 tag,
-                                safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"), true)
+                                safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
+                                        true
+                                )
                         )
                 );
             } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                 lists.push(
                         Pair.create(
                                 tag,
-                                safelyParseBoolean(getAttribute("numbered", xmlReader, "true"), true)
+                                safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
+                                        true
+                                )
                         )
                 );
                 olNextIndex.push(1);
@@ -215,6 +221,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final String font = getAttribute("face", xmlReader, "");
                 final String fgColor = getAttribute("color", xmlReader, "");
                 final String bgColor = getAttribute("bgcolor", xmlReader, "");
+                final boolean rounded = safelyParseBoolean(getAttribute("rounded", xmlReader, ""),
+                        false
+                );
                 if(font != null && !font.isEmpty()) {
                     start(output, new Font(font));
                 }
@@ -222,9 +231,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                     start(output, new ForegroundColor(fgColor));
                 }
                 if(bgColor != null && !bgColor.isEmpty()) {
-                    start(output, new BackgroundColor(bgColor));
+                    start(output, new BackgroundColor(bgColor, rounded));
                 }
-             }
+            }
         } else {
             // closing tag
             if(HtmlTextView.DEBUG) {
@@ -255,12 +264,16 @@ public class HtmlTagHandler implements Html.TagHandler {
                                 }
                             }
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                    new BulletSpan(bulletMargin));
+                                    new LeadingMarginSpan.Standard(
+                                            listItemIndent * (lists.size() - 1)),
+                                    new BulletSpan(bulletMargin)
+                            );
                         } else {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                    null);
+                                    new LeadingMarginSpan.Standard(
+                                            listItemIndent * (lists.size() - 1)),
+                                    null
+                            );
                         }
 
 
@@ -276,11 +289,13 @@ public class HtmlTagHandler implements Html.TagHandler {
                         if(lists.peek().second) {
                             end(output, Ol.class, false,
                                     new LeadingMarginSpan.Standard(numberMargin),
-                                    new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1));
+                                    new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1)
+                            );
                         } else {
                             end(output, Ol.class, false,
                                     new LeadingMarginSpan.Standard(numberMargin),
-                                    null);
+                                    null
+                            );
                         }
 
 
@@ -302,16 +317,20 @@ public class HtmlTagHandler implements Html.TagHandler {
                     output.replace(where + 1, len, " ");
                     final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
                     output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
                 }
-            }  else if(tag.equals("hr")) {
+            } else if(tag.equals("hr")) {
                 final Object obj = getLast(output, HorizontalRule.class);
                 final int where = output.getSpanStart(obj);
                 output.removeSpan(obj); //Remove the old span
                 output.replace(where, output.length(), " "); //We need a non-empty span
                 output.setSpan(new HorizontalRuleSpan(), where, where + 1, 0); //Insert the bar span
             } else if(tag.equalsIgnoreCase("center")) {
-                end(output, Center.class, true, new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER));
+                end(output, Center.class, true,
+                        new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER)
+                );
             } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
                 end(output, Strike.class, false, new StrikethroughSpan());
             } else if(tag.equalsIgnoreCase("table")) {
@@ -358,14 +377,18 @@ public class HtmlTagHandler implements Html.TagHandler {
                 int len = output.length();
                 output.removeSpan(obj);
                 if(isValidURL(obj.href)) {
-                    output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len,
+                            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    );
                 }
             } else if(tag.equalsIgnoreCase("inlinecode")) {
                 final InlineCode obj = getLast(output, InlineCode.class);
                 final int where = output.getSpanStart(obj);
                 final int len = output.length();
                 output.removeSpan(obj);
-                output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
             } else if(tag.equalsIgnoreCase(FONT_TAG)) {
                 final ForegroundColor fgc = getLast(output, ForegroundColor.class);
                 final BackgroundColor bgc = getLast(output, BackgroundColor.class);
@@ -375,19 +398,32 @@ public class HtmlTagHandler implements Html.TagHandler {
                     final int len = output.length();
                     output.removeSpan(fgc);
                     output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), where, len,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
                 }
                 if(bgc != null) {
                     final int where = output.getSpanStart(bgc);
                     final int len = output.length();
                     output.removeSpan(bgc);
-                    output.insert(len, " ");
-                    output.insert(where, " ");
+
                     final int color = safelyParseColor(bgc.color);
-                    output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    output.setSpan(new BackgroundColorSpan(color), where+1, len,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    if(bgc.rounded) {
+                        output.insert(len, " ");
+                        output.insert(where, " ");
+                        output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where + 1,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
+                        output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len + 1,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
+                        output.setSpan(new BackgroundColorSpan(color), where + 1, len,
+                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        );
+                    } else {
+                        output.setSpan(new BackgroundColorSpan(color), where, len,
+                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        );
+                    }
 
                 }
                 if(f != null) {
@@ -395,7 +431,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                     final int len = output.length();
                     output.removeSpan(f);
                     output.setSpan(new TypefaceSpan(f.face), where, len,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
                 }
             }
         }
@@ -617,11 +654,14 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static class Td {
     }
 
-    private static class HorizontalRule {}
+    private static class HorizontalRule {
+    }
 
-    private static class BlockQuote {}
+    private static class BlockQuote {
+    }
 
-    private static class InlineCode {}
+    private static class InlineCode {
+    }
 
     private static class A {
 
@@ -644,9 +684,11 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static class BackgroundColor {
         String color;
+        boolean rounded;
 
-        BackgroundColor(String color) {
+        BackgroundColor(String color, boolean rounded) {
             this.color = color;
+            this.rounded = rounded;
         }
     }
 

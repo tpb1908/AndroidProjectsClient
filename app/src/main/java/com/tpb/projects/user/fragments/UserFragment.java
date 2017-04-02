@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 
 /**
@@ -32,7 +32,8 @@ public abstract class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.parcel_user))) {
+        if(savedInstanceState != null && savedInstanceState
+                .containsKey(getString(R.string.parcel_user))) {
             mUser = savedInstanceState.getParcelable(getString(R.string.parcel_user));
             userLoaded(mUser);
         }

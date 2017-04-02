@@ -1,6 +1,6 @@
 package com.tpb.projects.user.fragments;
 
-import com.tpb.projects.data.models.User;
+import com.tpb.github.data.models.User;
 
 /**
  * Created by theo on 10/03/17.

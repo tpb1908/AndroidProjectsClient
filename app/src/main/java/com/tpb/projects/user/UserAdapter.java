@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.NetworkImageView;
 
@@ -106,7 +106,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
 
     @Override
     public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new UserHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_user, parent, false));
+        return new UserHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_user, parent, false));
     }
 
     @Override

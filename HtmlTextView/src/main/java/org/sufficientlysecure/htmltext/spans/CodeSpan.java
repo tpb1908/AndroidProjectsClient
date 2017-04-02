@@ -43,7 +43,7 @@ public class CodeSpan extends ReplacementSpan {
         final int ls = code.indexOf('[');
         final int le = code.indexOf(']');
         if(ls != -1 && le != -1 && le - ls > 0 && le < code.indexOf("\n")) {
-            mLanguage = code.substring(ls+1, le);
+            mLanguage = code.substring(ls + 1, le);
             mCode = code.substring(le + 1);
         } else {
             mCode = code;
@@ -58,27 +58,32 @@ public class CodeSpan extends ReplacementSpan {
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-        paint.setTextSize(paint.getTextSize()-1);
+        paint.setTextSize(paint.getTextSize() - 1);
         final int textHeight = paint.getFontMetricsInt().descent - paint.getFontMetricsInt().ascent;
 
         int offset = 5;
         if(mCodeBM != null) offset += mCodeBM.getWidth();
 
-        final int textStart = top + textHeight/4;
+        final int textStart = top + textHeight / 4;
 
         if(mLanguage != null && !mLanguage.isEmpty()) {
             mLanguage = mLanguage.substring(0, 1).toUpperCase() + mLanguage.substring(1);
-            canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + offset, textStart, paint);
+            canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + offset, textStart,
+                    paint
+            );
         } else {
-            canvas.drawText(mNoLanguageString,  x + offset, textStart, paint);
+            canvas.drawText(mNoLanguageString, x + offset, textStart, paint);
         }
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(4);
-        canvas.drawRoundRect(new RectF(x, top + top - bottom, x + canvas.getWidth(), bottom), 7, 7, paint);
+        canvas.drawRoundRect(new RectF(x, top + top - bottom, x + canvas.getWidth(), bottom), 7, 7,
+                paint
+        );
 
         if(mCodeBM != null) {
-            if(mBMFilter == null) mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
+            if(mBMFilter == null)
+                mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
             paint.setColorFilter(mBMFilter);
             canvas.drawBitmap(mCodeBM, x, textStart - textHeight, paint);
         }
@@ -91,7 +96,8 @@ public class CodeSpan extends ReplacementSpan {
     public static void initialise(Context context) {
         final Drawable drawable = context.getResources().getDrawable(R.drawable.ic_code);
         final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888
+        );
         final Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

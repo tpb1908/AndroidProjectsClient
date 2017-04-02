@@ -72,7 +72,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
 
-    private float[] mLastClickPosition = new float[] { -1, -1};
+    private float[] mLastClickPosition = new float[] {-1, -1};
 
     private WeakReference<SpanCache> mSpanCache;
 
@@ -150,7 +150,9 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlTextView.this, mLinkHandler, mCodeHandler);
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlTextView.this,
+                        mLinkHandler, mCodeHandler
+                );
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
@@ -160,13 +162,19 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                 final Spanned text;
                 if(removeFromHtmlSpace) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        text = removeHtmlBottomPadding(Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter, htmlTagHandler));
+                        text = removeHtmlBottomPadding(
+                                Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                        htmlTagHandler
+                                ));
                     } else {
-                        text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+                        text = removeHtmlBottomPadding(
+                                Html.fromHtml(overridden, imageGetter, htmlTagHandler));
                     }
                 } else {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        text = Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter, htmlTagHandler);
+                        text = Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                htmlTagHandler
+                        );
                     } else {
                         text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
                     }
@@ -200,7 +208,8 @@ public class HtmlTextView extends JellyBeanSpanFixTextView implements HtmlHttpIm
                         setText(buffer);
                         // make links work
                         setMovementMethod(LocalLinkMovementMethod.getInstance());
-                        if(mSpanCache != null && mSpanCache.get() != null) mSpanCache.get().cache(buffer);
+                        if(mSpanCache != null && mSpanCache.get() != null)
+                            mSpanCache.get().cache(buffer);
                         mSpanCache = null;
                     }
                 });

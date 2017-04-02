@@ -109,7 +109,9 @@ public class HtmlHttpImageGetter implements ImageGetter {
             source = params[0];
             synchronized(cache) {
                 Map.Entry<String, Pair<Drawable, Long>> entry;
-                for(Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet().iterator(); it.hasNext();) {
+                for(Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet()
+                                                                                .iterator(); it
+                            .hasNext(); ) {
                     entry = it.next();
                     if(System.currentTimeMillis() > entry.getValue().second + 60000) {
                         it.remove();
@@ -121,7 +123,7 @@ public class HtmlHttpImageGetter implements ImageGetter {
                         // The drawable is still being accesses, so we update it
                         fetchDrawable(resources.get(), source);
                     }
-                   return cache.get(source).first.getConstantState().newDrawable();
+                    return cache.get(source).first.getConstantState().newDrawable();
                 }
             }
 
@@ -146,7 +148,9 @@ public class HtmlHttpImageGetter implements ImageGetter {
             setDrawableScale(result);
 
             // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * scale), (int) (result.getIntrinsicHeight() * scale));
+            urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * scale),
+                    (int) (result.getIntrinsicHeight() * scale)
+            );
 
             // change the reference of the current drawable to the result from the HTTP call
             urlDrawable.drawable = result;
@@ -187,7 +191,9 @@ public class HtmlHttpImageGetter implements ImageGetter {
 
         private void setDrawableScale(Drawable drawable) {
             scale = getScale(drawable);
-            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale), (int) (drawable.getIntrinsicHeight() * scale));
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale),
+                    (int) (drawable.getIntrinsicHeight() * scale)
+            );
         }
 
         private float getScale(Drawable drawable) {

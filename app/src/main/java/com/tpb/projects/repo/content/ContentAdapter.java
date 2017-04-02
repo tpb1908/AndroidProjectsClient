@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.FileLoader;
-import com.tpb.projects.data.models.content.Node;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Util;
 
@@ -47,7 +47,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     @Override
     public NodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new NodeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_node, parent, false));
+        return new NodeViewHolder(LayoutInflater.from(parent.getContext())
+                                                .inflate(R.layout.viewholder_node, parent, false));
     }
 
     @Override
@@ -58,10 +59,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             holder.mText.setText(mCurrentNodes.get(position).getName());
         }
         if(mCurrentNodes.get(position).getType() == Node.NodeType.FILE) {
-            holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
+            holder.mText
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
             holder.mSize.setText(Util.formatBytes(mCurrentNodes.get(position).getSize()));
         } else {
-            holder.mText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
+            holder.mText
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
             holder.mSize.setText("");
         }
 
@@ -119,7 +122,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         } else if(node.getType() == Node.NodeType.SUBMODULE) {
             final Intent i = new Intent(mParent, RepoActivity.class);
             String path = node.getHtmlUrl();
-            path = path .substring(path.indexOf("com/") + 4, path.indexOf("/tree"));
+            path = path.substring(path.indexOf("com/") + 4, path.indexOf("/tree"));
             i.putExtra(mParent.getString(R.string.intent_repo), path);
             mParent.startActivity(i);
             //TODO Open the submodule in another instance
