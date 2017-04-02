@@ -16,13 +16,13 @@ import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
-import com.tpb.projects.util.CircularRevealActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.mdtext.Markdown;
+import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
     @BindView(R.id.milestone_issues_recycler) RecyclerView mRecycler;
     @BindView(R.id.milestone_user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.milestone_drawable) ImageView mStateImage;
-    @BindView(R.id.milestone_content_markdown) HtmlTextView mContent;
+    @BindView(R.id.milestone_content_markdown) MarkdownTextView mContent;
 
     private String mRepo;
 
@@ -155,7 +155,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
                 builder.append("</font>");
             }
         }
-        mContent.setHtml(Markdown.formatMD(builder.toString(), mRepo, true));
+        mContent.setMarkdown(Markdown.formatMD(builder.toString(), mRepo, true));
     }
 
     @Override

@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.view.animation.Transformation;
 
 import com.tpb.projects.R;
+import com.tpb.projects.common.CircularRevealActivity;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -65,7 +66,7 @@ public class UI {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        // Older versions of android (pre API 21) cancel animations for com.tpb.mdtext.views with a height of 0.
         v.getLayoutParams().height = 1;
         v.setVisibility(View.VISIBLE);
         final android.view.animation.Animation a = new android.view.animation.Animation() {

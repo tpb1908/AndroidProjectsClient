@@ -80,11 +80,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.google.firebase:firebase-core:10.2.0'
     compile 'com.google.firebase:firebase-crash:10.2.0'
-    compile 'com.atlassian.commonmark:commonmark:0.8.0'
-    compile 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
-    compile 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.8.0'
-    compile 'com.vdurmont:emoji-java:3.2.0'
-    compile project(':HtmlTextView')
+
+
+    compile project(':markdowntextview')
     compile project(':contributionsview')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile project(':markedview')

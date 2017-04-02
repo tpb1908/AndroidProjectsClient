@@ -76,7 +76,7 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <com.tpb.projects.util.fab.FloatingActionButton
+    <com.tpb.projects.common.fab.FloatingActionButton
         android:id="@+id/milestones_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

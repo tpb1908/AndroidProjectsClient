@@ -28,18 +28,18 @@ import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.views.MarkdownEditText;
+import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,11 +61,11 @@ public class IssueEditor extends EditorActivity {
     public static final int REQUEST_CODE_ISSUE_FROM_CARD = 9836;
 
     @BindView(R.id.issue_title_edit) EditText mTitleEdit;
-    @BindView(R.id.issue_body_edit) HtmlEditText mBodyEdit;
+    @BindView(R.id.issue_body_edit) MarkdownEditText mBodyEdit;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
-    @BindView(R.id.issue_labels_text) HtmlTextView mLabelsText;
-    @BindView(R.id.issue_assignees_text) HtmlTextView mAssigneesText;
+    @BindView(R.id.issue_labels_text) MarkdownTextView mLabelsText;
+    @BindView(R.id.issue_assignees_text) MarkdownTextView mAssigneesText;
     @BindView(R.id.issue_information_layout) View mInfoLayout;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     private KeyBoardVisibilityChecker mKeyBoardChecker;
@@ -197,9 +197,9 @@ public class IssueEditor extends EditorActivity {
                             String repo = null;
                             if(mLaunchIssue != null) repo = mLaunchIssue.getRepoFullName();
                             mBodyEdit.disableEditing();
-                            mBodyEdit.setHtml(
-                                    Markdown.parseMD(mBodyEdit.getInputText().toString(), repo),
-                                    new HtmlHttpImageGetter(mBodyEdit, mBodyEdit)
+                            mBodyEdit.setMarkdown(
+                                    Markdown.formatMD(mBodyEdit.getInputText().toString(), repo),
+                                    new HttpImageGetter(mBodyEdit, mBodyEdit)
                             );
                             mInfoLayout.setVisibility(View.GONE);
                         } else {
@@ -338,7 +338,7 @@ public class IssueEditor extends EditorActivity {
         }
         if(builder.length() > 0) {
             mAssigneesText.setVisibility(View.VISIBLE);
-            mAssigneesText.setHtml(builder.toString());
+            mAssigneesText.setMarkdown(builder.toString());
         } else {
             mAssigneesText.setVisibility(View.GONE);
         }
@@ -357,7 +357,7 @@ public class IssueEditor extends EditorActivity {
         builder.append("</ul>");
         if(builder.length() > 0) {
             mLabelsText.setVisibility(View.VISIBLE);
-            mLabelsText.setHtml(builder.toString());
+            mLabelsText.setMarkdown(builder.toString());
         } else {
             mLabelsText.setVisibility(View.GONE);
         }

@@ -16,14 +16,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
-        <com.tpb.projects.util.NetworkImageView
+        <com.tpb.projects.common.NetworkImageView
             android:id="@+id/event_comment_avatar"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
             android:layout_alignParentStart="true"/>
 
-        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+        <com.tpb.mdtext.views.MarkdownTextView
             android:id="@+id/comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

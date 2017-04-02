@@ -30,7 +30,7 @@ import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
 import com.tpb.projects.user.fragments.UserStarsFragment;
-import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 

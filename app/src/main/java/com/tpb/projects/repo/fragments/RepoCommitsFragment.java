@@ -20,7 +20,7 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoCommitsAdapter;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;

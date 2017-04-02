@@ -34,22 +34,21 @@ import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.github.data.models.User;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssueEventsAdapter;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
-
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,8 +69,8 @@ public class IssueInfoFragment extends IssueFragment {
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
     @BindView(R.id.issue_user_avatar) NetworkImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
-    @BindView(R.id.issue_title) HtmlTextView mTitle;
-    @BindView(R.id.issue_info) HtmlTextView mInfo;
+    @BindView(R.id.issue_title) MarkdownTextView mTitle;
+    @BindView(R.id.issue_info) MarkdownTextView mInfo;
     @BindView(R.id.issue_events_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.viewholder_milestone_card) CardView mMilestoneCard;
 
@@ -130,19 +129,18 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayIssue(Issue issue) {
-        mTitle.setHtml(Spanner.header(issue.getTitle(), 1));
-        mInfo.setHtml(
-                Markdown.parseMD(
-                        Spanner.buildIssueSpan(
-                                getContext(),
-                                issue,
-                                false, //Header title
-                                false, //No numbered link
-                                false, //No assignees
-                                true, //Closed at
-                                false //No comment count
-                        ).toString()
-                ), new HtmlHttpImageGetter(mInfo, mInfo), null);
+        mTitle.setMarkdown(Spanner.header(issue.getTitle(), 1));
+        mInfo.setMarkdown(
+                Spanner.buildIssueSpan(
+                        getContext(),
+                        issue,
+                        false, //Header title
+                        false, //No numbered link
+                        false, //No assignees
+                        true, //Closed at
+                        false //No comment count
+                ).toString(),
+                new HttpImageGetter(mInfo, mInfo), null);
 
         mUserAvatar.setOnClickListener(v -> IntentHandler
                 .openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
@@ -201,7 +199,7 @@ public class IssueInfoFragment extends IssueFragment {
         if(mIssue.getMilestone() != null) {
             mMilestoneCard.setVisibility(View.VISIBLE);
             final Milestone milestone = mIssue.getMilestone();
-            final HtmlTextView tv = ButterKnife
+            final MarkdownTextView tv = ButterKnife
                     .findById(mMilestoneCard, R.id.milestone_content_markdown);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
             final NetworkImageView user = ButterKnife
@@ -283,7 +281,7 @@ public class IssueInfoFragment extends IssueFragment {
                     builder.append("</font>");
                 }
             }
-            tv.setHtml(Markdown.formatMD(builder.toString(), mIssue.getRepoFullName()));
+            tv.setMarkdown(Markdown.formatMD(builder.toString(), mIssue.getRepoFullName()));
 
         } else {
             mMilestoneCard.setVisibility(View.GONE);
@@ -476,8 +474,8 @@ public class IssueInfoFragment extends IssueFragment {
     public void checkSharedElementExit() {
 //        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
 //            mCount.setVisibility(View.INVISIBLE);
-//            mTitle.setHtml(Spanner.bold(mIssue.getTitle()));
-//            mInfo.setHtml(
+//            mTitle.setMarkdown(Spanner.bold(mIssue.getTitle()));
+//            mInfo.setMarkdown(
 //                    Markdown.parseMD(
 //                        Spanner.buildIssueSpan(
 //                            getContext(),

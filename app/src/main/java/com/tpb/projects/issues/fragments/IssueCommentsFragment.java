@@ -27,7 +27,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.IssueCommentsAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

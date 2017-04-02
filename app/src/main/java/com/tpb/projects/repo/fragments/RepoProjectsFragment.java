@@ -23,8 +23,8 @@ import com.tpb.projects.editors.ProjectEditor;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoProjectsAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.fab.FabHideScrollListener;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FabHideScrollListener;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

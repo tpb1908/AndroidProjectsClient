@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
+import com.tpb.projects.common.BaseActivity;
 
 
 /**

@@ -55,7 +55,7 @@
 
     </android.support.v4.view.ViewPager>
 
-    <com.tpb.projects.util.fab.FloatingActionButton
+    <com.tpb.projects.common.fab.FloatingActionButton
         android:id="@+id/commit_comment_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

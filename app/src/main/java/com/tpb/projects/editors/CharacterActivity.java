@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tpb.projects.R;
-import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 

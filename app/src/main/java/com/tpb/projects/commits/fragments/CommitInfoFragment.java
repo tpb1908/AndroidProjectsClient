@@ -18,13 +18,13 @@ import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
-import com.tpb.projects.util.FixedLinearLayoutManger;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.FixedLinearLayoutManger;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.Util;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.Date;
 
@@ -41,9 +41,9 @@ public class CommitInfoFragment extends CommitFragment {
     private Unbinder unbinder;
 
     @BindView(R.id.commit_header_card) View mHeader;
-    @BindView(R.id.commit_title) HtmlTextView mTitle;
+    @BindView(R.id.commit_title) MarkdownTextView mTitle;
     @BindView(R.id.commit_user_avatar) NetworkImageView mAvatar;
-    @BindView(R.id.commit_info) HtmlTextView mInfo;
+    @BindView(R.id.commit_info) MarkdownTextView mInfo;
     @BindView(R.id.commit_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.commit_info_scrollview) NestedScrollView mScrollView;
     @BindView(R.id.commit_diff_recycler) AnimatingRecyclerView mRecyclerView;
@@ -89,7 +89,7 @@ public class CommitInfoFragment extends CommitFragment {
     public void commitLoaded(Commit commit) {
         mCommit = commit;
         if(!mAreViewsValid) return;
-        mTitle.setHtml(Spanner.bold(Markdown.escape(mCommit.getMessage())));
+        mTitle.setMarkdown(Spanner.bold(Markdown.escape(mCommit.getMessage())));
         final String user;
         if(mCommit.getCommitter() != null) {
             mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
@@ -124,7 +124,7 @@ public class CommitInfoFragment extends CommitFragment {
                                             new Date(mCommit.getCreatedAt())
                                     )
                             );
-            mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));
+            mInfo.setMarkdown(Markdown.formatMD(builder, mCommit.getFullRepoName()));
             mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
         }

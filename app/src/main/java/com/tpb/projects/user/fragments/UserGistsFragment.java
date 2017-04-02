@@ -16,7 +16,7 @@ import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.GistsAdapter;
-import com.tpb.projects.util.FixedLinearLayoutManger;
+import com.tpb.projects.common.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

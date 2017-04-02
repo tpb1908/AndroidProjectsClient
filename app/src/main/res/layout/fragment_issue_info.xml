@@ -48,14 +48,14 @@
                             android:layout_gravity="top"
                             android:contentDescription="@string/content_description_issue_state"/>
 
-                        <com.tpb.projects.util.NetworkImageView
+                        <com.tpb.projects.common.NetworkImageView
                             android:id="@+id/issue_user_avatar"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="top"
                             android:layout_marginStart="4dp"/>
 
-                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                        <com.tpb.mdtext.views.MarkdownTextView
                             android:id="@+id/issue_title"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                     </LinearLayout>
 
 
-                    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                    <com.tpb.mdtext.views.MarkdownTextView
                         android:id="@+id/issue_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -47,7 +47,7 @@
             android:layout_margin="16dp">
 
 
-            <com.tpb.projects.util.NetworkImageView
+            <com.tpb.projects.common.NetworkImageView
                 android:id="@+id/user_avatar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

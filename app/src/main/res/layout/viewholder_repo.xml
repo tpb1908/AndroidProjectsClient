@@ -27,7 +27,7 @@
         android:layout_toEndOf="@+id/repo_pin_button"
         android:textAppearance="@android:style/TextAppearance.Material.Large"/>
 
-    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+    <com.tpb.mdtext.views.MarkdownTextView
         android:id="@+id/repo_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

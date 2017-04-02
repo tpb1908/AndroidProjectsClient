@@ -26,8 +26,8 @@ import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.BaseActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.BaseActivity;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;

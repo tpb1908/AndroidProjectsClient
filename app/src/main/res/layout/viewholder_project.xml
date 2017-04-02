@@ -34,7 +34,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"/>
 
-    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+    <com.tpb.mdtext.views.MarkdownTextView
         android:id="@+id/project_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

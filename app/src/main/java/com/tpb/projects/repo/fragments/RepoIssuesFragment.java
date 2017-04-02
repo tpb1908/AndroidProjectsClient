@@ -33,10 +33,10 @@ import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.fab.FabHideScrollListener;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FabHideScrollListener;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -310,9 +310,9 @@ public class RepoIssuesFragment extends RepoFragment {
         final Loader loader = new Loader(getContext());
         loader.loadLabels(null, issue.getRepoFullName());
         loader.loadCollaborators(null, issue.getRepoFullName());
-        if(view instanceof HtmlTextView) {
+        if(view instanceof MarkdownTextView) {
             UI.setClickPositionForIntent(getActivity(), intent,
-                    ((HtmlTextView) view).getLastClickPosition()
+                    ((MarkdownTextView) view).getLastClickPosition()
             );
         } else {
             UI.setViewPositionForIntent(intent, view);

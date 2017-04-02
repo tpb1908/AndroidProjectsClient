@@ -26,17 +26,17 @@ import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.views.MarkdownEditText;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class CardEditor extends EditorActivity {
     public static final int REQUEST_CODE_NEW_CARD = 1606;
     public static final int REQUEST_CODE_EDIT_CARD = 7180;
 
-    @BindView(R.id.card_note_edit) HtmlEditText mEditor;
+    @BindView(R.id.card_note_edit) MarkdownEditText mEditor;
     @BindView(R.id.card_from_issue_button) Button mIssueButton;
     @BindView(R.id.card_clear_issue_button) Button mClearButton;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
@@ -115,9 +115,9 @@ public class CardEditor extends EditorActivity {
                         if(mEditor.isEditing()) {
                             mEditor.saveText();
                             mEditor.disableEditing();
-                            mEditor.setHtml(
-                                    Markdown.parseMD(mEditor.getInputText().toString(), null),
-                                    new HtmlHttpImageGetter(mEditor, mEditor)
+                            mEditor.setMarkdown(
+                                    Markdown.formatMD(mEditor.getInputText().toString(), null),
+                                    new HttpImageGetter(mEditor, mEditor)
                             );
                         } else {
                             mEditor.restoreText();
@@ -160,10 +160,9 @@ public class CardEditor extends EditorActivity {
     }
 
     private void bindIssue(Issue issue) {
-        mEditor.setHtml(
-                Markdown.parseMD(Spanner.buildIssueSpan(this, issue, true, true, true, true, false)
-                                        .toString()),
-                new HtmlHttpImageGetter(mEditor, mEditor)
+        mEditor.setMarkdown(Spanner.buildIssueSpan(this, issue, true, true, true, true, false)
+                                        .toString(),
+                new HttpImageGetter(mEditor, mEditor)
         );
 
     }

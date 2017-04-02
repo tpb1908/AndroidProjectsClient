@@ -23,17 +23,16 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.NetworkImageView;
-
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.projects.common.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -290,12 +289,12 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         holder.mTitleLayout.setVisibility(View.GONE);
         if(mCards.get(pos).second == null) {
             final Card card = mCards.get(pos).first;
-            holder.mText.setHtml(
-                    Markdown.parseMD(
+            holder.mText.setMarkdown(
+                    Markdown.formatMD(
                             card.getNote(),
                             mParent.mParent.mProject.getRepoPath()
                     ),
-                    new HtmlHttpImageGetter(holder.mText, holder.mText),
+                    new HttpImageGetter(holder.mText, holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );
         } else {
@@ -325,21 +324,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         );
         holder.mTitleLayout.setVisibility(View.VISIBLE);
 
-        holder.mTitle.setHtml(Spanner.bold(card.getIssue().getTitle()));
+        holder.mTitle.setMarkdown(Spanner.bold(card.getIssue().getTitle()));
         if(mCards.get(pos).second == null) {
-            holder.mText.setHtml(
-                    Markdown.parseMD(
-                            Spanner.buildIssueSpan(
-                                    holder.itemView.getContext(),
-                                    card.getIssue(),
-                                    false,
-                                    true,
-                                    true,
-                                    true,
-                                    true
-                            ).toString()
-                    ),
-                    new HtmlHttpImageGetter(holder.mText, holder.mText),
+            holder.mText.setMarkdown(
+                    Spanner.buildIssueSpan(
+                            holder.itemView.getContext(),
+                            card.getIssue(),
+                            false,
+                            true,
+                            true,
+                            true,
+                            true
+                    ).toString(),
+                    new HttpImageGetter(holder.mText, holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );
         } else {
@@ -355,8 +352,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
     class CardHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.card_markdown) HtmlTextView mText;
-        @BindView(R.id.card_title) HtmlTextView mTitle;
+        @BindView(R.id.card_markdown) MarkdownTextView mText;
+        @BindView(R.id.card_title) MarkdownTextView mTitle;
         @BindView(R.id.card_issue_progress) ProgressBar mSpinner;
         @BindView(R.id.viewholder_card) CardView mCardView;
         @BindView(R.id.card_menu_button) View mMenuButton;

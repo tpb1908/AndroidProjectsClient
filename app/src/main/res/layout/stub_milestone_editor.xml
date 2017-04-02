@@ -29,7 +29,7 @@
         android:layout_margin="8dp"
         android:hint="@string/hint_milestone_description">
 
-        <org.sufficientlysecure.htmltext.htmledittext.HtmlEditText
+        <com.tpb.mdtext.views.MarkdownEditText
             android:id="@+id/milestone_description_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

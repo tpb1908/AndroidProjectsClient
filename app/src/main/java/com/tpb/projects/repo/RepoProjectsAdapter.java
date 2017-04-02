@@ -17,13 +17,11 @@ import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
-
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,9 +118,9 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         );
         if(!(DataModel.JSON_NULL.equals(p.getBody()) || p.getBody().isEmpty())) {
             holder.mBody.setVisibility(View.VISIBLE);
-            holder.mBody.setHtml(
-                    Markdown.parseMD(mProjects.get(holder.getAdapterPosition()).getBody()),
-                    new HtmlHttpImageGetter(holder.mBody, holder.mBody),
+            holder.mBody.setMarkdown(
+                    mProjects.get(holder.getAdapterPosition()).getBody(),
+                    new HttpImageGetter(holder.mBody, holder.mBody),
                     null
             );
         }
@@ -151,7 +149,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
         @BindView(R.id.project_name) TextView mName;
         @BindView(R.id.project_last_updated) TextView mLastUpdate;
-        @BindView(R.id.project_body) HtmlTextView mBody;
+        @BindView(R.id.project_body) MarkdownTextView mBody;
         @BindView(R.id.project_menu_button) ImageButton mMenu;
 
         ProjectViewHolder(View view) {

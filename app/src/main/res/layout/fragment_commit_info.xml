@@ -42,7 +42,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_marginBottom="4dp">
 
-                        <com.tpb.projects.util.NetworkImageView
+                        <com.tpb.projects.common.NetworkImageView
                             android:id="@+id/commit_user_avatar"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -50,7 +50,7 @@
                             android:layout_marginStart="4dp"
                             />
 
-                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                        <com.tpb.mdtext.views.MarkdownTextView
                             android:id="@+id/commit_title"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
 
                     </LinearLayout>
 
-                    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                    <com.tpb.mdtext.views.MarkdownTextView
                         android:id="@+id/commit_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

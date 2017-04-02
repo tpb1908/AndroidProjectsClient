@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp">
 
-    <com.tpb.projects.util.NetworkImageView
+    <com.tpb.projects.common.NetworkImageView
         android:id="@+id/gist_user_avatar"
         android:layout_width="32dp"
         android:layout_height="32dp"

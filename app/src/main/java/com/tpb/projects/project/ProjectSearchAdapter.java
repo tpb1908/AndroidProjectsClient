@@ -3,8 +3,6 @@ package com.tpb.projects.project;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import android.widget.TextView;
 import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Label;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.search.ArrayFilter;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
 
@@ -29,14 +26,12 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private static final String TAG = ProjectSearchAdapter.class.getSimpleName();
 
     private final ArrayList<Card> data;
-    private final Spanned[] parseCache;
     private ArrayFilter<Card> mFilter;
     private final FuzzyStringSearcher mSearcher;
 
     public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
         super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
-        parseCache = new Spanned[data.size()];
         final ArrayList<String> strings = new ArrayList<>();
         String s;
         for(Card c : data) {
@@ -86,29 +81,27 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
     }
 
     private void bindView(int pos, View view) {
-        final int dataPos = data.indexOf(mFilter.getFiltered().get(pos));
-        if(parseCache[dataPos] == null) {
-            if(data.get(dataPos).hasIssue()) {
-                parseCache[dataPos] = Html.fromHtml(
-                        " #" + data.get(dataPos).getIssue().getNumber() + " " + Markdown
-                                .parseMD(data.get(dataPos).getIssue().getTitle()));
-            } else {
-                parseCache[dataPos] = Html
-                        .fromHtml(Markdown.formatMD(data.get(dataPos).getNote(), null));
-            }
+        final int dp = data.indexOf(mFilter.getFiltered().get(pos));
+        final String text;
+        if(data.get(dp).hasIssue()) {
+            text = " #" + data.get(dp).getIssue().getNumber() + " " + data.get(dp).getIssue()
+                                                                          .getTitle();
+        } else {
+            text = data.get(dp).getNote();
         }
-        if(data.get(dataPos).hasIssue()) {
+
+        if(data.get(dp).hasIssue()) {
             ((TextView) view.findViewById(R.id.suggestion_text))
-                    .setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dataPos).getIssue()
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dp).getIssue()
                                                                          .isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open,
                             0, 0, 0
                     );
-            ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setText(text);
         } else {
             ((TextView) view.findViewById(R.id.suggestion_text))
                     .setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             //Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
-            ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
+            ((TextView) view.findViewById(R.id.suggestion_text)).setText(text);
         }
     }
 

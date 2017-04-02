@@ -17,6 +17,7 @@ import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.User;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.R;
 
 /**

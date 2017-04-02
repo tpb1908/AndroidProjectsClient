@@ -20,7 +20,7 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 

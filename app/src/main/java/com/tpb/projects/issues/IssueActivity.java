@@ -26,11 +26,11 @@ import com.tpb.projects.R;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
-import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

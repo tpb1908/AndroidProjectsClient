@@ -25,9 +25,9 @@ import com.tpb.projects.R;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import java.util.List;
 import java.util.Locale;

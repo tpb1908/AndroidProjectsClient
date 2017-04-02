@@ -13,7 +13,7 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
