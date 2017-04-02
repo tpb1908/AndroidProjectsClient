@@ -50,12 +50,12 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.ShortcutDialog;
+import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.fab.FloatingActionButton;
-import com.tpb.projects.util.fab.FloatingActionMenu;
+import com.tpb.projects.common.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -615,7 +615,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         } else {
             /*
             This seems to fix the problem with RecyclerView view detaching
-            Quick and dirty way of removing the views
+            Quick and dirty way of removing the com.tpb.mdtext.views
              */
             mColumnPager.setAdapter(null);
             mMenu.hideMenuButton(true);

@@ -42,16 +42,16 @@ import android.widget.TextView;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
-import com.tpb.mdtext.spans.CleanURLSpan;
-import com.tpb.mdtext.spans.ClickableTableSpan;
-import com.tpb.mdtext.spans.CodeSpan;
-import com.tpb.mdtext.spans.DrawTableLinkSpan;
-import com.tpb.mdtext.spans.HorizontalRuleSpan;
-import com.tpb.mdtext.spans.InlineCodeSpan;
-import com.tpb.mdtext.spans.NumberSpan;
-import com.tpb.mdtext.spans.QuoteSpan;
-import com.tpb.mdtext.spans.RoundedBackgroundEndSpan;
+import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.mdtext.views.spans.CleanURLSpan;
+import com.tpb.mdtext.views.spans.ClickableTableSpan;
+import com.tpb.mdtext.views.spans.CodeSpan;
+import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
+import com.tpb.mdtext.views.spans.HorizontalRuleSpan;
+import com.tpb.mdtext.views.spans.InlineCodeSpan;
+import com.tpb.mdtext.views.spans.NumberSpan;
+import com.tpb.mdtext.views.spans.QuoteSpan;
+import com.tpb.mdtext.views.spans.RoundedBackgroundEndSpan;
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;

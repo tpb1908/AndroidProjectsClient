@@ -18,11 +18,11 @@ import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.util.ArrayList;

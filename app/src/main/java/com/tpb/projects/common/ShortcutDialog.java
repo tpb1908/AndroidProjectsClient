@@ -1,4 +1,4 @@
-package com.tpb.projects.util;
+package com.tpb.projects.common;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

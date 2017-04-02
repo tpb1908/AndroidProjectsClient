@@ -18,11 +18,11 @@ import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 /**
  * Created by theo on 24/02/17.

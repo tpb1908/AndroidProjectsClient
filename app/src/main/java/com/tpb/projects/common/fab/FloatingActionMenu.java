@@ -1,4 +1,4 @@
-package com.tpb.projects.util.fab;
+package com.tpb.projects.common.fab;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

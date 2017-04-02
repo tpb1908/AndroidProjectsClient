@@ -29,7 +29,7 @@
         android:layout_margin="8dp"
         android:hint="@string/hint_issue_body">
 
-        <com.tpb.mdtext.mdedittext.MarkdownEditText
+        <com.tpb.mdtext.views.MarkdownEditText
             android:id="@+id/issue_body_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -62,7 +62,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 style="@style/Widget.AppCompat.Button.Borderless"/>
 
-            <com.tpb.mdtext.mdtextview.MarkdownTextView
+            <com.tpb.mdtext.views.MarkdownTextView
                 android:id="@+id/issue_assignees_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 style="@style/Widget.AppCompat.Button.Borderless"/>
 
-            <com.tpb.mdtext.mdtextview.MarkdownTextView
+            <com.tpb.mdtext.views.MarkdownTextView
                 android:id="@+id/issue_labels_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

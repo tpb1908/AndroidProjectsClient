@@ -1,4 +1,4 @@
-package com.tpb.projects.util;
+package com.tpb.projects.common;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -11,6 +11,8 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.tpb.projects.R;
+import com.tpb.projects.util.SettingsActivity;
+import com.tpb.projects.util.UI;
 
 /**
  * Created by theo on 20/02/17.

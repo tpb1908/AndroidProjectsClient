@@ -1,4 +1,4 @@
-package com.tpb.mdtext.mdedittext;
+package com.tpb.mdtext.views;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -28,13 +28,14 @@ import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.spans.ClickableTableSpan;
-import com.tpb.mdtext.spans.CodeSpan;
-import com.tpb.mdtext.spans.DrawTableLinkSpan;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import com.tpb.mdtext.views.spans.ClickableTableSpan;
+import com.tpb.mdtext.views.spans.CodeSpan;
+import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
 
 
 /**

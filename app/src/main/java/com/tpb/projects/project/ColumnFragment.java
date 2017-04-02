@@ -44,7 +44,7 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 

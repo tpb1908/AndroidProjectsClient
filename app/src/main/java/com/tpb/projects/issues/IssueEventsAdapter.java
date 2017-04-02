@@ -18,13 +18,13 @@ import com.tpb.github.data.models.Event;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.MergedEvent;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Spanner;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;

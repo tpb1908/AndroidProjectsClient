@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 /**
  * Created by theo on 25/03/17.

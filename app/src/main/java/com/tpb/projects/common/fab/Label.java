@@ -1,4 +1,4 @@
-package com.tpb.projects.util.fab;
+package com.tpb.projects.common.fab;
 
 import android.annotation.TargetApi;
 import android.content.Context;

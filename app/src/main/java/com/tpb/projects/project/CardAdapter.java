@@ -27,12 +27,12 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;

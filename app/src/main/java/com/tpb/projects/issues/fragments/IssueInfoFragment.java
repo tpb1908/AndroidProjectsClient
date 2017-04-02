@@ -38,7 +38,7 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
@@ -47,7 +47,7 @@ import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssueEventsAdapter;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;

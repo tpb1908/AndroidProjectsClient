@@ -35,7 +35,7 @@ import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.mdedittext.MarkdownEditText;
+import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;

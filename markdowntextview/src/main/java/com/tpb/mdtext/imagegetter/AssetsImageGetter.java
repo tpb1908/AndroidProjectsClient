@@ -22,7 +22,7 @@ import android.text.Html;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.io.IOException;
 import java.io.InputStream;

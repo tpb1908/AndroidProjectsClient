@@ -20,11 +20,11 @@ import com.tpb.projects.repo.fragments.RepoInfoFragment;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
 import com.tpb.projects.repo.fragments.RepoReadmeFragment;
-import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

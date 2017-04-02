@@ -17,10 +17,10 @@ import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.Util;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.Date;

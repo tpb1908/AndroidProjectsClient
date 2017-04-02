@@ -20,11 +20,11 @@ import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
-import com.tpb.projects.util.FixedLinearLayoutManger;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.FixedLinearLayoutManger;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.Util;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.Date;
 

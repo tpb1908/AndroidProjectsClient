@@ -50,7 +50,6 @@ public class CodeDialog implements CodeClickHandler {
         dialog.show();
     }
 
-
     private static Language getLanguage(String lang) {
         for(Language l : Language.values()) {
             if(l.toString().equalsIgnoreCase(lang)) return l;

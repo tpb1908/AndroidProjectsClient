@@ -25,8 +25,8 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import com.tpb.mdtext.mdedittext.MarkdownEditText;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownEditText;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 /**
  * Copied from http://stackoverflow.com/questions/8558732

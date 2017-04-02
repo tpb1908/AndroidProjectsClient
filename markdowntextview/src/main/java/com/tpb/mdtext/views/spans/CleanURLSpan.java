@@ -1,4 +1,4 @@
-package com.tpb.mdtext.spans;
+package com.tpb.mdtext.views.spans;
 
 import android.content.Intent;
 import android.graphics.Typeface;

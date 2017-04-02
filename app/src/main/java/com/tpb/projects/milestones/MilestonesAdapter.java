@@ -17,9 +17,9 @@ import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.common.NetworkImageView;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;

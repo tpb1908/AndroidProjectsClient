@@ -21,7 +21,7 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.MilestoneEditor;
-import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -41,7 +41,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
 
     @BindView(R.id.milestones_recycler) AnimatingRecyclerView mRecycler;
     @BindView(R.id.milestones_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.milestones_fab) com.tpb.projects.util.fab.FloatingActionButton mFab;
+    @BindView(R.id.milestones_fab) com.tpb.projects.common.fab.FloatingActionButton mFab;
 
     private Loader mLoader;
     private Editor mEditor;

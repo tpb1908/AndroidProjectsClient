@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/content_description_issue_state"/>
 
-            <com.tpb.projects.util.NetworkImageView
+            <com.tpb.projects.common.NetworkImageView
                 android:id="@+id/milestone_user_avatar"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
@@ -44,7 +44,7 @@
 
         </LinearLayout>
 
-        <com.tpb.mdtext.mdtextview.MarkdownTextView
+        <com.tpb.mdtext.views.MarkdownTextView
             android:id="@+id/milestone_content_markdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:layout_toEndOf="@+id/milestone_drawable_wrapper"
             android:layout_toStartOf="@+id/milestone_menu_button"
             android:layout_centerVertical="true">
-        </com.tpb.mdtext.mdtextview.MarkdownTextView>
+        </com.tpb.mdtext.views.MarkdownTextView>
 
 
         <ImageButton

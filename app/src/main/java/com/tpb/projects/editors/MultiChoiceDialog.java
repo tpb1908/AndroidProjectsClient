@@ -48,8 +48,8 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
                     }
 
                     /*
-                    We have to get the views after they are bound, so we wait for a scroll
-                    and then iterate through the views on screen
+                    We have to get the com.tpb.mdtext.views after they are bound, so we wait for a scroll
+                    and then iterate through the com.tpb.mdtext.views on screen
                      */
 
                     @Override

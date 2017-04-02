@@ -18,7 +18,7 @@ import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.Spanned;
 
-import com.tpb.mdtext.spans.CleanURLSpan;
+import com.tpb.mdtext.views.spans.CleanURLSpan;
 
 import java.util.Map;
 import java.util.Set;

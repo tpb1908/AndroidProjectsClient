@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.tpb.mdtext.mdtextview;
+package com.tpb.mdtext.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

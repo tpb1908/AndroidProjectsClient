@@ -22,7 +22,7 @@ import com.tpb.projects.R;
 import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.Util;
 
-import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;

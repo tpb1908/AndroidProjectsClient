@@ -17,7 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.tpb.projects.R;
-import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.common.CircularRevealActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
