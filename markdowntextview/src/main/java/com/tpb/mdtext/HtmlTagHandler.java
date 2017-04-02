@@ -19,7 +19,6 @@
 
 package com.tpb.mdtext;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,7 +41,6 @@ import android.widget.TextView;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
-import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.mdtext.views.spans.CleanURLSpan;
 import com.tpb.mdtext.views.spans.ClickableTableSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
@@ -52,6 +50,7 @@ import com.tpb.mdtext.views.spans.InlineCodeSpan;
 import com.tpb.mdtext.views.spans.NumberSpan;
 import com.tpb.mdtext.views.spans.QuoteSpan;
 import com.tpb.mdtext.views.spans.RoundedBackgroundEndSpan;
+
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;
@@ -131,10 +130,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     private final TextPaint mTextPaint;
     private LinkClickHandler mLinkHandler;
     private CodeClickHandler mCodeHandler;
-    private Context mContext;
 
     public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
-        mContext = tv.getContext();
         mTextPaint = tv.getPaint();
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
@@ -145,9 +142,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
         if(opening) {
             // opening tag
-            if(MarkdownTextView.DEBUG) {
-                Log.d(MarkdownTextView.TAG, "opening, output: " + output.toString());
-            }
 
             if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                 lists.push(
@@ -236,9 +230,6 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
         } else {
             // closing tag
-            if(MarkdownTextView.DEBUG) {
-                Log.d(MarkdownTextView.TAG, "closing, output: " + output.toString());
-            }
 
             if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                 lists.pop();
@@ -544,9 +535,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     private void start(Editable output, Object mark) {
         int len = output.length();
         output.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
-        if(MarkdownTextView.DEBUG) {
-            Log.d(MarkdownTextView.TAG, "len: " + len);
-        }
     }
 
     /**
@@ -576,11 +564,6 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
             for(Object replace : replaces) {
                 output.setSpan(replace, where, thisLen, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-
-            if(MarkdownTextView.DEBUG) {
-                Log.d(MarkdownTextView.TAG, "where: " + where);
-                Log.d(MarkdownTextView.TAG, "thisLen: " + thisLen);
             }
         }
     }

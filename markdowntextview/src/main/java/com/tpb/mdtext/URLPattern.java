@@ -267,7 +267,7 @@ public class URLPattern {
      *
      * @hide
      */
-    private static final Pattern AUTOLINK_WEB_URL = Pattern.compile(
+    static final Pattern AUTOLINK_WEB_URL = Pattern.compile(
             "(" + WEB_URL_WITH_PROTOCOL + "|" + WEB_URL_WITHOUT_PROTOCOL + ")($|\\s)");
 
     /**
