@@ -1,7 +1,5 @@
 package com.tpb.projects.commits;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -44,41 +42,46 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
     @Override
     public void onBindViewHolder(DiffHolder holder, int position) {
         holder.mFileName.setText(mDiffs[position].getFileName());
+        holder.mInfo.setText(
+                String.format(
+                        holder.itemView.getResources().getString(R.string.text_diff_changes),
+                        mDiffs[position].getStatus(),
+                        mDiffs[position].getAdditions(),
+                        mDiffs[position].getDeletions()
+                )
+        );
         if(mDiffs[position].getPatch() != null) {
             holder.mDiff.setVisibility(View.VISIBLE);
-            holder.itemView.setOnClickListener(v -> {
-                if(holder.mDiff.getLineCount() > 1) {
-                    final ObjectAnimator anim = ObjectAnimator.ofInt(
-                            holder.mDiff,
-                            "maxLines",
-                            holder.mDiff.getLineCount(),
-                            1
-                    ).setDuration(holder.itemView.getContext().getResources()
-                                                 .getInteger(
-                                                         android.R.integer.config_mediumAnimTime));
-                    anim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            holder.mDiff.setText(R.string.text_placeholder);
-                            holder.mDiff.setMaxLines(Integer.MAX_VALUE);
-                            super.onAnimationEnd(animation);
-                        }
-                    });
-                    anim.start();
-
-                } else {
-                    holder.mDiff.setText(Spanner.buildDiffSpan(mDiffs[position].getPatch()));
-                    ObjectAnimator.ofInt(
-                            holder.mDiff,
-                            "maxLines",
-                            1,
-                            holder.mDiff.getLineCount()
-                    ).setDuration(holder.itemView.getContext().getResources()
-                                                 .getInteger(
-                                                         android.R.integer.config_mediumAnimTime))
-                                  .start();
-                }
+            holder.mDiff.setText(Spanner.buildDiffSpan(mDiffs[position].getPatch()));
+            holder.mDiff.post(() -> {
+                final int maxLines = holder.mDiff.getLineCount();
+                holder.mDiff.setMaxLines(3);
+                holder.itemView.setOnClickListener(v -> {
+                    if(holder.mDiff.getLineCount() < maxLines) {
+                        ObjectAnimator.ofInt(
+                                holder.mDiff,
+                                "maxLines",
+                                3,
+                                maxLines
+                        ).setDuration(holder.itemView.getContext().getResources()
+                                                     .getInteger(
+                                                             android.R.integer.config_mediumAnimTime))
+                                      .start();
+                    } else {
+                        ObjectAnimator.ofInt(
+                                holder.mDiff,
+                                "maxLines",
+                                maxLines,
+                                3
+                        ).setDuration(holder.itemView.getContext().getResources()
+                                                     .getInteger(
+                                                             android.R.integer.config_mediumAnimTime))
+                                      .start();
+                    }
+                });
             });
+
+
         } else {
             holder.mDiff.setVisibility(View.GONE);
         }

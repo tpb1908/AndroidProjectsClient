@@ -83,6 +83,7 @@
     <!-- Commit stuff -->
     <string name="text_committed_by">%1$s committed on %2$s</string>
     <string name="text_committed_by_with_has">%1$s committed %2$s on with %3$s</string>
+    <string name="text_diff_changes">%1$s\n%2$d additions\n%3$d deletions</string>
     <plurals name="text_commit_additions">
         <item quantity="one">%d addition</item>
         <item quantity="other">%d additions</item>
