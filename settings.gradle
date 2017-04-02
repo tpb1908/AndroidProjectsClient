@@ -1,1 +1,1 @@
-include ':app', ':animatingrecycler', ':HtmlTextView', ':contributionsview', ':markedview', ':github'
+include ':app', ':animatingrecycler', ':HtmlTextView', ':contributionsview', ':markedview', ':gitapi'
