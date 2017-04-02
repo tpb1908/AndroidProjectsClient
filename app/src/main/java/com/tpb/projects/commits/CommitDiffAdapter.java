@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tpb.github.data.models.DiffFile;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.DiffFile;
 import com.tpb.projects.markdown.Spanner;
 
 import butterknife.BindView;

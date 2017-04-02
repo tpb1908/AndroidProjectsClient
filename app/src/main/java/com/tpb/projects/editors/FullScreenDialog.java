@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
 
 /**
  * Created by theo on 24/12/16.

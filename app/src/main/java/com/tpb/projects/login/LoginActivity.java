@@ -19,11 +19,11 @@ import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.tpb.github.data.auth.OAuthHandler;
+import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.auth.OAuthHandler;
-import com.tpb.projects.data.models.DataModel;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.BaseActivity;
@@ -132,17 +132,11 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    public interface OAuthLoginListener {
-
-        void onCodeCollected(String code);
-
-        void onError(String error);
-    }
 
     private class OAuthWebViewClient extends WebViewClient {
-        private final OAuthLoginListener mListener;
+        private final OAuthHandler.OAuthLoginListener mListener;
 
-        OAuthWebViewClient(OAuthLoginListener listener) {
+        OAuthWebViewClient(OAuthHandler.OAuthLoginListener listener) {
             mListener = listener;
         }
 

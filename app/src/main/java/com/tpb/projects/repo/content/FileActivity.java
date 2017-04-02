@@ -13,10 +13,10 @@ import com.androidnetworking.interfaces.StringRequestListener;
 import com.pddstudio.highlightjs.HighlightJsView;
 import com.pddstudio.highlightjs.models.Language;
 import com.pddstudio.highlightjs.models.Theme;
+import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
-import com.tpb.projects.data.FileLoader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.content.Node;
+import com.tpb.projects.util.SettingsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

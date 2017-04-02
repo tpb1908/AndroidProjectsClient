@@ -10,20 +10,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.commits.fragments.CommitInfoFragment;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.Util;
 import com.tpb.projects.util.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 /**
  * Created by theo on 30/03/17.
@@ -83,7 +83,7 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     @Override
     public void loadComplete(Commit data) {
         mCommit = data;
-        mHash.setText(Util.shortenSha(mCommit.getSha()));
+        mHash.setText(com.tpb.github.data.Util.shortenSha(mCommit.getSha()));
         mAdapter.setCommit();
     }
 

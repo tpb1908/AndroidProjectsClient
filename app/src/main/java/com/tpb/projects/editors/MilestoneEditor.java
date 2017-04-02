@@ -17,13 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.Uploader;
+import com.tpb.github.data.models.Milestone;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.Uploader;
-import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
@@ -256,21 +257,23 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
     void imageLoadComplete(String image64) {
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-            @Override
-            public void imageUploaded(String link) {
-                Log.i(TAG, "imageUploaded: Image uploaded " + link);
-                mUploadDialog.cancel();
-                final String snippet = String.format(getString(R.string.text_image_link), link);
-                final int start = Math.max(mDescriptionEditor.getSelectionStart(), 0);
-                mDescriptionEditor.getText().insert(start, snippet);
-                mDescriptionEditor.setSelection(start + snippet.indexOf("]"));
-            }
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                                           mUploadDialog.cancel();
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           final int start = Math.max(mDescriptionEditor.getSelectionStart(), 0);
+                                           mDescriptionEditor.getText().insert(start, snippet);
+                                           mDescriptionEditor.setSelection(start + snippet.indexOf("]"));
+                                       }
 
-            @Override
-            public void uploadError(ANError error) {
+                                       @Override
+                                       public void uploadError(ANError error) {
 
-            }
-        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
+                                       }
+                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
     @Override

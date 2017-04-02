@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.commits.CommitDiffAdapter;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
@@ -93,7 +93,8 @@ public class CommitInfoFragment extends CommitFragment {
         final String user;
         if(mCommit.getCommitter() != null) {
             mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
-            IntentHandler.addOnClickHandler(getActivity(), mAvatar, mCommit.getCommitter().getLogin());
+            IntentHandler
+                    .addOnClickHandler(getActivity(), mAvatar, mCommit.getCommitter().getLogin());
             user = String.format(getString(R.string.text_md_link),
                     mCommit.getCommitter().getLogin(),
                     mCommit.getCommitter().getHtmlUrl()

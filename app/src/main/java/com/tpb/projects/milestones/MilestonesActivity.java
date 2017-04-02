@@ -12,17 +12,17 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 

@@ -14,14 +14,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.auth.OAuthHandler;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.auth.OAuthHandler;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFollowersFragment;
@@ -32,6 +31,7 @@ import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
 import com.tpb.projects.user.fragments.UserStarsFragment;
 import com.tpb.projects.util.CircularRevealActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;

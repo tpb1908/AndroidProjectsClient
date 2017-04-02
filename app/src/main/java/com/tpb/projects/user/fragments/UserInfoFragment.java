@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;

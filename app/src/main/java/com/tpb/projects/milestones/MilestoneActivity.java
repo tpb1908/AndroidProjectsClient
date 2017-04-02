@@ -9,17 +9,17 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.CircularRevealActivity;
 import com.tpb.projects.util.NetworkImageView;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;

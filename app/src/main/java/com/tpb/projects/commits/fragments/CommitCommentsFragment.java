@@ -17,13 +17,13 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.auth.GitHubSession;
+import com.tpb.github.data.models.Comment;
+import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitCommentsAdapter;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.auth.GitHubSession;
-import com.tpb.projects.data.models.Comment;
-import com.tpb.projects.data.models.Commit;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.util.FixedLinearLayoutManger;
 import com.tpb.projects.util.UI;

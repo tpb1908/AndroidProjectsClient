@@ -9,11 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Commit;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
@@ -161,7 +161,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                             ),
                             String.format(
                                     res.getString(R.string.text_md_link),
-                                    Util.shortenSha(c.getSha()),
+                                    com.tpb.github.data.Util.shortenSha(c.getSha()),
                                     c.getHtmlUrl()
                             ),
                             Util.formatDateLocally(holder.itemView.getContext(),

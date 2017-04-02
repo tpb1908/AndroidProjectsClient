@@ -103,7 +103,7 @@
             android:name=".editors.ProjectEditor"
             android:theme="@style/AppTheme.Transparent.Dark"/>
 
-        <activity android:name=".data.SettingsActivity"/>
+        <activity android:name=".util.SettingsActivity"/>
 
         <activity android:name=".repo.content.FileActivity"/>
 

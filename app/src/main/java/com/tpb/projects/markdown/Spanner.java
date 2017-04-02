@@ -13,11 +13,11 @@ import android.text.format.DateUtils;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.TypefaceSpan;
 
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Label;
+import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.User;
 
 /**
  * Created by theo on 17/03/17.

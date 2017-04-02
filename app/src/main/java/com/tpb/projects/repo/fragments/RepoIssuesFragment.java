@@ -17,16 +17,16 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Comment;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Label;
+import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
+import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.models.Comment;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
-import com.tpb.projects.data.models.Repository;
-import com.tpb.projects.data.models.State;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
@@ -47,9 +47,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static android.content.ContentValues.TAG;
-import static com.tpb.projects.data.models.State.ALL;
-import static com.tpb.projects.data.models.State.CLOSED;
-import static com.tpb.projects.data.models.State.OPEN;
+import static com.tpb.github.data.models.State.ALL;
+import static com.tpb.github.data.models.State.CLOSED;
+import static com.tpb.github.data.models.State.OPEN;
 
 /**
  * Created by theo on 25/03/17.

@@ -11,7 +11,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.tpb.projects.R;
-import com.tpb.projects.data.SettingsActivity;
 
 /**
  * Created by theo on 20/02/17.

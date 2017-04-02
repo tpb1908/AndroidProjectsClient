@@ -1,4 +1,4 @@
-package com.tpb.projects.data;
+package com.tpb.projects.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.util.BaseActivity;
 
 
 /**

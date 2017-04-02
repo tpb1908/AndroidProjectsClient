@@ -15,12 +15,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.github.data.Uploader;
+import com.tpb.github.data.models.Comment;
+import com.tpb.github.data.models.Issue;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.Uploader;
-import com.tpb.projects.data.models.Comment;
-import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.markdown.Markdown;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -159,21 +160,23 @@ public class CommentEditor extends EditorActivity {
     void imageLoadComplete(String image64) {
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-            @Override
-            public void imageUploaded(String link) {
-                Log.i(TAG, "imageUploaded: Image uploaded " + link);
-                mUploadDialog.cancel();
-                final String snippet = String.format(getString(R.string.text_image_link), link);
-                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
-                    Util.insertString(mEditor, snippet, snippet.indexOf("}"));
-                }
-            }
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                                           mUploadDialog.cancel();
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
+                                               Util.insertString(mEditor, snippet, snippet.indexOf("}"));
+                                           }
+                                       }
 
-            @Override
-            public void uploadError(ANError error) {
-                //TODO Error message
-            }
-        }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)));
+                                       @Override
+                                       public void uploadError(ANError error) {
+                                           //TODO Error message
+                                       }
+                                   }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
     @Override

@@ -28,20 +28,20 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Column;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Editor;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Column;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Repository;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
 import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
@@ -53,7 +53,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-import static com.tpb.projects.data.SettingsActivity.Preferences.CardAction.COPY;
+import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY;
 
 /**
  * Created by theo on 19/12/16.

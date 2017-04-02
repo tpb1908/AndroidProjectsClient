@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.FileLoader;
-import com.tpb.projects.data.models.content.Node;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Util;
 

@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
+import com.tpb.github.data.models.Card;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Card;
 
 /**
  * Created by theo on 22/12/16.

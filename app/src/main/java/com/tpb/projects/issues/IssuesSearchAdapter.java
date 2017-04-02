@@ -12,9 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Label;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.search.ArrayFilter;
 import com.tpb.projects.util.search.FuzzyStringSearcher;

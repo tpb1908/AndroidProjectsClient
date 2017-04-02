@@ -11,11 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
+import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
-import com.tpb.projects.data.FileLoader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.models.content.Node;
 import com.tpb.projects.util.BaseActivity;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
 import java.util.ArrayList;

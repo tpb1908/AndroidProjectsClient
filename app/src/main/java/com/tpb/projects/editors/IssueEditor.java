@@ -19,17 +19,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.Uploader;
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Label;
+import com.tpb.github.data.models.User;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.Uploader;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Label;
-import com.tpb.projects.data.models.User;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -367,19 +368,20 @@ public class IssueEditor extends EditorActivity {
     void imageLoadComplete(String image64) {
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-            @Override
-            public void imageUploaded(String link) {
-                Log.i(TAG, "imageUploaded: Image uploaded " + link);
-                mUploadDialog.cancel();
-                final String snippet = String.format(getString(R.string.text_image_link), link);
-                Util.insertString(mBodyEdit, snippet);
-            }
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           mUploadDialog.cancel();
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           Util.insertString(mBodyEdit, snippet);
+                                       }
 
-            @Override
-            public void uploadError(ANError error) {
+                                       @Override
+                                       public void uploadError(ANError error) {
 
-            }
-        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
+                                       }
+                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
     @Override

@@ -19,15 +19,16 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androidnetworking.error.ANError;
+import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Loader;
+import com.tpb.github.data.Uploader;
+import com.tpb.github.data.models.Card;
+import com.tpb.github.data.models.Issue;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.data.APIHandler;
-import com.tpb.projects.data.Loader;
-import com.tpb.projects.data.SettingsActivity;
-import com.tpb.projects.data.Uploader;
-import com.tpb.projects.data.models.Card;
-import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -248,21 +249,23 @@ public class CardEditor extends EditorActivity {
         //Ensure that we are on UI thread
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-            @Override
-            public void imageUploaded(String link) {
-                mUploadDialog.dismiss();
-                //Format the link and insert at currently selected position
-                final String snippet = String.format(getString(R.string.text_image_link), link);
-                final int start = Math.max(mEditor.getSelectionStart(), 0);
-                mEditor.getText().insert(start, snippet);
-                mEditor.setSelection(start + snippet.indexOf("]"));
-            }
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           mUploadDialog.dismiss();
+                                           //Format the link and insert at currently selected position
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           final int start = Math.max(mEditor.getSelectionStart(), 0);
+                                           mEditor.getText().insert(start, snippet);
+                                           mEditor.setSelection(start + snippet.indexOf("]"));
+                                       }
 
-            @Override
-            public void uploadError(ANError error) {
-                //TODO Tell the user
-            }
-        }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)));
+                                       @Override
+                                       public void uploadError(ANError error) {
+                                           //TODO Tell the user
+                                       }
+                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
     @Override

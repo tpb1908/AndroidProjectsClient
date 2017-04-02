@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.data.models.Milestone;
-import com.tpb.projects.data.models.State;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.NetworkImageView;

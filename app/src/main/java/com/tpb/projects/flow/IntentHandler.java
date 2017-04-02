@@ -10,11 +10,11 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.view.View;
 
+import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.Milestone;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
-import com.tpb.projects.data.models.Commit;
-import com.tpb.projects.data.models.Issue;
-import com.tpb.projects.data.models.Milestone;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
