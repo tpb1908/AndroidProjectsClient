@@ -15,12 +15,12 @@ import com.tpb.github.data.models.Commit;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.repo.fragments.RepoCommitsFragment;
 import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.Util;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -135,7 +135,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         if(c.getCommitter() != null) {
             holder.mAvatar.setImageUrl(c.getCommitter().getAvatarUrl());
         }
-        holder.mTitle.setHtml(Markdown.parseMD(c.getMessage(), mRepo.getFullName()));
+        holder.mTitle.setMarkdown(Markdown.formatMD(c.getMessage(), mRepo.getFullName()));
         final String userName;
         final String userUrl;
 
@@ -169,7 +169,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                             )
                     )
             );
-            holder.mInfo.setHtml(Markdown.parseMD(builder.toString(), mRepo.getFullName()), null,
+            holder.mInfo.setMarkdown(Markdown.formatMD(builder.toString(), mRepo.getFullName()), null,
                     text -> mCommits.set(position, Pair.create(c, text))
             );
         } else {
@@ -188,8 +188,8 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     static class CommitViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.commit_user_avatar) NetworkImageView mAvatar;
-        @BindView(R.id.commit_title) HtmlTextView mTitle;
-        @BindView(R.id.commit_info) HtmlTextView mInfo;
+        @BindView(R.id.commit_title) MarkdownTextView mTitle;
+        @BindView(R.id.commit_info) MarkdownTextView mInfo;
 
         CommitViewHolder(View itemView) {
             super(itemView);

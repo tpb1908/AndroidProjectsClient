@@ -22,7 +22,7 @@ import com.tpb.projects.util.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 /**
  * Created by theo on 24/02/17.
@@ -31,7 +31,7 @@ import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
 public class IntentHandler {
     private static final String TAG = IntentHandler.class.getSimpleName();
 
-    public static void addOnClickHandler(Activity activity, HtmlTextView tv) {
+    public static void addOnClickHandler(Activity activity, MarkdownTextView tv) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
@@ -52,7 +52,7 @@ public class IntentHandler {
         view.setOnClickListener(v -> openIssue(activity, parent, issue));
     }
 
-    public static void addOnClickHandler(Activity activity, HtmlTextView tv, NetworkImageView iv, @Nullable CardView cv, Issue issue) {
+    public static void addOnClickHandler(Activity activity, MarkdownTextView tv, NetworkImageView iv, @Nullable CardView cv, Issue issue) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
@@ -69,7 +69,7 @@ public class IntentHandler {
         });
     }
 
-    public static void addOnClickHandler(Activity activity, HtmlTextView tv, NetworkImageView iv, String login) {
+    public static void addOnClickHandler(Activity activity, MarkdownTextView tv, NetworkImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
             if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
                 openUser(activity, iv, login);
@@ -105,8 +105,8 @@ public class IntentHandler {
         final String repo = url.substring(url.indexOf("com/") + 4, url.indexOf("/issues"));
         i.putExtra(activity.getString(R.string.intent_repo), repo);
         i.putExtra(activity.getString(R.string.intent_issue_number), number);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        if(view instanceof MarkdownTextView) {
+            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
             activity.startActivity(i);
         } else if(view instanceof CardView) {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -125,8 +125,8 @@ public class IntentHandler {
     public static void openIssue(Activity activity, View view, Issue issue) {
         final Intent i = new Intent(activity, IssueActivity.class);
         i.putExtra(activity.getString(R.string.parcel_issue), issue);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        if(view instanceof MarkdownTextView) {
+            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
             activity.startActivity(i);
         } else if(view instanceof CardView) {
             i.putExtra(activity.getString(R.string.transition_card), "");
@@ -146,8 +146,8 @@ public class IntentHandler {
     private static void openUser(Activity activity, View view, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        if(view instanceof MarkdownTextView) {
+            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
         } else {
             UI.setViewPositionForIntent(i, view);
         }
@@ -173,8 +173,8 @@ public class IntentHandler {
     public static void openMilestone(Activity activity, View view, Milestone milestone) {
         final Intent i = new Intent(activity, MilestoneEditor.class);
         i.putExtra(activity.getString(R.string.parcel_milestone), milestone);
-        if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(activity, i, ((HtmlTextView) view).getLastClickPosition());
+        if(view instanceof MarkdownTextView) {
+            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
         } else {
             UI.setViewPositionForIntent(i, view);
         }

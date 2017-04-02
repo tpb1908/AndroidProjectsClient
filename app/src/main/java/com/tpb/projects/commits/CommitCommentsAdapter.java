@@ -17,13 +17,13 @@ import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.NetworkImageView;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,9 +182,9 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mCommit.getFullRepoName()));
-            commentHolder.mText.setHtml(
-                    Markdown.parseMD(builder.toString()),
-                    new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
+            commentHolder.mText.setMarkdown(
+                    Markdown.formatMD(builder.toString()),
+                    new HttpImageGetter(commentHolder.mText, commentHolder.mText),
                     text -> mComments.set(pos, new Pair<>(comment, text))
             );
         } else {
@@ -208,7 +208,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
 
     class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_comment_avatar) NetworkImageView mAvatar;
-        @BindView(R.id.comment_text) HtmlTextView mText;
+        @BindView(R.id.comment_text) MarkdownTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
 
         CommentHolder(View view) {

@@ -11,7 +11,7 @@
         android:layout_margin="8dp"
         android:hint="@string/hint_comment_new">
 
-        <org.sufficientlysecure.htmltext.htmledittext.HtmlEditText
+        <com.tpb.mdtext.mdedittext.MarkdownEditText
             android:id="@+id/comment_body_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

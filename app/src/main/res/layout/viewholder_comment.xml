@@ -23,7 +23,7 @@
             android:layout_marginEnd="8dp"
             android:layout_alignParentStart="true"/>
 
-        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+        <com.tpb.mdtext.mdtextview.MarkdownTextView
             android:id="@+id/comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

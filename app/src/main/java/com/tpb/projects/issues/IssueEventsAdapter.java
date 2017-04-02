@@ -17,16 +17,14 @@ import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Event;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.MergedEvent;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
-import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.NetworkImageView;
-
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -326,9 +324,9 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
-        eventHolder.mText.setHtml(
-                Markdown.parseMD(text),
-                new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
+        eventHolder.mText.setMarkdown(
+                text,
+                new HttpImageGetter(eventHolder.mText, eventHolder.mText),
                 null
         );
         if(me.getEvents().get(0).getActor() != null) {
@@ -591,9 +589,9 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 text += "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
-        eventHolder.mText.setHtml(
-                Markdown.parseMD(text),
-                new HtmlHttpImageGetter(eventHolder.mText, eventHolder.mText),
+        eventHolder.mText.setMarkdown(
+                text,
+                new HttpImageGetter(eventHolder.mText, eventHolder.mText),
                 null
         );
         if(event.getActor() != null) {
@@ -617,7 +615,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
 
     class EventHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.event_text) HtmlTextView mText;
+        @BindView(R.id.event_text) MarkdownTextView mText;
         @BindView(R.id.event_user_avatar) NetworkImageView mAvatar;
 
         EventHolder(View view) {

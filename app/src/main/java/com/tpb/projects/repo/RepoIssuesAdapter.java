@@ -22,7 +22,7 @@ import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.util.NetworkImageView;
@@ -30,7 +30,7 @@ import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +183,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             pos = holder.getAdapterPosition();
         }
         final Issue issue = mIssues.get(pos).first;
-        holder.mTitle.setHtml(Spanner.bold(issue.getTitle()));
+        holder.mTitle.setMarkdown(Spanner.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(
                 issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
@@ -195,7 +195,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
                         issue
                 );
         if(mIssues.get(pos).second == null) {
-            holder.mContent.setHtml(Markdown.parseMD(
+            holder.mContent.setMarkdown(Markdown.formatMD(
                     Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(),
                     issue.getRepoFullName()
                     ),
@@ -231,8 +231,8 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     class IssueHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.issue_title) HtmlTextView mTitle;
-        @BindView(R.id.issue_content_markdown) HtmlTextView mContent;
+        @BindView(R.id.issue_title) MarkdownTextView mTitle;
+        @BindView(R.id.issue_content_markdown) MarkdownTextView mContent;
         @BindView(R.id.issue_menu_button) ImageButton mMenuButton;
         @BindView(R.id.issue_state_drawable) ImageView mIssueIcon;
         @BindView(R.id.issue_user_avatar) NetworkImageView mUserAvatar;

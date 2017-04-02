@@ -19,10 +19,10 @@ import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.Util;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,7 +125,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         }
         if(!DataModel.JSON_NULL.equals(r.getDescription())) {
             holder.mDescription.setVisibility(View.VISIBLE);
-            holder.mDescription.setHtml(Markdown.parseMD(r.getDescription(), r.getFullName()));
+            holder.mDescription.setMarkdown(Markdown.formatMD(r.getDescription(), r.getFullName()));
         } else {
             holder.mDescription.setVisibility(View.GONE);
         }
@@ -224,7 +224,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     class RepoHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.repo_name) TextView mName;
-        @BindView(R.id.repo_description) HtmlTextView mDescription;
+        @BindView(R.id.repo_description) MarkdownTextView mDescription;
         @BindView(R.id.repo_forks) TextView mForks;
         @BindView(R.id.repo_stars) TextView mStars;
         @BindView(R.id.repo_language) TextView mLanguage;

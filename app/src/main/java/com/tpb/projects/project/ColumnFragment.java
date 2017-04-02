@@ -44,7 +44,7 @@ import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 import java.util.ArrayList;
 
@@ -597,9 +597,9 @@ public class ColumnFragment extends Fragment {
         i.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
-        if(view instanceof HtmlTextView) {
+        if(view instanceof MarkdownTextView) {
             UI.setClickPositionForIntent(getContext(), i,
-                    ((HtmlTextView) view).getLastClickPosition()
+                    ((MarkdownTextView) view).getLastClickPosition()
             );
         } else {
             UI.setViewPositionForIntent(i, view);
@@ -758,9 +758,9 @@ public class ColumnFragment extends Fragment {
                 } else {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
-                    if(view instanceof HtmlTextView) {
+                    if(view instanceof MarkdownTextView) {
                         UI.setClickPositionForIntent(getContext(), i,
-                                ((HtmlTextView) view).getLastClickPosition()
+                                ((MarkdownTextView) view).getLastClickPosition()
                         );
                     } else {
                         UI.setViewPositionForIntent(i, view);

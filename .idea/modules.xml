@@ -3,11 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidProjectsClient.iml" filepath="$PROJECT_DIR$/AndroidProjectsClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HtmlTextView/HtmlTextView.iml" filepath="$PROJECT_DIR$/HtmlTextView/HtmlTextView.iml" />
       <module fileurl="file://$PROJECT_DIR$/animatingrecycler/animatingrecycler.iml" filepath="$PROJECT_DIR$/animatingrecycler/animatingrecycler.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/contributionsview/contributionsview.iml" filepath="$PROJECT_DIR$/contributionsview/contributionsview.iml" />
       <module fileurl="file://$PROJECT_DIR$/gitapi/gitapi.iml" filepath="$PROJECT_DIR$/gitapi/gitapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/markdowntextview/markdowntextview.iml" filepath="$PROJECT_DIR$/markdowntextview/markdowntextview.iml" />
       <module fileurl="file://$PROJECT_DIR$/markedview/markedview.iml" filepath="$PROJECT_DIR$/markedview/markedview.iml" />
     </modules>
   </component>

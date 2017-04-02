@@ -25,7 +25,7 @@
             android:visibility="gone"
             android:layout_marginEnd="8dp"/>
 
-        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+        <com.tpb.mdtext.mdtextview.MarkdownTextView
             android:id="@+id/event_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

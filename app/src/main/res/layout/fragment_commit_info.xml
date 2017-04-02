@@ -50,7 +50,7 @@
                             android:layout_marginStart="4dp"
                             />
 
-                        <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                        <com.tpb.mdtext.mdtextview.MarkdownTextView
                             android:id="@+id/commit_title"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
 
                     </LinearLayout>
 
-                    <org.sufficientlysecure.htmltext.htmltextview.HtmlTextView
+                    <com.tpb.mdtext.mdtextview.MarkdownTextView
                         android:id="@+id/commit_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

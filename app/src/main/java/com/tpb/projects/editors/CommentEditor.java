@@ -20,16 +20,16 @@ import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.mdedittext.MarkdownEditText;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 
@@ -48,7 +48,7 @@ public class CommentEditor extends EditorActivity {
     public static final int REQUEST_CODE_EDIT_COMMENT = 5734;
     public static final int REQUEST_CODE_COMMENT_FOR_STATE = 1400;
 
-    @BindView(R.id.comment_body_edit) HtmlEditText mEditor;
+    @BindView(R.id.comment_body_edit) MarkdownEditText mEditor;
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.markdown_editor_discard) Button mDiscardButton;
     @BindView(R.id.markdown_editor_done) Button mDoneButton;
@@ -112,9 +112,9 @@ public class CommentEditor extends EditorActivity {
                             String repo = null;
                             if(mIssue != null) repo = mIssue.getRepoFullName();
                             mEditor.disableEditing();
-                            mEditor.setHtml(
-                                    Markdown.parseMD(mEditor.getInputText().toString(), repo),
-                                    new HtmlHttpImageGetter(mEditor, mEditor)
+                            mEditor.setMarkdown(
+                                    Markdown.formatMD(mEditor.getInputText().toString(), repo),
+                                    new HttpImageGetter(mEditor, mEditor)
                             );
                         } else {
                             mEditor.restoreText();

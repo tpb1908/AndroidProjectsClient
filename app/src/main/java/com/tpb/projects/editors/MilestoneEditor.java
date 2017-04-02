@@ -23,17 +23,17 @@ import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Milestone;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
-import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
-import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
-import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.mdedittext.MarkdownEditText;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -56,7 +56,7 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
     @BindView(R.id.markdown_edit_buttons) LinearLayout mEditButtons;
     @BindView(R.id.milestone_date_layout) View mDateLayout;
     @BindView(R.id.milestone_clear_date_button) Button mClearDateButton;
-    @BindView(R.id.milestone_description_edit) HtmlEditText mDescriptionEditor;
+    @BindView(R.id.milestone_description_edit) MarkdownEditText mDescriptionEditor;
     @BindView(R.id.milestone_title_edit) EditText mTitleEditor;
     @BindView(R.id.milestone_due_date) TextView mDueDate;
 
@@ -147,9 +147,9 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
                     public void previewCalled() {
                         if(mDescriptionEditor.isEditing()) {
                             mDescriptionEditor.saveText();
-                            mDescriptionEditor.setHtml(
-                                    Markdown.parseMD(mDescriptionEditor.getText().toString(), null),
-                                    new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor)
+                            mDescriptionEditor.setMarkdown(
+                                    Markdown.formatMD(mDescriptionEditor.getText().toString(), null),
+                                    new HttpImageGetter(mDescriptionEditor, mDescriptionEditor)
                             );
                             mDescriptionEditor.disableEditing();
                         } else {

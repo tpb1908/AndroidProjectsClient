@@ -16,10 +16,10 @@ import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Markdown;
+import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.NetworkImageView;
 
-import org.sufficientlysecure.htmltext.htmltextview.HtmlTextView;
+import com.tpb.mdtext.mdtextview.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,7 +173,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
                     builder.append("</font>");
                 }
             }
-            holder.mContent.setHtml(Markdown.formatMD(builder.toString(), null),
+            holder.mContent.setMarkdown(Markdown.formatMD(builder.toString(), null),
                     null,
                     text -> mParseCache.set(position, text)
             );
@@ -195,7 +195,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 
         @BindView(R.id.milestone_drawable) ImageView mState;
         @BindView(R.id.milestone_user_avatar) NetworkImageView mAvatar;
-        @BindView(R.id.milestone_content_markdown) HtmlTextView mContent;
+        @BindView(R.id.milestone_content_markdown) MarkdownTextView mContent;
         @BindView(R.id.milestone_menu_button) ImageButton mMenu;
 
         public MilestoneHolder(View itemView) {

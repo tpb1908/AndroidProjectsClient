@@ -17,6 +17,7 @@
         <option value="$PROJECT_DIR$/.gradle" />
         <option value="$PROJECT_DIR$/.idea" />
         <option value="$PROJECT_DIR$/markedview/build" />
+        <option value="$PROJECT_DIR$/gitapi/build" />
       </list>
     </option>
   </component>
