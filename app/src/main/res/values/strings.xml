@@ -170,6 +170,7 @@
 
     <!-- Issue strings -->
     <string name="text_loading_collaborators">Loading collaborators</string>
+    <string name="text_assignees">Assignee</string>
     <string name="text_loading_labels">Loading labels</string>
     <string name="text_assigned_to">Assigned to </string>
     <string name="text_closed_by_link">Closed by [%1$s](%2$s) %3$s</string>

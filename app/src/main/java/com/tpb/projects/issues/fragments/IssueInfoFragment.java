@@ -157,6 +157,7 @@ public class IssueInfoFragment extends IssueFragment {
         mAssigneesLayout.removeAllViews();
         if(issue != null && issue.getAssignees() != null && issue.getAssignees().length > 0) {
             mAssigneesLayout.setVisibility(View.VISIBLE);
+            ButterKnife.findById(getActivity(), R.id.text_issue_assignees).setVisibility(View.VISIBLE);
             for(int i = 0; i < issue.getAssignees().length; i++) {
                 final User u = issue.getAssignees()[i];
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
@@ -191,6 +192,7 @@ public class IssueInfoFragment extends IssueFragment {
                 });
             }
         } else {
+            ButterKnife.findById(getActivity(), R.id.text_issue_assignees).setVisibility(View.GONE);
             mAssigneesLayout.setVisibility(View.GONE);
         }
     }
