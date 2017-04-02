@@ -1,6 +1,5 @@
 package com.tpb.projects.util;
 
-import android.support.compat.BuildConfig;
 import android.util.Log;
 
 /**
@@ -8,7 +7,7 @@ import android.util.Log;
  */
 
 public class Logger {
-    public static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = com.tpb.projects.BuildConfig.IS_IN_DEBUG;
 
 
     public static void logLong(String TAG, String s) {
@@ -53,6 +52,14 @@ public class Logger {
 
     public static void i(String tag, String msg, Throwable tr) {
         if(DEBUG) Log.i(tag, msg, tr);
+    }
+
+    public static void e(String tag, String msg) {
+        if(DEBUG) Log.e(tag, msg);
+    }
+
+    public static void e(String tag, String msg, Throwable tr) {
+        if(DEBUG) Log.e(tag, msg, tr);
     }
 
 }

@@ -18,6 +18,7 @@ import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Column;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.CompleteStatus;
 import com.tpb.github.data.models.Event;
 import com.tpb.github.data.models.Gist;
 import com.tpb.github.data.models.Issue;
@@ -57,6 +58,7 @@ public class Loader extends APIHandler {
     private static final String SEGMENT_MARKDOWN = "/markdown";
     private static final String SEGMENT_BRANCHES = "/branches";
     private static final String SEGMENT_CONTRIBUTORS = "/contributors";
+    private static final String SEGMENT_STATUS = "/status";
 
     public Loader(Context context) {
         super(context);
@@ -1097,6 +1099,24 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         loader.listLoadError(parseError(anError));
+                    }
+                });
+    }
+
+    public void loadCommitStatuses(@NonNull final ItemLoader<CompleteStatus> loader, final String repoFullName, String sha) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_STATUS)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        loader.loadComplete(new CompleteStatus(response));
+
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        loader.loadError(parseError(anError));
                     }
                 });
     }

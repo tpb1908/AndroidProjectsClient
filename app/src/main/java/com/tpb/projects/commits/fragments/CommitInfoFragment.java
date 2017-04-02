@@ -9,22 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Commit;
+import com.tpb.github.data.models.CompleteStatus;
+import com.tpb.github.data.models.Status;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.commits.CommitDiffAdapter;
-import com.tpb.projects.flow.IntentHandler;
-import com.tpb.mdtext.Markdown;
-import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Util;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.Date;
 
@@ -37,6 +39,7 @@ import butterknife.Unbinder;
  */
 
 public class CommitInfoFragment extends CommitFragment {
+    private static final String TAG = CommitInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -66,6 +69,7 @@ public class CommitInfoFragment extends CommitFragment {
         mRecyclerView.setLayoutManager(new FixedLinearLayoutManger(getContext()));
         mRecyclerView.setAdapter(mAdapter);
         mRefresher.setOnRefreshListener(() -> {
+            ButterKnife.findById(getActivity(), R.id.commit_status).setVisibility(View.GONE);
             mAdapter.clear();
             new Loader(getContext()).loadCommit(new Loader.ItemLoader<Commit>() {
                 @Override
@@ -103,7 +107,6 @@ public class CommitInfoFragment extends CommitFragment {
             user = mCommit.getCommitterName();
             IntentHandler.addOnClickHandler(getActivity(), mAvatar, user);
         }
-
         if(mCommit.getFiles() != null) {
             String builder =
                     "<br>" +
@@ -128,8 +131,43 @@ public class CommitInfoFragment extends CommitFragment {
             mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
         }
+        new Loader(getContext()).loadCommitStatuses(new Loader.ItemLoader<CompleteStatus>() {
+            @Override
+            public void loadComplete(CompleteStatus data) {
+                if(data.getTotalCount() == 0) return; //We don't care if there is no integration
+                ButterKnife.findById(getActivity(), R.id.commit_status).setVisibility(View.VISIBLE);
+                final NetworkImageView niv = ButterKnife.findById(getActivity(), R.id.status_image);
+                final TextView status = ButterKnife.findById(getActivity(), R.id.status_state);
+                final TextView desc = ButterKnife.findById(getActivity(), R.id.status_context);
+                if("success".equals(data.getState())) {
+                    niv.setImageResource(R.drawable.ic_check);
+                } else if("pending".equals(data.getState())) {
+                    niv.setImageResource(R.drawable.ic_loading);
+                } else {
+                    niv.setImageResource(R.drawable.ic_failure);
+                }
+                status.setText(String.format(getString(R.string.text_ci_status), data.getState()));
+                final StringBuilder builder = new StringBuilder();
+                if(data.getStatuses() != null) {
+                    for(Status s: data.getStatuses()) {
+                        builder.append(
+                                String.format(getString(R.string.text_ci_info),
+                                        s.getContext(),
+                                        s.getDescription())
+                        );
+                        builder.append('\n');
+                    }
+                }
+                desc.setText(builder.toString());
+            }
 
+            @Override
+            public void loadError(APIHandler.APIError error) {
+
+            }
+        }, mCommit.getFullRepoName(), mCommit.getSha());
     }
+
 
     private void checkSharedElementEntry() {
         final Intent i = getActivity().getIntent();

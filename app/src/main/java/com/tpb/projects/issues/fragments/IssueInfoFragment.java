@@ -65,7 +65,8 @@ public class IssueInfoFragment extends IssueFragment {
 
     @BindView(R.id.issue_header_card) CardView mHeader;
     @BindView(R.id.issue_events_recycler) RecyclerView mRecycler;
-    @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout; //http://stackoverflow.com/a/29430226/4191572
+    @BindView(R.id.issue_assignees) LinearLayout mAssigneesLayout;
+    @BindView(R.id.text_issue_assignees) View mAssigneesTitle;
     @BindView(R.id.issue_menu_button) ImageButton mOverflowButton;
     @BindView(R.id.issue_user_avatar) NetworkImageView mUserAvatar;
     @BindView(R.id.issue_state) ImageView mImageState;
@@ -157,14 +158,14 @@ public class IssueInfoFragment extends IssueFragment {
         mAssigneesLayout.removeAllViews();
         if(issue != null && issue.getAssignees() != null && issue.getAssignees().length > 0) {
             mAssigneesLayout.setVisibility(View.VISIBLE);
-            ButterKnife.findById(getActivity(), R.id.text_issue_assignees).setVisibility(View.VISIBLE);
-            for(int i = 0; i < issue.getAssignees().length; i++) {
-                final User u = issue.getAssignees()[i];
+            mAssigneesTitle.setVisibility(View.VISIBLE);
+            for(User u : issue.getAssignees()) {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
                                                                       .inflate(R.layout.shard_user,
-                                                                              null
+                                                                              mAssigneesLayout,
+                                                                              false
                                                                       );
-                user.setId(i);
+                user.setId(View.generateViewId());
                 mAssigneesLayout.addView(user);
                 final NetworkImageView imageView = ButterKnife.findById(user, R.id.user_avatar);
                 imageView.setId(View.generateViewId());
@@ -172,7 +173,7 @@ public class IssueInfoFragment extends IssueFragment {
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = ButterKnife.findById(user, R.id.user_login);
                 login.setId(View.generateViewId()); //Max 10 assignees
-                login.setText(issue.getAssignees()[i].getLogin());
+                login.setText(u.getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);
                     us.putExtra(getString(R.string.intent_username), u.getLogin());
@@ -192,8 +193,8 @@ public class IssueInfoFragment extends IssueFragment {
                 });
             }
         } else {
-            ButterKnife.findById(getActivity(), R.id.text_issue_assignees).setVisibility(View.GONE);
             mAssigneesLayout.setVisibility(View.GONE);
+            mAssigneesTitle.setVisibility(View.GONE);
         }
     }
 

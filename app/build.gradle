@@ -36,10 +36,12 @@ android {
         it.buildConfigField('String', 'BUG_EMAIL', project.hasProperty('BUG_EMAIL') ? BUG_EMAIL : System.getenv('BUG_EMAIL'))
         it.buildConfigField('String', 'IMGUR_CLIENT_ID', project.hasProperty('IMGUR_CLIENT_ID') ? IMGUR_CLIENT_ID : System.getenv('IMGUR_CLIENT_ID'))
         it.buildConfigField('String', 'IMGUR_CLIENT_SECRET', project.hasProperty('IMGUR_CLIENT_SECRET') ? IMGUR_CLIENT_SECRET : System.getenv('IMGUR_CLIENT_SECRET'))
+        it.buildConfigField('Boolean', 'IS_IN_DEBUG', 'true')
     }
 
     buildTypes {
         release {
+            it.buildConfigField('Boolean', 'IS_IN_DEBUG', 'true')
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
