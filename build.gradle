@@ -14,7 +14,7 @@ buildscript {
 
         println(System.getenv("TRAVIS"))
 
-        if(System.getenv("TRAVIS") != "true") {
+        if (System.getenv("TRAVIS") != "true") {
             classpath 'com.google.gms:google-services:3.0.0'
         }
     }

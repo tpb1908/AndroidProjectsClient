@@ -1069,7 +1069,9 @@ public class Loader extends APIHandler {
     }
 
     public void loadCommitComments(@NonNull ListLoader<Comment> loader, String repoFullName, String sha, int page) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS + appendPage(page))
+        AndroidNetworking
+                .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS + appendPage(
+                        page))
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {

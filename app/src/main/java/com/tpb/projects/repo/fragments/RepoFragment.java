@@ -32,7 +32,8 @@ public abstract class RepoFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.intent_repo))) {
+        if(savedInstanceState != null && savedInstanceState
+                .containsKey(getString(R.string.intent_repo))) {
             mRepo = savedInstanceState.getParcelable(getString(R.string.intent_repo));
             repoLoaded(mRepo);
         }

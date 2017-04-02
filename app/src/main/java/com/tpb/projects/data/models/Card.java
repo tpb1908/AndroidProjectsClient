@@ -107,7 +107,9 @@ public class Card extends DataModel implements Parcelable {
 
 
     public void setFromIssue(Issue issue) {
-        note = issue.getTitle() + "\n" + (issue.getBody() != null && !issue.getBody().isEmpty() ? '\n' + issue.getBody() : "");
+        note = issue.getTitle() + "\n" + (issue.getBody() != null && !issue.getBody()
+                                                                           .isEmpty() ? '\n' + issue
+                .getBody() : "");
         this.issue = issue;
     }
 
@@ -118,7 +120,8 @@ public class Card extends DataModel implements Parcelable {
             c.columnUrl = object.getString(COLUMN_URL);
             if(object.has(CONTENT_URL)) {
                 c.contentUrl = object.getString(CONTENT_URL);
-                c.issueId = Integer.parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
+                c.issueId = Integer
+                        .parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
 
             }
             c.note = object.getString(NOTE);

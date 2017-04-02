@@ -99,7 +99,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_project);
@@ -127,7 +128,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             }
         } else {
             final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
-            final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
+            final int number = launchIntent
+                    .getIntExtra(getString(R.string.intent_project_number), 1);
             if(launchIntent.hasExtra(getString(R.string.intent_card_id))) {
                 mLaunchCardId = launchIntent.getIntExtra(getString(R.string.intent_card_id), -1);
             }
@@ -168,7 +170,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 mLoader.loadProject(ProjectActivity.this, mProject.getId());
             } else {
                 final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
-                final int number = launchIntent.getIntExtra(getString(R.string.intent_project_number), 1);
+                final int number = launchIntent
+                        .getIntExtra(getString(R.string.intent_project_number), 1);
                 loadFromId(repo, number);
             }
         });
@@ -194,7 +197,9 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                         return;
                     }
                 }
-                Toast.makeText(ProjectActivity.this, R.string.error_project_not_found, Toast.LENGTH_LONG).show();
+                Toast.makeText(ProjectActivity.this, R.string.error_project_not_found,
+                        Toast.LENGTH_LONG
+                ).show();
                 finish();
             }
 
@@ -209,7 +214,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                         projectLoadAttempts++;
                         mLoader.loadProjects(this, repo);
                     } else {
-                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
+                             .show();
                         mRefresher.setRefreshing(false);
                     }
                 }
@@ -245,9 +251,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 } else {
                     if(accessCheckAttempts < 5) {
                         accessCheckAttempts++;
-                        mLoader.checkAccessToRepository(this, GitHubSession.getSession(ProjectActivity.this).getUserLogin(), project.getRepoPath());
+                        mLoader.checkAccessToRepository(this,
+                                GitHubSession.getSession(ProjectActivity.this).getUserLogin(),
+                                project.getRepoPath()
+                        );
                     } else {
-                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
+                             .show();
                         mRefresher.setRefreshing(false);
                     }
                 }
@@ -336,7 +346,9 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     }
 
     void loadIssue(Loader.ItemLoader<Issue> loader, int issueId, Column column) {
-        mLoader.loadIssue(loader, mProject.getRepoPath(), issueId, mAdapter.indexOf(column.getId()) == mCurrentPosition);
+        mLoader.loadIssue(loader, mProject.getRepoPath(), issueId,
+                mAdapter.indexOf(column.getId()) == mCurrentPosition
+        );
     }
 
     @OnClick(R.id.project_add_column)
@@ -354,7 +366,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             final EditText editor = (EditText) dialog.findViewById(R.id.project_new_column);
             final String text = editor.getText().toString();
-            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
             if(imm.isActive()) {
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             }
@@ -384,14 +397,17 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     public void creationError(APIHandler.APIError error) {
                         if(error == APIHandler.APIError.NO_CONNECTION) {
                             mRefresher.setRefreshing(false);
-                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
+                                 .show();
 
                         } else {
                             if(addColumnAttempts < 5) {
                                 addColumnAttempts++;
                                 mEditor.addColumn(this, mProject.getId(), text);
                             } else {
-                                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProjectActivity.this, error.resId,
+                                        Toast.LENGTH_SHORT
+                                ).show();
                                 mRefresher.setRefreshing(false);
                             }
                         }
@@ -406,13 +422,15 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             }
         });
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
-            final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
             if(imm.isActive()) {
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             }
             dialog.dismiss();
         });
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
@@ -468,14 +486,18 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                         public void deletionError(APIHandler.APIError error) {
                             if(error == APIHandler.APIError.NO_CONNECTION) {
                                 mRefresher.setRefreshing(false);
-                                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProjectActivity.this, error.resId,
+                                        Toast.LENGTH_SHORT
+                                ).show();
 
                             } else {
                                 if(deleteColumnAttempts < 5) {
                                     deleteColumnAttempts++;
                                     mEditor.deleteColumn(this, column.getId());
                                 } else {
-                                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ProjectActivity.this, error.resId,
+                                            Toast.LENGTH_SHORT
+                                    ).show();
                                     mRefresher.setRefreshing(false);
                                 }
                             }
@@ -526,8 +548,11 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 mRefresher.setRefreshing(false);
                 mAdapter.getCurrentFragment().removeCard(card);
                 Snackbar.make(findViewById(R.id.project_coordinator),
-                        getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.action_undo), view -> mAdapter.getCurrentFragment().recreateCard(card))
+                        getString(R.string.text_note_deleted), Snackbar.LENGTH_LONG
+                )
+                        .setAction(getString(R.string.action_undo),
+                                view -> mAdapter.getCurrentFragment().recreateCard(card)
+                        )
                         .show();
             }
 
@@ -592,7 +617,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             This seems to fix the problem with RecyclerView view detaching
             Quick and dirty way of removing the views
              */
-            mColumnPager.setAdapter(new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>()));
+            mColumnPager.setAdapter(null);
             mMenu.hideMenuButton(true);
             super.onBackPressed();
         }
@@ -632,7 +657,9 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             case R.id.menu_save_to_homescreen:
                 final ShortcutDialog dialog = new ShortcutDialog();
                 final Bundle args = new Bundle();
-                args.putInt(getString(R.string.intent_title_res), R.string.title_save_project_shortcut);
+                args.putInt(getString(R.string.intent_title_res),
+                        R.string.title_save_project_shortcut
+                );
                 args.putString(getString(R.string.intent_name), mProject.getName());
 
                 dialog.setArguments(args);
@@ -645,7 +672,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
                     add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
                     add.putExtra("duplicate", false);
-                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource
+                            .fromContext(getApplicationContext(), R.mipmap.ic_launcher));
                     add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                     getApplicationContext().sendBroadcast(add);
                 });
@@ -653,9 +681,12 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 break;
             case R.id.menu_action_search:
                 if(mAdapter.getCount() > 0) {
-                    final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+                    final SearchView.SearchAutoComplete searchSrc = (SearchView.SearchAutoComplete) mSearchView
+                            .findViewById(android.support.v7.appcompat.R.id.search_src_text);
                     searchSrc.setThreshold(1);
-                    final ProjectSearchAdapter searchAdapter = new ProjectSearchAdapter(this, mAdapter.getAllCards());
+                    final ProjectSearchAdapter searchAdapter = new ProjectSearchAdapter(this,
+                            mAdapter.getAllCards()
+                    );
                     searchSrc.setAdapter(searchAdapter);
                     searchSrc.setOnItemClickListener((adapterView, view, i, l) -> {
                         mSearchItem.collapseActionView();
@@ -678,7 +709,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 String[] assignees = null;
                 String[] labels = null;
                 if(data.hasExtra(getString(R.string.intent_issue_assignees))) {
-                    assignees = data.getStringArrayExtra(getString(R.string.intent_issue_assignees));
+                    assignees = data
+                            .getStringArrayExtra(getString(R.string.intent_issue_assignees));
                 }
                 if(data.hasExtra(getString(R.string.intent_issue_labels))) {
                     labels = data.getStringArrayExtra(getString(R.string.intent_issue_labels));
@@ -711,14 +743,17 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     mAdapter.getCurrentFragment().newCard(card);
                 }
             } else if(requestCode == CardEditor.REQUEST_CODE_EDIT_CARD) {
-                mAdapter.getCurrentFragment().editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
+                mAdapter.getCurrentFragment()
+                        .editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
                 mEditor.createIssueComment(new Editor.CreationListener<Comment>() {
                     @Override
                     public void created(Comment comment) {
-                        Toast.makeText(ProjectActivity.this, R.string.text_comment_created, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, R.string.text_comment_created,
+                                Toast.LENGTH_SHORT
+                        ).show();
                         mRefresher.setRefreshing(false);
                     }
 
@@ -736,7 +771,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     @Override
     protected void onResume() {
         super.onResume();
-        mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
+        mAnalytics.setAnalyticsCollectionEnabled(
+                SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
     }
 
     class NavigationDragListener implements View.OnDragListener {
@@ -746,7 +782,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         @Override
         public boolean onDrag(View view, DragEvent event) {
             final DisplayMetrics metrics = getResources().getDisplayMetrics();
-            if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED && view.getId() == R.id.viewholder_card) {
+            if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED && view
+                    .getId() == R.id.viewholder_card) {
                 final RecyclerView rv = (RecyclerView) view.getParent();
                 final CardAdapter ca = (CardAdapter) rv.getAdapter();
                 final Rect r = new Rect();
@@ -793,10 +830,12 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 }
 
             } else if(event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
-                if(event.getX() / metrics.widthPixels > 0.85f && System.nanoTime() - mLastPageChange > 5E8) {
+                if(event.getX() / metrics.widthPixels > 0.85f && System
+                        .nanoTime() - mLastPageChange > 5E8) {
                     dragRight();
                     mLastPageChange = System.nanoTime();
-                } else if(event.getX() / metrics.widthPixels < 0.15f && System.nanoTime() - mLastPageChange > 5E8) {
+                } else if(event.getX() / metrics.widthPixels < 0.15f && System
+                        .nanoTime() - mLastPageChange > 5E8) {
                     dragLeft();
                     mLastPageChange = System.nanoTime();
                 }

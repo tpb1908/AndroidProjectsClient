@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/menu_edit_project" android:title="@string/menu_edit_project"/>
+    <item
+        android:id="@+id/menu_edit_project"
+        android:title="@string/menu_edit_project"/>
 
-    <item android:id="@+id/menu_delete_project" android:title="@string/menu_delete_project"/>
-
+    <item
+        android:id="@+id/menu_delete_project"
+        android:title="@string/menu_delete_project"/>
 
 
 </menu>

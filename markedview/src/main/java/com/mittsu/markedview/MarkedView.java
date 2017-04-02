@@ -18,7 +18,7 @@ import android.webkit.WebViewClient;
 
 /**
  * The MarkedView is the Markdown viewer.
- *
+ * <p>
  * Created by mittsu on 2016/04/25.
  */
 public final class MarkedView extends WebView implements NestedScrollingChild {
@@ -56,7 +56,7 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     @TargetApi(11)
     @SuppressLint("SetJavaScriptEnabled")
     private void init() {
-        setWebViewClient(new WebViewClient(){
+        setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                     loadUrl(previewText);
@@ -73,10 +73,10 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
         }
 
         getSettings().setJavaScriptEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             getSettings().setAllowUniversalAccessFromFileURLs(true);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
     }
@@ -102,27 +102,28 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
 
     public void setMarkdown(String mdText) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            previewText = String.format("javascript:preview('%s', %b)", escape(mdText), isCodeScrollDisable());
+            previewText = String
+                    .format("javascript:preview('%s', %b)", escape(mdText), isCodeScrollDisable());
         } else {
             previewText = String.format("preview('%s', %b)", escape(mdText), isCodeScrollDisable());
         }
     }
 
-    private String escape(String mdText){
+    private String escape(String mdText) {
         String escText = mdText.replace("\n", "\\\\n");
         escText = escText.replace("'", "\\\'");
         //in some cases the string may have "\r" and our view will show nothing,so replace it
-        escText = escText.replace("\r","");
+        escText = escText.replace("\r", "");
         return escText;
     }
 
     /* options */
 
-    public void setCodeScrollDisable(){
+    public void setCodeScrollDisable() {
         codeScrollDisable = true;
     }
 
-    private boolean isCodeScrollDisable(){
+    private boolean isCodeScrollDisable() {
         return codeScrollDisable;
     }
 
@@ -147,16 +148,16 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
 
         MotionEvent event = MotionEvent.obtain(ev);
         final int action = MotionEventCompat.getActionMasked(event);
-        if (action == MotionEvent.ACTION_DOWN) {
+        if(action == MotionEvent.ACTION_DOWN) {
             mNestedOffsetY = 0;
         }
         int eventY = (int) event.getY();
         event.offsetLocation(0, mNestedOffsetY);
-        switch (action) {
+        switch(action) {
             case MotionEvent.ACTION_MOVE:
                 int deltaY = mLastY - eventY;
                 // NestedPreScroll
-                if (dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset)) {
+                if(dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset)) {
                     deltaY -= mScrollConsumed[1];
                     mLastY = eventY - mScrollOffset[1];
                     event.offsetLocation(0, -mScrollOffset[1]);
@@ -165,7 +166,7 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
                 rv = super.onTouchEvent(event);
 
                 // NestedScroll
-                if (dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY, mScrollOffset)) {
+                if(dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY, mScrollOffset)) {
                     event.offsetLocation(0, mScrollOffset[1]);
                     mNestedOffsetY += mScrollOffset[1];
                     mLastY -= mScrollOffset[1];
@@ -216,7 +217,9 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     @Override
     public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed,
                                         int[] offsetInWindow) {
-        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
+        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+                offsetInWindow
+        );
     }
 
     @Override

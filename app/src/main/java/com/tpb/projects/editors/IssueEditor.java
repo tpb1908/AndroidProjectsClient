@@ -82,7 +82,8 @@ public class IssueEditor extends EditorActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_markdown_editor);
 
@@ -145,58 +146,70 @@ public class IssueEditor extends EditorActivity {
 
         final View content = findViewById(android.R.id.content);
 
-        mKeyBoardChecker = new KeyBoardVisibilityChecker(content, new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
-            @Override
-            public void keyboardShown() {
-                mInfoLayout.setVisibility(View.GONE);
-            }
+        mKeyBoardChecker = new KeyBoardVisibilityChecker(content,
+                new KeyBoardVisibilityChecker.KeyBoardVisibilityListener() {
+                    @Override
+                    public void keyboardShown() {
+                        mInfoLayout.setVisibility(View.GONE);
+                    }
 
-            @Override
-            public void keyboardHidden() {
-                if(mBodyEdit.isEditing()) {
-                    mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE), 100);
+                    @Override
+                    public void keyboardHidden() {
+                        if(mBodyEdit.isEditing()) {
+                            mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE),
+                                    100
+                            );
+                        }
+                    }
                 }
-            }
-        });
+        );
 
-        new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
-            @Override
-            public void snippetEntered(String snippet, int relativePosition) {
-                mHasBeenEdited = true;
-                //Check which EditText has focus and insert into the correct one
-                if(mTitleEdit.hasFocus()) {
-                    final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
-                    mTitleEdit.getText().insert(start, snippet);
-                    mTitleEdit.setSelection(start + relativePosition);
-                } else if(mBodyEdit.hasFocus() && mBodyEdit.isEditing()) {
-                    final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
-                    mBodyEdit.getText().insert(start, snippet);
-                    Log.i(TAG, "snippetEntered: Setting selection " + (start + relativePosition));
-                    mBodyEdit.setSelection(start + relativePosition);
+        new MarkdownButtonAdapter(this, mEditButtons,
+                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                    @Override
+                    public void snippetEntered(String snippet, int relativePosition) {
+                        mHasBeenEdited = true;
+                        //Check which EditText has focus and insert into the correct one
+                        if(mTitleEdit.hasFocus()) {
+                            final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
+                            mTitleEdit.getText().insert(start, snippet);
+                            mTitleEdit.setSelection(start + relativePosition);
+                        } else if(mBodyEdit.hasFocus() && mBodyEdit.isEditing()) {
+                            final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
+                            mBodyEdit.getText().insert(start, snippet);
+                            Log.i(TAG,
+                                    "snippetEntered: Setting selection " + (start + relativePosition)
+                            );
+                            mBodyEdit.setSelection(start + relativePosition);
+                        }
+                    }
+
+                    @Override
+                    public String getText() {
+                        return mBodyEdit.getInputText().toString();
+                    }
+
+                    @Override
+                    public void previewCalled() {
+                        if(mBodyEdit.isEditing()) {
+                            mBodyEdit.saveText();
+                            String repo = null;
+                            if(mLaunchIssue != null) repo = mLaunchIssue.getRepoFullName();
+                            mBodyEdit.disableEditing();
+                            mBodyEdit.setHtml(
+                                    Markdown.parseMD(mBodyEdit.getInputText().toString(), repo),
+                                    new HtmlHttpImageGetter(mBodyEdit, mBodyEdit)
+                            );
+                            mInfoLayout.setVisibility(View.GONE);
+                        } else {
+                            mBodyEdit.restoreText();
+                            mBodyEdit.enableEditing();
+                            if(!mKeyBoardChecker.isKeyboardOpen())
+                                mInfoLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
-            }
-
-            @Override
-            public String getText() {
-                return mBodyEdit.getInputText().toString();
-            }
-
-            @Override
-            public void previewCalled() {
-                if(mBodyEdit.isEditing()) {
-                    mBodyEdit.saveText();
-                    String repo = null;
-                    if(mLaunchIssue != null) repo = mLaunchIssue.getRepoFullName();
-                    mBodyEdit.disableEditing();
-                    mBodyEdit.setHtml(Markdown.parseMD(mBodyEdit.getInputText().toString(), repo), new HtmlHttpImageGetter(mBodyEdit, mBodyEdit));
-                    mInfoLayout.setVisibility(View.GONE);
-                } else {
-                    mBodyEdit.restoreText();
-                    mBodyEdit.enableEditing();
-                    if(!mKeyBoardChecker.isKeyboardOpen()) mInfoLayout.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        );
 
     }
 
@@ -318,7 +331,8 @@ public class IssueEditor extends EditorActivity {
     private void setAssigneesText() {
         final StringBuilder builder = new StringBuilder();
         for(String a : mAssignees) {
-            builder.append(String.format(getString(R.string.text_href), "https://github.com/" + a, a));
+            builder.append(
+                    String.format(getString(R.string.text_href), "https://github.com/" + a, a));
             builder.append("<br>");
         }
         if(builder.length() > 0) {
@@ -394,9 +408,13 @@ public class IssueEditor extends EditorActivity {
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
         if(mSelectedLabels.size() > 0)
-            done.putExtra(getString(R.string.intent_issue_labels), mSelectedLabels.toArray(new String[0]));
+            done.putExtra(getString(R.string.intent_issue_labels),
+                    mSelectedLabels.toArray(new String[0])
+            );
         if(mAssignees.size() > 0)
-            done.putExtra(getString(R.string.intent_issue_assignees), mAssignees.toArray(new String[0]));
+            done.putExtra(getString(R.string.intent_issue_assignees),
+                    mAssignees.toArray(new String[0])
+            );
 
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;
@@ -415,11 +433,14 @@ public class IssueEditor extends EditorActivity {
 
     @Override
     public void finish() {
-        if(mHasBeenEdited && !mBodyEdit.getText().toString().isEmpty() && !mTitleEdit.getText().toString().isEmpty()) {
+        if(mHasBeenEdited && !mBodyEdit.getText().toString().isEmpty() && !mTitleEdit.getText()
+                                                                                     .toString()
+                                                                                     .isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             });
@@ -429,7 +450,8 @@ public class IssueEditor extends EditorActivity {
             deleteDialog.show();
         } else {
             if(mKeyBoardChecker.isKeyboardOpen()) {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             } else {

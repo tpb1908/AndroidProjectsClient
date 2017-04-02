@@ -37,7 +37,8 @@ public class UI {
     /**
      * Sets the expansion point for a {@link CircularRevealActivity} Intent
      * to the midpoint of a View
-     * @param i The Intent to launch a {@link CircularRevealActivity} instance
+     *
+     * @param i    The Intent to launch a {@link CircularRevealActivity} instance
      * @param view The View instance which was clicked
      */
     public static void setViewPositionForIntent(Intent i, View view) {
@@ -50,10 +51,9 @@ public class UI {
     }
 
     /**
-     *
      * @param context Required to get string resource values
-     * @param i The Intent to launch a {@link CircularRevealActivity} instance
-     * @param pos The x and y coordinates of the click
+     * @param i       The Intent to launch a {@link CircularRevealActivity} instance
+     * @param pos     The x and y coordinates of the click
      */
     public static void setClickPositionForIntent(Context context, Intent i, float[] pos) {
         i.putExtra(context.getString(R.string.intent_position_x), (int) pos[0]);
@@ -84,7 +84,8 @@ public class UI {
         };
 
         // 1dp/ms
-        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration(
+                (int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
 
@@ -109,7 +110,8 @@ public class UI {
         };
 
         // 1dp/ms
-        a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration(
+                (int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
 
@@ -130,7 +132,9 @@ public class UI {
 
     @Px
     public static int pxFromSp(final float sp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
+                Resources.getSystem().getDisplayMetrics()
+        );
     }
 
     public static void setStatusBarColor(Window window, @ColorInt int color) {
@@ -144,9 +148,10 @@ public class UI {
 
     /**
      * Fades the background color of a View from original to flash and back
-     * @param view The view to flash
+     *
+     * @param view     The view to flash
      * @param original The current background color
-     * @param flash The color to fade to
+     * @param flash    The color to fade to
      */
     public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
         final ObjectAnimator colorFade = ObjectAnimator.ofObject(
@@ -154,7 +159,8 @@ public class UI {
                 "backgroundColor",
                 new ArgbEvaluator(),
                 original,
-                flash);
+                flash
+        );
         colorFade.setDuration(300);
         colorFade.setRepeatMode(ObjectAnimator.REVERSE);
         colorFade.setRepeatCount(1);
@@ -165,6 +171,7 @@ public class UI {
     /**
      * Checks whether the device has a navigation bar, and if so returns a pair
      * for {@see ActivityOptionsCompat#makeSceneTransition}
+     *
      * @param activity Any activity in which to find the navigation bar
      * @return The navigation bar view view pair, or an empty view pair
      */
@@ -178,21 +185,22 @@ public class UI {
     public static void removeActivityFromTransitionManager(Activity activity) {
         final Class transitionManagerClass = TransitionManager.class;
         try {
-            final Field runningTransitionsField = transitionManagerClass.getDeclaredField("sRunningTransitions");
+            final Field runningTransitionsField = transitionManagerClass
+                    .getDeclaredField("sRunningTransitions");
             runningTransitionsField.setAccessible(true);
             //noinspection unchecked
             final ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>> runningTransitions
                     = (ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>>)
                     runningTransitionsField.get(transitionManagerClass);
-            if (runningTransitions.get() == null || runningTransitions.get().get() == null) {
+            if(runningTransitions.get() == null || runningTransitions.get().get() == null) {
                 return;
             }
             ArrayMap map = runningTransitions.get().get();
             View decorView = activity.getWindow().getDecorView();
-            if (map.containsKey(decorView)) {
+            if(map.containsKey(decorView)) {
                 map.remove(decorView);
             }
-        } catch (Exception ignored) {
+        } catch(Exception ignored) {
         }
     }
 

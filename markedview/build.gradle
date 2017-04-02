@@ -19,8 +19,8 @@ android {
         compile 'com.android.support:appcompat-v7:25.3.0'
     }
 
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             assets.srcDirs = ['src/main/assets']
         }
     }

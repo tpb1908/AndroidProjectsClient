@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import com.androidnetworking.widget.ANImageView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.data.APIHandler;
@@ -149,7 +148,10 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
 
     @Override
     public CommentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CommentHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_comment, parent, false));
+        return new CommentHolder(LayoutInflater.from(parent.getContext())
+                                               .inflate(R.layout.viewholder_comment, parent,
+                                                       false
+                                               ));
 
     }
 
@@ -164,27 +166,35 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         if(mComments.get(pos).second == null) {
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             final StringBuilder builder = new StringBuilder();
-            builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
-                    String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
+            builder.append(String.format(
+                    commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                    String.format(
+                            commentHolder.itemView.getResources().getString(R.string.text_href),
                             comment.getUser().getHtmlUrl(),
-                            comment.getUser().getLogin()),
-                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
+                            comment.getUser().getLogin()
+                    ),
+                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())
+            ));
             if(comment.getUpdatedAt() != comment.getCreatedAt()) {
                 builder.append(" • ");
-                builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
+                builder.append(commentHolder.itemView.getResources()
+                                                     .getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mCommit.getFullRepoName()));
             commentHolder.mText.setHtml(
                     Markdown.parseMD(builder.toString()),
                     new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
-                    text -> mComments.set(pos, new Pair<>(comment, text)));
+                    text -> mComments.set(pos, new Pair<>(comment, text))
+            );
         } else {
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             commentHolder.mText.setText(mComments.get(pos).second);
         }
         IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mText);
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar,
+                comment.getUser().getLogin()
+        );
     }
 
     @Override

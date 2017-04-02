@@ -56,7 +56,8 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
                     public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
                         for(int i = 0; i < visibleCount; i++) {
                             try {
-                                ((AppCompatCheckedTextView) listView.getChildAt(i)).setTextColor(colors[firstVisible + i]);
+                                ((AppCompatCheckedTextView) listView.getChildAt(i))
+                                        .setTextColor(colors[firstVisible + i]);
                             } catch(ClassCastException ignored) {
                             }
                         }

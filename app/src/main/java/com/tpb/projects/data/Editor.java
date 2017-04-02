@@ -634,7 +634,11 @@ public class Editor extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Update error " + anError.getErrorBody() + ", " + anError.getErrorDetail() + ", " + anError.getErrorCode() + ", " + anError.getMessage());
+                        Log.i(TAG,
+                                "onError: Update error " + anError.getErrorBody() + ", " + anError
+                                        .getErrorDetail() + ", " + anError
+                                        .getErrorCode() + ", " + anError.getMessage()
+                        );
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
@@ -663,7 +667,7 @@ public class Editor extends APIHandler {
                 });
 
     }
-    
+
     public void starRepo(@Nullable UpdateListener<Boolean> listener, String fullRepoName) {
         AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                          .addHeaders(API_AUTH_HEADERS)

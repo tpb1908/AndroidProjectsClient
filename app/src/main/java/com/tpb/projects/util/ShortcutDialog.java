@@ -26,7 +26,8 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getArguments().getInt(getString(R.string.intent_title_res)));
-        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_save_shortcut, null);
+        final View view = getActivity().getLayoutInflater()
+                                       .inflate(R.layout.dialog_save_shortcut, null);
         builder.setView(view);
         final EditText name = (EditText) view.findViewById(R.id.shortcut_name);
         name.setText(getArguments().getString(getString(R.string.intent_name)));
@@ -38,7 +39,9 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
             if(mListener != null && !name.getText().toString().isEmpty()) {
                 if(showCheckbox) {
-                    mListener.onPositive(name.getText().toString(), ((CheckBox) view.findViewById(R.id.shortcut_use_user_image)).isChecked());
+                    mListener.onPositive(name.getText().toString(),
+                            ((CheckBox) view.findViewById(R.id.shortcut_use_user_image)).isChecked()
+                    );
                 } else {
                     mListener.onPositive(name.getText().toString(), false);
                 }
@@ -49,7 +52,8 @@ public class ShortcutDialog extends KeyboardDismissingDialogFragment {
         final Dialog dialog = builder.create();
         dialog.setOnShowListener(dialogInterface -> {
             //Show keyboard
-            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(name, InputMethodManager.SHOW_IMPLICIT);
         });
 

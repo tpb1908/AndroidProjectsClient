@@ -58,7 +58,8 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_milestones);
@@ -83,7 +84,9 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                     mAccessLevel = data;
                     if(mAccessLevel != Repository.AccessLevel.NONE) {
                         mFab.postDelayed(() -> mFab.show(true), 300);
-                        enableScrollListener(mRecycler, (LinearLayoutManager) mRecycler.getLayoutManager());
+                        enableScrollListener(mRecycler,
+                                (LinearLayoutManager) mRecycler.getLayoutManager()
+                        );
                     }
                 }
 
@@ -110,7 +113,8 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                 } else if(dy < -10) {
                     mFab.show(true);
                 }
-                if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager.getItemCount()) {
+                if((manager.getChildCount() + manager.findFirstVisibleItemPosition()) >= manager
+                        .getItemCount()) {
                     if(!mIsLoading && !mMaxPageReached) {
                         mPage++;
                         mRefresher.setRefreshing(true);
@@ -206,25 +210,28 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
         if(resultCode == Activity.RESULT_OK) {
             mRefresher.setRefreshing(true);
             final String title = data.getStringExtra(getString(R.string.intent_milestone_title));
-            final String description = data.getStringExtra(getString(R.string.intent_milestone_description));
+            final String description = data
+                    .getStringExtra(getString(R.string.intent_milestone_description));
             final int number = data.getIntExtra(getString(R.string.intent_milestone_number), -1);
             final long dueOn = data.getLongExtra(getString(R.string.intent_milestone_due_on), -1);
 
             if(requestCode == MilestoneEditor.REQUEST_CODE_NEW_MILESTONE) {
                 mEditor.createMilestone(new Editor.CreationListener<Milestone>() {
-                    @Override
-                    public void created(Milestone milestone) {
-                        Log.i(TAG, "created: Milestone created");
-                        mRefresher.setRefreshing(false);
-                        mAdapter.addMilestone(milestone);
-                        mRecycler.scrollToPosition(0);
-                    }
+                                            @Override
+                                            public void created(Milestone milestone) {
+                                                Log.i(TAG, "created: Milestone created");
+                                                mRefresher.setRefreshing(false);
+                                                mAdapter.addMilestone(milestone);
+                                                mRecycler.scrollToPosition(0);
+                                            }
 
-                    @Override
-                    public void creationError(APIHandler.APIError error) {
-                        mRefresher.setRefreshing(false);
-                    }
-                }, mRepo, title, description, dueOn > 0 ? Util.toISO8061FromMilliseconds(dueOn) : null);
+                                            @Override
+                                            public void creationError(APIHandler.APIError error) {
+                                                mRefresher.setRefreshing(false);
+                                            }
+                                        }, mRepo, title, description,
+                        dueOn > 0 ? Util.toISO8061FromMilliseconds(dueOn) : null
+                );
             } else if(requestCode == MilestoneEditor.REQUEST_CODE_EDIT_MILESTONE) {
                 mEditor.updateMilestone(new Editor.UpdateListener<Milestone>() {
                     @Override

@@ -62,24 +62,33 @@ public abstract class APIHandler {
     }
 
     protected void initHeaders() {
-        API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+        );
         API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
 
-        ORGANIZATIONS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        ORGANIZATIONS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+        );
         ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
 
-        PROJECTS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        PROJECTS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+        );
         PROJECTS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         PROJECTS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
 
-        LICENSES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY, String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken()));
+        LICENSES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+        );
         LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REPO_LICENSE_PREVIEW_ACCEPT_HEADER);
     }
 
     public static boolean isNetworkAvailable(Context context) {
-        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
+        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo() != null;
     }
 
     private static final String CONNECTION_ERROR = "connectionError";
@@ -189,7 +198,8 @@ public abstract class APIHandler {
             case HTTP_UNPROCESSABLE_422:
                 return APIError.UNPROCESSABLE;
             case HTTP_409:
-                if(error.getErrorBody() != null && error.getErrorBody().contains(ERROR_MESSAGE_EMPTY_REPOSITORY)) {
+                if(error.getErrorBody() != null && error.getErrorBody()
+                                                        .contains(ERROR_MESSAGE_EMPTY_REPOSITORY)) {
                     return APIError.EMPTY_REPOSITORY;
                 }
         }

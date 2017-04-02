@@ -86,7 +86,9 @@ public class RepoReadmeFragment extends RepoFragment {
 
                     @Override
                     public void loadError(APIHandler.APIError error) {
-                        Toast.makeText(getContext(), R.string.error_rendering_readme, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.error_rendering_readme,
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
                 }, data, mRepo.getDescription());
             }
@@ -96,7 +98,9 @@ public class RepoReadmeFragment extends RepoFragment {
                 if(!mAreViewsValid) return;
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NOT_FOUND) {
-                    Toast.makeText(getContext(), R.string.error_readme_not_found, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_readme_not_found,
+                            Toast.LENGTH_SHORT
+                    ).show();
                 } else {
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                 }

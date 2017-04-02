@@ -67,9 +67,11 @@ public class Commit extends DataModel implements Parcelable {
                 committerEmail = commit.getJSONObject(COMMITTER).getString(EMAIL);
                 authorName = commit.getJSONObject(AUTHOR).getString(NAME);
                 authorEmail = commit.getJSONObject(AUTHOR).getString(EMAIL);
-            } catch(JSONException ignored) {}
+            } catch(JSONException ignored) {
+            }
             try {
-                createdAt = Util.toCalendar(commit.getJSONObject(AUTHOR).getString(DATE)).getTimeInMillis();
+                createdAt = Util.toCalendar(commit.getJSONObject(AUTHOR).getString(DATE))
+                                .getTimeInMillis();
             } catch(ParseException pe) {
 
             }
@@ -96,12 +98,13 @@ public class Commit extends DataModel implements Parcelable {
             if(obj.has(FILES)) {
                 final JSONArray fs = obj.getJSONArray(FILES);
                 files = new DiffFile[fs.length()];
-                for(int i = 0; i < fs.length() ; i++) {
+                for(int i = 0; i < fs.length(); i++) {
                     files[i] = new DiffFile(fs.getJSONObject(i));
                 }
             }
 
-        } catch(JSONException jse) {}
+        } catch(JSONException jse) {
+        }
     }
 
     @Override
@@ -171,7 +174,7 @@ public class Commit extends DataModel implements Parcelable {
 
     public String getFullRepoName() {
         final int repoStart = url.indexOf("repos") + "repos/".length();
-        return url.substring(repoStart, url.indexOf('/', url.indexOf('/', repoStart)+1));
+        return url.substring(repoStart, url.indexOf('/', url.indexOf('/', repoStart) + 1));
     }
 
     @Override

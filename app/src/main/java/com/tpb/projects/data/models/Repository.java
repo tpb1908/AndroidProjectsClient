@@ -282,7 +282,8 @@ public class Repository extends DataModel implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Repository && fullName.equals(((Repository) obj).fullName) && updatedAt == ((Repository) obj).updatedAt;
+        return obj instanceof Repository && fullName
+                .equals(((Repository) obj).fullName) && updatedAt == ((Repository) obj).updatedAt;
     }
 
     @Override
@@ -315,7 +316,6 @@ public class Repository extends DataModel implements Parcelable {
                 ", licenseUrl='" + licenseUrl + '\'' +
                 '}';
     }
-
 
 
     public enum AccessLevel {

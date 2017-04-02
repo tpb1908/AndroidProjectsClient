@@ -15,9 +15,9 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.data.models.Issue;
 import com.tpb.projects.data.models.Label;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.search.ArrayFilter;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
-import com.tpb.projects.markdown.Markdown;
 
 import java.util.ArrayList;
 
@@ -73,7 +73,10 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         if(convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_search_suggestion, parent, false);
+            convertView = LayoutInflater.from(parent.getContext())
+                                        .inflate(R.layout.viewholder_search_suggestion, parent,
+                                                false
+                                        );
         }
         bindView(position, convertView);
         return convertView;
@@ -88,8 +91,12 @@ class IssuesSearchAdapter extends ArrayAdapter<Issue> {
             );
         }
 
-        ((TextView) view.findViewById(R.id.suggestion_text)).setCompoundDrawablesRelativeWithIntrinsicBounds(
-                data.get(dataPos).isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open, 0, 0, 0);
+        ((TextView) view.findViewById(R.id.suggestion_text))
+                .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        data.get(dataPos)
+                            .isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open, 0,
+                        0, 0
+                );
         ((TextView) view.findViewById(R.id.suggestion_text)).setText(parseCache[dataPos]);
 
     }

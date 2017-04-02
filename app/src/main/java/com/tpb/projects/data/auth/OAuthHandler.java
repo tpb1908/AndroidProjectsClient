@@ -66,44 +66,47 @@ public class OAuthHandler extends APIHandler {
 
     private void getAccessToken(final String code) {
         AndroidNetworking.get(mTokenUrl + "&code=" + code)
-                .build()
-                .getAsString(new StringRequestListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        mAccessToken = response.substring(
-                                response.indexOf("access_token=") + 13,
-                                response.indexOf("&scope"));
-                        mSession.storeAccessToken(mAccessToken);
-                        initHeaders();
-                        mListener.onSuccess();
-                        fetchUserName();
-                    }
+                         .build()
+                         .getAsString(new StringRequestListener() {
+                             @Override
+                             public void onResponse(String response) {
+                                 mAccessToken = response.substring(
+                                         response.indexOf("access_token=") + 13,
+                                         response.indexOf("&scope")
+                                 );
+                                 mSession.storeAccessToken(mAccessToken);
+                                 initHeaders();
+                                 mListener.onSuccess();
+                                 fetchUserName();
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
+                             @Override
+                             public void onError(ANError anError) {
 
-                    }
-                });
+                             }
+                         });
     }
 
     private void fetchUserName() {
 
         AndroidNetworking.get(GIT_BASE + "/user")
-                .addHeaders(API_AUTH_HEADERS)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        final User user = User.parse(response);
-                        mSession.storeCredentials(mAccessToken, user.getId(), user.getLogin());
-                        mListener.userLoaded(user);
-                    }
+                         .addHeaders(API_AUTH_HEADERS)
+                         .build()
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 final User user = User.parse(response);
+                                 mSession.storeCredentials(mAccessToken, user.getId(),
+                                         user.getLogin()
+                                 );
+                                 mListener.userLoaded(user);
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorDetail());
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 Log.i(TAG, "onError: " + anError.getErrorDetail());
+                             }
+                         });
 
     }
 
@@ -129,20 +132,20 @@ public class OAuthHandler extends APIHandler {
     //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization
     public static void validateKey(OAuthValidationListener listener) {
         AndroidNetworking.get(GIT_BASE + RATE_LIMIT)
-                .addHeaders(API_AUTH_HEADERS)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if(listener != null) listener.keyValidated(true);
-                    }
+                         .addHeaders(API_AUTH_HEADERS)
+                         .build()
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 if(listener != null) listener.keyValidated(true);
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        if(listener != null) listener.keyValidated(false);
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 if(listener != null) listener.keyValidated(false);
+                                 Log.i(TAG, "onError: " + anError.getErrorBody());
+                             }
+                         });
     }
 
     public interface OAuthAuthenticationListener {

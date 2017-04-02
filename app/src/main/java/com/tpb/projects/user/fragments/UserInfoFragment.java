@@ -54,30 +54,35 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         final View view = inflater.inflate(R.layout.fragment_user_info, container, false);
         unbinder = ButterKnife.bind(this, view);
         mRefresher.setRefreshing(true);
-        mAvatar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
-                if(getActivity().getIntent() != null && getActivity().getIntent().hasExtra(getString(R.string.intent_drawable))) {
-                    final Bitmap bm = getActivity().getIntent().getParcelableExtra(getString(R.string.intent_drawable));
-                    mUserName.setText(getActivity().getIntent().getStringExtra(getString(R.string.intent_username)));
-                    mAvatar.setImageBitmap(bm);
-                }
-                getActivity().startPostponedEnterTransition();
-                return true;
-            }
-        });
-        mRefresher.setOnRefreshListener(() -> new Loader(getContext()).loadUser(new Loader.ItemLoader<User>() {
-            @Override
-            public void loadComplete(User data) {
-                userLoaded(data);
-            }
+        mAvatar.getViewTreeObserver()
+               .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                   @Override
+                   public boolean onPreDraw() {
+                       mAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
+                       if(getActivity().getIntent() != null && getActivity().getIntent().hasExtra(
+                               getString(R.string.intent_drawable))) {
+                           final Bitmap bm = getActivity().getIntent().getParcelableExtra(
+                                   getString(R.string.intent_drawable));
+                           mUserName.setText(getActivity().getIntent().getStringExtra(
+                                   getString(R.string.intent_username)));
+                           mAvatar.setImageBitmap(bm);
+                       }
+                       getActivity().startPostponedEnterTransition();
+                       return true;
+                   }
+               });
+        mRefresher.setOnRefreshListener(
+                () -> new Loader(getContext()).loadUser(new Loader.ItemLoader<User>() {
+                    @Override
+                    public void loadComplete(User data) {
+                        userLoaded(data);
+                    }
 
-            @Override
-            public void loadError(APIHandler.APIError error) {
-                mRefresher.setRefreshing(false);
-            }
-        }, getParent().getUser().getLogin()));
+                    @Override
+                    public void loadError(APIHandler.APIError error) {
+                        mRefresher.setRefreshing(false);
+                    }
+                }, getParent().getUser().getLogin()));
 
         mAreViewsValid = true;
         return view;
@@ -112,12 +117,12 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         tv = getInfoTextView(R.drawable.ic_date);
         tv.setText(
                 String.format(
-                    getString(R.string.text_user_created_at),
-                    Util.formatDateLocally(
-                        getContext(),
-                        new Date(user.getCreatedAt())
+                        getString(R.string.text_user_created_at),
+                        Util.formatDateLocally(
+                                getContext(),
+                                new Date(user.getCreatedAt())
+                        )
                 )
-            )
         );
         mInfoList.addView(tv, params);
         if(user.getEmail() != null) {
@@ -147,7 +152,8 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             tv.setText(getResources().getQuantityString(
                     R.plurals.text_user_repositories,
                     user.getRepos(),
-                    user.getRepos())
+                    user.getRepos()
+                    )
             );
             mInfoList.addView(tv, params);
         }
@@ -156,7 +162,8 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             tv.setText(getResources().getQuantityString(
                     R.plurals.text_user_gists,
                     user.getGists(),
-                    user.getGists())
+                    user.getGists()
+                    )
             );
             mInfoList.addView(tv, params);
         }
@@ -197,11 +204,16 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         }
         if(total > 0) {
 
-            final String info = getResources().getQuantityString(R.plurals.text_user_contributions, total, total) +
+            final String info = getResources()
+                    .getQuantityString(R.plurals.text_user_contributions, total, total) +
                     "\n" +
-                    String.format(getString(R.string.text_user_average), (float) total / daysTotal) +
+                    String.format(getString(R.string.text_user_average),
+                            (float) total / daysTotal
+                    ) +
                     "\n" +
-                    String.format(getString(R.string.text_user_average_active), ((float) total / daysActive)) +
+                    String.format(getString(R.string.text_user_average_active),
+                            ((float) total / daysActive)
+                    ) +
                     "\n" +
                     String.format(getString(R.string.text_user_max_contributions), max) +
                     "\n" +

@@ -53,7 +53,8 @@ public class LoginActivity extends BaseActivity {
 
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT);
+            ViewGroup.LayoutParams.FILL_PARENT
+    );
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -66,7 +67,8 @@ public class LoginActivity extends BaseActivity {
         mAnalytics = FirebaseAnalytics.getInstance(this);
 
         mOAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL);
+                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL
+        );
         mOAuthHandler.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
@@ -92,7 +94,9 @@ public class LoginActivity extends BaseActivity {
                 mId.setText(user.getLogin());
                 String details = "";
                 if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
-                mStats.setText(String.format(getString(R.string.text_user_info), details, user.getLocation(), user.getRepos(), user.getFollowers()));
+                mStats.setText(String.format(getString(R.string.text_user_info), details,
+                        user.getLocation(), user.getRepos(), user.getFollowers()
+                ));
 
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);

@@ -38,14 +38,17 @@ public class SettingsActivity extends BaseActivity {
         setTheme(preferences.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_settings);
         ((TextView) findViewById(R.id.text_version_number)).setText(BuildConfig.VERSION_NAME);
-        ((Switch) findViewById(R.id.switch_dark_theme)).setChecked(preferences.isDarkThemeEnabled());
-        ((Switch) findViewById(R.id.switch_enable_analytics)).setChecked(preferences.areAnalyticsEnabled());
+        ((Switch) findViewById(R.id.switch_dark_theme))
+                .setChecked(preferences.isDarkThemeEnabled());
+        ((Switch) findViewById(R.id.switch_enable_analytics))
+                .setChecked(preferences.areAnalyticsEnabled());
 
         final Spinner spinner = (Spinner) findViewById(R.id.spinner_card_click);
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_dropdown_item,
-                getResources().getStringArray(R.array.settings_card_actions));
+                getResources().getStringArray(R.array.settings_card_actions)
+        );
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -60,7 +63,9 @@ public class SettingsActivity extends BaseActivity {
         });
         spinner.setSelection(preferences.getCardAction().toInt());
 
-        Log.i(TAG, "onCreate: Emails " + BuildConfig.BUG_EMAIL + ", " + BuildConfig.FEATURE_REQUEST_EMAIL);
+        Log.i(TAG,
+                "onCreate: Emails " + BuildConfig.BUG_EMAIL + ", " + BuildConfig.FEATURE_REQUEST_EMAIL
+        );
     }
 
     public void onSettingsClick(View view) {
@@ -90,7 +95,8 @@ public class SettingsActivity extends BaseActivity {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.REPO_ADDRESS)));
                 break;
             case R.id.layout_settings_developer:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908")));
+                startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tpb1908")));
                 break;
             case R.id.layout_settings_bug_report:
                 final Intent bugIntent = new Intent(Intent.ACTION_SEND);
@@ -103,7 +109,9 @@ public class SettingsActivity extends BaseActivity {
             case R.id.layout_settings_feature_request:
                 final Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("text/email");
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {BuildConfig.FEATURE_REQUEST_EMAIL});
+                emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                        new String[] {BuildConfig.FEATURE_REQUEST_EMAIL}
+                );
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Projects feature request");
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "Bug:\n\n\nSteps to reproduce:");
                 startActivity(Intent.createChooser(emailIntent, "Send email:"));
@@ -203,7 +211,8 @@ public class SettingsActivity extends BaseActivity {
 
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if(url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-                        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        view.getContext()
+                            .startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                         return true;
                     } else {
                         return false;

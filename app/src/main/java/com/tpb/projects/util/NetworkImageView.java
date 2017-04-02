@@ -42,9 +42,14 @@ public class NetworkImageView extends AppCompatImageView {
     }
 
     private void init(AttributeSet attrs, int defStyleAttr) {
-        final TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.NetworkImageView, defStyleAttr, 0);
-        mDefaultImageResId = array.getResourceId(R.styleable.NetworkImageView_default_image_resource, R.drawable.ic_avatar_default);
-        mErrorImageResId = array.getResourceId(R.styleable.NetworkImageView_error_image_resource, 0);
+        final TypedArray array = getContext()
+                .obtainStyledAttributes(attrs, R.styleable.NetworkImageView, defStyleAttr, 0);
+        mDefaultImageResId = array
+                .getResourceId(R.styleable.NetworkImageView_default_image_resource,
+                        R.drawable.ic_avatar_default
+                );
+        mErrorImageResId = array
+                .getResourceId(R.styleable.NetworkImageView_error_image_resource, 0);
         array.recycle();
     }
 

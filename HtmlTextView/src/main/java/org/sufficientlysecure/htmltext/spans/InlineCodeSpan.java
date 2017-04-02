@@ -17,7 +17,7 @@ import static android.R.attr.padding;
  * Created by theo on 22/03/17.
  */
 
-public class InlineCodeSpan extends ReplacementSpan{
+public class InlineCodeSpan extends ReplacementSpan {
     private final float mTextSize;
 
     private GradientDrawable mDrawable;
@@ -61,7 +61,7 @@ public class InlineCodeSpan extends ReplacementSpan{
         final int leading = paint.getFontMetricsInt().leading;
         mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
         mDrawable.draw(canvas);
-       // Log.i(InlineCodeSpan.class.getSimpleName(), "draw: From " + start + " to " + end + " string " + text.subSequence(start, end));
+        // Log.i(InlineCodeSpan.class.getSimpleName(), "draw: From " + start + " to " + end + " string " + text.subSequence(start, end));
         canvas.drawText(text, start, end, x + mPadding, y, paint);
     }
 

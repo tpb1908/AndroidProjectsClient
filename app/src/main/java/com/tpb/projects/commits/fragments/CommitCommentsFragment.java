@@ -111,7 +111,7 @@ public class CommitCommentsFragment extends CommitFragment {
             public void creationError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
             }
-        },  mCommit.getFullRepoName(), mCommit.getSha(), comment.getBody());
+        }, mCommit.getFullRepoName(), mCommit.getSha(), comment.getBody());
     }
 
     private void editComment(Comment comment) {
@@ -150,8 +150,11 @@ public class CommitCommentsFragment extends CommitFragment {
         menu.inflate(R.menu.menu_comment);
         if(comment.getUser().getLogin().equals(
                 GitHubSession.getSession(getContext()).getUserLogin())) {
-            menu.getMenu().add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
-            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE, getString(R.string.menu_delete_comment));
+            menu.getMenu()
+                .add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
+            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE,
+                    getString(R.string.menu_delete_comment)
+            );
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
@@ -168,7 +171,9 @@ public class CommitCommentsFragment extends CommitFragment {
                     final ClipboardManager cm = (ClipboardManager) getActivity().getSystemService(
                             Context.CLIPBOARD_SERVICE);
                     cm.setPrimaryClip(ClipData.newPlainText("Comment", comment.getBody()));
-                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board),
+                            Toast.LENGTH_SHORT
+                    ).show();
                     break;
             }
             return false;

@@ -70,9 +70,9 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
                         "maxLines",
                         1,
                         holder.mDiff.getLineCount()
-                        ).setDuration(holder.itemView.getContext().getResources()
+                ).setDuration(holder.itemView.getContext().getResources()
                                              .getInteger(android.R.integer.config_mediumAnimTime))
-                        .start();
+                              .start();
             }
         });
     }

@@ -42,7 +42,8 @@ public class EmojiActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_simple_search);
         ButterKnife.bind(this);
@@ -64,7 +65,7 @@ public class EmojiActivity extends BaseActivity {
 
         private ArrayList<Emoji> mEmojis = new ArrayList<>();
         private ArrayList<Emoji> mFilteredEmojis = new ArrayList<>();
-        
+
         EmojiAdapter(SharedPreferences prefs) {
             mEmojis.addAll(EmojiManager.getAll());
             if(prefs.getString("common", null) != null) {
@@ -100,13 +101,17 @@ public class EmojiActivity extends BaseActivity {
 
         @Override
         public EmojiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new EmojiViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_text, parent, false));
+            return new EmojiViewHolder(LayoutInflater.from(parent.getContext())
+                                                     .inflate(R.layout.viewholder_text, parent,
+                                                             false
+                                                     ));
         }
 
         @Override
         public void onBindViewHolder(EmojiViewHolder holder, int position) {
             holder.mEmoji.setText(mFilteredEmojis.get(position).getUnicode());
-            holder.mName.setText(String.format(":%1$s:", mFilteredEmojis.get(position).getAliases().get(0)));
+            holder.mName.setText(
+                    String.format(":%1$s:", mFilteredEmojis.get(position).getAliases().get(0)));
         }
 
         @Override
@@ -118,7 +123,7 @@ public class EmojiActivity extends BaseActivity {
 
             @BindView(R.id.text_content) TextView mEmoji;
             @BindView(R.id.text_info) TextView mName;
-            
+
             EmojiViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);

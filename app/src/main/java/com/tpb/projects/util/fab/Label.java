@@ -77,14 +77,14 @@ public class Label extends AppCompatTextView {
     }
 
     private int calculateMeasuredWidth() {
-        if (mRawWidth == 0) {
+        if(mRawWidth == 0) {
             mRawWidth = getMeasuredWidth();
         }
         return getMeasuredWidth() + calculateShadowWidth();
     }
 
     private int calculateMeasuredHeight() {
-        if (mRawHeight == 0) {
+        if(mRawHeight == 0) {
             mRawHeight = getMeasuredHeight();
         }
         return getMeasuredHeight() + calculateShadowHeight();
@@ -100,8 +100,8 @@ public class Label extends AppCompatTextView {
 
     void updateBackground() {
         LayerDrawable layerDrawable;
-        if (mShowShadow) {
-            layerDrawable = new LayerDrawable(new Drawable[]{
+        if(mShowShadow) {
+            layerDrawable = new LayerDrawable(new Drawable[] {
                     new Label.Shadow(),
                     createFillDrawable()
             });
@@ -119,7 +119,7 @@ public class Label extends AppCompatTextView {
                     bottomInset
             );
         } else {
-            layerDrawable = new LayerDrawable(new Drawable[]{
+            layerDrawable = new LayerDrawable(new Drawable[] {
                     createFillDrawable()
             });
         }
@@ -130,13 +130,15 @@ public class Label extends AppCompatTextView {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private Drawable createFillDrawable() {
         StateListDrawable drawable = new StateListDrawable();
-        drawable.addState(new int[]{android.R.attr.state_pressed},
-                createRectDrawable(mColorPressed));
-        drawable.addState(new int[]{}, createRectDrawable(mColorNormal));
+        drawable.addState(new int[] {android.R.attr.state_pressed},
+                createRectDrawable(mColorPressed)
+        );
+        drawable.addState(new int[] {}, createRectDrawable(mColorNormal));
 
-        if (Util.hasLollipop() && mUsingRipple) {
-            RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][]{{}},
-                    new int[]{mColorRipple}), drawable, null);
+        if(Util.hasLollipop() && mUsingRipple) {
+            RippleDrawable ripple = new RippleDrawable(new ColorStateList(new int[][] {{}},
+                    new int[] {mColorRipple}
+            ), drawable, null);
             setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(View view, Outline outline) {
@@ -154,7 +156,7 @@ public class Label extends AppCompatTextView {
 
     private Drawable createRectDrawable(int color) {
         RoundRectShape shape = new RoundRectShape(
-                new float[]{
+                new float[] {
                         mCornerRadius,
                         mCornerRadius,
                         mCornerRadius,
@@ -165,7 +167,8 @@ public class Label extends AppCompatTextView {
                         mCornerRadius
                 },
                 null,
-                null);
+                null
+        );
         ShapeDrawable shapeDrawable = new ShapeDrawable(shape);
         shapeDrawable.getPaint().setColor(color);
         return shapeDrawable;
@@ -186,14 +189,14 @@ public class Label extends AppCompatTextView {
     }
 
     private void playShowAnimation() {
-        if (mShowAnimation != null) {
+        if(mShowAnimation != null) {
             mHideAnimation.cancel();
             startAnimation(mShowAnimation);
         }
     }
 
     private void playHideAnimation() {
-        if (mHideAnimation != null) {
+        if(mHideAnimation != null) {
             mShowAnimation.cancel();
             startAnimation(mHideAnimation);
         }
@@ -201,16 +204,16 @@ public class Label extends AppCompatTextView {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onActionDown() {
-        if (mUsingStyle) {
+        if(mUsingStyle) {
             mBackgroundDrawable = getBackground();
         }
 
-        if (mBackgroundDrawable instanceof StateListDrawable) {
+        if(mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
-            drawable.setState(new int[]{android.R.attr.state_pressed});
-        } else if (Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
+            drawable.setState(new int[] {android.R.attr.state_pressed});
+        } else if(Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
-            ripple.setState(new int[]{android.R.attr.state_enabled,
+            ripple.setState(new int[] {android.R.attr.state_enabled,
                     android.R.attr.state_pressed});
             ripple.setHotspot(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
             ripple.setVisible(true, true);
@@ -220,16 +223,16 @@ public class Label extends AppCompatTextView {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onActionUp() {
-        if (mUsingStyle) {
+        if(mUsingStyle) {
             mBackgroundDrawable = getBackground();
         }
 
-        if (mBackgroundDrawable instanceof StateListDrawable) {
+        if(mBackgroundDrawable instanceof StateListDrawable) {
             StateListDrawable drawable = (StateListDrawable) mBackgroundDrawable;
-            drawable.setState(new int[]{});
-        } else if (Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
+            drawable.setState(new int[] {});
+        } else if(Util.hasLollipop() && mBackgroundDrawable instanceof RippleDrawable) {
             RippleDrawable ripple = (RippleDrawable) mBackgroundDrawable;
-            ripple.setState(new int[]{});
+            ripple.setState(new int[] {});
             ripple.setHotspot(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
             ripple.setVisible(true, true);
         }
@@ -256,14 +259,14 @@ public class Label extends AppCompatTextView {
     }
 
     void show(boolean animate) {
-        if (animate) {
+        if(animate) {
             playShowAnimation();
         }
         setVisibility(VISIBLE);
     }
 
     void hide(boolean animate) {
-        if (animate) {
+        if(animate) {
             playHideAnimation();
         }
         setVisibility(INVISIBLE);
@@ -287,12 +290,12 @@ public class Label extends AppCompatTextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mFab == null || mFab.getOnClickListener() == null || !mFab.isEnabled()) {
+        if(mFab == null || mFab.getOnClickListener() == null || !mFab.isEnabled()) {
             return super.onTouchEvent(event);
         }
 
         int action = event.getAction();
-        switch (action) {
+        switch(action) {
             case MotionEvent.ACTION_UP:
                 onActionUp();
                 mFab.onActionUp();
@@ -314,7 +317,7 @@ public class Label extends AppCompatTextView {
                 @Override
                 public boolean onDown(MotionEvent e) {
                     onActionDown();
-                    if (mFab != null) {
+                    if(mFab != null) {
                         mFab.onActionDown();
                     }
                     return super.onDown(e);
@@ -323,7 +326,7 @@ public class Label extends AppCompatTextView {
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
                     onActionUp();
-                    if (mFab != null) {
+                    if(mFab != null) {
                         mFab.onActionUp();
                     }
                     return super.onSingleTapUp(e);
@@ -346,9 +349,10 @@ public class Label extends AppCompatTextView {
 
             mErase.setXfermode(PORTER_DUFF_CLEAR);
 
-            if (!isInEditMode()) {
+            if(!isInEditMode()) {
                 mPaint.setShadowLayer(mShadowRadius, mShadowXOffset, mShadowYOffset,
-                        mShadowColor);
+                        mShadowColor
+                );
             }
         }
 

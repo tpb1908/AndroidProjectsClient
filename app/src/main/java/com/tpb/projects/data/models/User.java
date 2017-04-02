@@ -167,15 +167,21 @@ public class User extends DataModel implements Parcelable {
             } else {
                 u.htmlUrl = "https://github.com/" + u.getLogin();
             }
-            if(obj.has(REPOS_URL) && !JSON_NULL.equals(obj.getString(REPOS_URL))) u.reposUrl = obj.getString(REPOS_URL);
+            if(obj.has(REPOS_URL) && !JSON_NULL.equals(obj.getString(REPOS_URL)))
+                u.reposUrl = obj.getString(REPOS_URL);
             if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
             if(obj.has(FOLLOWERS)) u.followers = obj.getInt(FOLLOWERS);
             if(obj.has(BIO) && !JSON_NULL.equals(obj.getString(BIO))) u.bio = obj.getString(BIO);
-            if(obj.has(EMAIL) && !JSON_NULL.equals(obj.getString(EMAIL))) u.email = obj.getString(EMAIL);
-            if(obj.has(LOCATION) && !JSON_NULL.equals(obj.getString(LOCATION))) u.location = obj.getString(LOCATION);
-            if(obj.has(NAME) && !JSON_NULL.equals(obj.getString(NAME))) u.name = obj.getString(NAME);
-            if(obj.has(BLOG) && !JSON_NULL.equals(obj.getString(BLOG))) u.blog = obj.getString(BLOG);
-            if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY))) u.company = obj.getString(COMPANY);
+            if(obj.has(EMAIL) && !JSON_NULL.equals(obj.getString(EMAIL)))
+                u.email = obj.getString(EMAIL);
+            if(obj.has(LOCATION) && !JSON_NULL.equals(obj.getString(LOCATION)))
+                u.location = obj.getString(LOCATION);
+            if(obj.has(NAME) && !JSON_NULL.equals(obj.getString(NAME)))
+                u.name = obj.getString(NAME);
+            if(obj.has(BLOG) && !JSON_NULL.equals(obj.getString(BLOG)))
+                u.blog = obj.getString(BLOG);
+            if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY)))
+                u.company = obj.getString(COMPANY);
             if(obj.has(GISTS)) u.gists = obj.getInt(GISTS);
             if(obj.has(FOLLOWING)) u.following = obj.getInt(FOLLOWING);
             if(obj.has(CONTRIBUTIONS)) u.contributions = obj.getInt(CONTRIBUTIONS);

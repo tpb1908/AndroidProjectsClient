@@ -104,7 +104,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     @Override
     public RepoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RepoHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_repo, parent, false));
+        return new RepoHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_repo, parent, false));
     }
 
     @SuppressLint("SetTextI18n")
@@ -113,7 +114,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         final int pos = holder.getAdapterPosition();
         final Repository r = mRepos.get(pos);
         holder.mName.setText(
-                (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r.isFork() ? " (Forked) " : "")
+                (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r
+                        .isFork() ? " (Forked) " : "")
         );
         if(!DataModel.JSON_NULL.equals(r.getLanguage())) {
             holder.mLanguage.setVisibility(View.VISIBLE);
@@ -234,14 +236,16 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             super(view);
             ButterKnife.bind(this, view);
             mDescription.setConsumeNonUrlClicks(false);
-            view.setOnClickListener((v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
+            view.setOnClickListener(
+                    (v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
             if(mIsShowingStars) {
                 mPin.setVisibility(View.GONE);
             } else {
                 mPin.setOnClickListener((v) -> {
                     togglePin(getAdapterPosition());
                     isPinned = !isPinned;
-                    mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+                    mPin.setImageResource(
+                            isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
                 });
             }
         }

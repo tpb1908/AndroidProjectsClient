@@ -37,24 +37,30 @@ public abstract class CircularRevealActivity extends BaseActivity {
         final View content = findViewById(android.R.id.content);
         if(x != -1 && y != -1) {
             if(content.getViewTreeObserver().isAlive()) {
-                content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        //We need to set the background as it is transparent
-                        if(SettingsActivity.Preferences.getPreferences(CircularRevealActivity.this).isDarkThemeEnabled()) {
-                            content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundDark));
-                        } else {
-                            content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundLight));
-                        }
-                        circularRevealActivity(x, y);
-                        //Remove the observer, as they are expensive
-                        content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                });
+                content.getViewTreeObserver()
+                       .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                           @Override
+                           public void onGlobalLayout() {
+                               //We need to set the background as it is transparent
+                               if(SettingsActivity.Preferences
+                                       .getPreferences(CircularRevealActivity.this)
+                                       .isDarkThemeEnabled()) {
+                                   content.setBackgroundColor(
+                                           getResources().getColor(R.color.defaultBackgroundDark));
+                               } else {
+                                   content.setBackgroundColor(
+                                           getResources().getColor(R.color.defaultBackgroundLight));
+                               }
+                               circularRevealActivity(x, y);
+                               //Remove the observer, as they are expensive
+                               content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                           }
+                       });
             }
         } else {
             //Even if we don't expand, we still need to show a non-transparent background
-            if(SettingsActivity.Preferences.getPreferences(CircularRevealActivity.this).isDarkThemeEnabled()) {
+            if(SettingsActivity.Preferences.getPreferences(CircularRevealActivity.this)
+                                           .isDarkThemeEnabled()) {
                 content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundDark));
             } else {
                 content.setBackgroundColor(getResources().getColor(R.color.defaultBackgroundLight));
@@ -70,8 +76,10 @@ public abstract class CircularRevealActivity extends BaseActivity {
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
         // Create the animator for this view (the start radius is zero)
-        final Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, 0, finalRadius);
-        circularReveal.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+        final Animator circularReveal = ViewAnimationUtils
+                .createCircularReveal(rootLayout, cx, cy, 0, finalRadius);
+        circularReveal
+                .setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
 
         // Make the view visible and start the animation
         rootLayout.setVisibility(View.VISIBLE);
@@ -85,7 +93,8 @@ public abstract class CircularRevealActivity extends BaseActivity {
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
         // Create the animator for this view (the start radius is zero)
-        final Animator circularClose = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
+        final Animator circularClose = ViewAnimationUtils
+                .createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
         //Generally 4-500 ms depending on system settings
         circularClose.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
         circularClose.addListener(new AnimatorListenerAdapter() {
@@ -96,7 +105,9 @@ public abstract class CircularRevealActivity extends BaseActivity {
                 frame(s) between the animation ending and finish being called
                  */
                 findViewById(android.R.id.content).setVisibility(View.GONE);
-                UI.setStatusBarColor(getWindow(), getResources().getColor(android.R.color.transparent));
+                UI.setStatusBarColor(getWindow(),
+                        getResources().getColor(android.R.color.transparent)
+                );
                 super.onAnimationEnd(animation);
                 CircularRevealActivity.super.finish();
             }

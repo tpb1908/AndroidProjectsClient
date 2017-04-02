@@ -36,7 +36,8 @@ public class DiffFile extends DataModel implements Parcelable {
             rawUrl = obj.getString(RAW_URL);
             blobUrl = obj.getString(BLOB_URL);
             patch = obj.getString(PATCH);
-        } catch(JSONException jse) {}
+        } catch(JSONException jse) {
+        }
     }
 
     @Override

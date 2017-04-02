@@ -24,7 +24,7 @@ public class JellyBeanSpanFixEditText extends AppCompatEditText {
         public final List<Object> spansWithSpacesAfter;
 
         public static FixingResult fixed(List<Object> spansWithSpacesBefore,
-                                                                  List<Object> spansWithSpacesAfter) {
+                                         List<Object> spansWithSpacesAfter) {
             return new FixingResult(true, spansWithSpacesBefore, spansWithSpacesAfter);
         }
 
@@ -67,7 +67,9 @@ public class JellyBeanSpanFixEditText extends AppCompatEditText {
     private void fixOnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final CharSequence text = getText();
         if(text != null) {
-            fixSpannedWithSpaces(new SpannableStringBuilder(text), widthMeasureSpec, heightMeasureSpec);
+            fixSpannedWithSpaces(new SpannableStringBuilder(text), widthMeasureSpec,
+                    heightMeasureSpec
+            );
         } else {
             if(HtmlTextView.DEBUG) {
                 Log.d(HtmlTextView.TAG, "The text isn't a Spanned");
@@ -83,7 +85,8 @@ public class JellyBeanSpanFixEditText extends AppCompatEditText {
                                       int heightMeasureSpec) {
 
         final FixingResult result = addSpacesAroundSpansUntilFixed(builder, widthMeasureSpec,
-                heightMeasureSpec);
+                heightMeasureSpec
+        );
 
         if(result.fixed) {
             removeUnneededSpaces(widthMeasureSpec, heightMeasureSpec, builder, result);
@@ -93,7 +96,7 @@ public class JellyBeanSpanFixEditText extends AppCompatEditText {
     }
 
     private FixingResult addSpacesAroundSpansUntilFixed(SpannableStringBuilder builder,
-                                                                                 int widthMeasureSpec, int heightMeasureSpec) {
+                                                        int widthMeasureSpec, int heightMeasureSpec) {
 
         Object[] spans = builder.getSpans(0, builder.length(), Object.class);
         List<Object> spansWithSpacesBefore = new ArrayList<>(spans.length);
@@ -175,5 +178,5 @@ public class JellyBeanSpanFixEditText extends AppCompatEditText {
         String fallbackText = getText().toString();
         setTextAndMeasure(fallbackText, widthMeasureSpec, heightMeasureSpec);
     }
-    
+
 }

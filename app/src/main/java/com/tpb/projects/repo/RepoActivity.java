@@ -52,7 +52,8 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_repo);
@@ -95,7 +96,9 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
                 mLaunchPage = launchIntent.getIntExtra(getString(R.string.intent_pager_page), 0);
 
             }
-            loader.loadRepository(this, launchIntent.getStringExtra(getString(R.string.intent_repo)));
+            loader.loadRepository(this,
+                    launchIntent.getStringExtra(getString(R.string.intent_repo))
+            );
         }
 
     }
@@ -194,16 +197,21 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         @Override
         public CharSequence getPageTitle(int position) {
             switch(position) {
-                case 0: return getString(R.string.title_repo_info);
-                case 1: return getString(R.string.title_repo_readme);
-                case 2: return getString(R.string.title_repo_commits);
-                case 3: return getString(R.string.title_repo_issues);
-                case 4: return getString(R.string.title_repo_projects);
-                default: return "";
+                case 0:
+                    return getString(R.string.title_repo_info);
+                case 1:
+                    return getString(R.string.title_repo_readme);
+                case 2:
+                    return getString(R.string.title_repo_commits);
+                case 3:
+                    return getString(R.string.title_repo_issues);
+                case 4:
+                    return getString(R.string.title_repo_projects);
+                default:
+                    return "";
             }
         }
     }
-
 
 
 }

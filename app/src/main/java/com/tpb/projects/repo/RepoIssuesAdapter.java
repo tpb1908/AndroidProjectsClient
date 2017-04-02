@@ -150,7 +150,9 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             mPage = 1;
             mMaxPageReached = false;
         }
-        mLoader.loadIssues(this, mRepo.getFullName(), mFilter, mAssigneeFilter, mLabelsFilter, mPage);
+        mLoader.loadIssues(this, mRepo.getFullName(), mFilter, mAssigneeFilter, mLabelsFilter,
+                mPage
+        );
     }
 
     public void addIssue(Issue issue) {
@@ -165,9 +167,11 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             notifyItemChanged(index);
         }
     }
+
     @Override
     public IssueHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new IssueHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_issue, parent, false));
+        return new IssueHolder(LayoutInflater.from(parent.getContext())
+                                             .inflate(R.layout.viewholder_issue, parent, false));
     }
 
     @Override
@@ -180,13 +184,21 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         }
         final Issue issue = mIssues.get(pos).first;
         holder.mTitle.setHtml(Spanner.bold(issue.getTitle()));
-        holder.mIssueIcon.setImageResource(issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
+        holder.mIssueIcon.setImageResource(
+                issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar, issue.getOpenedBy().getLogin());
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mContent, holder.mUserAvatar, null, issue);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mUserAvatar,
+                issue.getOpenedBy().getLogin()
+        );
+        IntentHandler
+                .addOnClickHandler(mParent.getActivity(), holder.mContent, holder.mUserAvatar, null,
+                        issue
+                );
         if(mIssues.get(pos).second == null) {
             holder.mContent.setHtml(Markdown.parseMD(
-                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(), issue.getRepoFullName()),
+                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(),
+                    issue.getRepoFullName()
+                    ),
                     null,
                     text -> mIssues.set(pos, Pair.create(issue, text))
             );
@@ -205,12 +217,15 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         final Intent i = new Intent(mParent.getContext(), IssueActivity.class);
         i.putExtra(mParent.getString(R.string.transition_card), "");
         i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos).first);
-        i.putExtra(mParent.getString(R.string.intent_drawable), ((BitmapDrawable) holder.mUserAvatar.getDrawable()).getBitmap());
+        i.putExtra(mParent.getString(R.string.intent_drawable),
+                ((BitmapDrawable) holder.mUserAvatar.getDrawable()).getBitmap()
+        );
         //We have to add the nav bar as ViewOverlay is above it
         mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 mParent.getActivity(),
                 Pair.create(holder.itemView, mParent.getString(R.string.transition_card)),
-                UI.getSafeNavigationBarTransitionPair(mParent.getActivity())).toBundle()
+                UI.getSafeNavigationBarTransitionPair(mParent.getActivity())
+                ).toBundle()
         );
     }
 
@@ -225,7 +240,8 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mMenuButton.setOnClickListener((v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
+            mMenuButton.setOnClickListener(
+                    (v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
             mContent.setConsumeNonUrlClicks(false);
             mTitle.setConsumeNonUrlClicks(false);
             view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));

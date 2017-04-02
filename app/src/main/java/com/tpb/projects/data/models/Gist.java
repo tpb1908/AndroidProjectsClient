@@ -68,7 +68,8 @@ public class Gist extends DataModel implements Parcelable {
             g.description = obj.getString(DESCRIPTION);
             g.isPublic = obj.getBoolean(PUBLIC);
             g.owner = User.parse(obj.getJSONObject(OWNER));
-            if(obj.has(USER) && !JSON_NULL.equals(obj.getString(USER))) g.user = User.parse(obj.getJSONObject(USER));
+            if(obj.has(USER) && !JSON_NULL.equals(obj.getString(USER)))
+                g.user = User.parse(obj.getJSONObject(USER));
             g.htmlUrl = obj.getString(HTML_URL);
             g.commitsUrl = obj.getString(COMMITS_URL);
             g.forksUrl = obj.getString(FORKS_URL);
@@ -168,8 +169,6 @@ public class Gist extends DataModel implements Parcelable {
                 "\n, updatedAt=" + updatedAt +
                 '}';
     }
-    
-    
 
 
     @Override

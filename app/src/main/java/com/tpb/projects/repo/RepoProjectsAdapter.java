@@ -98,7 +98,10 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_project, parent, false));
+        return new ProjectViewHolder(LayoutInflater.from(parent.getContext())
+                                                   .inflate(R.layout.viewholder_project, parent,
+                                                           false
+                                                   ));
     }
 
     @Override
@@ -107,7 +110,8 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
         holder.mName.setText(p.getName());
         holder.mName.setCompoundDrawablesWithIntrinsicBounds(
                 p.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed,
-                0, 0, 0);
+                0, 0, 0
+        );
         holder.mLastUpdate.setText(
                 String.format(
                         holder.itemView.getContext().getString(R.string.text_last_updated),

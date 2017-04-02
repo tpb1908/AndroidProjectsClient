@@ -20,15 +20,15 @@ import com.tpb.projects.data.SettingsActivity;
 import com.tpb.projects.data.Uploader;
 import com.tpb.projects.data.models.Comment;
 import com.tpb.projects.data.models.Issue;
+import com.tpb.projects.markdown.Markdown;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-import com.tpb.projects.markdown.Markdown;
 
-import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltext.dialogs.CodeDialog;
 import org.sufficientlysecure.htmltext.dialogs.ImageDialog;
 import org.sufficientlysecure.htmltext.htmledittext.HtmlEditText;
+import org.sufficientlysecure.htmltext.imagegetter.HtmlHttpImageGetter;
 
 import java.io.IOException;
 
@@ -61,7 +61,8 @@ public class CommentEditor extends EditorActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_markdown_editor);
 
@@ -89,33 +90,38 @@ public class CommentEditor extends EditorActivity {
             }
         });
 
-        new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
-            @Override
-            public void snippetEntered(String snippet, int relativePosition) {
-                if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
-                    Util.insertString(mEditor, snippet, relativePosition);
-                }
-            }
+        new MarkdownButtonAdapter(this, mEditButtons,
+                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                    @Override
+                    public void snippetEntered(String snippet, int relativePosition) {
+                        if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
+                            Util.insertString(mEditor, snippet, relativePosition);
+                        }
+                    }
 
-            @Override
-            public String getText() {
-                return mEditor.getInputText().toString();
-            }
+                    @Override
+                    public String getText() {
+                        return mEditor.getInputText().toString();
+                    }
 
-            @Override
-            public void previewCalled() {
-                if(mEditor.isEditing()) {
-                    mEditor.saveText();
-                    String repo = null;
-                    if(mIssue != null) repo = mIssue.getRepoFullName();
-                    mEditor.disableEditing();
-                    mEditor.setHtml(Markdown.parseMD(mEditor.getInputText().toString(), repo), new HtmlHttpImageGetter(mEditor, mEditor));
-                } else {
-                    mEditor.restoreText();
-                    mEditor.enableEditing();
+                    @Override
+                    public void previewCalled() {
+                        if(mEditor.isEditing()) {
+                            mEditor.saveText();
+                            String repo = null;
+                            if(mIssue != null) repo = mIssue.getRepoFullName();
+                            mEditor.disableEditing();
+                            mEditor.setHtml(
+                                    Markdown.parseMD(mEditor.getInputText().toString(), repo),
+                                    new HtmlHttpImageGetter(mEditor, mEditor)
+                            );
+                        } else {
+                            mEditor.restoreText();
+                            mEditor.enableEditing();
+                        }
+                    }
                 }
-            }
-        });
+        );
         mEditor.setImageHandler(new ImageDialog(this));
         mEditor.setCodeClickHandler(new CodeDialog(this));
         mKeyBoardChecker = new KeyBoardVisibilityChecker(findViewById(android.R.id.content));
@@ -181,7 +187,8 @@ public class CommentEditor extends EditorActivity {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             });
@@ -191,7 +198,8 @@ public class CommentEditor extends EditorActivity {
             deleteDialog.show();
         } else {
             if(mKeyBoardChecker.isKeyboardOpen()) {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
                 mDoneButton.postDelayed(super::finish, 150);
             } else {

@@ -76,7 +76,8 @@ public class Node implements Parcelable {
             int repoEnd = url.indexOf('/', repoStart + 1) + 1;
             final String repo = url.substring(repoStart, repoEnd);
             start = gitUrl.indexOf("com/") + 4;
-            repoStart = gitUrl.indexOf('/', gitUrl.indexOf('/', gitUrl.indexOf('/', start + 1) + 1));
+            repoStart = gitUrl
+                    .indexOf('/', gitUrl.indexOf('/', gitUrl.indexOf('/', start + 1) + 1));
             repoEnd = gitUrl.indexOf('/', repoStart + 1) + 1;
             return !repo.equals(gitUrl.substring(repoStart, repoEnd));
         } catch(IndexOutOfBoundsException iob) {

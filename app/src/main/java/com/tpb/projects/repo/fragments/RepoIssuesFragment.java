@@ -252,7 +252,7 @@ public class RepoIssuesFragment extends RepoFragment {
         new Loader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void listLoadComplete(List<User> collaborators) {
-                final String[] collabNames = new String[collaborators.size()+ 2];
+                final String[] collabNames = new String[collaborators.size() + 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
                 int pos = 0;
@@ -265,7 +265,9 @@ public class RepoIssuesFragment extends RepoFragment {
 
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(R.string.title_choose_assignee);
-                builder.setSingleChoiceItems(collabNames, pos, (dialogInterface, i) -> mAssigneeFilter = collabNames[i]);
+                builder.setSingleChoiceItems(collabNames, pos,
+                        (dialogInterface, i) -> mAssigneeFilter = collabNames[i]
+                );
                 builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> refresh());
                 builder.setNegativeButton(R.string.action_cancel, null);
                 builder.create().show();
@@ -282,7 +284,9 @@ public class RepoIssuesFragment extends RepoFragment {
     public void openMenu(View view, final Issue issue) {
         final PopupMenu menu = new PopupMenu(getContext(), view);
         menu.inflate(R.menu.menu_issue);
-        menu.getMenu().add(0, R.id.menu_toggle_issue_state, Menu.NONE, issue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+        menu.getMenu().add(0, R.id.menu_toggle_issue_state, Menu.NONE,
+                issue.isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue
+        );
         menu.getMenu().add(0, R.id.menu_edit_issue, Menu.NONE, getString(R.string.menu_edit_issue));
 
         menu.setOnMenuItemClickListener(menuItem -> {
@@ -307,7 +311,9 @@ public class RepoIssuesFragment extends RepoFragment {
         loader.loadLabels(null, issue.getRepoFullName());
         loader.loadCollaborators(null, issue.getRepoFullName());
         if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(getActivity(), intent, ((HtmlTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(getActivity(), intent,
+                    ((HtmlTextView) view).getLastClickPosition()
+            );
         } else {
             UI.setViewPositionForIntent(intent, view);
         }
@@ -410,9 +416,12 @@ public class RepoIssuesFragment extends RepoFragment {
                         } else {
                             if(issueCreationAttempts < 5) {
                                 issueCreationAttempts++;
-                                mEditor.updateIssue(this, mRepo.getFullName(), issue, assignees, labels);
+                                mEditor.updateIssue(this, mRepo.getFullName(), issue, assignees,
+                                        labels
+                                );
                             } else {
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT)
+                                     .show();
                                 mRefresher.setRefreshing(false);
                             }
                         }

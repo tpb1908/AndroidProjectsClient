@@ -50,8 +50,10 @@ public class ProjectEditor extends EditorActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
-        setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
+        setTheme(
+                prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
         setContentView(R.layout.activity_markdown_editor);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         final ViewStub stub = (ViewStub) findViewById(R.id.editor_stub);
@@ -61,37 +63,41 @@ public class ProjectEditor extends EditorActivity {
         ButterKnife.bind(this);
 
 
-        new MarkdownButtonAdapter(this, mEditButtons, new MarkdownButtonAdapter.MarkDownButtonListener() {
-            @Override
-            public void snippetEntered(String snippet, int relativePosition) {
-                if(mNameEditor.hasFocus()) {
-                    final int start = Math.max(mNameEditor.getSelectionStart(), 0);
-                    mNameEditor.getText().insert(start, snippet);
-                    mNameEditor.setSelection(start + relativePosition);
-                }
-            }
+        new MarkdownButtonAdapter(this, mEditButtons,
+                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                    @Override
+                    public void snippetEntered(String snippet, int relativePosition) {
+                        if(mNameEditor.hasFocus()) {
+                            final int start = Math.max(mNameEditor.getSelectionStart(), 0);
+                            mNameEditor.getText().insert(start, snippet);
+                            mNameEditor.setSelection(start + relativePosition);
+                        }
+                    }
 
-            @Override
-            public String getText() {
-                if(mNameEditor.isFocused()) return mNameEditor.getText().toString();
-                if(mDescriptionEditor.isFocused()) return mDescriptionEditor.getInputText().toString();
-                return "";
-            }
+                    @Override
+                    public String getText() {
+                        if(mNameEditor.isFocused()) return mNameEditor.getText().toString();
+                        if(mDescriptionEditor.isFocused())
+                            return mDescriptionEditor.getInputText().toString();
+                        return "";
+                    }
 
-            @Override
-            public void previewCalled() {
-                if(mDescriptionEditor.isEditing()) {
-                    mDescriptionEditor.saveText();
-                    mDescriptionEditor.setHtml(
-                            Markdown.parseMD(mDescriptionEditor.getText().toString(), null),
-                            new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor));
-                    mDescriptionEditor.disableEditing();
-                } else {
-                    mDescriptionEditor.restoreText();
-                    mDescriptionEditor.enableEditing();
+                    @Override
+                    public void previewCalled() {
+                        if(mDescriptionEditor.isEditing()) {
+                            mDescriptionEditor.saveText();
+                            mDescriptionEditor.setHtml(
+                                    Markdown.parseMD(mDescriptionEditor.getText().toString(), null),
+                                    new HtmlHttpImageGetter(mDescriptionEditor, mDescriptionEditor)
+                            );
+                            mDescriptionEditor.disableEditing();
+                        } else {
+                            mDescriptionEditor.restoreText();
+                            mDescriptionEditor.enableEditing();
+                        }
+                    }
                 }
-            }
-        });
+        );
 
         final View content = findViewById(android.R.id.content);
         content.setVisibility(View.VISIBLE);
@@ -113,7 +119,8 @@ public class ProjectEditor extends EditorActivity {
         mDescriptionEditor.setImageHandler(new ImageDialog(this));
 
         if(getIntent().hasExtra(getString(R.string.parcel_project))) {
-            final Project project = getIntent().getParcelableExtra(getString(R.string.parcel_project));
+            final Project project = getIntent()
+                    .getParcelableExtra(getString(R.string.parcel_project));
             mProjectNumber = project.getId();
             mNameEditor.setText(project.getName());
             mDescriptionEditor.setText(project.getBody());

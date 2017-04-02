@@ -113,7 +113,8 @@ public class JellyBeanSpanFixTextView extends AppCompatTextView {
         long startFix = System.currentTimeMillis();
 
         FixingResult result = addSpacesAroundSpansUntilFixed(builder, widthMeasureSpec,
-                heightMeasureSpec);
+                heightMeasureSpec
+        );
 
         if(result.fixed) {
             removeUnneededSpaces(widthMeasureSpec, heightMeasureSpec, builder, result);

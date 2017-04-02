@@ -85,7 +85,10 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 
     @Override
     public MilestoneHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MilestoneHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_milestone, parent, false));
+        return new MilestoneHolder(LayoutInflater.from(parent.getContext())
+                                                 .inflate(R.layout.viewholder_milestone, parent,
+                                                         false
+                                                 ));
     }
 
     @Override
@@ -93,8 +96,11 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
         if(mParseCache.get(position) == null) {
             final Milestone milestone = mMilestones.get(position);
 
-            IntentHandler.addOnClickHandler(mParent, holder.mContent, holder.mAvatar, milestone.getCreator().getLogin());
-            holder.mState.setImageResource(milestone.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
+            IntentHandler.addOnClickHandler(mParent, holder.mContent, holder.mAvatar,
+                    milestone.getCreator().getLogin()
+            );
+            holder.mState.setImageResource(milestone
+                    .getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed);
             holder.mAvatar.setImageUrl(milestone.getCreator().getAvatarUrl());
 
             final Resources res = holder.itemView.getResources();
@@ -109,7 +115,9 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
                 builder.append(String.format(res.getString(R.string.text_milestone_completion),
                         milestone.getOpenIssues(),
                         milestone.getClosedIssues(),
-                        Math.round(100f * milestone.getClosedIssues() / (milestone.getOpenIssues() + milestone.getClosedIssues())))
+                        Math.round(100f * milestone.getClosedIssues() / (milestone
+                                .getOpenIssues() + milestone.getClosedIssues()))
+                        )
                 );
             }
             builder.append("<br>");
@@ -144,7 +152,8 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
             if(milestone.getDueOn() != 0) {
                 builder.append("<br>");
                 if(System.currentTimeMillis() < milestone.getDueOn() ||
-                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone.getDueOn())) {
+                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone
+                                .getDueOn())) {
                     builder.append(
                             String.format(
                                     res.getString(R.string.text_milestone_due_on),
@@ -166,7 +175,8 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
             }
             holder.mContent.setHtml(Markdown.formatMD(builder.toString(), null),
                     null,
-                    text -> mParseCache.set(position, text));
+                    text -> mParseCache.set(position, text)
+            );
         } else {
             holder.mContent.setText(mParseCache.get(position));
         }

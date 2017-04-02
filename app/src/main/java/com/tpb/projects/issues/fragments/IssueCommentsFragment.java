@@ -176,8 +176,11 @@ public class IssueCommentsFragment extends IssueFragment {
         menu.inflate(R.menu.menu_comment);
         if(comment.getUser().getLogin().equals(
                 GitHubSession.getSession(getContext()).getUserLogin())) {
-            menu.getMenu().add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
-            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE, getString(R.string.menu_delete_comment));
+            menu.getMenu()
+                .add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
+            menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE,
+                    getString(R.string.menu_delete_comment)
+            );
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
@@ -191,9 +194,12 @@ public class IssueCommentsFragment extends IssueFragment {
                     removeComment(comment);
                     break;
                 case R.id.menu_copy_comment_text:
-                    final ClipboardManager cm = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    final ClipboardManager cm = (ClipboardManager) getActivity()
+                            .getSystemService(Context.CLIPBOARD_SERVICE);
                     cm.setPrimaryClip(ClipData.newPlainText("Comment", comment.getBody()));
-                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.text_copied_to_board),
+                            Toast.LENGTH_SHORT
+                    ).show();
                     break;
             }
             return false;

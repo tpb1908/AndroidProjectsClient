@@ -32,7 +32,8 @@ public abstract class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.parcel_user))) {
+        if(savedInstanceState != null && savedInstanceState
+                .containsKey(getString(R.string.parcel_user))) {
             mUser = savedInstanceState.getParcelable(getString(R.string.parcel_user));
             userLoaded(mUser);
         }

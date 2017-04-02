@@ -26,30 +26,33 @@ public class Uploader {
 
     public void uploadImage(ImgurUploadListener listener, String image64, @Nullable UploadProgressListener uploadListener) {
         AndroidNetworking.upload("https://api.imgur.com/3/image")
-                .addHeaders(IMGUR_AUTH_KEY, String.format(IMGUR_AUTH_FORMAT, com.tpb.projects.BuildConfig.IMGUR_CLIENT_ID))
-                .addMultipartParameter("image", image64)
-                .setPriority(Priority.HIGH)
-                .build()
-                .setUploadProgressListener(uploadListener)
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i("Upload", "onResponse: " + response.toString());
-                        try {
-                            final String link = response.getJSONObject("data").getString("link");
-                            if(listener != null) listener.imageUploaded(link);
-                        } catch(Exception e) {
-                            Log.e("Uploader", "onResponse: ", e);
-                        }
-                    }
+                         .addHeaders(IMGUR_AUTH_KEY, String.format(IMGUR_AUTH_FORMAT,
+                                 com.tpb.projects.BuildConfig.IMGUR_CLIENT_ID
+                         ))
+                         .addMultipartParameter("image", image64)
+                         .setPriority(Priority.HIGH)
+                         .build()
+                         .setUploadProgressListener(uploadListener)
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 Log.i("Upload", "onResponse: " + response.toString());
+                                 try {
+                                     final String link = response.getJSONObject("data")
+                                                                 .getString("link");
+                                     if(listener != null) listener.imageUploaded(link);
+                                 } catch(Exception e) {
+                                     Log.e("Uploader", "onResponse: ", e);
+                                 }
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i("Upload error", "onError: " + anError.getErrorBody());
-                        Log.i("Upload error", "onError: " + anError.getErrorDetail());
-                        if(listener != null) listener.uploadError(anError);
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 Log.i("Upload error", "onError: " + anError.getErrorBody());
+                                 Log.i("Upload error", "onError: " + anError.getErrorDetail());
+                                 if(listener != null) listener.uploadError(anError);
+                             }
+                         });
     }
 
     public interface ImgurUploadListener {

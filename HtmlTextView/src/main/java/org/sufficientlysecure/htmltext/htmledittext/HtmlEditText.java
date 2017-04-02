@@ -61,7 +61,7 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
 
-    private float[] mLastClickPosition = new float[] { -1, -1};
+    private float[] mLastClickPosition = new float[] {-1, -1};
 
 
     public HtmlEditText(Context context, AttributeSet attrs, int defStyle) {
@@ -134,7 +134,9 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
             public void run() {
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlEditText.this, mLinkHandler, mCodeHandler);
+                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(HtmlEditText.this,
+                        mLinkHandler, mCodeHandler
+                );
                 htmlTagHandler.setClickableTableSpan(clickableTableSpan);
                 htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
@@ -143,7 +145,8 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
 
                 final Spanned text;
                 if(removeFromHtmlSpace) {
-                    text = removeHtmlBottomPadding(Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+                    text = removeHtmlBottomPadding(
+                            Html.fromHtml(overridden, imageGetter, htmlTagHandler));
                 } else {
                     text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
                 }
@@ -322,5 +325,5 @@ public class HtmlEditText extends JellyBeanSpanFixEditText implements HtmlHttpIm
     public boolean isSuggestionsEnabled() {
         return mIsEditing;
     }
-    
+
 }

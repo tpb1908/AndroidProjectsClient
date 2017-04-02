@@ -61,7 +61,8 @@ public abstract class EditorActivity extends CircularRevealActivity {
             } else if(items[which].equals(items[1])) {
                 final Intent intent = new Intent(
                         Intent.ACTION_GET_CONTENT,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                );
                 intent.setType("image/*");
                 startActivityForResult(intent, SELECT_FILE);
 
@@ -86,14 +87,16 @@ public abstract class EditorActivity extends CircularRevealActivity {
             }
 
             if(photoFile != null) {
-                final Uri photoURI = FileProvider.getUriForFile(this, "com.tpb.projects.provider", photoFile);
+                final Uri photoURI = FileProvider
+                        .getUriForFile(this, "com.tpb.projects.provider", photoFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_CAMERA);
             } else {
                 imageLoadException(new IOException("File not created"));
             }
         } else {
-            Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT)
+                 .show();
         }
     }
 
@@ -151,7 +154,8 @@ public abstract class EditorActivity extends CircularRevealActivity {
                         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         pd.cancel();
-                        imageLoadComplete(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
+                        imageLoadComplete(
+                                Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
                     });
 
                 } else if(requestCode == SELECT_FILE) {

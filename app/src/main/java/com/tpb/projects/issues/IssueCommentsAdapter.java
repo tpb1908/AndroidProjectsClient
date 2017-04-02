@@ -47,7 +47,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
     private SwipeRefreshLayout mRefresher;
     private Loader mLoader;
-    
+
     public IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mLoader = new Loader(parent.getContext());
@@ -66,7 +66,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mComments.clear();
         notifyItemRangeRemoved(0, oldSize);
     }
-    
+
     public void setIssue(Issue issue) {
         mIssue = issue;
         clear();
@@ -101,7 +101,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             loadComments(false);
         }
     }
-    
+
     private void loadComments(boolean resetPage) {
         mIsLoading = true;
         mRefresher.setRefreshing(true);
@@ -147,7 +147,10 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
     @Override
     public CommentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CommentHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_comment, parent, false));
+        return new CommentHolder(LayoutInflater.from(parent.getContext())
+                                               .inflate(R.layout.viewholder_comment, parent,
+                                                       false
+                                               ));
 
     }
 
@@ -162,27 +165,35 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         if(mComments.get(pos).second == null) {
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             final StringBuilder builder = new StringBuilder();
-            builder.append(String.format(commentHolder.itemView.getResources().getString(R.string.text_comment_by),
-                    String.format(commentHolder.itemView.getResources().getString(R.string.text_href),
+            builder.append(String.format(
+                    commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                    String.format(
+                            commentHolder.itemView.getResources().getString(R.string.text_href),
                             comment.getUser().getHtmlUrl(),
-                            comment.getUser().getLogin()),
-                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())));
+                            comment.getUser().getLogin()
+                    ),
+                    DateUtils.getRelativeTimeSpanString(comment.getCreatedAt())
+            ));
             if(comment.getUpdatedAt() != comment.getCreatedAt()) {
                 builder.append(" • ");
-                builder.append(commentHolder.itemView.getResources().getString(R.string.text_comment_edited));
+                builder.append(commentHolder.itemView.getResources()
+                                                     .getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
             commentHolder.mText.setHtml(
                     Markdown.parseMD(builder.toString()),
                     new HtmlHttpImageGetter(commentHolder.mText, commentHolder.mText),
-                    text -> mComments.set(pos, new Pair<>(comment, text)));
+                    text -> mComments.set(pos, new Pair<>(comment, text))
+            );
         } else {
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             commentHolder.mText.setText(mComments.get(pos).second);
         }
         IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mText);
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar, comment.getUser().getLogin());
+        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar,
+                comment.getUser().getLogin()
+        );
     }
 
     @Override
@@ -205,7 +216,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             mText.setImageHandler(new ImageDialog(mText.getContext()));
             mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-           // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
+            // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }

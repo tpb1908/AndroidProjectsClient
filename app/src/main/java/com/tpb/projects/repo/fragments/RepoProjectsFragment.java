@@ -123,7 +123,7 @@ public class RepoProjectsFragment extends RepoFragment {
                                 }
 
                                 @Override
-                                public void deletionError(APIHandler.APIError error){
+                                public void deletionError(APIHandler.APIError error) {
                                     mRefresher.setRefreshing(false);
                                 }
                             }, project);

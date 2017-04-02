@@ -30,78 +30,114 @@ class MarkdownButtonAdapter {
     }
 
     private void initViews() {
-        ImageButton preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        ImageButton preview = (ImageButton) LayoutInflater.from(mParent)
+                                                          .inflate(R.layout.shard_markdown_button,
+                                                                  mScrollView, false
+                                                          );
         preview.setImageResource(R.drawable.ic_preview);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.previewCalled();
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_insert_link);
         preview.setOnClickListener((v) -> showInsertLinkDialog());
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_photo);
         preview.setOnClickListener((v) -> mParent.showImageUploadDialog());
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_bold);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered("****", 2);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_italic);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered("**", 1);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_strikethrough);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered("~~~~", 2);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_list_bulleted);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered(" * ", 3);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_list_numbered);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered(" 1. ", 3);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_quote);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered("> ", 2);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_code);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered("```\n\n```", 4);
         });
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_emoticon);
         preview.setOnClickListener((v) -> showInsertEmoticonActivity());
         mScrollView.addView(preview);
 
-        preview = (ImageButton) LayoutInflater.from(mParent).inflate(R.layout.shard_markdown_button, mScrollView, false);
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_character);
         preview.setOnClickListener((v) -> showInsertCharacterActivity());
         mScrollView.addView(preview);
@@ -132,7 +168,8 @@ class MarkdownButtonAdapter {
                                 text.getText().toString(),
                                 url.getText().toString()
                         ),
-                        0);
+                        0
+                );
             }
         });
         builder.setNegativeButton(R.string.action_cancel, null);
@@ -142,11 +179,15 @@ class MarkdownButtonAdapter {
     }
 
     private void showInsertEmoticonActivity() {
-        mParent.startActivityForResult(new Intent(mParent, EmojiActivity.class), EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI);
+        mParent.startActivityForResult(new Intent(mParent, EmojiActivity.class),
+                EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI
+        );
     }
 
     private void showInsertCharacterActivity() {
-        mParent.startActivityForResult(new Intent(mParent, CharacterActivity.class), CharacterActivity.REQUEST_CODE_INSERT_CHARACTER);
+        mParent.startActivityForResult(new Intent(mParent, CharacterActivity.class),
+                CharacterActivity.REQUEST_CODE_INSERT_CHARACTER
+        );
     }
 
     interface MarkDownButtonListener {

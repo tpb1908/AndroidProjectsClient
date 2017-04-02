@@ -18,9 +18,12 @@ public abstract class KeyboardDismissingDialogFragment extends DialogFragment {
     public void dismiss() {
         //Check if a text input is focused
         if(getDialog().getCurrentFocus() != null) {
-            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
             //Close the keyboard with the window token of the focused text input
-            imm.hideSoftInputFromWindow(getDialog().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            imm.hideSoftInputFromWindow(getDialog().getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS
+            );
         }
         super.dismiss();
     }
@@ -29,8 +32,11 @@ public abstract class KeyboardDismissingDialogFragment extends DialogFragment {
     @Override
     public void dismissAllowingStateLoss() {
         if(getDialog().getCurrentFocus() != null) {
-            final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(getDialog().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            final InputMethodManager imm = (InputMethodManager) getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getDialog().getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS
+            );
         }
         super.dismissAllowingStateLoss();
     }

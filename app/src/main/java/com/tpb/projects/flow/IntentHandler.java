@@ -94,7 +94,8 @@ public class IntentHandler {
         activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 activity,
                 Pair.create(view, activity.getString(R.string.transition_card)),
-                UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+                UI.getSafeNavigationBarTransitionPair(activity)
+                ).toBundle()
         );
     }
 
@@ -111,7 +112,8 @@ public class IntentHandler {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     Pair.create(view, activity.getString(R.string.transition_card)),
-                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+                    UI.getSafeNavigationBarTransitionPair(activity)
+                    ).toBundle()
             );
         } else {
             UI.setViewPositionForIntent(i, view);
@@ -131,7 +133,8 @@ public class IntentHandler {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     Pair.create(view, activity.getString(R.string.transition_card)),
-                    UI.getSafeNavigationBarTransitionPair(activity)).toBundle()
+                    UI.getSafeNavigationBarTransitionPair(activity)
+                    ).toBundle()
             );
         } else {
             UI.setViewPositionForIntent(i, view);
@@ -155,7 +158,9 @@ public class IntentHandler {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
         if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
-            i.putExtra(activity.getString(R.string.intent_drawable), ((BitmapDrawable) iv.getDrawable()).getBitmap());
+            i.putExtra(activity.getString(R.string.intent_drawable),
+                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
+            );
         }
         activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 activity,

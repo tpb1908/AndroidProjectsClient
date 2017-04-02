@@ -127,11 +127,13 @@ public class ColumnFragment extends Fragment {
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE) {
                 if(mName.getText().toString().isEmpty()) {
-                    Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_no_column_title, Toast.LENGTH_SHORT)
+                         .show();
                     mName.setText(mColumn.getName());
                 } else {
                     mEditor.updateColumnName(new Editor.UpdateListener<Column>() {
                         int loadCount = 0;
+
                         @Override
                         public void updated(Column column) {
                             if(mViewsValid) {
@@ -148,12 +150,18 @@ public class ColumnFragment extends Fragment {
                             if(error != APIHandler.APIError.NO_CONNECTION) {
                                 if(loadCount < 5) {
                                     loadCount++;
-                                    mEditor.updateColumnName(this, mColumn.getId(), mName.getText().toString());
+                                    mEditor.updateColumnName(this, mColumn.getId(),
+                                            mName.getText().toString()
+                                    );
                                 } else {
-                                    Toast.makeText(getContext(), R.string.error_title_change_failed, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), R.string.error_title_change_failed,
+                                            Toast.LENGTH_SHORT
+                                    ).show();
                                     mName.setText(mColumn.getName());
                                     final Bundle bundle = new Bundle();
-                                    bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_FAILURE);
+                                    bundle.putString(Analytics.TAG_PROJECT_EDIT,
+                                            Analytics.VALUE_FAILURE
+                                    );
                                     mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
                                 }
                             }
@@ -164,7 +172,7 @@ public class ColumnFragment extends Fragment {
             }
             return false;
         });
-        
+
     }
 
     void setAccessLevel(Repository.AccessLevel accessLevel) {
@@ -195,16 +203,17 @@ public class ColumnFragment extends Fragment {
         mName.setOnDragListener(listener);
         mLastUpdate.setOnDragListener(listener);
         mCard.setOnDragListener(listener);
-        ((NestedScrollView) view.findViewById(R.id.column_scrollview)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(scrollY - oldScrollY > 10) {
-                    mParent.hideFab();
-                } else if(scrollY - oldScrollY < -10) {
-                    mParent.showFab();
-                }
-            }
-        });
+        ((NestedScrollView) view.findViewById(R.id.column_scrollview))
+                .setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                    @Override
+                    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                        if(scrollY - oldScrollY > 10) {
+                            mParent.hideFab();
+                        } else if(scrollY - oldScrollY < -10) {
+                            mParent.showFab();
+                        }
+                    }
+                });
     }
 
     private void disableAccess(View view) {
@@ -287,7 +296,8 @@ public class ColumnFragment extends Fragment {
         UI.flashViewBackground(
                 mRecycler.findViewHolderForAdapterPosition(index).itemView,
                 getResources().getColor(R.color.md_grey_800),
-                getResources().getColor(R.color.colorAccent));
+                getResources().getColor(R.color.colorAccent)
+        );
 
         //Initial height is the top cardview
         int height = ((LinearLayout) mNestedScroller.getChildAt(0)).getChildAt(0).getHeight();
@@ -326,16 +336,18 @@ public class ColumnFragment extends Fragment {
                 final Card oldCard = data.getParcelableExtra(getString(R.string.parcel_card));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
                 mEditor.createIssue(new Editor.CreationListener<Issue>() {
-                    @Override
-                    public void created(Issue issue) {
-                        convertCardToIssue(oldCard, issue);
-                    }
+                                        @Override
+                                        public void created(Issue issue) {
+                                            convertCardToIssue(oldCard, issue);
+                                        }
 
-                    @Override
-                    public void creationError(APIHandler.APIError error) {
+                                        @Override
+                                        public void creationError(APIHandler.APIError error) {
 
-                    }
-                }, mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels);
+                                        }
+                                    }, mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees,
+                        labels
+                );
                 break;
         }
     }
@@ -361,22 +373,28 @@ public class ColumnFragment extends Fragment {
                     copyToClipboard(String.format(mParent.getString(R.string.text_card_url),
                             mParent.mProject.getRepoPath(),
                             mParent.mProject.getNumber(),
-                            mCard.getId()));
+                            mCard.getId()
+                    ));
                     break;
                 case R.id.menu_copy_issue_url:
                     copyToClipboard(String.format(mParent.getString(R.string.text_issue_url),
                             mParent.mProject.getRepoPath(),
-                            card.getIssue().getNumber()));
+                            card.getIssue().getNumber()
+                    ));
                     break;
                 case R.id.menu_card_fullscreen:
                     showFullscreen(card);
                     break;
                 case R.id.menu_convert_to_issue:
                     final Intent intent = new Intent(getContext(), IssueEditor.class);
-                    intent.putExtra(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
+                    intent.putExtra(getString(R.string.intent_repo),
+                            mParent.mProject.getRepoPath()
+                    );
                     intent.putExtra(getString(R.string.parcel_card), card);
                     UI.setViewPositionForIntent(intent, view);
-                    getActivity().startActivityForResult(intent, IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD);
+                    getActivity().startActivityForResult(intent,
+                            IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD
+                    );
                     break;
                 case R.id.menu_edit_issue:
                     showIssueEditor(view, card);
@@ -413,7 +431,8 @@ public class ColumnFragment extends Fragment {
         });
         if(card.hasIssue()) {
             popup.inflate(R.menu.menu_card_issue);
-            popup.getMenu().add(0, 1, 0, card.getIssue().isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
+            popup.getMenu().add(0, 1, 0, card.getIssue()
+                                             .isClosed() ? R.string.menu_reopen_issue : R.string.menu_close_issue);
         } else {
             popup.inflate(R.menu.menu_card);
         }
@@ -505,7 +524,10 @@ public class ColumnFragment extends Fragment {
                 mAdapter.updateCard(card);
                 final Bundle bundle = new Bundle();
                 bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED, bundle);
+                mAnalytics.logEvent(
+                        issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED,
+                        bundle
+                );
             }
 
             @Override
@@ -518,9 +540,13 @@ public class ColumnFragment extends Fragment {
                     if(stateChangeAttempts < 5) {
                         if(card.getIssue().isClosed()) {
                             stateChangeAttempts++;
-                            mEditor.openIssue(this, mParent.mProject.getRepoPath(), card.getIssueId());
+                            mEditor.openIssue(this, mParent.mProject.getRepoPath(),
+                                    card.getIssueId()
+                            );
                         } else {
-                            mEditor.closeIssue(this, mParent.mProject.getRepoPath(), card.getIssueId());
+                            mEditor.closeIssue(this, mParent.mProject.getRepoPath(),
+                                    card.getIssueId()
+                            );
                         }
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
@@ -538,9 +564,13 @@ public class ColumnFragment extends Fragment {
         builder.setTitle(R.string.title_state_change_comment);
         builder.setPositiveButton(R.string.action_ok, (dialog, which) -> {
             if(card.getIssue().isClosed()) {
-                mEditor.openIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
+                mEditor.openIssue(listener, card.getIssue().getRepoFullName(),
+                        card.getIssue().getNumber()
+                );
             } else {
-                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
+                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(),
+                        card.getIssue().getNumber()
+                );
             }
             final Intent i = new Intent(getContext(), CommentEditor.class);
             i.putExtra(getString(R.string.parcel_issue), card.getIssue());
@@ -549,9 +579,13 @@ public class ColumnFragment extends Fragment {
         });
         builder.setNegativeButton(R.string.action_no, (dialog, which) -> {
             if(card.getIssue().isClosed()) {
-                mEditor.openIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
+                mEditor.openIssue(listener, card.getIssue().getRepoFullName(),
+                        card.getIssue().getNumber()
+                );
             } else {
-                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(), card.getIssue().getNumber());
+                mEditor.closeIssue(listener, card.getIssue().getRepoFullName(),
+                        card.getIssue().getNumber()
+                );
             }
         });
         builder.setNeutralButton(R.string.action_cancel, null);
@@ -564,7 +598,9 @@ public class ColumnFragment extends Fragment {
         i.putExtra(getString(R.string.parcel_card), card);
         i.putExtra(getString(R.string.parcel_issue), card.getIssue());
         if(view instanceof HtmlTextView) {
-            UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(getContext(), i,
+                    ((HtmlTextView) view).getLastClickPosition()
+            );
         } else {
             UI.setViewPositionForIntent(i, view);
         }
@@ -596,7 +632,9 @@ public class ColumnFragment extends Fragment {
                 } else {
                     if(issueCreationAttempts < 5) {
                         issueCreationAttempts++;
-                        mEditor.updateIssue(this, issue.getRepoFullName(), issue, assignees, labels);
+                        mEditor.updateIssue(this, issue.getRepoFullName(), issue, assignees,
+                                labels
+                        );
                     } else {
                         Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
                         mParent.mRefresher.setRefreshing(false);
@@ -613,6 +651,7 @@ public class ColumnFragment extends Fragment {
     private void convertCardToIssue(Card oldCard, Issue issue) {
         mEditor.deleteCard(new Editor.DeletionListener<Card>() {
             int cardDeletionAttempts = 0;
+
             @Override
             public void deleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
@@ -689,9 +728,11 @@ public class ColumnFragment extends Fragment {
     }
 
     private void copyToClipboard(String text) {
-        final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        final ClipboardManager cm = (ClipboardManager) getContext()
+                .getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(ClipData.newPlainText("Card", text));
-        Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mParent, getString(R.string.text_copied_to_board), Toast.LENGTH_SHORT)
+             .show();
     }
 
     private void showFullscreen(Card card) {
@@ -718,7 +759,9 @@ public class ColumnFragment extends Fragment {
                     final Intent i = new Intent(getContext(), CardEditor.class);
                     i.putExtra(getString(R.string.parcel_card), card);
                     if(view instanceof HtmlTextView) {
-                        UI.setClickPositionForIntent(getContext(), i, ((HtmlTextView) view).getLastClickPosition());
+                        UI.setClickPositionForIntent(getContext(), i,
+                                ((HtmlTextView) view).getLastClickPosition()
+                        );
                     } else {
                         UI.setViewPositionForIntent(i, view);
                     }

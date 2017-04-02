@@ -62,7 +62,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_issue);
@@ -77,13 +78,16 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         if(launchIntent.hasExtra(getString(R.string.transition_card))) {
             postponeEnterTransition();
         }
-        if(launchIntent.getExtras() != null && launchIntent.getExtras().containsKey(getString(R.string.parcel_issue))) {
+        if(launchIntent.getExtras() != null && launchIntent.getExtras().containsKey(
+                getString(R.string.parcel_issue))) {
             mIssue = launchIntent.getExtras().getParcelable(getString(R.string.parcel_issue));
 
             loadComplete(mIssue);
         } else {
-            final int issueNumber = launchIntent.getIntExtra(getString(R.string.intent_issue_number), -1);
-            final String fullRepoName = launchIntent.getStringExtra(getString(R.string.intent_repo));
+            final int issueNumber = launchIntent
+                    .getIntExtra(getString(R.string.intent_issue_number), -1);
+            final String fullRepoName = launchIntent
+                    .getStringExtra(getString(R.string.intent_repo));
             mLoader.loadIssue(this, fullRepoName, issueNumber, true);
         }
 
@@ -116,7 +120,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
-                    if(mAdapter.mInfoFragment != null) mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
+                    if(mAdapter.mInfoFragment != null)
+                        mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
                 }
 
                 @Override
@@ -167,7 +172,10 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 if(mIssue != null) {
                     final Intent share = new Intent();
                     share.setAction(Intent.ACTION_SEND);
-                    share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mIssue.getRepoFullName() + "/issues/" + mIssue.getNumber());
+                    share.putExtra(Intent.EXTRA_TEXT,
+                            "https://github.com/" + mIssue.getRepoFullName() + "/issues/" + mIssue
+                                    .getNumber()
+                    );
                     share.setType("text/plain");
                     startActivity(share);
                 }
@@ -175,7 +183,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
             case R.id.menu_save_to_homescreen:
                 final ShortcutDialog dialog = new ShortcutDialog();
                 final Bundle args = new Bundle();
-                args.putInt(getString(R.string.intent_title_res), R.string.title_save_issue_shortcut);
+                args.putInt(getString(R.string.intent_title_res),
+                        R.string.title_save_issue_shortcut
+                );
                 args.putBoolean(getString(R.string.intent_drawable), false);
                 args.putString(getString(R.string.intent_name), "#" + mIssue.getNumber());
 
@@ -188,7 +198,8 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                     final Intent add = new Intent();
                     add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
                     add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource
+                            .fromContext(getApplicationContext(), R.mipmap.ic_launcher));
                     add.putExtra("duplicate", false);
                     add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                     getApplicationContext().sendBroadcast(add);
@@ -237,7 +248,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         public CharSequence getPageTitle(int position) {
             if(position == 0) {
                 return getString(R.string.title_issue_info_fragment);
-            }  else {
+            } else {
                 return getString(R.string.title_issue_comments_fragment);
             }
         }

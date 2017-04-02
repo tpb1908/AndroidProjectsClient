@@ -39,9 +39,12 @@ public class ImageDialog implements ImageClickHandler {
 
         final Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT);
+                WindowManager.LayoutParams.MATCH_PARENT
+        );
 
         fiv.setOnClickListener(new View.OnClickListener() {
             @Override

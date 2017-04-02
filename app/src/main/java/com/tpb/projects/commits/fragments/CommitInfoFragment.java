@@ -102,20 +102,23 @@ public class CommitInfoFragment extends CommitFragment {
         if(mCommit.getFiles() != null) {
             String builder =
                     "<br>" +
-                    getResources()
-                    .getQuantityString(R.plurals.text_commit_additions, mCommit.getAdditions(),
-                            mCommit.getAdditions()
-                    ) +
-                    "<br>" +
-                    getResources().getQuantityString(R.plurals.text_commit_deletions,
-                            mCommit.getDeletions(), mCommit.getDeletions()
-                    ) +
-                    "<br><br>" +
-                    String.format(
-                            getString(R.string.text_committed_by),
-                            user,
-                            Util.formatDateLocally(getContext(), new Date(mCommit.getCreatedAt()))
-                    );
+                            getResources()
+                                    .getQuantityString(R.plurals.text_commit_additions,
+                                            mCommit.getAdditions(),
+                                            mCommit.getAdditions()
+                                    ) +
+                            "<br>" +
+                            getResources().getQuantityString(R.plurals.text_commit_deletions,
+                                    mCommit.getDeletions(), mCommit.getDeletions()
+                            ) +
+                            "<br><br>" +
+                            String.format(
+                                    getString(R.string.text_committed_by),
+                                    user,
+                                    Util.formatDateLocally(getContext(),
+                                            new Date(mCommit.getCreatedAt())
+                                    )
+                            );
             mInfo.setHtml(Markdown.parseMD(builder, mCommit.getFullRepoName()));
             mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
@@ -126,17 +129,19 @@ public class CommitInfoFragment extends CommitFragment {
     private void checkSharedElementEntry() {
         final Intent i = getActivity().getIntent();
         if(i.hasExtra(getString(R.string.transition_card))) {
-            mHeader.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
-                    if(i.hasExtra(getString(R.string.intent_drawable))) {
-                        mAvatar.setImageBitmap(i.getParcelableExtra(getString(R.string.intent_drawable)));
-                    }
-                    getActivity().startPostponedEnterTransition();
-                    return true;
-                }
-            });
+            mHeader.getViewTreeObserver()
+                   .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                       @Override
+                       public boolean onPreDraw() {
+                           mHeader.getViewTreeObserver().removeOnPreDrawListener(this);
+                           if(i.hasExtra(getString(R.string.intent_drawable))) {
+                               mAvatar.setImageBitmap(
+                                       i.getParcelableExtra(getString(R.string.intent_drawable)));
+                           }
+                           getActivity().startPostponedEnterTransition();
+                           return true;
+                       }
+                   });
         }
     }
 

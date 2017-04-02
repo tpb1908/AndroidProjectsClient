@@ -35,31 +35,32 @@ public class FileLoader extends APIHandler {
         String PATH = GIT_BASE + SEGMENT_REPOS + "/" + repo + SEGMENT_CONTENTS;
         if(path != null) PATH += "/" + path;
         AndroidNetworking.get(PATH)
-                .addHeaders(API_AUTH_HEADERS)
-                .getResponseOnlyFromNetwork()
-                .build()
-                .getAsJSONArray(new JSONArrayRequestListener() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        final List<Node> nodes = new ArrayList<>(response.length());
-                        try {
-                            for(int i = 0; i < response.length(); i++) {
-                                nodes.add(new Node(response.getJSONObject(i)));
-                                nodes.get(i).setParent(parent);
-                            }
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
-                            if(loader != null) loader.directoryLoadError(APIError.UNPROCESSABLE);
-                        }
-                        Collections.sort(nodes, sorter);
-                        if(loader != null) loader.directoryLoaded(nodes);
-                    }
+                         .addHeaders(API_AUTH_HEADERS)
+                         .getResponseOnlyFromNetwork()
+                         .build()
+                         .getAsJSONArray(new JSONArrayRequestListener() {
+                             @Override
+                             public void onResponse(JSONArray response) {
+                                 final List<Node> nodes = new ArrayList<>(response.length());
+                                 try {
+                                     for(int i = 0; i < response.length(); i++) {
+                                         nodes.add(new Node(response.getJSONObject(i)));
+                                         nodes.get(i).setParent(parent);
+                                     }
+                                 } catch(JSONException jse) {
+                                     Log.e(TAG, "onResponse: ", jse);
+                                     if(loader != null)
+                                         loader.directoryLoadError(APIError.UNPROCESSABLE);
+                                 }
+                                 Collections.sort(nodes, sorter);
+                                 if(loader != null) loader.directoryLoaded(nodes);
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        if(loader != null) loader.directoryLoadError(parseError(anError));
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 if(loader != null) loader.directoryLoadError(parseError(anError));
+                             }
+                         });
     }
 
     private static final Comparator<Node> sorter = (n1, n2) -> {
@@ -70,20 +71,20 @@ public class FileLoader extends APIHandler {
 
     public void loadRawFile(StringRequestListener listener, String path) {
         AndroidNetworking.get(path)
-                .addHeaders(API_AUTH_HEADERS)
-                .setPriority(Priority.IMMEDIATE)
-                .build()
-                .getAsString(new StringRequestListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        if(listener != null) listener.onResponse(response);
-                    }
+                         .addHeaders(API_AUTH_HEADERS)
+                         .setPriority(Priority.IMMEDIATE)
+                         .build()
+                         .getAsString(new StringRequestListener() {
+                             @Override
+                             public void onResponse(String response) {
+                                 if(listener != null) listener.onResponse(response);
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        if(listener != null) listener.onError(anError);
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 if(listener != null) listener.onError(anError);
+                             }
+                         });
     }
 
     public interface DirectoryLoader {

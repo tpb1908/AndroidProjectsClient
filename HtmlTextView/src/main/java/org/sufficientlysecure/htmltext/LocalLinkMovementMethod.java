@@ -67,7 +67,8 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
                 } else if(action == MotionEvent.ACTION_DOWN) {
                     Selection.setSelection(buffer,
                             buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0]));
+                            buffer.getSpanEnd(link[0])
+                    );
                 }
 
                 if(widget instanceof HtmlTextView) {

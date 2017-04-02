@@ -35,7 +35,8 @@ public class FileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences.getPreferences(this);
+        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
+                .getPreferences(this);
         setTheme(prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_file);
         ButterKnife.bind(this);
@@ -72,7 +73,9 @@ public class FileActivity extends AppCompatActivity {
                 mName.setText(blob.substring(nameStart));
             }
             mWebView.setHighlightLanguage(getLanguage(getFileType(blob)));
-            new FileLoader(this).loadRawFile(fileLoadListener, "https://raw.githubusercontent.com/" + repo + blob);
+            new FileLoader(this).loadRawFile(fileLoadListener,
+                    "https://raw.githubusercontent.com/" + repo + blob
+            );
         } else if(getIntent().hasExtra(getString(R.string.intent_gist_url))) {
             final String url = getIntent().getStringExtra(getString(R.string.intent_gist_url));
             mWebView.setHighlightLanguage(getLanguage(getFileType(url)));

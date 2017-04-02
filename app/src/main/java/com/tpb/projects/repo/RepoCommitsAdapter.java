@@ -66,17 +66,17 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     }
 
     public void setBranch(String branch) {
-       if(!branch.equals(mBranch)) {
-           if(mBranch != null) {
-               mBranch = branch;
-               mCommits.clear();
-               notifyDataSetChanged();
-               loadCommits(true);
-           } else {
-               mBranch = branch;
-           }
+        if(!branch.equals(mBranch)) {
+            if(mBranch != null) {
+                mBranch = branch;
+                mCommits.clear();
+                notifyDataSetChanged();
+                loadCommits(true);
+            } else {
+                mBranch = branch;
+            }
 
-       }
+        }
     }
 
     public void notifyBottomReached() {
@@ -107,7 +107,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                 mParent.setLatestSHA(commits.get(0).getSha());
                 mCommits.clear();
             }
-            for(Commit c: commits) {
+            for(Commit c : commits) {
                 mCommits.add(Pair.create(c, null));
             }
             notifyItemRangeInserted(oldLength, mCommits.size());
@@ -123,7 +123,10 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     @Override
     public CommitViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CommitViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_commit, parent, false));
+        return new CommitViewHolder(LayoutInflater.from(parent.getContext())
+                                                  .inflate(R.layout.viewholder_commit, parent,
+                                                          false
+                                                  ));
     }
 
     @Override
@@ -156,7 +159,9 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                                     userName,
                                     userUrl
                             ),
-                            Util.formatDateLocally(holder.itemView.getContext(), new Date(c.getCreatedAt()))
+                            Util.formatDateLocally(holder.itemView.getContext(),
+                                    new Date(c.getCreatedAt())
+                            )
                     )
             );
             holder.mInfo.setHtml(Markdown.parseMD(builder.toString(), mRepo.getFullName()), null,

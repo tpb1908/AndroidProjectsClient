@@ -114,7 +114,8 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
 
     @Override
     public GistHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GistHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_gist, parent, false));
+        return new GistHolder(LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.viewholder_gist, parent, false));
     }
 
     @Override
@@ -123,7 +124,8 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         if(mIsShowingPublic) {
             holder.mTitle.setText(
                     String.format(
-                            holder.itemView.getResources().getString(R.string.text_gist_viewholder_title),
+                            holder.itemView.getResources()
+                                           .getString(R.string.text_gist_viewholder_title),
                             g.getOwner().getLogin(),
                             g.getFiles()[0].getName()
                     )
