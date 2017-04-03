@@ -394,7 +394,7 @@ public class Loader extends APIHandler {
                 @Override
                 public void onResponse(JSONArray response) {
                     final List<Label> labels = new ArrayList<>(response.length());
-                    for(int i = 0; i < labels.size(); i++) {
+                    for(int i = 0; i < response.length(); i++) {
                         try {
                             labels.add(Label.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {

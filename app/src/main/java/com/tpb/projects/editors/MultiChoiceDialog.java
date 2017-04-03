@@ -5,9 +5,14 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatCheckedTextView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.tpb.mdtext.TextUtils;
 import com.tpb.projects.R;
 
 /**
@@ -41,32 +46,48 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
         listView = dialog.getListView();
 
         dialog.setOnShowListener(dialogInterface -> {
-            if(colors != null) {
-                listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-                    }
-
-                    /*
-                    We have to get the com.tpb.mdtext.views after they are bound, so we wait for a scroll
-                    and then iterate through the com.tpb.mdtext.views on screen
-                     */
-
-                    @Override
-                    public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
-                        for(int i = 0; i < visibleCount; i++) {
-                            try {
-                                ((AppCompatCheckedTextView) listView.getChildAt(i))
-                                        .setTextColor(colors[firstVisible + i]);
-                            } catch(ClassCastException ignored) {
-                            }
-                        }
-                    }
-                });
-            }
+            if(colors != null) addBackgroundSetterListener();
         });
 
         return dialog;
+    };
+
+    private void addBackgroundSetterListener() {
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+            }
+
+                    /*
+                    We have to get the TextViews after they are bound, so we wait for a scroll
+                    and then iterate through the TextView on screen
+                     */
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
+                for(int i = 0; i < visibleCount; i++) {
+                    try {
+                        final SpannableStringBuilder builder = new SpannableStringBuilder();
+                        builder.append(choices[firstVisible + i]);
+                        builder.setSpan(
+                                new BackgroundColorSpan(colors[firstVisible + i]),
+                                0,
+                                builder.length(),
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        builder.setSpan(
+                                new ForegroundColorSpan(
+                                        TextUtils.getTextColorForBackground(colors[firstVisible + i])
+                                ),
+                                0,
+                                builder.length(),
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ((AppCompatCheckedTextView) listView.getChildAt(i))
+                                .setText(builder);
+                    } catch(ClassCastException ignored) {
+                    }
+                }
+            }
+        });
     }
 
     public void setTextColors(int[] colors) {

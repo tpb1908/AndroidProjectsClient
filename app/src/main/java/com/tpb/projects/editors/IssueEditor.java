@@ -275,6 +275,7 @@ public class IssueEditor extends EditorActivity {
         new Loader(this).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void listLoadComplete(List<Label> labels) {
+                Logger.i(TAG, "listLoadComplete: " + labels.toString());
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();

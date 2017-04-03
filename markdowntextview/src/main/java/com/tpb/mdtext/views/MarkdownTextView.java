@@ -38,7 +38,7 @@ import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.LocalLinkMovementMethod;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.SpanCache;
-import com.tpb.mdtext.StringUtils;
+import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.URLPattern;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
@@ -190,7 +190,7 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
                 //Add links for emails and web-urls
 
-                StringUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
+                TextUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
 
                 //Copy back the spans from the original text
                 for(URLSpan us : spans) {

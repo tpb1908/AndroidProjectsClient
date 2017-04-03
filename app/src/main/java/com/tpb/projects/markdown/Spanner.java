@@ -20,6 +20,8 @@ import com.tpb.github.data.models.User;
 import com.tpb.mdtext.Markdown;
 import com.tpb.projects.R;
 
+import static com.tpb.mdtext.TextUtils.getTextColorForBackground;
+
 /**
  * Created by theo on 17/03/17.
  */
@@ -271,7 +273,7 @@ public class Spanner {
     private static class FullWidthBackgroundColorSpan implements LineBackgroundSpan {
         private final int color;
 
-        public FullWidthBackgroundColorSpan(int color) {
+        FullWidthBackgroundColorSpan(int color) {
             this.color = color;
         }
 
@@ -307,35 +309,13 @@ public class Spanner {
     public static String getLabelString(String name, int color) {
         return
                 "<font color=\"" +
-                        String.format("#%06X", getTextColor((0xFFFFFF & color))) +
+                        String.format("#%06X", getTextColorForBackground((0xFFFFFF & color))) +
                         "\" bgcolor=\"" +
                         String.format("#%06X", (0xFFFFFF & color)) +
                         "\" " +
                         " rounded=\"true\">" +
                         name +
                         " </font>";
-    }
-
-    private static int getTextColor(int bg) {
-        double r = Color.red(bg) / 255d;
-        if(r <= 0.03928) {
-            r = r / 12.92;
-        } else {
-            r = Math.pow((r + 0.055) / 1.055, 2.4);
-        }
-        double g = Color.green(bg) / 255d;
-        if(g <= 0.03928) {
-            g = g / 12.92;
-        } else {
-            g = Math.pow((g + 0.055) / 1.055, 2.4);
-        }
-        double b = Color.blue(bg) / 255d;
-        if(b <= 0.03928) {
-            b = b / 12.92;
-        } else {
-            b = Math.pow((b + 0.055) / 1.055, 2.4);
-        }
-        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.35 ? Color.BLACK : Color.WHITE;
     }
 
 }

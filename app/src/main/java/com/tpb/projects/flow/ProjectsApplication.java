@@ -3,6 +3,7 @@ package com.tpb.projects.flow;
 import android.app.Application;
 
 import com.androidnetworking.AndroidNetworking;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.leakcanary.LeakCanary;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.util.Logger;
@@ -15,10 +16,12 @@ import okhttp3.OkHttpClient;
 
 public class ProjectsApplication extends Application {
 
+    public static FirebaseAnalytics mAnalytics;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        if(LeakCanary.isInAnalyzerProcess(this)) return;
+        if(LeakCanary.isInAnalyzerProcess(this)) return; //Heap analysis process, not our stuff
         if(BuildConfig.IS_IN_DEBUG) {
             LeakCanary.install(this);
             Logger.i(ProjectsApplication.class.getSimpleName(), "onCreate: Installed canary");
@@ -27,5 +30,6 @@ public class ProjectsApplication extends Application {
         } else {
             AndroidNetworking.initialize(this);
         }
+        mAnalytics = FirebaseAnalytics.getInstance(this);
     }
 }

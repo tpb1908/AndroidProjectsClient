@@ -154,7 +154,7 @@ public class Markdown {
         ESCAPE_MAP.put("`", "&#96;"); //Code tags in titles
     }
 
-    private static final Pattern ESCAPE_PATTERN = StringUtils.generatePattern(ESCAPE_MAP.keySet());
+    private static final Pattern ESCAPE_PATTERN = TextUtils.generatePattern(ESCAPE_MAP.keySet());
 
     /**
      * Escapes characters to stop parser mishandling them
@@ -163,7 +163,7 @@ public class Markdown {
      * @return String with #, @, <, and > replaced with their HTML codes
      */
     public static String escape(@Nullable String s) {
-        return StringUtils.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
+        return TextUtils.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     public static String fixRelativeLinks(@NonNull String s, String fullRepoName) {
