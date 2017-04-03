@@ -78,12 +78,14 @@ public class CharacterActivity extends BaseActivity {
 
         private final ArrayList<Pair<String, String>> mCharacters = new ArrayList<>();
         private final ArrayList<Pair<String, String>> mFilteredCharacters = new ArrayList<>();
+        private int mSize = 0;
 
         void addCharacters(List<Pair<String, String>> characters) {
             mCharacters.addAll(characters);
             final int originalSize = mFilteredCharacters.size();
             mFilteredCharacters.addAll(characters);
             CharacterActivity.this.runOnUiThread(() -> {
+                mSize = mFilteredCharacters.size();
                 notifyItemRangeInserted(originalSize, mFilteredCharacters.size());
             });
         }
@@ -120,7 +122,7 @@ public class CharacterActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return mFilteredCharacters.size();
+            return mSize;
         }
 
         class CharacterViewHolder extends RecyclerView.ViewHolder {
