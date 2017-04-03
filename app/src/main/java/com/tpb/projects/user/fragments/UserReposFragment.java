@@ -3,7 +3,6 @@ package com.tpb.projects.user.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +16,9 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
+import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.user.RepositoriesAdapter;
-import com.tpb.projects.common.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,17 +69,12 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
     }
 
     @Override
-    public void openRepo(Repository repo, View view) {
+    public void openRepo(Repository repo) {
         final Intent i = new Intent(getContext(), RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
         new Loader(getContext()).loadProjects(null, repo.getFullName());
         new Loader(getContext()).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
-        startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                getActivity(),
-                view,
-                getString(R.string.transition_name)
-                ).toBundle()
-        );
+        startActivity(i);
         getActivity().overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 

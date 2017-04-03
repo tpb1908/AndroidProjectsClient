@@ -42,7 +42,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     private final String mAuthenticatedUser;
     private String mUser;
     private final RepoPinChecker mPinChecker;
-    private final RepoOpener mManager;
+    private final RepoOpener mOpener;
 
     private int mPage = 1;
     private boolean mIsLoading = false;
@@ -52,7 +52,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     public RepositoriesAdapter(Context context, RepoOpener opener, SwipeRefreshLayout refresher) {
         mLoader = new Loader(context);
-        mManager = opener;
+        mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -215,8 +215,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         }
     }
 
-    private void openItem(View view, int pos) {
-        mManager.openRepo(mRepos.get(pos), view);
+    private void openItem(int pos) {
+        mOpener.openRepo(mRepos.get(pos));
     }
 
     class RepoHolder extends RecyclerView.ViewHolder {
@@ -233,8 +233,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             super(view);
             ButterKnife.bind(this, view);
             mDescription.setConsumeNonUrlClicks(false);
-            view.setOnClickListener(
-                    (v) -> RepositoriesAdapter.this.openItem(mName, getAdapterPosition()));
+            view.setOnClickListener(v -> openItem(getAdapterPosition()));
             if(mIsShowingStars) {
                 mPin.setVisibility(View.GONE);
             } else {
@@ -313,8 +312,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     public interface RepoOpener {
 
-        void openRepo(Repository repo, View view);
-
+        void openRepo(Repository repo);
 
     }
 
