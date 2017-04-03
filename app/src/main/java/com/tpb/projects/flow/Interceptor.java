@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.tpb.projects.R;
 import com.tpb.projects.issues.IssueActivity;
@@ -18,6 +17,7 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class Interceptor extends Activity {
                 getIntent().getData() != null &&
                 "github.com".equals(getIntent().getData().getHost())) {
             final List<String> segments = getIntent().getData().getPathSegments();
-            Log.i(TAG, "onCreate: Path: " + segments.toString());
+            Logger.i(TAG, "onCreate: Path: " + segments.toString());
             if(segments.size() == 1) {
                 final Intent u = new Intent(Interceptor.this, UserActivity.class);
                 u.putExtra(getString(R.string.intent_username), segments.get(0));
@@ -193,7 +193,7 @@ public class Interceptor extends Activity {
     }
 
     private void fail() {
-        Log.i(TAG, "fail: ");
+        Logger.e(TAG, "fail: ");
         try {
             if(failIntent != null) {
                 startActivity(failIntent);

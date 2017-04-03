@@ -3,12 +3,12 @@ package com.tpb.projects.project;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
 import com.tpb.github.data.models.Card;
 import com.tpb.projects.R;
+import com.tpb.projects.util.Logger;
 
 /**
  * Created by theo on 22/12/16.
@@ -61,7 +61,7 @@ class CardDragListener implements View.OnDragListener {
 
                 if(view.getId() == R.id.viewholder_card) {
                     targetPosition = targetAdapter.indexOf((int) view.getTag());
-                    Log.i(TAG, "onDrag: Hovering over position " + targetPosition);
+                    Logger.i(TAG, "onDrag: Hovering over position " + targetPosition);
                     if(event.getY() < view.getHeight() / 2) {
                         targetPosition = Math.max(0, targetPosition - 1);
                     }
@@ -97,7 +97,7 @@ class CardDragListener implements View.OnDragListener {
 
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
-                Log.i(TAG, "onDrag: Drag exited");
+                Logger.i(TAG, "onDrag: Drag exited");
                 view.setBackground(selectedBG);
                 //This is when we have exited another view
                 break;

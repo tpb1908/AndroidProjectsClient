@@ -62,10 +62,6 @@ public class SettingsActivity extends BaseActivity {
             }
         });
         spinner.setSelection(preferences.getCardAction().toInt());
-
-        Log.i(TAG,
-                "onCreate: Emails " + BuildConfig.BUG_EMAIL + ", " + BuildConfig.FEATURE_REQUEST_EMAIL
-        );
     }
 
     public void onSettingsClick(View view) {

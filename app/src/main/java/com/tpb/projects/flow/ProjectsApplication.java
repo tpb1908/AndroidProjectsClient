@@ -1,7 +1,6 @@
 package com.tpb.projects.flow;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
 import com.squareup.leakcanary.LeakCanary;
@@ -22,7 +21,7 @@ public class ProjectsApplication extends Application {
         if(LeakCanary.isInAnalyzerProcess(this)) return;
         if(BuildConfig.IS_IN_DEBUG) {
             LeakCanary.install(this);
-            Log.i(ProjectsApplication.class.getSimpleName(), "onCreate: Installed canary");
+            Logger.i(ProjectsApplication.class.getSimpleName(), "onCreate: Installed canary");
             AndroidNetworking.initialize(this, new OkHttpClient.Builder()
                     .addNetworkInterceptor(new Logger.LoggingInterceptor()).build());
         } else {

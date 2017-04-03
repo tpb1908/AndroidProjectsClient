@@ -22,6 +22,7 @@ import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -131,7 +132,7 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
             mPage = 1;
             mMaxPageReached = false;
         }
-        Log.i(TAG, "loadMilestones: Loading with filter " + mFilter);
+        Logger.i(TAG, "loadMilestones: Loading with filter " + mFilter);
         mLoader.loadMilestones(this, mRepo, mFilter, mPage);
     }
 
@@ -158,7 +159,6 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-        Log.i(TAG, "listLoadError: " + error.toString());
     }
 
     @OnClick(R.id.milestones_filter_button)
@@ -219,7 +219,6 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
                 mEditor.createMilestone(new Editor.CreationListener<Milestone>() {
                                             @Override
                                             public void created(Milestone milestone) {
-                                                Log.i(TAG, "created: Milestone created");
                                                 mRefresher.setRefreshing(false);
                                                 mAdapter.addMilestone(milestone);
                                                 mRecycler.scrollToPosition(0);

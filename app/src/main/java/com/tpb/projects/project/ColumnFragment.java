@@ -15,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,16 +34,16 @@ import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Column;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 
@@ -304,7 +303,7 @@ public class ColumnFragment extends Fragment {
         for(int i = 0; i < mRecycler.getChildCount() && i < index; i++) {
             height += mRecycler.getChildAt(i).getHeight();
         }
-        Log.i(TAG, "attemptMoveTo: Height of " + height);
+        Logger.i(TAG, "attemptMoveTo: Height of " + height);
         mNestedScroller.scrollTo(0, height);
 
         return true;
@@ -477,7 +476,7 @@ public class ColumnFragment extends Fragment {
     }
 
     void editCard(Card card) {
-        Log.i(TAG, "editCard: Updating card: " + card.toString());
+        Logger.i(TAG, "editCard: Updating card: " + card.toString());
         mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.UpdateListener<Card>() {
             int updateAttempts = 0;
@@ -625,7 +624,7 @@ public class ColumnFragment extends Fragment {
 
             @Override
             public void updateError(APIHandler.APIError error) {
-                Log.i(TAG, "updateError: " + error.toString());
+                Logger.i(TAG, "updateError: " + error.toString());
                 if(error == APIHandler.APIError.NO_CONNECTION) {
                     mParent.mRefresher.setRefreshing(false);
                     Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();

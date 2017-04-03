@@ -17,6 +17,8 @@ import com.tpb.github.data.models.User;
 
 import org.json.JSONObject;
 
+import static android.util.Log.i;
+
 public class OAuthHandler extends APIHandler {
     private static final String TAG = OAuthHandler.class.getSimpleName();
 
@@ -62,7 +64,7 @@ public class OAuthHandler extends APIHandler {
 
             @Override
             public void onError(String error) {
-                Log.i(TAG, "onError: " + error);
+                Log.e(TAG, "onError: " + error);
             }
         };
     }
@@ -111,7 +113,7 @@ public class OAuthHandler extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: " + anError.getErrorDetail());
+                                 Log.e(TAG, "onError: " + anError.getErrorDetail());
                              }
                          });
 

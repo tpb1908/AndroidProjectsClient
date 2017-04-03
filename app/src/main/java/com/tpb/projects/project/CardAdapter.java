@@ -10,7 +10,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +28,11 @@ import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +152,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     void addCardFromDrag(int pos, Card card) {
-        Log.i(TAG, "createCard: Card being added to " + pos);
+        Logger.i(TAG, "createCard: Card being added to " + pos);
         mCards.add(pos, new Pair<>(card, null));
         notifyItemInserted(pos);
         final int id = pos == 0 ? -1 : mCards.get(pos - 1).first.getId();

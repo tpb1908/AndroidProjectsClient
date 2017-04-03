@@ -24,6 +24,8 @@ import org.json.JSONObject;
 
 import okhttp3.Response;
 
+import static com.androidnetworking.AndroidNetworking.post;
+
 /**
  * Created by theo on 18/12/16.
  */
@@ -65,7 +67,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createProject: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
+        post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                          .addHeaders(PROJECTS_API_AUTH_HEADERS)
                          .addJSONObjectBody(obj)
                          .build()
@@ -210,7 +212,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "addColumn: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
+        post(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                          .addHeaders(PROJECTS_API_AUTH_HEADERS)
                          .addJSONObjectBody(obj)
                          .build()
@@ -238,8 +240,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "moveColumn: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_MOVES)
+        post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_MOVES)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -286,8 +287,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createCard: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
+        post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -313,8 +313,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createCard: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
+        post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -369,8 +368,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "moveCard: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId + SEGMENT_MOVES)
+        post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId + SEGMENT_MOVES)
                 .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -420,7 +418,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createIssue: ", jse);
         }
-        AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
+        post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                          .addHeaders(API_AUTH_HEADERS)
                          .addJSONObjectBody(obj)
                          .build()
@@ -523,8 +521,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createIssueComment: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
+        post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -596,8 +593,7 @@ public class Editor extends APIHandler {
         } catch(JSONException jse) {
             Log.e(TAG, "createCommitComment: ", jse);
         }
-        AndroidNetworking
-                .post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS)
+        post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS)
                 .addHeaders(API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
@@ -658,7 +654,6 @@ public class Editor extends APIHandler {
                         } else if(listener != null) {
                             listener.deletionError(parseError(anError));
                         }
-                        Log.i(TAG, "onError: Comment deletion error: " + anError.getErrorBody());
                     }
                 });
 
@@ -766,8 +761,8 @@ public class Editor extends APIHandler {
             if(description != null) obj.put("description", description);
             if(dueOn != null) obj.put("due_on", dueOn);
 
-        } catch(JSONException jse) {
-            Log.e(TAG, "updateMilestone: ", jse);
+        } catch(JSONException wtf) {
+            Log.wtf(TAG, "Milestone JSONObject", wtf);
         }
         AndroidNetworking.post(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_MILESTONES)
                          .addHeaders(API_AUTH_HEADERS)
@@ -781,10 +776,6 @@ public class Editor extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: " + anError.getErrorDetail());
-                                 Log.i(TAG, "onError: " + anError.toString());
-                                 Log.i(TAG, "onError: " + anError.getErrorCode());
-                                 Log.i(TAG, "onError: " + anError.getErrorBody());
                                  if(listener != null) listener.creationError(parseError(anError));
                              }
                          });
@@ -797,8 +788,8 @@ public class Editor extends APIHandler {
             if(description != null) obj.put("description", description);
             if(dueOn != null) obj.put("due_on", dueOn);
             if(state != null) obj.put("state", state.toString().toLowerCase());
-        } catch(JSONException jse) {
-            Log.e(TAG, "updateMilestone: ", jse);
+        } catch(JSONException wtf) {
+            Log.wtf(TAG, "Milestone update JSONObject", wtf);
         }
         AndroidNetworking
                 .patch(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_MILESTONES + "/" + number)

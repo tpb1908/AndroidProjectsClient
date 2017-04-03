@@ -2,7 +2,6 @@ package com.tpb.github.data.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 public class GitHubSession {
     private static final String TAG = GitHubSession.class.getSimpleName();
@@ -64,7 +63,6 @@ public class GitHubSession {
      * @return Access token
      */
     public String getAccessToken() {
-        Log.i(TAG, "getAccessToken: " + prefs.contains(API_ACCESS_TOKEN));
         return prefs.getString(API_ACCESS_TOKEN, null);
     }
 

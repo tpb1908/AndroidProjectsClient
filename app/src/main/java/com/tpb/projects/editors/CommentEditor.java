@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -18,18 +17,18 @@ import com.androidnetworking.error.ANError;
 import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.mdtext.Markdown;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 
@@ -162,7 +161,7 @@ public class CommentEditor extends EditorActivity {
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
                                        @Override
                                        public void imageUploaded(String link) {
-                                           Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                                           Logger.i(TAG, "imageUploaded: Image uploaded " + link);
                                            mUploadDialog.cancel();
                                            final String snippet = String.format(getString(R.string.text_image_link), link);
                                            if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {

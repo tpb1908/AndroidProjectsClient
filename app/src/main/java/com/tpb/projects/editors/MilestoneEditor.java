@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -21,19 +20,19 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.mdtext.Markdown;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -259,7 +258,7 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
         new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
                                        @Override
                                        public void imageUploaded(String link) {
-                                           Log.i(TAG, "imageUploaded: Image uploaded " + link);
+                                           Logger.i(TAG, "imageUploaded: Image uploaded " + link);
                                            mUploadDialog.cancel();
                                            final String snippet = String.format(getString(R.string.text_image_link), link);
                                            final int start = Math.max(mDescriptionEditor.getSelectionStart(), 0);

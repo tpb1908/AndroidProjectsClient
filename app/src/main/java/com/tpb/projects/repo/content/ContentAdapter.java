@@ -3,7 +3,6 @@ package com.tpb.projects.repo.content;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import com.tpb.github.data.FileLoader;
 import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
 import com.tpb.projects.repo.RepoActivity;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
@@ -128,7 +128,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             //TODO Open the submodule in another instance
         } else {
             mParent.addRibbonItem(node);
-            Log.i(TAG, "loadNode: Loading path " + node.getPath());
             mPreviousNode = node;
             mParent.mRefresher.setRefreshing(true);
             mIsLoading = true;
@@ -149,7 +148,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
                 final Node parent = directory.get(0).getParent();
                 for(Node n : mCurrentNodes) { //Most likely here
                     if(parent.equals(n)) {
-                        Log.i(TAG, "directoryLoaded: Found parent");
+                        Logger.i(TAG, "directoryLoaded: Found parent");
                         n.setChildren(directory);
                         return;
                     }
@@ -171,7 +170,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
                                 stack.push(child);
                             }
                             depth += 1;
-                            Log.i(TAG, "directoryLoaded: Traversing at depth " + depth);
                         }
                     }
                 }

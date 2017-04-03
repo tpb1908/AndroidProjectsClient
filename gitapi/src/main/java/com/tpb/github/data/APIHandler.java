@@ -2,6 +2,7 @@ package com.tpb.github.data;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.androidnetworking.error.ANError;
@@ -171,40 +172,55 @@ public abstract class APIHandler {
     //1900 network https://github.com/GleSYS/API/wiki/API-Error-codes#19xx---network
 
     static APIError parseError(ANError error) {
-        if(CONNECTION_ERROR.equals(error.getErrorDetail())) return APIError.NO_CONNECTION;
-        switch(error.getErrorCode()) {
-            case HTTP_BAD_REQUEST_400:
-                return APIError.BAD_REQUEST;
-            case HTTP_UNAUTHORIZED_401:
-                if(error.getErrorBody() != null) {
-                    if(error.getErrorBody().contains(MESSAGE_BAD_CREDENTIALS))
-                        return APIError.BAD_CREDENTIALS;
-                    if(error.getErrorBody().contains(MESSAGE_MAX_LOGIN_ATTEMPTS))
-                        return APIError.MAX_LOGIN_ATTEMPTS;
-                }
-                return APIError.UNAUTHORIZED;
-            case HTTP_FORBIDDEN_403:
-                if(error.getErrorBody() != null) {
-                    if(error.getErrorBody().contains(MESSAGE_RATE_LIMIT_START))
-                        return APIError.RATE_LIMIT;
-                    if(error.getErrorBody().contains(MESSAGE_ABUSE_LIMIT))
-                        return APIError.ABUSE_LIMIT;
-                }
-                return APIError.FORBIDDEN;
-            case HTTP_NOT_ALLOWED_405:
-                return APIError.NOT_ALLOWED;
-            case HTTP_NOT_FOUND_404:
-                return APIError.NOT_FOUND;
-            case HTTP_UNPROCESSABLE_422:
-                return APIError.UNPROCESSABLE;
-            case HTTP_409:
-                if(error.getErrorBody() != null && error.getErrorBody()
-                                                        .contains(ERROR_MESSAGE_EMPTY_REPOSITORY)) {
-                    return APIError.EMPTY_REPOSITORY;
-                }
+        APIError apiError;
+        if(CONNECTION_ERROR.equals(error.getErrorDetail())) {
+            apiError = APIError.NO_CONNECTION;
+        } else {
+            switch(error.getErrorCode()) {
+                case HTTP_BAD_REQUEST_400:
+                    apiError = APIError.BAD_REQUEST;
+                    break;
+                case HTTP_UNAUTHORIZED_401:
+                    apiError = APIError.UNAUTHORIZED;
+                    if(error.getErrorBody() != null) {
+                        if(error.getErrorBody().contains(MESSAGE_BAD_CREDENTIALS)) {
+                            apiError = APIError.BAD_CREDENTIALS;
+                        } else if(error.getErrorBody().contains(MESSAGE_MAX_LOGIN_ATTEMPTS)) {
+                            apiError = APIError.MAX_LOGIN_ATTEMPTS;
+                        }
+                    }
+                    break;
+                case HTTP_FORBIDDEN_403:
+                    apiError = APIError.FORBIDDEN;
+                    if(error.getErrorBody() != null) {
+                        if(error.getErrorBody().contains(MESSAGE_RATE_LIMIT_START)) {
+                            apiError = APIError.RATE_LIMIT;
+                        } else if(error.getErrorBody().contains(MESSAGE_ABUSE_LIMIT)) {
+                            apiError = APIError.ABUSE_LIMIT;
+                        }
+                    }
+                    break;
+                case HTTP_NOT_ALLOWED_405:
+                    apiError = APIError.NOT_ALLOWED;
+                    break;
+                case HTTP_NOT_FOUND_404:
+                    apiError = APIError.NOT_FOUND;
+                    break;
+                case HTTP_UNPROCESSABLE_422:
+                    apiError = APIError.UNPROCESSABLE;
+                    break;
+                case HTTP_409:
+                    if(error.getErrorBody() != null && error.getErrorBody().contains(
+                                                                    ERROR_MESSAGE_EMPTY_REPOSITORY)) {
+                        apiError = APIError.EMPTY_REPOSITORY;
+                        break;
+                    }
+                default:
+                    apiError = APIError.UNKNOWN;
+            }
         }
-
-        return APIError.UNKNOWN;
+        apiError.error = error;
+        return apiError;
     }
 
     public enum APIError {
@@ -225,11 +241,16 @@ public abstract class APIHandler {
         @StringRes
         public final int resId;
 
+        @Nullable ANError error;
+
         APIError(@StringRes int resId) {
             this.resId = resId;
         }
 
-
+        APIError(@StringRes int resId, @Nullable ANError error) {
+            this.resId = resId;
+            this.error = error;
+        }
     }
 
 }

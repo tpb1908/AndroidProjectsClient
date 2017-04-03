@@ -72,8 +72,6 @@ public class LoginActivity extends BaseActivity {
         mOAuthHandler.setListener(new OAuthHandler.OAuthAuthenticationListener() {
             @Override
             public void onSuccess() {
-                Log.i(TAG, "onSuccess: ");
-                Log.i(TAG, "onSuccess: User " + mOAuthHandler.getUserName());
                 mWebView.setVisibility(View.GONE);
                 mSpinner.setVisibility(View.VISIBLE);
             }
@@ -171,9 +169,7 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            Log.d(TAG, "Loading URL: " + url);
             if(url.contains("?code=")) {
-                Log.i(TAG, "onPageStarted: Code complete " + url);
                 final String[] parts = url.split("=");
                 mListener.onCodeCollected(parts[1]);
             }

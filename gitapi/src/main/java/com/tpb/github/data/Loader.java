@@ -72,14 +72,11 @@ public class Loader extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "onResponse: User loaded " + response.toString());
                                  if(loader != null) loader.loadComplete(User.parse(response));
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "onError: Authenticated user error " + anError
-                                         .getErrorBody());
                                  if(loader != null) loader.loadError(parseError(anError));
                              }
                          });
@@ -95,13 +92,11 @@ public class Loader extends APIHandler {
             req.getAsJSONObject(new JSONObjectRequestListener() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    Log.i(TAG, "onResponse: User loaded");
                     loader.loadComplete(User.parse(response));
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: User not loaded: " + anError.getErrorBody());
                     loader.loadError(parseError(anError));
                 }
             });
@@ -134,7 +129,6 @@ public class Loader extends APIHandler {
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: " + anError.getErrorBody());
                     loader.listLoadError(parseError(anError));
                 }
             });
@@ -159,14 +153,12 @@ public class Loader extends APIHandler {
                         }
                         loader.listLoadComplete(repos);
                     } catch(JSONException jse) {
-                        Log.i(TAG, "onResponse: " + response.toString());
-                        Log.e(TAG, "onResponse: ", jse);
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: User repos" + anError.getErrorBody());
                     loader.listLoadError(parseError(anError));
                 }
             });
@@ -191,14 +183,12 @@ public class Loader extends APIHandler {
                         }
                         loader.listLoadComplete(repos);
                     } catch(JSONException jse) {
-                        Log.i(TAG, "onResponse: " + response.toString());
-                        Log.e(TAG, "onResponse: ", jse);
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
                 }
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: User repos" + anError.getErrorBody());
                     loader.listLoadError(parseError(anError));
                 }
             });
@@ -221,7 +211,6 @@ public class Loader extends APIHandler {
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: load Repo: " + anError.getErrorBody());
                     loader.loadError(parseError(anError));
                 }
             });
@@ -559,7 +548,6 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: Issue: " + anError.getErrorBody());
                         if(loader != null) loader.loadError(parseError(anError));
                     }
                 });
@@ -591,7 +579,6 @@ public class Loader extends APIHandler {
 
                 @Override
                 public void onError(ANError anError) {
-                    Log.i(TAG, "onError: Issue load: " + anError.getErrorBody());
                     loader.listLoadError(parseError(anError));
                 }
             });
@@ -857,10 +844,6 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG,
-                                "onError: Access check: " + anError.getErrorCode() + " " + anError
-                                        .getErrorBody()
-                        );
                         if(listener != null) {
                             if(anError.getErrorCode() == 403) {
                                 //403 Must have push access to view collaborator permission
@@ -908,7 +891,6 @@ public class Loader extends APIHandler {
                          .getAsOkHttpResponse(new OkHttpResponseListener() {
                              @Override
                              public void onResponse(Response response) {
-                                 Log.i(TAG, "onResponse: Check if starred: " + response.toString());
                                  if(response.code() == 204) {
                                      if(listener != null) listener.loadComplete(true);
                                  } else if(response.code() == 404) {
@@ -931,9 +913,6 @@ public class Loader extends APIHandler {
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG,
-                                         "onResponse: Subscription check " + response.toString()
-                                 );
                                  try {
                                      if(response.has("subscribed")) {
                                          if(listener != null)

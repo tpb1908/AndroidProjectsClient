@@ -20,7 +20,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,16 +45,17 @@ import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
+import com.tpb.projects.common.BaseActivity;
+import com.tpb.projects.common.ShortcutDialog;
+import com.tpb.projects.common.fab.FloatingActionButton;
+import com.tpb.projects.common.fab.FloatingActionMenu;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.common.BaseActivity;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FloatingActionButton;
-import com.tpb.projects.common.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +147,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             @Override
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
-                Log.i(TAG, "onPageSelected: Page changed to  " + position);
                 if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
                     showFab();
                 }
@@ -519,12 +518,11 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         final int from = mAdapter.indexOf(tag);
         final int to;
         if(direction) {
-            Log.i(TAG, "moveColumn: Dropping to the left");
             to = Math.max(0, mAdapter.indexOf(dropTag) - 1);
         } else {
             to = Math.min(mAdapter.getCount() - 1, mAdapter.indexOf(dropTag) + 1);
         }
-        Log.i(TAG, "moveColumn: From " + from + ", to " + to);
+        Logger.i(TAG, "moveColumn: From " + from + ", to " + to);
         mAdapter.move(from, to);
         mAdapter.columns.add(to, mAdapter.columns.remove(from));
         mColumnPager.setCurrentItem(to, true);
@@ -802,28 +800,20 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                         break;
                     }
                 }
-                Log.i(TAG, "onDrag: Range of positions " + first + ", to " + last);
                 final int tp = ca.indexOf((int) view.getTag());
-                Log.i(TAG, "onDrag: View is at " + view.getY());
-                Log.i(TAG, "onDrag: Event is at " + event.getY());
-                Log.i(TAG, "onDrag: Position in view is " + (event.getY() - view.getY()));
                 final float relativePos = event.getY() - view.getY();
                 final int[] pos = new int[2];
                 if(tp == first) {
                     rv.getChildAt(first).getLocationOnScreen(pos);
-                    Log.i(TAG, "onDrag: First view " + pos[1]);
                     if(pos[1] + relativePos < 0.1 * metrics.heightPixels) {
-                        Log.i(TAG, "onDrag: In bottom 10%");
                         dragUp();
                     }
-                    Log.i(TAG, "onDrag: At the first position- We should scroll up");
+                    Logger.i(TAG, "onDrag: At the first position- We should scroll up");
 
                 } else if(tp == last) {
-                    Log.i(TAG, "onDrag: At the last position- We should scroll down");
+                    Logger.i(TAG, "onDrag: At the last position- We should scroll down");
                     rv.getChildAt(last).getLocationOnScreen(pos);
-                    Log.i(TAG, "onDrag: Last view " + pos[1]);
                     if(pos[1] + relativePos > 0.9 * metrics.heightPixels) {
-                        Log.i(TAG, "onDrag: In top 10%");
                         dragDown();
                     }
 

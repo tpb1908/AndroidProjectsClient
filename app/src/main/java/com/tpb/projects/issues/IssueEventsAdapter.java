@@ -6,7 +6,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,10 @@ import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Spanner;
-import com.tpb.projects.common.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +129,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     public void notifyBottomReached() {
-        Log.i(TAG, "notifyBottomReached: ");
         if(!mIsLoading && !mMaxPageReached) {
             mPage++;
             loadEvents(false);
@@ -138,7 +136,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     private void loadEvents(boolean resetPage) {
-        Log.i(TAG, "loadEvents: Loading events for page " + mPage);
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {

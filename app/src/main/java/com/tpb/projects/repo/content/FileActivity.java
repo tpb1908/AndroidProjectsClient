@@ -59,15 +59,12 @@ public class FileActivity extends AppCompatActivity {
 
             @Override
             public void onError(ANError anError) {
-                Log.i(TAG, "onError: " + anError.toString());
                 mSpinner.setVisibility(View.GONE);
             }
         };
         if(getIntent().hasExtra(getString(R.string.intent_blob_path))) {
             final String repo = getIntent().getStringExtra(getString(R.string.intent_repo));
             final String blob = getIntent().getStringExtra(getString(R.string.intent_blob_path));
-            Log.i(TAG, "onCreate: Repo path is " + repo);
-            Log.i(TAG, "onCreate: Blob path is " + blob);
             final int nameStart = blob.lastIndexOf('/') + 1;
             if(nameStart < blob.length()) {
                 mName.setText(blob.substring(nameStart));

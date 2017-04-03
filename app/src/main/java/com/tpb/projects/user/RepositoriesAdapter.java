@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +17,10 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Repository;
-import com.tpb.projects.R;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.util.Util;
-
 import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.projects.R;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +82,6 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     private void loadReposForUser(boolean resetPage) {
-        Log.i(TAG, "loadReposForUser: ");
         mIsLoading = true;
         mRefresher.setRefreshing(true);
         if(resetPage) {
@@ -269,7 +266,6 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             final String[] savedPins = Util.stringArrayFromPrefs(prefs.getString(KEY, ""));
             pins.clear();
             pins.addAll(Arrays.asList(savedPins));
-            Log.i(TAG, "RepoPinChecker: Loaded pin positions " + pins.toString());
         }
 
         void pin(String path) {

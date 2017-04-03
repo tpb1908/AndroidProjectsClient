@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.util.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -160,7 +161,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
 
                 } else if(requestCode == SELECT_FILE) {
                     final Uri selectedFile = data.getData();
-                    Log.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
+                    Logger.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
                     pd.setTitle(R.string.title_image_conversion);
                     pd.show();
                     AsyncTask.execute(() -> {
