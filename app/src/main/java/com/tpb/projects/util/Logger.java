@@ -1,6 +1,13 @@
 package com.tpb.projects.util;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
+
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by theo on 11/03/17.
@@ -60,6 +67,27 @@ public class Logger {
 
     public static void e(String tag, String msg, Throwable tr) {
         if(DEBUG) Log.e(tag, msg, tr);
+    }
+
+    public static class LoggingInterceptor implements Interceptor {
+
+        private static final String TAG = LoggingInterceptor.class.getSimpleName();
+
+        @SuppressLint("DefaultLocale")
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            final Request request = chain.request();
+            final long ts = System.nanoTime();
+            Logger.i(TAG, String.format("Sending request %s on %s%n%s",
+                    request.url(), chain.connection(), request.headers()));
+
+            final Response response = chain.proceed(request);
+
+            Logger.i(TAG, String.format("Received response for %s in %.1fms%n%s",
+                    response.request().url(), (System.nanoTime() - ts) / 1e6d, response.headers()));
+
+            return response;
+        }
     }
 
 }

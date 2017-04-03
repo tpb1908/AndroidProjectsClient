@@ -93,7 +93,7 @@ public class CommitInfoFragment extends CommitFragment {
     public void commitLoaded(Commit commit) {
         mCommit = commit;
         if(!mAreViewsValid) return;
-        mTitle.setMarkdown(Spanner.bold(Markdown.escape(mCommit.getMessage())));
+        mTitle.setMarkdown(Spanner.bold(mCommit.getMessage()));
         final String user;
         if(mCommit.getCommitter() != null) {
             mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());
