@@ -254,11 +254,24 @@ public class HtmlTagHandler implements Html.TagHandler {
                                     bulletMargin -= (lists.size() - 2) * listItemIndent;
                                 }
                             }
-                            end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(
-                                            listItemIndent * (lists.size() - 1)),
-                                    new BulletSpan(bulletMargin)
-                            );
+
+                            //Check for checkboxes
+                            if(output.length() > 2 &&
+                                    ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
+                                            || (output.charAt(1) >= '\u2610' && output.charAt(1) <= '\u2612')
+                            )) {
+                                end(output, Ul.class, false,
+                                        new LeadingMarginSpan.Standard(
+                                                listItemIndent * (lists.size() - 1)),
+                                        null
+                                );
+                            } else {
+                                end(output, Ul.class, false,
+                                        new LeadingMarginSpan.Standard(
+                                                listItemIndent * (lists.size() - 1)),
+                                        new BulletSpan(bulletMargin)
+                                );
+                            }
                         } else {
                             end(output, Ul.class, false,
                                     new LeadingMarginSpan.Standard(
@@ -288,8 +301,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                                     null
                             );
                         }
-
-
                     }
                 } else {
                     end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));

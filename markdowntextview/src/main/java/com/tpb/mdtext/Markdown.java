@@ -224,28 +224,13 @@ public class Markdown {
             } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);
             } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
-                if(i - 4 >= 0 && chars[i - 4] == '-') {
-                    builder.setLength(builder.length() - 4);
-                    builder.append("<br>");
-                } else {
-                    builder.setLength(builder.length() - 2);
-                }
-                builder.append("\u2611");         //☑ ballot box with check
+                builder.setLength(builder.length() - 2);
+                builder.append("\u2611");  //☑ ballot box with check
             } else if(p == '[' && chars[i] == ']') { //Closed box
-                if(i - 4 >= 0 && chars[i - 4] == '-') {
-                    builder.setLength(builder.length() - 3);
-                    builder.append("<br>");
-                } else {
-                    builder.setLength(builder.length() - 1);
-                }
+                builder.setLength(builder.length() - 1);
                 builder.append("\u2610"); //☐ ballot box
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
-                if(i - 4 >= 0 && chars[i - 4] == '-') {
-                    builder.setLength(builder.length() - 4);
-                    builder.append("<br>");
-                } else {
-                    builder.setLength(builder.length() - 2);
-                }
+                builder.setLength(builder.length() - 2);
                 builder.append("\u2610");
             } else if(chars[i] == '(') {
                 builder.append("(");
