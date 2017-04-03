@@ -119,5 +119,10 @@ public class TextUtils {
         }
         return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.35 ? Color.BLACK : Color.WHITE;
     }
+    public static boolean isValidURL(String possible) {
+        return URLPattern.AUTOLINK_WEB_URL.matcher(possible).matches();
+    }
+
+
 
 }

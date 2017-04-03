@@ -59,6 +59,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import static com.tpb.mdtext.TextUtils.isValidURL;
+
 /**
  * Some parts of this code are based on android.text.Html
  */
@@ -518,10 +520,6 @@ public class HtmlTagHandler implements Html.TagHandler {
             Log.e(TAG, "handleTag: ", e);
         }
         return defaultAttr;
-    }
-
-    private static boolean isValidURL(String possible) {
-        return URLPattern.AUTOLINK_WEB_URL.matcher(possible).matches();
     }
 
     /**

@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static android.webkit.URLUtil.isValidUrl;
+
 /**
  * Created by theo on 24/02/17.
  */
@@ -178,20 +180,27 @@ public class Markdown {
                     if(url.startsWith("./")) offset = 2;
                     else if(url.startsWith("/")) offset = 1;
                     else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
-                    if(offset != -1) {
-                        s =
-                                s.substring(0, srcStart) +
-                                        "https://raw.githubusercontent.com/" +
-                                        fullRepoName +
-                                        "/master/" + url.substring(offset) +
-                                        s.substring(srcEnd);
+                    s = s.substring(0, srcStart) + concatenateRawContentUrl(url, fullRepoName) +
+                                s.substring(srcEnd);
 
-                    }
                 }
             }
             next = s.indexOf("<img", next + 1);
         }
         return s;
+    }
+
+    private static String concatenateRawContentUrl(String url, String fullRepoName) {
+        int offset = -1;
+        if(url.startsWith("./")) offset = 2;
+        else if(url.startsWith("/")) offset = 1;
+        else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
+        if(offset != -1) {
+            return "https://raw.githubusercontent.com/" + fullRepoName + "/master/" + url
+                    .substring(offset);
+
+        }
+        return url;
     }
 
     public static String parseMD(@NonNull String s) {
@@ -234,7 +243,7 @@ public class Markdown {
                 builder.append("\u2610");
             } else if(chars[i] == '(') {
                 builder.append("(");
-                i = parseImageLink(builder, chars, i);
+                i = parseImageLink(builder, chars, i, fullRepoPath);
             } else if(pp == '`' && p == '`' && chars[i] == '`') {
                 //We jump over the code block
                 pp = ' ';
@@ -355,7 +364,7 @@ public class Markdown {
     The TextView fucks up line spacing if there is text on the same line
     as an image, so if we find an image url we add a newline
      */
-    private static int parseImageLink(StringBuilder builder, char[] cs, int pos) {
+    private static int parseImageLink(StringBuilder builder, char[] cs, int pos, @Nullable String repoFullName) {
         for(int i = ++pos; i < cs.length; i++) {
             if(cs[i] == ')') {
                 final String link = new String(Arrays.copyOfRange(cs, pos, i));
@@ -365,7 +374,11 @@ public class Markdown {
                         "gif".equals(extension) ||
                         "bmp".equals(extension) ||
                         "webp".equals(extension)) {
-                    builder.append(link);
+                    if(isValidUrl(link) || repoFullName == null) {
+                        builder.append(link);
+                    } else {
+                        builder.append(concatenateRawContentUrl(link, repoFullName));
+                    }
                     builder.append(") <br><br>");
                 } else {
                     builder.append(link);
