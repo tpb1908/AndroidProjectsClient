@@ -98,7 +98,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if(position == 1 && !mIssue.isLocked()) {
+                if(position == 1 && mIssue != null && !mIssue.isLocked()) {
                     mFab.show(true);
                 } else {
                     mFab.hide(true);

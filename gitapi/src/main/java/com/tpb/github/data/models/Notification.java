@@ -58,7 +58,7 @@ public class Notification extends DataModel implements Parcelable {
 
             final JSONObject info = obj.getJSONObject(SUBJECT);
             title = info.getString(TITLE);
-            url = info.getString(URL).replace("api.", "").replace("/issues", "");
+            url = info.getString(URL).replace("api.", "").replace("/repos", "");
             type = info.getString(TYPE);
 
         } catch(JSONException ignored) {
