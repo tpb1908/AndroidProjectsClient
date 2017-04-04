@@ -132,6 +132,16 @@
     <string name="text_event_rename_multiple">![CDATA[from <b>\"%1$s\"</b> to <b>\"%2$s\"</b>]></string>
     <string name="text_event_moved_columns_in_project_multiple">Moved columns in project multiple times</string>
 
+
+    <!--Notifications -->
+    <string name="text_notification_comment">Comment on %1$s</string>
+    <string name="text_notification_mention">Mentioned on %1$s</string>
+    <string name="text_notification_assign">Assigned to %1$s on %2$s</string>
+    <string name="text_notification_author">Comment on your thread on %1$s</string>
+    <string name="text_notification_invitation">Invitation</string>
+    <string name="text_notification_manual">Subscribed to %1$s</string>
+    <string name="text_notification_subscribed">Updated on %1$s</string>
+
     <!-- User activity -->
 
     <string name="text_user_activity">Activity</string>

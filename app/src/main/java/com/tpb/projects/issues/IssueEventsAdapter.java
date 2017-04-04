@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
+import com.tpb.github.data.Util;
 import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.IssueEvent;
@@ -26,6 +27,7 @@ import com.tpb.projects.issues.fragments.IssueInfoFragment;
 import com.tpb.projects.markdown.Spanner;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -81,7 +83,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         if(events.size() > 0) {
             int oldLength = mEvents.size();
             if(mPage == 1) mEvents.clear();
-            for(DataModel dm : mergeEvents(events)) {
+            for(DataModel dm : Util.mergeModels(events, comparator)) {
                 mEvents.add(new Pair<>(dm, null));
             }
             notifyItemRangeInserted(oldLength, mEvents.size());
@@ -89,6 +91,14 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             mMaxPageReached = true;
         }
     }
+
+    private static Comparator<DataModel> comparator = (o1, o2) ->
+            o1 instanceof IssueEvent &&
+                    o2 instanceof IssueEvent &&
+                    o1.getCreatedAt() == o2.getCreatedAt() &&
+                    ((IssueEvent)o1).getEvent() == ((IssueEvent)o2).getEvent()
+     ? 0 : -1;
+
 
     private ArrayList<DataModel> mergeEvents(List<IssueEvent> events) {
         final ArrayList<DataModel> merged = new ArrayList<>();

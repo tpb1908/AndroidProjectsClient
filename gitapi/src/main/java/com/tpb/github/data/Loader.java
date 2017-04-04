@@ -1123,7 +1123,7 @@ public class Loader extends APIHandler {
     }
 
     public void loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true?since=" + Util.toISO8061FromMilliseconds(from))
+        AndroidNetworking.get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true" + (from == 0 ? "" : "?since=" +  Util.toISO8061FromMilliseconds(from)))
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.HIGH)
                 .getResponseOnlyFromNetwork()
@@ -1145,6 +1145,10 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
+                        Log.i(TAG, "onError: " + anError.getErrorBody());
+                        Log.i(TAG, "onError: " + anError.getErrorDetail());
+                        Log.i(TAG, "onError: " + anError.getErrorCode());
+                        Log.i(TAG, "onError: " + anError.getMessage());
                         loader.listLoadError(parseError(anError));
                     }
                 });

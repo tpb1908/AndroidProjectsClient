@@ -4,12 +4,16 @@ import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import com.tpb.github.data.models.DataModel;
+import com.tpb.github.data.models.MergedModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -73,6 +77,36 @@ public class Util {
      */
     public static String base64Decode(String base64) {
         return new String(Base64.decode(base64, Base64.DEFAULT));
+    }
+
+    public static ArrayList<DataModel> mergeModels(List<? extends DataModel> models, Comparator<DataModel> comparator) {
+        final ArrayList<DataModel> merged = new ArrayList<>();
+        ArrayList<DataModel> toMerge = new ArrayList<>();
+        DataModel last = null;
+        for(int i = 0; i < models.size(); i++) {
+            //If we have two of the same event, happening at the same time
+            if(comparator.compare(models.get(i), last) == 0) {
+                /*If multiple events (labels or assignees) were added as the first event,
+                * then we need to stop the first item being duplicated
+                 */
+                if(merged.size() > 1) merged.remove(merged.size()-1);
+                if(merged.size() == 1 && merged.get(0).equals(last)) merged.remove(0);
+                toMerge.add(models.get(i - 1)); //Add the previous event
+                int j = i;
+                //Loop until we find an event which shouldn't be merged
+                while(j < models.size() && comparator.compare(models.get(j), last) == 0) {
+                    toMerge.add(models.get(j++));
+                }
+                i = j - 1; //Jump to the end of the merged positions
+                merged.add(new MergedModel<>(toMerge));
+                toMerge = new ArrayList<>(); //Reset the list of merged events
+            } else {
+                merged.add(models.get(i));
+            }
+            last = models.get(i); //Set the last event
+        }
+        return merged;
+
     }
 
 }
