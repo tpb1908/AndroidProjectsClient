@@ -13,17 +13,16 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.github.data.auth.OAuthHandler;
-import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.common.BaseActivity;
-import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
@@ -43,11 +42,8 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
     @BindView(R.id.login_webview) WebView mWebView;
     @BindView(R.id.login_form) CardView mLogin;
     @BindView(R.id.progress_spinner) ProgressBar mSpinner;
-    @BindView(R.id.user_details) View mDetails;
-    @BindView(R.id.user_avatar) NetworkImageView mImage;
-    @BindView(R.id.user_name) TextView mName;
-    @BindView(R.id.user_id) TextView mId;
-    @BindView(R.id.user_stats) TextView mStats;
+    @BindView(R.id.user_details) LinearLayout mUserDetails;
+
 
     private Intent mLaunchIntent;
 
@@ -83,6 +79,8 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(OAuthHandler.getAuthUrl());
         mWebView.setLayoutParams(FILL);
+
+        mUserDetails.setVisibility(View.GONE);
         UI.expand(mLogin);
     }
 
@@ -100,15 +98,8 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
     @Override
     public void userLoaded(User user) {
         mSpinner.setVisibility(View.GONE);
-        mDetails.setVisibility(View.VISIBLE);
-        mImage.setImageUrl(user.getAvatarUrl());
-        if(!(DataModel.JSON_NULL.equals(user.getName()))) mName.setText(user.getName());
-        mId.setText(user.getLogin());
-        String details = "";
-        if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
-        mStats.setText(String.format(getString(R.string.text_user_info), details,
-                user.getLocation(), user.getRepos(), user.getFollowers()
-        ));
+
+        Spanner.displayUser(ButterKnife.findById(this, R.id.user_details), user);
 
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);

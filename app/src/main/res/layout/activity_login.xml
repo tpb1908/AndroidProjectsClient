@@ -37,45 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <LinearLayout
-            android:id="@+id/user_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical"
-            android:layout_margin="16dp">
+        <include layout="@layout/shard_user_info" />
 
-
-            <com.tpb.projects.common.NetworkImageView
-                android:id="@+id/user_avatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="32dp"/>
-
-            <TextView
-                android:id="@+id/user_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textAppearance="@android:style/TextAppearance.Material.Title"/>
-
-            <TextView
-                android:id="@+id/user_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textAppearance="@android:style/TextAppearance.Material.Subhead"
-                android:layout_marginBottom="32dp"/>
-
-            <TextView
-                android:id="@+id/user_stats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
-
-        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

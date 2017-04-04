@@ -9,7 +9,6 @@ import android.view.View;
 import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.login.LoginActivity;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 
 /**
@@ -27,7 +26,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 BuildConfig.GITHUB_CLIENT_SECRET,
                 BuildConfig.GITHUB_REDIRECT_URL
         );
-        Logger.i(this.getClass().getSimpleName(), "onCreate: Access token " + OAuthHandler.hasAccessToken());
         if(!OAuthHandler.hasAccessToken() && !(this instanceof LoginActivity)) {
             final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -3,10 +3,8 @@ package com.tpb.projects.user.fragments;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +19,8 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
-import com.tpb.projects.util.UI;
-import com.tpb.projects.util.Util;
+import com.tpb.projects.markdown.Spanner;
 
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -41,12 +37,12 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     private Unbinder unbinder;
 
+    @BindView(R.id.user_login) TextView mUserLogin;
+    @BindView(R.id.user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.user_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.user_contributions) ContributionsView mContributions;
-    @BindView(R.id.user_avatar) NetworkImageView mAvatar;
-    @BindView(R.id.user_name) TextView mUserName;
-    @BindView(R.id.user_info_layout) LinearLayout mInfoList;
     @BindView(R.id.user_contributions_info) TextView mContributionsInfo;
+    @BindView(R.id.user_details) LinearLayout mUserInfoParent;
 
     @Nullable
     @Override
@@ -63,7 +59,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                                getString(R.string.intent_drawable))) {
                            final Bitmap bm = getActivity().getIntent().getParcelableExtra(
                                    getString(R.string.intent_drawable));
-                           mUserName.setText(getActivity().getIntent().getStringExtra(
+                           mUserLogin.setText(getActivity().getIntent().getStringExtra(
                                    getString(R.string.intent_username)));
                            mAvatar.setImageBitmap(bm);
                        }
@@ -92,90 +88,10 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     public void userLoaded(User user) {
         if(getActivity() == null) return;
         mUser = user;
-        mUserName.setText(user.getLogin());
-        mAvatar.setImageUrl(user.getAvatarUrl());
-
         mContributions.setListener(this);
         mContributions.loadUser(user.getLogin());
-        listUserInfo(user);
+        Spanner.displayUser(mUserInfoParent, mUser);
         mRefresher.setRefreshing(false);
-    }
-
-    private void listUserInfo(User user) {
-        mInfoList.removeAllViews();
-        TextView tv;
-        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, UI.pxFromDp(4), 0, UI.pxFromDp(4));
-        if(user.getName() != null) {
-            tv = getInfoTextView(R.drawable.ic_person);
-            tv.setText(user.getName());
-            mInfoList.addView(tv, params);
-        }
-        tv = getInfoTextView(R.drawable.ic_date);
-        tv.setText(
-                String.format(
-                        getString(R.string.text_user_created_at),
-                        Util.formatDateLocally(
-                                getContext(),
-                                new Date(user.getCreatedAt())
-                        )
-                )
-        );
-        mInfoList.addView(tv, params);
-        if(user.getEmail() != null) {
-            tv = getInfoTextView(R.drawable.ic_email);
-            tv.setAutoLinkMask(Linkify.EMAIL_ADDRESSES);
-            tv.setText(user.getEmail());
-            mInfoList.addView(tv, params);
-        }
-        if(user.getBlog() != null) {
-            tv = getInfoTextView(R.drawable.ic_blog);
-            tv.setAutoLinkMask(Linkify.WEB_URLS);
-            tv.setText(user.getBlog());
-            mInfoList.addView(tv, params);
-        }
-        if(user.getCompany() != null) {
-            tv = getInfoTextView(R.drawable.ic_company);
-            tv.setText(user.getCompany());
-            mInfoList.addView(tv, params);
-        }
-        if(user.getLocation() != null) {
-            tv = getInfoTextView(R.drawable.ic_location);
-            tv.setText(user.getLocation());
-            mInfoList.addView(tv, params);
-        }
-        if(user.getRepos() > 0) {
-            tv = getInfoTextView(R.drawable.ic_repo);
-            tv.setText(getResources().getQuantityString(
-                    R.plurals.text_user_repositories,
-                    user.getRepos(),
-                    user.getRepos()
-                    )
-            );
-            mInfoList.addView(tv, params);
-        }
-        if(user.getGists() > 0) {
-            tv = getInfoTextView(R.drawable.ic_gist);
-            tv.setText(getResources().getQuantityString(
-                    R.plurals.text_user_gists,
-                    user.getGists(),
-                    user.getGists()
-                    )
-            );
-            mInfoList.addView(tv, params);
-        }
-
-        UI.expand(mInfoList);
-    }
-
-    private TextView getInfoTextView(@DrawableRes int drawableRes) {
-        final TextView tv = new TextView(getContext());
-        tv.setCompoundDrawablePadding(UI.pxFromDp(4));
-        tv.setCompoundDrawablesRelativeWithIntrinsicBounds(drawableRes, 0, 0, 0);
-        return tv;
     }
 
     @Override
