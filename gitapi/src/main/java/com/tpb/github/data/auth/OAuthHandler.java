@@ -17,8 +17,6 @@ import com.tpb.github.data.models.User;
 
 import org.json.JSONObject;
 
-import static android.util.Log.i;
-
 public class OAuthHandler extends APIHandler {
     private static final String TAG = OAuthHandler.class.getSimpleName();
 
@@ -29,7 +27,7 @@ public class OAuthHandler extends APIHandler {
     private String mAccessToken;
 
 
-    public static String mCallbackUrl = "";
+    private static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
     private static final String SCOPE = "user public_repo repo gist";
@@ -69,10 +67,6 @@ public class OAuthHandler extends APIHandler {
         };
     }
 
-    public String getAuthUrl() {
-        return mAuthUrl;
-    }
-
     private void getAccessToken(final String code) {
         AndroidNetworking.get(mTokenUrl + "&code=" + code)
                          .build()
@@ -91,20 +85,20 @@ public class OAuthHandler extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-
+                                mListener.onFail(anError.getErrorDetail());
                              }
                          });
     }
 
     private void fetchUserName() {
-
         AndroidNetworking.get(GIT_BASE + "/user")
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 final User user = User.parse(response);
+                                 mSession.storeUser(response);
+                                 final User user = mSession.getUser();
                                  mSession.storeCredentials(mAccessToken, user.getId(),
                                          user.getLogin()
                                  );
@@ -113,6 +107,7 @@ public class OAuthHandler extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
+                                 mListener.onFail(anError.getErrorDetail());
                                  Log.e(TAG, "onError: " + anError.getErrorDetail());
                              }
                          });
@@ -120,11 +115,16 @@ public class OAuthHandler extends APIHandler {
     }
 
     public boolean hasAccessToken() {
+        Log.i(TAG, "\n\n\n\n\nACcess token " + mAccessToken);
         return mAccessToken != null;
     }
 
     public void setListener(OAuthAuthenticationListener listener) {
         mListener = listener;
+    }
+
+    public String getAuthUrl() {
+        return mAuthUrl;
     }
 
     public String getUserName() {

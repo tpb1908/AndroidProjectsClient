@@ -1,6 +1,5 @@
 package com.tpb.projects.user;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -17,11 +16,9 @@ import com.androidnetworking.AndroidNetworking;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
-import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.github.data.models.User;
-import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.login.LoginActivity;
+import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFollowersFragment;
 import com.tpb.projects.user.fragments.UserFollowingFragment;
@@ -30,7 +27,6 @@ import com.tpb.projects.user.fragments.UserGistsFragment;
 import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
 import com.tpb.projects.user.fragments.UserStarsFragment;
-import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
@@ -62,17 +58,6 @@ public class UserActivity extends CircularRevealActivity {
         setContentView(R.layout.activity_user);
         ButterKnife.bind(this);
         postponeEnterTransition();
-
-        final OAuthHandler oAuthHandler = new OAuthHandler(
-                this,
-                BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET,
-                BuildConfig.GITHUB_REDIRECT_URL
-        );
-        if(!oAuthHandler.hasAccessToken()) {
-            startActivity(new Intent(UserActivity.this, LoginActivity.class));
-            finish();
-        }
 
         final String user;
         final Loader loader = new Loader(this);

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -17,29 +16,28 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.androidnetworking.AndroidNetworking;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.Analytics;
 import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
+
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAuthenticationListener {
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private FirebaseAnalytics mAnalytics;
-    private OAuthHandler mOAuthHandler;
     private boolean mLoginShown = false;
 
     @BindView(R.id.login_webview) WebView mWebView;
@@ -50,6 +48,8 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.user_name) TextView mName;
     @BindView(R.id.user_id) TextView mId;
     @BindView(R.id.user_stats) TextView mStats;
+
+    private Intent mLaunchIntent;
 
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
@@ -62,60 +62,62 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        AndroidNetworking.initialize(this);
 
-        mAnalytics = FirebaseAnalytics.getInstance(this);
-
-        mOAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
+        final OAuthHandler OAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
                 BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL
         );
-        mOAuthHandler.setListener(new OAuthHandler.OAuthAuthenticationListener() {
-            @Override
-            public void onSuccess() {
-                mWebView.setVisibility(View.GONE);
-                mSpinner.setVisibility(View.VISIBLE);
-            }
+        OAuthHandler.setListener(this);
 
-            @Override
-            public void onFail(String error) {
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-            }
+        if(getIntent().hasExtra(Intent.EXTRA_INTENT)) {
+            mLaunchIntent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
+        } else {
+            new Intent(LoginActivity.this, UserActivity.class);
+        }
 
-            @Override
-            public void userLoaded(User user) {
-                mSpinner.setVisibility(View.GONE);
-                mDetails.setVisibility(View.VISIBLE);
-                mImage.setImageUrl(user.getAvatarUrl());
-                mName.setText(user.getName());
-                mId.setText(user.getLogin());
-                String details = "";
-                if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
-                mStats.setText(String.format(getString(R.string.text_user_info), details,
-                        user.getLocation(), user.getRepos(), user.getFollowers()
-                ));
-
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-
-                new Handler().postDelayed(() -> {
-                    startActivity(new Intent(LoginActivity.this, UserActivity.class));
-                    finish();
-                }, 1500);
-            }
-        });
         CookieSyncManager.createInstance(this);
         final CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-        mWebView.setWebViewClient(new OAuthWebViewClient(mOAuthHandler.getListener()));
+        mWebView.setWebViewClient(new OAuthWebViewClient(OAuthHandler.getListener()));
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.loadUrl(mOAuthHandler.getAuthUrl());
+        mWebView.loadUrl(OAuthHandler.getAuthUrl());
         mWebView.setLayoutParams(FILL);
         UI.expand(mLogin);
+    }
+
+    @Override
+    public void onSuccess() {
+        mWebView.setVisibility(View.GONE);
+        mSpinner.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onFail(String error) {
+
+    }
+
+    @Override
+    public void userLoaded(User user) {
+        mSpinner.setVisibility(View.GONE);
+        mDetails.setVisibility(View.VISIBLE);
+        mImage.setImageUrl(user.getAvatarUrl());
+        if(!(DataModel.JSON_NULL.equals(user.getName()))) mName.setText(user.getName());
+        mId.setText(user.getLogin());
+        String details = "";
+        if(!DataModel.JSON_NULL.equals(user.getBio())) details += user.getBio();
+        mStats.setText(String.format(getString(R.string.text_user_info), details,
+                user.getLocation(), user.getRepos(), user.getFollowers()
+        ));
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
+        mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+
+        new Handler().postDelayed(() -> {
+            startActivity(mLaunchIntent);
+            finish();
+        }, 1500);
     }
 
     private void ensureWebViewVisible() {
@@ -125,7 +127,6 @@ public class LoginActivity extends BaseActivity {
                 mSpinner.setVisibility(View.GONE);
                 mLoginShown = true;
             }, 150);
-
         }
 
     }
@@ -142,7 +143,6 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingUrl) {
-            Log.d(TAG, "Page error: " + description);
 
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(description);
@@ -155,17 +155,6 @@ public class LoginActivity extends BaseActivity {
                     url.startsWith("https://github.com/session") ||
                     url.startsWith(BuildConfig.GITHUB_REDIRECT_URL));
         }
-
-        //
-//        @Override
-//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//            if(request.getUrl().toString().startsWith("https://github.com/login") ||
-//                    request.getUrl().toString().startsWith("https://github.com/session") ||
-//                    request.getUrl().toString().startsWith("https://github.com/password_reset")) {
-//                return super.shouldOverrideUrlLoading(view, request);
-//            }
-//            return true;
-//        }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {

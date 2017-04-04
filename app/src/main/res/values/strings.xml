@@ -365,6 +365,7 @@
     <string name="text_placeholder">…</string>
 
     <!-- Constants for values passed in Intent or Intent Bundle -->
+    <string name="intent_next_activity" translatable="false">next_activity</string>
     <string name="intent_int_arraylist" translatable="false">int_arraylist</string>
     <string name="intent_repo" translatable="false">repo</string>
     <string name="intent_path" translatable="false">path</string>

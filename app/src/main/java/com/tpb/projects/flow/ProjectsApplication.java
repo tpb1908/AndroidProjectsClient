@@ -31,5 +31,6 @@ public class ProjectsApplication extends Application {
             AndroidNetworking.initialize(this);
         }
         mAnalytics = FirebaseAnalytics.getInstance(this);
+
     }
 }

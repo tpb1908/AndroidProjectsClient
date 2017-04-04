@@ -1,8 +1,15 @@
 package com.tpb.projects.common;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.tpb.github.data.auth.OAuthHandler;
+import com.tpb.projects.BuildConfig;
+import com.tpb.projects.login.LoginActivity;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 
 /**
@@ -10,6 +17,24 @@ import com.tpb.projects.util.UI;
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final OAuthHandler OAuthHandler = new OAuthHandler(
+                this,
+                BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET,
+                BuildConfig.GITHUB_REDIRECT_URL
+        );
+        Logger.i(this.getClass().getSimpleName(), "onCreate: Access token " + OAuthHandler.hasAccessToken());
+        if(!OAuthHandler.hasAccessToken() && !(this instanceof LoginActivity)) {
+            final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_INTENT, getIntent());
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onDestroy() {
