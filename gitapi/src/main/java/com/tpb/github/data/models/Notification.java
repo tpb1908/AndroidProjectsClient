@@ -139,7 +139,7 @@ public class Notification extends DataModel implements Parcelable {
 
         static GitNotificationReason fromString(@NonNull String val) {
             try {
-                return GitNotificationReason.valueOf(val);
+                return GitNotificationReason.valueOf(val.toUpperCase());
             } catch(Exception e) {
                 final GitNotificationReason reason = UNKNOWN;
                 reason.val = val;

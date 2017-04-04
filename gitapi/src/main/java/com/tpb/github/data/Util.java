@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created by theo on 02/04/17.
@@ -45,6 +46,20 @@ public class Util {
      */
     public static String toISO8061FromSeconds(long t) {
         return ISO8601.format(new Date(t * 1000));
+    }
+
+    /**
+     * Converts a UNIX time value in milliseconds to an ISO8061 string
+     *
+     * @param t The time since 1970 in milliseconds
+     * @return Time formatted as yyyy-MM-dd'T'HH:mm:ssZ
+     */
+    public static String toISO8061FromMilliseconds(long t) {
+        return ISO8601.format(new Date(t));
+    }
+
+    public static long getUTCTimeInMillis() {
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
     }
 
     public static String shortenSha(@Nullable String sha) {

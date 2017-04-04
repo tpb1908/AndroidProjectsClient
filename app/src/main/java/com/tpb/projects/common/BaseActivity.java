@@ -11,6 +11,8 @@ import com.tpb.projects.BuildConfig;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.util.UI;
 
+import com.tpb.projects.notifications.receivers.NotificationEventReceiver;
+
 /**
  * Created by theo on 10/03/17.
  */
@@ -31,6 +33,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_INTENT, getIntent());
             startActivity(intent);
+        } else {
+            NotificationEventReceiver.setupAlarm(getApplicationContext());
         }
     }
 

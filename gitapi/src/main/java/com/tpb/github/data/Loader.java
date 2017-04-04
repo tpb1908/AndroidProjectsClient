@@ -24,6 +24,7 @@ import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.IssueEvent;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.Notification;
 import com.tpb.github.data.models.Page;
 import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
@@ -1117,6 +1118,34 @@ public class Loader extends APIHandler {
                     @Override
                     public void onError(ANError anError) {
                         loader.loadError(parseError(anError));
+                    }
+                });
+    }
+
+    public void loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true?since=" + Util.toISO8061FromMilliseconds(from))
+                .addHeaders(API_AUTH_HEADERS)
+                .setPriority(Priority.HIGH)
+                .getResponseOnlyFromNetwork()
+                .doNotCacheResponse()
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        final List<Notification> notifications = new ArrayList<>();
+                        try {
+                            for(int i = 0; i < response.length(); i++) {
+                                notifications.add(new Notification(response.getJSONObject(i)));
+                            }
+                            loader.listLoadComplete(notifications);
+                        } catch(JSONException jse) {
+                            loader.listLoadError(APIError.UNPROCESSABLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        loader.listLoadError(parseError(anError));
                     }
                 });
     }
