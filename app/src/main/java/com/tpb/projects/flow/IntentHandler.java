@@ -2,7 +2,6 @@ package com.tpb.projects.flow;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -13,16 +12,15 @@ import android.view.View;
 import com.tpb.github.data.models.Commit;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 /**
  * Created by theo on 24/02/17.
@@ -157,11 +155,7 @@ public class IntentHandler {
     public static void openUser(Activity activity, NetworkImageView iv, String login) {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
-        if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
-            i.putExtra(activity.getString(R.string.intent_drawable),
-                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
-            );
-        }
+        UI.setDrawableForIntent(iv, i);
         activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 activity,
                 iv,

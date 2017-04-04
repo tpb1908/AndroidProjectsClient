@@ -1,7 +1,6 @@
 package com.tpb.projects.repo;
 
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,18 +18,17 @@ import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
-import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
-import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,9 +215,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         final Intent i = new Intent(mParent.getContext(), IssueActivity.class);
         i.putExtra(mParent.getString(R.string.transition_card), "");
         i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos).first);
-        i.putExtra(mParent.getString(R.string.intent_drawable),
-                ((BitmapDrawable) holder.mUserAvatar.getDrawable()).getBitmap()
-        );
+        UI.setDrawableForIntent(holder.mUserAvatar, i);
         //We have to add the nav bar as ViewOverlay is above it
         mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
                 mParent.getActivity(),

@@ -3,7 +3,6 @@ package com.tpb.projects.repo.fragments;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -22,12 +21,13 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.common.fab.FloatingActionButton;
 
 import java.util.List;
 import java.util.Locale;
@@ -178,10 +178,10 @@ public class RepoInfoFragment extends RepoFragment {
                         .getLayoutInflater()
                         .inflate(R.layout.shard_user, mCollaborators, false);
         layout.setId(View.generateViewId());
-        final NetworkImageView imageView = ButterKnife.findById(layout, R.id.user_avatar);
-        imageView.setId(View.generateViewId());
-        imageView.setImageUrl(u.getAvatarUrl());
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        final NetworkImageView avatar = ButterKnife.findById(layout, R.id.user_avatar);
+        avatar.setId(View.generateViewId());
+        avatar.setImageUrl(u.getAvatarUrl());
+        avatar.setScaleType(ImageView.ScaleType.FIT_XY);
         final TextView login = ButterKnife.findById(layout, R.id.user_login);
         login.setId(View.generateViewId());
         if(u.getContributions() > 0) {
@@ -194,17 +194,12 @@ public class RepoInfoFragment extends RepoFragment {
         layout.setOnClickListener((v) -> {
             final Intent us = new Intent(getActivity(), UserActivity.class);
             us.putExtra(getString(R.string.intent_username), u.getLogin());
-
-            if(imageView.getDrawable() != null) {
-                us.putExtra(getString(R.string.intent_drawable),
-                        ((BitmapDrawable) imageView.getDrawable()).getBitmap()
-                );
-            }
+            UI.setDrawableForIntent(avatar, us);
             getActivity().startActivity(us,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             getActivity(),
                             Pair.create(login, getString(R.string.transition_username)),
-                            Pair.create(imageView,
+                            Pair.create(avatar,
                                     getString(R.string.transition_user_image)
                             )
                     ).toBundle()
@@ -247,11 +242,7 @@ public class RepoInfoFragment extends RepoFragment {
         if(mRepo != null) {
             final Intent i = new Intent(getContext(), UserActivity.class);
             i.putExtra(getString(R.string.intent_username), mRepo.getUserLogin());
-            if(mAvatar.getDrawable() != null) {
-                i.putExtra(getString(R.string.intent_drawable),
-                        ((BitmapDrawable) mAvatar.getDrawable()).getBitmap()
-                );
-            }
+            UI.setDrawableForIntent(mAvatar, i);
             startActivity(i,
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             getActivity(),

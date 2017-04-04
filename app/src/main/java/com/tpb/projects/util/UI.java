@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Transformation;
+import android.widget.ImageView;
 
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
@@ -59,6 +61,14 @@ public class UI {
     public static void setClickPositionForIntent(Context context, Intent i, float[] pos) {
         i.putExtra(context.getString(R.string.intent_position_x), (int) pos[0]);
         i.putExtra(context.getString(R.string.intent_position_y), (int) pos[1]);
+    }
+
+    public static void setDrawableForIntent(@NonNull ImageView iv, @NonNull Intent i) {
+        if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
+            i.putExtra(iv.getResources().getString(R.string.intent_drawable),
+                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
+            );
+        }
     }
 
     //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation

@@ -3,7 +3,6 @@ package com.tpb.projects.issues.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -40,6 +39,7 @@ import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
@@ -47,7 +47,6 @@ import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssueEventsAdapter;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -167,27 +166,22 @@ public class IssueInfoFragment extends IssueFragment {
                                                                       );
                 user.setId(View.generateViewId());
                 mAssigneesLayout.addView(user);
-                final NetworkImageView imageView = ButterKnife.findById(user, R.id.user_avatar);
-                imageView.setId(View.generateViewId());
-                imageView.setImageUrl(u.getAvatarUrl());
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                final NetworkImageView avatar = ButterKnife.findById(user, R.id.user_avatar);
+                avatar.setId(View.generateViewId());
+                avatar.setImageUrl(u.getAvatarUrl());
+                avatar.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = ButterKnife.findById(user, R.id.user_login);
                 login.setId(View.generateViewId()); //Max 10 assignees
                 login.setText(u.getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);
                     us.putExtra(getString(R.string.intent_username), u.getLogin());
-
-                    if(imageView.getDrawable() != null) {
-                        us.putExtra(getString(R.string.intent_drawable),
-                                ((BitmapDrawable) imageView.getDrawable()).getBitmap()
-                        );
-                    }
+                    UI.setDrawableForIntent(avatar, us);
                     getActivity().startActivity(us,
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     getActivity(),
                                     new Pair<>(login, getString(R.string.transition_username)),
-                                    new Pair<>(imageView, getString(R.string.transition_user_image))
+                                    new Pair<>(avatar, getString(R.string.transition_user_image))
                             ).toBundle()
                     );
                 });
