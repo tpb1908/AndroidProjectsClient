@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
+import com.tpb.github.data.models.Page;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
@@ -26,6 +27,7 @@ import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
@@ -42,6 +44,7 @@ import butterknife.Unbinder;
  */
 
 public class RepoInfoFragment extends RepoFragment {
+    private static final String TAG = RepoInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -107,6 +110,17 @@ public class RepoInfoFragment extends RepoFragment {
         } else {
             mLicense.setText(R.string.text_no_license);
         }
+        new Loader(getContext()).loadPage(new Loader.ItemLoader<Page>() {
+            @Override
+            public void loadComplete(Page data) {
+                Logger.i(TAG, "loadComplete: " + data.toString());
+            }
+
+            @Override
+            public void loadError(APIHandler.APIError error) {
+                Logger.i(TAG, "loadError: " + error.toString());
+            }
+        }, mRepo.getFullName());
         loadRelevantUsers();
     }
 

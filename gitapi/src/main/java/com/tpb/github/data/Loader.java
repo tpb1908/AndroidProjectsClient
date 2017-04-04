@@ -19,11 +19,12 @@ import com.tpb.github.data.models.Column;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Commit;
 import com.tpb.github.data.models.CompleteStatus;
-import com.tpb.github.data.models.Event;
 import com.tpb.github.data.models.Gist;
 import com.tpb.github.data.models.Issue;
+import com.tpb.github.data.models.IssueEvent;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.Page;
 import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
@@ -59,6 +60,7 @@ public class Loader extends APIHandler {
     private static final String SEGMENT_BRANCHES = "/branches";
     private static final String SEGMENT_CONTRIBUTORS = "/contributors";
     private static final String SEGMENT_STATUS = "/status";
+    private static final String SEGMENT_PAGES = "/pages";
 
     public Loader(Context context) {
         super(context);
@@ -205,8 +207,7 @@ public class Loader extends APIHandler {
             req.getAsJSONObject(new JSONObjectRequestListener() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    final Repository repo = Repository.parse(response);
-                    loader.loadComplete(repo);
+                    loader.loadComplete(Repository.parse(response));
                 }
 
                 @Override
@@ -215,6 +216,26 @@ public class Loader extends APIHandler {
                 }
             });
         }
+    }
+
+    public void loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
+        Log.i(TAG, "Loading " + GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES);
+        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES)
+                .addHeaders(PAGES_API_API_AUTH_HEADERS)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "Page response " + response.toString());
+                        loader.loadComplete(new Page(response));
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "Page response " + anError.getMessage());
+                        loader.loadError(parseError(anError));
+                    }
+                });
     }
 
     public void loadBranches(@NonNull final ListLoader<android.support.v4.util.Pair<String, String>> loader, String repoFullName) {
@@ -414,7 +435,7 @@ public class Loader extends APIHandler {
 
     public void loadProject(@Nullable final ItemLoader<Project> loader, int id) {
         final ANRequest req = AndroidNetworking.get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
-                                               .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                                               .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                                                .build();
         if(loader == null) {
             req.prefetch();
@@ -437,7 +458,7 @@ public class Loader extends APIHandler {
         final ANRequest req =
                 AndroidNetworking
                         .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
-                        .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                        .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                         .addQueryParameter("state", "all")
                         .build();
         if(loader == null) {
@@ -478,7 +499,7 @@ public class Loader extends APIHandler {
     public void loadColumns(@Nullable final ListLoader<Column> loader, int projectId) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
-                .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
                 .build();
         if(loader == null) {
@@ -510,7 +531,7 @@ public class Loader extends APIHandler {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + appendPage(
                         page))
-                .addHeaders(PROJECTS_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -669,7 +690,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadEvents(@Nullable final ListLoader<Event> loader, String repoFullName, int issueNumber, int page) {
+    public void loadEvents(@Nullable final ListLoader<IssueEvent> loader, final String repoFullName, int issueNumber, int page) {
         final ANRequest req = AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS + appendPage(
                         page))
@@ -681,17 +702,17 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Event> events = new ArrayList<>(response.length());
+                    final List<IssueEvent> events = new ArrayList<>(response.length());
                     for(int i = 0; i < response.length(); i++) {
                         try {
-                            events.add(Event.parse(response.getJSONObject(i)));
+                            events.add(IssueEvent.parse(response.getJSONObject(i)));
                         } catch(JSONException jse) {
                             Log.e(TAG, "onResponse: Events: ", jse);
                         }
                     }
-                    Collections.sort(events, new Comparator<Event>() {
+                    Collections.sort(events, new Comparator<IssueEvent>() {
                         @Override
-                        public int compare(Event e1, Event e2) {
+                        public int compare(IssueEvent e1, IssueEvent e2) {
                             return e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0;
                         }
                     });

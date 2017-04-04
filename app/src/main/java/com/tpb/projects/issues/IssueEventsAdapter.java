@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.DataModel;
-import com.tpb.github.data.models.Event;
 import com.tpb.github.data.models.Issue;
-import com.tpb.github.data.models.MergedEvent;
+import com.tpb.github.data.models.IssueEvent;
+import com.tpb.github.data.models.MergedModel;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.BuildConfig;
@@ -35,7 +35,7 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.ListLoader<Event> {
+public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.ListLoader<IssueEvent> {
     private static final String TAG = IssueEventsAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
@@ -75,7 +75,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     @Override
-    public void listLoadComplete(List<Event> events) {
+    public void listLoadComplete(List<IssueEvent> events) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(events.size() > 0) {
@@ -90,14 +90,13 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         }
     }
 
-    private ArrayList<DataModel> mergeEvents(List<Event> events) {
+    private ArrayList<DataModel> mergeEvents(List<IssueEvent> events) {
         final ArrayList<DataModel> merged = new ArrayList<>();
-        ArrayList<Event> toMerge = new ArrayList<>();
-        Event last = new Event();
+        ArrayList<IssueEvent> toMerge = new ArrayList<>();
+        IssueEvent last = new IssueEvent();
         for(int i = 0; i < events.size(); i++) {
             //If we have two of the same event, happening at the same time
-            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i)
-                                                                            .getEvent() == last
+            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i).getEvent() == last
                     .getEvent()) {
                 /*If multiple events (labels or assignees) were added as the first event,
                 * then we need to stop the first item being duplicated
@@ -111,7 +110,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                     toMerge.add(events.get(j++));
                 }
                 i = j - 1; //Jump to the end of the merged positions
-                merged.add(new MergedEvent(toMerge));
+                merged.add(new MergedModel<IssueEvent>(toMerge));
                 toMerge = new ArrayList<>(); //Reset the list of merged events
             } else {
                 merged.add(events.get(i));
@@ -145,7 +144,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         mLoader.loadEvents(this, mIssue.getRepoFullName(), mIssue.getNumber(), mPage);
     }
 
-    void addEvent(Event event) {
+    void addEvent(IssueEvent event) {
         mEvents.add(new Pair<>(event, null));
         notifyItemInserted(mEvents.size());
     }
@@ -158,20 +157,20 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     @Override
     public void onBindViewHolder(EventHolder holder, int position) {
-        if(mEvents.get(position).first instanceof Event) {
-            bindEvent(holder, (Event) mEvents.get(position).first);
-        } else {
-            bindMergedEvent(holder, (MergedEvent) mEvents.get(position).first);
+        if(mEvents.get(position).first instanceof IssueEvent) {
+            bindEvent(holder, (IssueEvent) mEvents.get(position).first);
+        } else if(mEvents.get(position).first instanceof MergedModel) {
+            bindMergedEvent(holder, (MergedModel<IssueEvent>) mEvents.get(position).first);
         }
     }
 
-    private void bindMergedEvent(EventHolder eventHolder, MergedEvent me) {
+    private void bindMergedEvent(EventHolder eventHolder, MergedModel<IssueEvent> me) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
-        switch(me.getEvent()) {
+        switch(me.getData().get(0).getEvent()) {
             case ASSIGNED:
                 final StringBuilder assignees = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     assignees.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
                             e.getActor().getLogin()
@@ -185,7 +184,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 break;
             case UNASSIGNED:
                 final StringBuilder unassignees = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     unassignees.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
                             e.getActor().getLogin()
@@ -199,7 +198,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 break;
             case REVIEW_REQUESTED:
                 final StringBuilder requested = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     requested.append(String.format(res.getString(R.string.text_href),
                             e.getRequestedReviewer().getHtmlUrl(),
                             e.getRequestedReviewer().getLogin()
@@ -209,15 +208,15 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 requested.setLength(requested.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_review_requested_multiple),
                         String.format(res.getString(R.string.text_href),
-                                me.getEvents().get(0).getReviewRequester().getHtmlUrl(),
-                                me.getEvents().get(0).getReviewRequester().getLogin()
+                                me.getData().get(0).getReviewRequester().getHtmlUrl(),
+                                me.getData().get(0).getReviewRequester().getLogin()
                         ),
                         requested.toString()
                 );
                 break;
             case REVIEW_REQUEST_REMOVED:
                 final StringBuilder derequested = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     derequested.append(String.format(res.getString(R.string.text_href),
                             e.getReviewRequester().getHtmlUrl(),
                             e.getReviewRequester().getLogin()
@@ -228,15 +227,15 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 text = String
                         .format(res.getString(R.string.text_event_review_request_removed_multiple),
                                 String.format(res.getString(R.string.text_href),
-                                        me.getEvents().get(0).getActor().getHtmlUrl(),
-                                        me.getEvents().get(0).getActor().getLogin()
+                                        me.getData().get(0).getActor().getHtmlUrl(),
+                                        me.getData().get(0).getActor().getLogin()
                                 ),
                                 derequested.toString()
                         );
                 break;
             case LABELED:
                 final StringBuilder labels = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     labels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
                     labels.append("&nbsp;");
                 }
@@ -244,34 +243,34 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 text = String.format(
                         res.getString(R.string.text_event_labels_added),
                         String.format(res.getString(R.string.text_href),
-                                me.getEvents().get(0).getActor().getHtmlUrl(),
-                                me.getEvents().get(0).getActor().getLogin()
+                                me.getData().get(0).getActor().getHtmlUrl(),
+                                me.getData().get(0).getActor().getLogin()
                         ),
                         labels.toString()
                 );
                 break;
             case UNLABELED:
                 final StringBuilder unlabels = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     unlabels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
                     unlabels.append("&nbsp;");
                 }
                 unlabels.setLength(unlabels.length() - 2);
                 text = String.format(res.getString(R.string.text_event_labels_removed),
                         String.format(res.getString(R.string.text_href),
-                                me.getEvents().get(0).getActor().getHtmlUrl(),
-                                me.getEvents().get(0).getActor().getLogin()
+                                me.getData().get(0).getActor().getHtmlUrl(),
+                                me.getData().get(0).getActor().getLogin()
                         ),
                         unlabels.toString()
                 );
                 break;
             case CLOSED:
                 //Duplicate close events seem to happen
-                bindEvent(eventHolder, me.getEvents().get(0));
+                bindEvent(eventHolder, me.getData().get(0));
                 return;
             case REFERENCED:
                 final StringBuilder commits = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     commits.append("<br>");
                     commits.append(String.format(res.getString(R.string.text_href),
                             "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + e
@@ -286,7 +285,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 break;
             case MENTIONED:
                 final StringBuilder mentioned = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     mentioned.append("<br>");
                     mentioned.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
@@ -299,7 +298,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 break;
             case RENAMED:
                 final StringBuilder named = new StringBuilder();
-                for(Event e : me.getEvents()) {
+                for(IssueEvent e : me.getData()) {
                     named.append("<br>");
                     named.append(
                             String.format(
@@ -317,7 +316,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 text = res.getString(R.string.text_event_moved_columns_in_project_multiple);
                 break;
             default:
-                bindEvent(eventHolder, me.getEvents().get(0));
+                bindEvent(eventHolder, me.getData().get(0));
                 return;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
@@ -326,24 +325,24 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 new HttpImageGetter(eventHolder.mText, eventHolder.mText),
                 null
         );
-        if(me.getEvents().get(0).getActor() != null) {
+        if(me.getData().get(0).getActor() != null) {
             eventHolder.mAvatar.setVisibility(View.VISIBLE);
-            eventHolder.mAvatar.setImageUrl(me.getEvents().get(0).getActor().getAvatarUrl());
+            eventHolder.mAvatar.setImageUrl(me.getData().get(0).getActor().getAvatarUrl());
             IntentHandler.addOnClickHandler(
                     mParent.getActivity(),
-                    eventHolder.mAvatar, me.getEvents().get(0).getActor().getLogin()
+                    eventHolder.mAvatar, me.getData().get(0).getActor().getLogin()
             );
             IntentHandler.addOnClickHandler(mParent.getActivity(),
                     eventHolder.mText,
                     eventHolder.mAvatar,
-                    me.getEvents().get(0).getActor().getLogin()
+                    me.getData().get(0).getActor().getLogin()
             );
         } else {
             eventHolder.mAvatar.setVisibility(View.GONE);
         }
     }
 
-    private void bindEvent(EventHolder eventHolder, Event event) {
+    private void bindEvent(EventHolder eventHolder, IssueEvent event) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
         switch(event.getEvent()) {
