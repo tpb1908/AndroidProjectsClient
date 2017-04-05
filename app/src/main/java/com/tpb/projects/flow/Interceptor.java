@@ -54,9 +54,6 @@ public class Interceptor extends Activity {
                 switch(segments.size()) {
                     case 2: //Repo
                         i.setClass(Interceptor.this, RepoActivity.class);
-                        startActivity(i);
-                        overridePendingTransition(R.anim.slide_up, R.anim.none);
-                        finish();
                         break;
                     case 3:
                         if("projects".equals(segments.get(2))) {
@@ -64,32 +61,18 @@ public class Interceptor extends Activity {
                             i.putExtra(getString(R.string.intent_pager_page),
                                     RepoActivity.PAGE_PROJECTS
                             );
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
                             i.putExtra(getString(R.string.intent_pager_page),
                                     RepoActivity.PAGE_ISSUES
                             );
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("milestones".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, MilestonesActivity.class);
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("commits".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, RepoActivity.class);
                             i.putExtra(getString(R.string.intent_pager_page),
                                     RepoActivity.PAGE_COMMITS
                             );
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
-                        } else {
-                            fail();
                         }
                         break;
                     case 4: //Project
@@ -110,29 +93,17 @@ public class Interceptor extends Activity {
                                 i.putExtra(getString(R.string.intent_card_id),
                                         safelyExtractInt(id.toString())
                                 );
-                            } catch(Exception ignored) {
-                            }
-
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
+                            } catch(Exception ignored) {}
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, IssueActivity.class);
                             i.putExtra(getString(R.string.intent_issue_number),
                                     safelyExtractInt(segments.get(3))
                             );
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("milestone".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, MilestonesActivity.class);
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
                             );
-                            startActivity(i);
-                            finish();
-                        } else {
-                            fail();
                         }
                         break;
                     default:
@@ -147,9 +118,6 @@ public class Interceptor extends Activity {
                                 path.append('/');
                             }
                             i.putExtra(getString(R.string.intent_path), path.toString());
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("blob".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, FileActivity.class);
                             final StringBuilder path = new StringBuilder();
@@ -158,23 +126,22 @@ public class Interceptor extends Activity {
                                 path.append(segments.get(j));
                             }
                             i.putExtra(getString(R.string.intent_blob_path), path.toString());
-                            startActivity(i);
-                            overridePendingTransition(R.anim.slide_up, R.anim.none);
-                            finish();
                         } else if("milestone".equals(segments.get(2))) {
                             //TODO Deal with number and edit suffix
                             i.setClass(Interceptor.this, MilestoneActivity.class);
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
                             );
-                            startActivity(i);
-                            finish();
-                        } else {
-                            fail();
                         }
                 }
+                if(i.getClass() != null) {
+                    startActivity(i);
+                    overridePendingTransition(R.anim.slide_up, R.anim.none);
+                    finish();
+                } else {
+                    fail();
+                }
             }
-
         } else {
             fail();
         }
