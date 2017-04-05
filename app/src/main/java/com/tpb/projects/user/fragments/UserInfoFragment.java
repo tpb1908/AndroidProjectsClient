@@ -111,10 +111,10 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                     max = gd.contributions;
                 }
                 streak += 1;
-            } else {
                 if(streak > maxStreak) {
                     maxStreak = streak;
                 }
+            } else {
                 streak = 0;
             }
         }

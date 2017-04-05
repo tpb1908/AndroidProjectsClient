@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
@@ -118,7 +117,8 @@ public class NotificationIntentService extends IntentService implements Loader.L
         stackBuilder.addNextIntent( new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
 
         builder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
-        builder.setColor(Color.WHITE);
+        //builder.setColor(Color.BLACK);
+        builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
         builder.setContentTitle(title);
         builder.setContentText(notif.getTitle());
         builder.setGroup("GITHUB_GROUP");

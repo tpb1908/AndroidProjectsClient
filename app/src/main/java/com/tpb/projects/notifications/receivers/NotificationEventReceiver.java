@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IntRange;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
 
 import com.tpb.projects.notifications.NotificationIntentService;
+import com.tpb.projects.util.Logger;
 
 import java.util.Date;
 
@@ -35,12 +35,6 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver {
                 alarmIntent);
     }
 
-    public static void cancelAlarm(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = getStartPendingIntent(context);
-        alarmManager.cancel(alarmIntent);
-    }
-
     private static PendingIntent getStartPendingIntent(Context context) {
         final Intent intent = new Intent(context, NotificationEventReceiver.class);
         intent.setAction(ACTION_START_NOTIFICATION_SERVICE);
@@ -52,7 +46,7 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if(ACTION_START_NOTIFICATION_SERVICE.equals(action)) {
-            Log.i(getClass().getSimpleName(), "onReceive from alarm, starting notification service");
+            Logger.i(getClass().getSimpleName(), "onReceive from alarm, starting notification service");
             // Start the service, keeping the device awake while it is launching.
             startWakefulService(context, NotificationIntentService.createIntentStartNotificationService(context));
         }
