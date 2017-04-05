@@ -156,7 +156,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
         @BindView(R.id.gist_info) TextView mInfo;
         @BindView(R.id.gist_user_avatar) NetworkImageView mAvatar;
 
-        public GistHolder(View itemView) {
+        GistHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(v -> open(itemView, getAdapterPosition()));

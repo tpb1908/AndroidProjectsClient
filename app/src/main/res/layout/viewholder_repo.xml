@@ -5,41 +5,47 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:padding="8dp"
     android:transitionName="@string/transition_name">
 
-    <ImageButton
-        android:id="@+id/repo_pin_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.tpb.projects.common.NetworkImageView
+        android:id="@+id/repo_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_not_pinned"
-        android:contentDescription="@string/content_description_pin"
-        android:layout_margin="8dp"/>
+        android:contentDescription="@string/content_description_pin"/>
 
     <TextView
         android:id="@+id/repo_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/repo_pin_button"
+        android:layout_toEndOf="@+id/repo_icon"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:textAppearance="@android:style/TextAppearance.Material.Large"/>
 
     <com.tpb.mdtext.views.MarkdownTextView
         android:id="@+id/repo_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/repo_name"
-        android:layout_toEndOf="@+id/repo_pin_button"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_below="@+id/repo_name"/>
 
     <LinearLayout
         android:id="@+id/repo_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_toEndOf="@+id/repo_pin_button"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_below="@+id/repo_description">
 
         <TextView

@@ -1,6 +1,7 @@
 package com.tpb.projects.user;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,7 +10,6 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tpb.github.data.APIHandler;
@@ -20,6 +20,8 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
@@ -43,15 +45,16 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     private String mUser;
     private final RepoPinChecker mPinChecker;
     private final RepoOpener mOpener;
-
+    private final Activity mActivity;
     private int mPage = 1;
     private boolean mIsLoading = false;
     private boolean mMaxPageReached = false;
 
     private boolean mIsShowingStars = false;
 
-    public RepositoriesAdapter(Context context, RepoOpener opener, SwipeRefreshLayout refresher) {
-        mLoader = new Loader(context);
+    public RepositoriesAdapter(Activity activity, RepoOpener opener, SwipeRefreshLayout refresher) {
+        mActivity = activity;
+        mLoader = new Loader(activity);
         mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
@@ -63,8 +66,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             notifyItemRangeRemoved(0, oldSize);
             loadReposForUser(true);
         });
-        mPinChecker = new RepoPinChecker(context);
-        mAuthenticatedUser = GitHubSession.getSession(context).getUserLogin();
+        mPinChecker = new RepoPinChecker(activity);
+        mAuthenticatedUser = GitHubSession.getSession(activity).getUserLogin();
     }
 
     public void setUser(String user, boolean isShowingStars) {
@@ -126,9 +129,15 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         } else {
             holder.mDescription.setVisibility(View.GONE);
         }
-        final boolean isPinned = mPinChecker.isPinned(r.getFullName());
-        holder.isPinned = isPinned;
-        holder.mPin.setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+        if(mIsShowingStars) {
+            holder.mImage.setImageUrl(r.getUserAvatarUrl());
+            IntentHandler.addOnClickHandler(mActivity, holder.mImage, r.getUserLogin());
+        } else {
+            final boolean isPinned = mPinChecker.isPinned(r.getFullName());
+            holder.isPinned = isPinned;
+            holder.mImage
+                    .setImageResource(isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
+        }
         holder.mForks.setText(Integer.toString(r.getForks()));
         holder.mStars.setText(Integer.toString(r.getStarGazers()));
         holder.mLastUpdated.setText(DateUtils.getRelativeTimeSpanString(r.getUpdatedAt()));
@@ -226,7 +235,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         @BindView(R.id.repo_stars) TextView mStars;
         @BindView(R.id.repo_language) TextView mLanguage;
         @BindView(R.id.repo_last_updated) TextView mLastUpdated;
-        @BindView(R.id.repo_pin_button) ImageButton mPin;
+        @BindView(R.id.repo_icon) NetworkImageView mImage;
         private boolean isPinned = false;
 
         RepoHolder(View view) {
@@ -234,13 +243,11 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             ButterKnife.bind(this, view);
             mDescription.setConsumeNonUrlClicks(false);
             view.setOnClickListener(v -> openItem(getAdapterPosition()));
-            if(mIsShowingStars) {
-                mPin.setVisibility(View.GONE);
-            } else {
-                mPin.setOnClickListener((v) -> {
+            if(!mIsShowingStars) {
+                mImage.setOnClickListener((v) -> {
                     togglePin(getAdapterPosition());
                     isPinned = !isPinned;
-                    mPin.setImageResource(
+                    mImage.setImageResource(
                             isPinned ? R.drawable.ic_pinned : R.drawable.ic_not_pinned);
                 });
             }

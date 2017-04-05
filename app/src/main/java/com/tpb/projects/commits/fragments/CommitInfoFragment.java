@@ -168,7 +168,6 @@ public class CommitInfoFragment extends CommitFragment {
         }, mCommit.getFullRepoName(), mCommit.getSha());
     }
 
-
     private void checkSharedElementEntry() {
         final Intent i = getActivity().getIntent();
         if(i.hasExtra(getString(R.string.transition_card))) {

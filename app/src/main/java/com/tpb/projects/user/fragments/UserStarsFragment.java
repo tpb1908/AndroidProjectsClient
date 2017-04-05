@@ -45,7 +45,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mRecycler.enableLineDecoration();
-        mAdapter = new RepositoriesAdapter(getContext(), this, mRefresher);
+        mAdapter = new RepositoriesAdapter(getActivity(), this, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {

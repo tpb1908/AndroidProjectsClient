@@ -262,7 +262,7 @@
     <string name="hint_search_characters">Search characters</string>
 
     <string name="title_activity_login">Sign in</string>
-    <string name="title_activity_user">Repositories</string>
+    <string name="title_activity_user">User</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_repo">Repository</string>
     <string name="title_activity_emoji">Emojis</string>
