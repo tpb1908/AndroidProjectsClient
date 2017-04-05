@@ -14,9 +14,9 @@ import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.github.data.models.Gist;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
+import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.GistsAdapter;
-import com.tpb.projects.common.FixedLinearLayoutManger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

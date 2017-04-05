@@ -42,7 +42,8 @@ public class Status extends DataModel implements Parcelable {
             try {
                 createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
                 updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException ignored) {}
+            } catch(ParseException ignored) {
+            }
             state = obj.getString(STATE);
             targetUrl = obj.getString(TARGET_URL);
             id = obj.getInt(ID);
@@ -50,7 +51,8 @@ public class Status extends DataModel implements Parcelable {
             url = obj.getString(URL);
             context = obj.getString(CONTEXT);
             if(obj.has(KEY_CREATOR)) creator = User.parse(obj.getJSONObject(KEY_CREATOR));
-        } catch(JSONException jse) {}
+        } catch(JSONException jse) {
+        }
     }
 
     public long getUpdatedAt() {

@@ -13,14 +13,13 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Commit;
 import com.tpb.github.data.models.Repository;
-import com.tpb.projects.R;
-import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.repo.fragments.RepoCommitsFragment;
-import com.tpb.projects.common.NetworkImageView;
-import com.tpb.projects.util.Util;
-
 import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.projects.R;
+import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.repo.fragments.RepoCommitsFragment;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -169,9 +168,10 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                             )
                     )
             );
-            holder.mInfo.setMarkdown(Markdown.formatMD(builder.toString(), mRepo.getFullName()), null,
-                    text -> mCommits.set(position, Pair.create(c, text))
-            );
+            holder.mInfo
+                    .setMarkdown(Markdown.formatMD(builder.toString(), mRepo.getFullName()), null,
+                            text -> mCommits.set(position, Pair.create(c, text))
+                    );
         } else {
             holder.mInfo.setText(mCommits.get(position).second);
         }

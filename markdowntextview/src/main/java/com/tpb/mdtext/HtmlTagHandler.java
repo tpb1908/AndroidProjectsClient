@@ -260,8 +260,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                             //Check for checkboxes
                             if(output.length() > 2 &&
                                     ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
-                                            || (output.charAt(1) >= '\u2610' && output.charAt(1) <= '\u2612')
-                            )) {
+                                            || (output.charAt(1) >= '\u2610' && output
+                                            .charAt(1) <= '\u2612')
+                                    )) {
                                 end(output, Ul.class, false,
                                         new LeadingMarginSpan.Standard(
                                                 listItemIndent * (lists.size() - 1)),

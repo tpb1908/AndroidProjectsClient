@@ -104,7 +104,9 @@ public class IntentHandler {
         i.putExtra(activity.getString(R.string.intent_repo), repo);
         i.putExtra(activity.getString(R.string.intent_issue_number), number);
         if(view instanceof MarkdownTextView) {
-            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(activity, i,
+                    ((MarkdownTextView) view).getLastClickPosition()
+            );
             activity.startActivity(i);
         } else if(view instanceof CardView) {
             activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -124,7 +126,9 @@ public class IntentHandler {
         final Intent i = new Intent(activity, IssueActivity.class);
         i.putExtra(activity.getString(R.string.parcel_issue), issue);
         if(view instanceof MarkdownTextView) {
-            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(activity, i,
+                    ((MarkdownTextView) view).getLastClickPosition()
+            );
             activity.startActivity(i);
         } else if(view instanceof CardView) {
             i.putExtra(activity.getString(R.string.transition_card), "");
@@ -145,7 +149,9 @@ public class IntentHandler {
         final Intent i = new Intent(activity, UserActivity.class);
         i.putExtra(activity.getString(R.string.intent_username), login);
         if(view instanceof MarkdownTextView) {
-            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(activity, i,
+                    ((MarkdownTextView) view).getLastClickPosition()
+            );
         } else {
             UI.setViewPositionForIntent(i, view);
         }
@@ -168,7 +174,9 @@ public class IntentHandler {
         final Intent i = new Intent(activity, MilestoneEditor.class);
         i.putExtra(activity.getString(R.string.parcel_milestone), milestone);
         if(view instanceof MarkdownTextView) {
-            UI.setClickPositionForIntent(activity, i, ((MarkdownTextView) view).getLastClickPosition());
+            UI.setClickPositionForIntent(activity, i,
+                    ((MarkdownTextView) view).getLastClickPosition()
+            );
         } else {
             UI.setViewPositionForIntent(i, view);
         }

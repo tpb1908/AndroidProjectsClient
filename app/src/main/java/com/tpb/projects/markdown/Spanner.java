@@ -330,7 +330,7 @@ public class Spanner {
                         name +
                         " </font>";
     }
-    
+
     public static void displayUser(LinearLayout userInfoParent, User user) {
         userInfoParent.setVisibility(View.VISIBLE);
 
@@ -415,5 +415,5 @@ public class Spanner {
         tv.setCompoundDrawablesRelativeWithIntrinsicBounds(drawableRes, 0, 0, 0);
         return tv;
     }
-    
+
 }

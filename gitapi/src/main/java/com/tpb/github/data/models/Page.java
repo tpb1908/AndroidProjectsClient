@@ -32,7 +32,8 @@ public class Page extends DataModel implements Parcelable {
             custom404 = obj.getBoolean(CUSTOM_404);
             url = obj.getString(URL);
             htmlUrl = obj.getString(HTML_URL);
-        } catch(JSONException ignored) {}
+        } catch(JSONException ignored) {
+        }
     }
 
     @Override

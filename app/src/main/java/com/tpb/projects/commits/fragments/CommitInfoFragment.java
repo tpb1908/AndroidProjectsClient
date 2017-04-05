@@ -149,11 +149,12 @@ public class CommitInfoFragment extends CommitFragment {
                 status.setText(String.format(getString(R.string.text_ci_status), data.getState()));
                 final StringBuilder builder = new StringBuilder();
                 if(data.getStatuses() != null) {
-                    for(Status s: data.getStatuses()) {
+                    for(Status s : data.getStatuses()) {
                         builder.append(
                                 String.format(getString(R.string.text_ci_info),
                                         s.getContext(),
-                                        s.getDescription())
+                                        s.getDescription()
+                                )
                         );
                         builder.append('\n');
                     }

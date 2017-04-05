@@ -53,11 +53,13 @@ public class Util {
     }
 
 
+    private static final SimpleDateFormat UTCISO8061 = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm'Z'");
 
-    private static final SimpleDateFormat UTCISO8061 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     static {
         UTCISO8061.setTimeZone(TimeZone.getTimeZone("UTCISO8061"));
     }
+
     /**
      * Converts a UNIX time value in milliseconds to an ISO8061 string
      *
@@ -96,7 +98,7 @@ public class Util {
                 /*If multiple events (labels or assignees) were added as the first event,
                 * then we need to stop the first item being duplicated
                  */
-                if(merged.size() > 1) merged.remove(merged.size()-1);
+                if(merged.size() > 1) merged.remove(merged.size() - 1);
                 if(merged.size() == 1 && merged.get(0).equals(last)) merged.remove(0);
                 toMerge.add(models.get(i - 1)); //Add the previous event
                 int j = i;

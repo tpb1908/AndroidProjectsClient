@@ -77,25 +77,29 @@ public class TextUtils {
                 new RoundedBackgroundEndSpan(bg, false),
                 start,
                 start + 1,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
         editable.setSpan(
                 new BackgroundColorSpan(bg),
                 start,
                 editable.length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
         editable.setSpan(
                 new ForegroundColorSpan(
                         TextUtils.getTextColorForBackground(bg)
                 ),
                 start,
                 editable.length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
 
         editable.setSpan(
                 new RoundedBackgroundEndSpan(bg, true),
                 editable.length() - 1,
                 editable.length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
     }
 
     public static int getTextColorForBackground(int bg) {

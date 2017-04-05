@@ -123,7 +123,8 @@ public class IssueEvent extends DataModel implements Parcelable {
         try {
             e.id = obj.getInt(ID);
             e.actor = User.parse(obj.getJSONObject(ACTOR));
-            if(obj.has(EVENT)) e.event = GitIssueEvent.fromString(obj.getString(EVENT).toLowerCase());
+            if(obj.has(EVENT))
+                e.event = GitIssueEvent.fromString(obj.getString(EVENT).toLowerCase());
 
             try {
                 e.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();

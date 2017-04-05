@@ -12,8 +12,8 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
 
 import java.util.ArrayList;
 import java.util.List;

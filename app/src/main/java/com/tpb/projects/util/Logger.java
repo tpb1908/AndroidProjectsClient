@@ -79,12 +79,14 @@ public class Logger {
             final Request request = chain.request();
             final long ts = System.nanoTime();
             Logger.i(TAG, String.format("Sending request %s on %s%n%s",
-                    request.url(), chain.connection(), request.headers()));
+                    request.url(), chain.connection(), request.headers()
+            ));
 
             final Response response = chain.proceed(request);
 
             Logger.i(TAG, String.format("Received response for %s in %.1fms%n%s",
-                    response.request().url(), (System.nanoTime() - ts) / 1e6d, response.headers()));
+                    response.request().url(), (System.nanoTime() - ts) / 1e6d, response.headers()
+            ));
 
             return response;
         }

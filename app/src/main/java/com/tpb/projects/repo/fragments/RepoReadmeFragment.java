@@ -12,10 +12,10 @@ import com.mittsu.markedview.MarkedView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Repository;
-import com.tpb.projects.R;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.repo.RepoActivity;
+import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FloatingActionButton;
+import com.tpb.projects.repo.RepoActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

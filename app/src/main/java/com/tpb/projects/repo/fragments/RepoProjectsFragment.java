@@ -19,12 +19,12 @@ import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
+import com.tpb.projects.common.fab.FabHideScrollListener;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.ProjectEditor;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoProjectsAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FabHideScrollListener;
-import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

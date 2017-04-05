@@ -362,7 +362,7 @@ public class Event extends DataModel implements Parcelable {
 
         public static GitEvent fromString(@NonNull String val) {
             try {
-                return  GitEvent.valueOf(val);
+                return GitEvent.valueOf(val);
             } catch(Exception e) {
                 final GitEvent event = UNKNOWN;
                 event.val = val;

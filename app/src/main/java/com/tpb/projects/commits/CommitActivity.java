@@ -17,9 +17,9 @@ import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

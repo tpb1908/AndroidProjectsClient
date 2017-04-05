@@ -220,7 +220,7 @@ public abstract class APIHandler {
                     break;
                 case HTTP_409:
                     if(error.getErrorBody() != null && error.getErrorBody().contains(
-                                                                    ERROR_MESSAGE_EMPTY_REPOSITORY)) {
+                            ERROR_MESSAGE_EMPTY_REPOSITORY)) {
                         apiError = APIError.EMPTY_REPOSITORY;
                         break;
                     }

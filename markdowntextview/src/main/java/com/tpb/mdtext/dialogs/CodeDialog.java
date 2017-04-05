@@ -12,8 +12,8 @@ import android.view.Window;
 import com.pddstudio.highlightjs.HighlightJsView;
 import com.pddstudio.highlightjs.models.Language;
 import com.pddstudio.highlightjs.models.Theme;
-
 import com.tpb.mdtext.handlers.CodeClickHandler;
+
 import org.sufficientlysecure.htmltextview.R;
 
 /**

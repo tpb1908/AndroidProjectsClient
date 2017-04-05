@@ -26,17 +26,16 @@ import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.github.data.models.User;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.fab.FabHideScrollListener;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FabHideScrollListener;
-import com.tpb.projects.common.fab.FloatingActionButton;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.ArrayList;
 import java.util.List;

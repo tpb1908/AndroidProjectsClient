@@ -93,7 +93,8 @@ public class Interceptor extends Activity {
                                 i.putExtra(getString(R.string.intent_card_id),
                                         safelyExtractInt(id.toString())
                                 );
-                            } catch(Exception ignored) {}
+                            } catch(Exception ignored) {
+                            }
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, IssueActivity.class);
                             i.putExtra(getString(R.string.intent_issue_number),

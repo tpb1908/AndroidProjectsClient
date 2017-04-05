@@ -100,7 +100,8 @@ public abstract class EditorActivity extends CircularRevealActivity {
         builder.setPositiveButton(R.string.action_insert, (v, di) -> {
             insertString(String.format(getString(R.string.text_image_link_with_desc),
                     desc.getText().toString(),
-                    url.getText().toString()));
+                    url.getText().toString()
+            ));
         });
         builder.setNegativeButton(R.string.action_cancel, null);
 

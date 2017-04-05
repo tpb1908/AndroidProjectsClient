@@ -44,15 +44,14 @@ import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.spans.ClickableTableSpan;
+import com.tpb.mdtext.views.spans.CodeSpan;
+import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Scanner;
-
-import com.tpb.mdtext.views.spans.ClickableTableSpan;
-import com.tpb.mdtext.views.spans.CodeSpan;
-import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
 
 
 public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpImageGetter.DrawableCacheHandler {
@@ -142,7 +141,7 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
      * Parses String containing HTML to Android's Spannable format and displays it in this TextView.
      * Using the implementation of Html.ImageGetter provided.
      *
-     * @param markdown       String containing HTML, for example: "<b>Hello world!</b>"
+     * @param markdown    String containing HTML, for example: "<b>Hello world!</b>"
      * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
      *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
      */

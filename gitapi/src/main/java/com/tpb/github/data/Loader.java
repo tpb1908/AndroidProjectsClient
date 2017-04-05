@@ -222,21 +222,21 @@ public class Loader extends APIHandler {
     public void loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
         Log.i(TAG, "Loading " + GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES);
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES)
-                .addHeaders(PAGES_API_API_AUTH_HEADERS)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i(TAG, "Page response " + response.toString());
-                        loader.loadComplete(new Page(response));
-                    }
+                         .addHeaders(PAGES_API_API_AUTH_HEADERS)
+                         .build()
+                         .getAsJSONObject(new JSONObjectRequestListener() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 Log.i(TAG, "Page response " + response.toString());
+                                 loader.loadComplete(new Page(response));
+                             }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.i(TAG, "Page response " + anError.getMessage());
-                        loader.loadError(parseError(anError));
-                    }
-                });
+                             @Override
+                             public void onError(ANError anError) {
+                                 Log.i(TAG, "Page response " + anError.getMessage());
+                                 loader.loadError(parseError(anError));
+                             }
+                         });
     }
 
     public void loadBranches(@NonNull final ListLoader<android.support.v4.util.Pair<String, String>> loader, String repoFullName) {
@@ -1105,7 +1105,8 @@ public class Loader extends APIHandler {
     }
 
     public void loadCommitStatuses(@NonNull final ItemLoader<CompleteStatus> loader, final String repoFullName, String sha) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_STATUS)
+        AndroidNetworking
+                .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_STATUS)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -1123,7 +1124,9 @@ public class Loader extends APIHandler {
     }
 
     public void loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
-        AndroidNetworking.get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true" + (from == 0 ? "" : "?since=" +  Util.toISO8061FromMilliseconds(from)))
+        AndroidNetworking
+                .get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true" + (from == 0 ? "" : "?since=" + Util
+                        .toISO8061FromMilliseconds(from)))
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.HIGH)
                 .getResponseOnlyFromNetwork()

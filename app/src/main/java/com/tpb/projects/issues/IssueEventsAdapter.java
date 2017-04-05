@@ -96,8 +96,8 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             o1 instanceof IssueEvent &&
                     o2 instanceof IssueEvent &&
                     o1.getCreatedAt() == o2.getCreatedAt() &&
-                    ((IssueEvent)o1).getEvent() == ((IssueEvent)o2).getEvent()
-     ? 0 : -1;
+                    ((IssueEvent) o1).getEvent() == ((IssueEvent) o2).getEvent()
+                    ? 0 : -1;
 
 
     private ArrayList<DataModel> mergeEvents(List<IssueEvent> events) {
@@ -106,7 +106,8 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         IssueEvent last = new IssueEvent();
         for(int i = 0; i < events.size(); i++) {
             //If we have two of the same event, happening at the same time
-            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i).getEvent() == last
+            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i)
+                                                                            .getEvent() == last
                     .getEvent()) {
                 /*If multiple events (labels or assignees) were added as the first event,
                 * then we need to stop the first item being duplicated

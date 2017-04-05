@@ -17,6 +17,7 @@ import android.text.style.ReplacementSpan;
 import android.view.View;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
+
 import org.sufficientlysecure.htmltextview.R;
 
 import java.lang.ref.WeakReference;

@@ -54,7 +54,8 @@ public class Notification extends DataModel implements Parcelable {
             try {
                 lastReadAt = Util.toCalendar(obj.getString(LAST_READ_AT)).getTimeInMillis();
                 updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException ignored) {}
+            } catch(ParseException ignored) {
+            }
 
             final JSONObject info = obj.getJSONObject(SUBJECT);
             title = info.getString(TITLE);
@@ -120,7 +121,6 @@ public class Notification extends DataModel implements Parcelable {
                 ", url='" + url + '\'' +
                 '}';
     }
-
 
 
     public enum GitNotificationReason {

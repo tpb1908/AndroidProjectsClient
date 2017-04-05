@@ -147,7 +147,9 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
                         if(mDescriptionEditor.isEditing()) {
                             mDescriptionEditor.saveText();
                             mDescriptionEditor.setMarkdown(
-                                    Markdown.formatMD(mDescriptionEditor.getText().toString(), null),
+                                    Markdown.formatMD(mDescriptionEditor.getText().toString(),
+                                            null
+                                    ),
                                     new HttpImageGetter(mDescriptionEditor, mDescriptionEditor)
                             );
                             mDescriptionEditor.disableEditing();

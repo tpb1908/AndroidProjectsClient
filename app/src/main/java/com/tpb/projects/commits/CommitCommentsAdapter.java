@@ -14,16 +14,15 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Commit;
-import com.tpb.projects.R;
-import com.tpb.projects.commits.fragments.CommitCommentsFragment;
-import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
-import com.tpb.projects.common.NetworkImageView;
-
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.projects.R;
+import com.tpb.projects.commits.fragments.CommitCommentsFragment;
+import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
 
 import java.util.ArrayList;
 import java.util.List;

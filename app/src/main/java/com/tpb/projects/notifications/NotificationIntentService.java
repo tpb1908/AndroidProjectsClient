@@ -61,7 +61,8 @@ public class NotificationIntentService extends IntentService implements Loader.L
 
     private void loadNotifications() {
         if(mLoader == null) mLoader = new Loader(getApplicationContext());
-        Logger.i(TAG, "loadNotifications: Timestamp " + Util.toISO8061FromMilliseconds(mLastLoadedSuccessfully));
+        Logger.i(TAG, "loadNotifications: Timestamp " + Util
+                .toISO8061FromMilliseconds(mLastLoadedSuccessfully));
         mLoader.loadNotifications(this, mLastLoadedSuccessfully);
     }
 
@@ -70,24 +71,29 @@ public class NotificationIntentService extends IntentService implements Loader.L
         String title;
         switch(notif.getReason()) {
             case AUTHOR:
-                title = String.format(getString(R.string.text_notification_author), notif.getRepository().getFullName());
+                title = String.format(getString(R.string.text_notification_author),
+                        notif.getRepository().getFullName()
+                );
                 builder.setSmallIcon(R.drawable.ic_person_white);
                 break;
             case COMMENT:
                 if("issue".equalsIgnoreCase(notif.getType())) {
                     //TODO Get issue number
-                } else if(notif.getUrl().contains("/commits/")){
+                } else if(notif.getUrl().contains("/commits/")) {
                     //TODO get commit ref
                 }
                 //else
-                title = String.format(getString(R.string.text_notification_comment), notif.getRepository().getName());
+                title = String.format(getString(R.string.text_notification_comment),
+                        notif.getRepository().getName()
+                );
                 builder.setSmallIcon(R.drawable.ic_comment_white);
                 break;
             case ASSIGN:
                 title = String.format(
                         getString(R.string.text_notification_assign),
                         "#A number",
-                        notif.getRepository().getFullName());
+                        notif.getRepository().getFullName()
+                );
                 builder.setSmallIcon(R.drawable.ic_person_white);
                 break;
             case INVITATION:
@@ -95,20 +101,28 @@ public class NotificationIntentService extends IntentService implements Loader.L
                 builder.setSmallIcon(R.drawable.ic_group_add_white);
                 break;
             case MANUAL:
-                title = getString(R.string.text_notification_manual, notif.getRepository().getFullName());
+                title = getString(R.string.text_notification_manual,
+                        notif.getRepository().getFullName()
+                );
                 builder.setSmallIcon(R.drawable.ic_watchers_white);
                 //TODO get thread
                 break;
             case MENTION:
-                title = getString(R.string.text_notification_mention, notif.getRepository().getFullName());
+                title = getString(R.string.text_notification_mention,
+                        notif.getRepository().getFullName()
+                );
                 builder.setSmallIcon(R.drawable.ic_mention_white);
                 break;
             case SUBSCRIBED:
                 if("issue".equalsIgnoreCase(notif.getType())) {
-                    title = String.format(getString(R.string.text_notification_issue), notif.getRepository().getName());
+                    title = String.format(getString(R.string.text_notification_issue),
+                            notif.getRepository().getName()
+                    );
                     builder.setSmallIcon(R.drawable.ic_issue_white);
                 } else {
-                    title = getString(R.string.text_notification_subscribed, notif.getRepository().getFullName());
+                    title = getString(R.string.text_notification_subscribed,
+                            notif.getRepository().getFullName()
+                    );
                     builder.setSmallIcon(R.drawable.ic_watchers_white);
                 }
                 break;
@@ -118,9 +132,10 @@ public class NotificationIntentService extends IntentService implements Loader.L
         }
         final TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(Interceptor.class);
-        stackBuilder.addNextIntent( new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
+        stackBuilder.addNextIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
         Logger.i(TAG, "buildNotification: URL " + notif.getUrl());
-        builder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
+        builder.setContentIntent(
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
         builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
         builder.setContentTitle(title);
         builder.setContentText(notif.getTitle());
@@ -132,7 +147,8 @@ public class NotificationIntentService extends IntentService implements Loader.L
     public void listLoadComplete(List<Notification> notifications) {
         Logger.i(TAG, "listLoadComplete: " + notifications);
         mLastLoadedSuccessfully = Util.getUTCTimeInMillis();
-        final NotificationManager manager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        final NotificationManager manager = (NotificationManager) this
+                .getSystemService(Context.NOTIFICATION_SERVICE);
         for(Notification n : notifications) {
             manager.notify((int) n.getId(), buildNotification(n));
         }

@@ -140,7 +140,8 @@ public class IssueInfoFragment extends IssueFragment {
                         true, //Closed at
                         false //No comment count
                 ).toString(),
-                new HttpImageGetter(mInfo, mInfo), null);
+                new HttpImageGetter(mInfo, mInfo), null
+        );
 
         mUserAvatar.setOnClickListener(v -> IntentHandler
                 .openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));

@@ -24,19 +24,18 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.mdtext.Markdown;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
-
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -161,7 +160,7 @@ public class CardEditor extends EditorActivity {
 
     private void bindIssue(Issue issue) {
         mEditor.setMarkdown(Spanner.buildIssueSpan(this, issue, true, true, true, true, false)
-                                        .toString(),
+                                   .toString(),
                 new HttpImageGetter(mEditor, mEditor)
         );
 

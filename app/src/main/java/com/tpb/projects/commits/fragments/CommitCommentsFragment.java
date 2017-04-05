@@ -24,10 +24,10 @@ import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitCommentsAdapter;
-import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.common.FixedLinearLayoutManger;
-import com.tpb.projects.util.UI;
 import com.tpb.projects.common.fab.FloatingActionButton;
+import com.tpb.projects.editors.CommentEditor;
+import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

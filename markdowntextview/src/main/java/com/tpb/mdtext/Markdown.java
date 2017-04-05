@@ -181,7 +181,7 @@ public class Markdown {
                     else if(url.startsWith("/")) offset = 1;
                     else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
                     s = s.substring(0, srcStart) + concatenateRawContentUrl(url, fullRepoName) +
-                                s.substring(srcEnd);
+                            s.substring(srcEnd);
 
                 }
             }

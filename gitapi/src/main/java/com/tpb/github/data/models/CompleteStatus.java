@@ -43,8 +43,10 @@ public class CompleteStatus extends DataModel implements Parcelable {
                 for(int i = 0; i < array.length(); i++) {
                     statuses.add(new Status(array.getJSONObject(i)));
                 }
-            } catch(JSONException ignored) {}
-        } catch(JSONException jse) {}
+            } catch(JSONException ignored) {
+            }
+        } catch(JSONException jse) {
+        }
     }
 
     @Override

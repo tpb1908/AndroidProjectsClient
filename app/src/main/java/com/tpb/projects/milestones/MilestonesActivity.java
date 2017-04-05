@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.PopupMenu;
 
@@ -20,8 +19,8 @@ import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.projects.R;
-import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;

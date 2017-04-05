@@ -13,18 +13,17 @@ import android.widget.LinearLayout;
 import com.androidnetworking.error.ANError;
 import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Project;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.mdtext.Markdown;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
-
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
-import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
 
 import java.io.IOException;
 
@@ -88,7 +87,9 @@ public class ProjectEditor extends EditorActivity {
                         if(mDescriptionEditor.isEditing()) {
                             mDescriptionEditor.saveText();
                             mDescriptionEditor.setMarkdown(
-                                    Markdown.formatMD(mDescriptionEditor.getText().toString(), null),
+                                    Markdown.formatMD(mDescriptionEditor.getText().toString(),
+                                            null
+                                    ),
                                     new HttpImageGetter(mDescriptionEditor, mDescriptionEditor)
                             );
                             mDescriptionEditor.disableEditing();

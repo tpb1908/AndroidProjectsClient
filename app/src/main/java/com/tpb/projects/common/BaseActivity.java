@@ -9,9 +9,8 @@ import android.view.View;
 import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.login.LoginActivity;
-import com.tpb.projects.util.UI;
-
 import com.tpb.projects.notifications.receivers.NotificationEventReceiver;
+import com.tpb.projects.util.UI;
 
 /**
  * Created by theo on 10/03/17.

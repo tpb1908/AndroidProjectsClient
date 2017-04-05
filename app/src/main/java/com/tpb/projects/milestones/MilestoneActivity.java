@@ -14,15 +14,14 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.State;
-import com.tpb.projects.R;
-import com.tpb.projects.flow.IntentHandler;
 import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.views.MarkdownTextView;
+import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.util.List;
 

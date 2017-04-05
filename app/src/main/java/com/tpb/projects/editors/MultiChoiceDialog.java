@@ -50,7 +50,9 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
         });
 
         return dialog;
-    };
+    }
+
+    ;
 
     private void addBackgroundSetterListener() {
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -73,14 +75,17 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
                                 new BackgroundColorSpan(colors[firstVisible + i]),
                                 0,
                                 builder.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
                         builder.setSpan(
                                 new ForegroundColorSpan(
-                                        TextUtils.getTextColorForBackground(colors[firstVisible + i])
+                                        TextUtils
+                                                .getTextColorForBackground(colors[firstVisible + i])
                                 ),
                                 0,
                                 builder.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
                         ((AppCompatCheckedTextView) listView.getChildAt(i))
                                 .setText(builder);
                     } catch(ClassCastException ignored) {

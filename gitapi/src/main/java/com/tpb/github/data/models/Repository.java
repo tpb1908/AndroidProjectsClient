@@ -222,12 +222,12 @@ public class Repository extends DataModel implements Parcelable {
             r.url = obj.getString(URL);
             r.htmlUrl = obj.getString(HTML_URL);
             if(obj.has(HAS_ISSUES)) r.hasIssues = obj.getBoolean(HAS_ISSUES);
-            if(obj.has(STAR_GAZERS))r.starGazers = obj.getInt(STAR_GAZERS);
+            if(obj.has(STAR_GAZERS)) r.starGazers = obj.getInt(STAR_GAZERS);
             if(obj.has(FORKS)) r.forks = obj.getInt(FORKS);
             if(obj.has(WATCHERS)) r.watchers = obj.getInt(WATCHERS);
             if(obj.has(ISSUES)) r.issues = obj.getInt(ISSUES);
             if(obj.has(SIZE)) r.size = obj.getInt(SIZE);
-            if(obj.has(LANGUAGE))   r.language = obj.getString(LANGUAGE);
+            if(obj.has(LANGUAGE)) r.language = obj.getString(LANGUAGE);
             if(obj.has(PARENT)) r.parent = Repository.parse(obj.getJSONObject(PARENT));
             if(obj.has(SOURCE)) r.source = Repository.parse(obj.getJSONObject(SOURCE));
             if(obj.has(LICENSE) && !JSON_NULL.equals(obj.getString(LICENSE))) {
@@ -238,8 +238,10 @@ public class Repository extends DataModel implements Parcelable {
                 r.licenseUrl = license.getString(LICENSE_URL);
             }
             try {
-                if(obj.has(CREATED_AT)) r.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-                if(obj.has(UPDATED_AT)) r.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+                if(obj.has(CREATED_AT))
+                    r.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                if(obj.has(UPDATED_AT))
+                    r.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }

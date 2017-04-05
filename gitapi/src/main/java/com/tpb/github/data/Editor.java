@@ -68,20 +68,20 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createProject: ", jse);
         }
         post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
-                         .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
-                         .addJSONObjectBody(obj)
-                         .build()
-                         .getAsJSONObject(new JSONObjectRequestListener() {
-                             @Override
-                             public void onResponse(JSONObject response) {
-                                 if(listener != null) listener.created(Project.parse(response));
-                             }
+                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.created(Project.parse(response));
+                    }
 
-                             @Override
-                             public void onError(ANError anError) {
-                                 if(listener != null) listener.creationError(parseError(anError));
-                             }
-                         });
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.creationError(parseError(anError));
+                    }
+                });
     }
 
     public void updateProject(@Nullable final UpdateListener<Project> listener, String name, String body, int id) {
@@ -213,20 +213,20 @@ public class Editor extends APIHandler {
             Log.e(TAG, "addColumn: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
-                         .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
-                         .addJSONObjectBody(obj)
-                         .build()
-                         .getAsJSONObject(new JSONObjectRequestListener() {
-                             @Override
-                             public void onResponse(JSONObject response) {
-                                 if(listener != null) listener.created(Column.parse(response));
-                             }
+                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.created(Column.parse(response));
+                    }
 
-                             @Override
-                             public void onError(ANError anError) {
-                                 if(listener != null) listener.creationError(parseError(anError));
-                             }
-                         });
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.creationError(parseError(anError));
+                    }
+                });
     }
 
     public void moveColumn(@Nullable final UpdateListener<Integer> listener, final int columnId, int dropPositionId, int position) {
@@ -419,20 +419,20 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createIssue: ", jse);
         }
         post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
-                         .addHeaders(API_AUTH_HEADERS)
-                         .addJSONObjectBody(obj)
-                         .build()
-                         .getAsJSONObject(new JSONObjectRequestListener() {
-                             @Override
-                             public void onResponse(JSONObject response) {
-                                 if(listener != null) listener.created(Issue.parse(response));
-                             }
+                .addHeaders(API_AUTH_HEADERS)
+                .addJSONObjectBody(obj)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if(listener != null) listener.created(Issue.parse(response));
+                    }
 
-                             @Override
-                             public void onError(ANError anError) {
-                                 if(listener != null) listener.creationError(parseError(anError));
-                             }
-                         });
+                    @Override
+                    public void onError(ANError anError) {
+                        if(listener != null) listener.creationError(parseError(anError));
+                    }
+                });
     }
 
     public void closeIssue(@Nullable final UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
