@@ -71,7 +71,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
         switch(notif.getReason()) {
             case AUTHOR:
                 title = String.format(getString(R.string.text_notification_author), notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_person);
+                builder.setSmallIcon(R.drawable.ic_person_white);
                 break;
             case COMMENT:
                 if("issue".equalsIgnoreCase(notif.getType())) {
@@ -81,43 +81,41 @@ public class NotificationIntentService extends IntentService implements Loader.L
                 }
                 //else
                 title = String.format(getString(R.string.text_notification_comment), notif.getRepository().getName());
-                builder.setSmallIcon(R.drawable.ic_comment);
+                builder.setSmallIcon(R.drawable.ic_comment_white);
                 break;
             case ASSIGN:
                 title = String.format(
                         getString(R.string.text_notification_assign),
                         "#A number",
                         notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_person);
+                builder.setSmallIcon(R.drawable.ic_person_white);
                 break;
             case INVITATION:
                 title = getString(R.string.text_notification_invitation);
-                builder.setSmallIcon(R.drawable.ic_group_add);
+                builder.setSmallIcon(R.drawable.ic_group_add_white);
                 break;
             case MANUAL:
                 title = getString(R.string.text_notification_manual, notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_watchers);
+                builder.setSmallIcon(R.drawable.ic_watchers_white);
                 //TODO get thread
                 break;
             case MENTION:
                 title = getString(R.string.text_notification_mention, notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_mention);
+                builder.setSmallIcon(R.drawable.ic_mention_white);
                 break;
             case SUBSCRIBED:
                 title = getString(R.string.text_notification_subscribed, notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_watchers);
+                builder.setSmallIcon(R.drawable.ic_watchers_white);
                 break;
             default:
                 title = TextUtils.capitaliseFirst(notif.getReason().toString());
                 break;
         }
-
         final TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(Interceptor.class);
         stackBuilder.addNextIntent( new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
 
         builder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
-        //builder.setColor(Color.BLACK);
         builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
         builder.setContentTitle(title);
         builder.setContentText(notif.getTitle());
