@@ -173,6 +173,7 @@ public class RepoInfoFragment extends RepoFragment {
     }
 
     private void displayContributors(List<User> contributors) {
+        if(!mAreViewsValid) return;
         mContributors.removeAllViews();
         if(contributors.size() > 1) {
             mContributors.setVisibility(View.VISIBLE);

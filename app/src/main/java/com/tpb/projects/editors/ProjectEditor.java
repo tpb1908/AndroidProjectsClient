@@ -178,7 +178,7 @@ public class ProjectEditor extends EditorActivity {
     }
 
     @Override
-    protected void characterChosen(String c) {
+    protected void insertString(String c) {
         Util.insertString(mDescriptionEditor, c);
     }
 }

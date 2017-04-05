@@ -24,10 +24,10 @@ import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.IssueCommentsAdapter;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -175,7 +175,7 @@ public class IssueCommentsFragment extends IssueFragment {
         final PopupMenu menu = new PopupMenu(getContext(), view);
         menu.inflate(R.menu.menu_comment);
         if(comment.getUser().getLogin().equals(
-                GitHubSession.getSession(getContext()).getUserLogin())) {
+                GitHubSession.getSession(getContext()).getUserLogin()) && !mIssue.isLocked()) {
             menu.getMenu()
                 .add(0, R.id.menu_edit_comment, Menu.NONE, getString(R.string.menu_edit_comment));
             menu.getMenu().add(0, R.id.menu_delete_comment, Menu.NONE,

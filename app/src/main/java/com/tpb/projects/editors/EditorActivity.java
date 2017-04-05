@@ -14,11 +14,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.Logger;
+import com.tpb.projects.util.UI;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,6 +50,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
         final CharSequence[] items = {
                 getString(R.string.text_take_a_picture),
                 getString(R.string.text_choose_from_gallery),
+                getString(R.string.text_insert_image_link),
                 getString(R.string.action_cancel)
         };
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -57,9 +61,9 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 mUploadDialog.setTitle(R.string.title_image_upload);
                 mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             }
-            if(items[which].equals(items[0])) {
+            if(which == 0) {
                 attemptTakePicture();
-            } else if(items[which].equals(items[1])) {
+            } else if(which == 1) {
                 final Intent intent = new Intent(
                         Intent.ACTION_GET_CONTENT,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -67,11 +71,40 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 intent.setType("image/*");
                 startActivityForResult(intent, SELECT_FILE);
 
-            } else if(items[which].equals(items[2])) {
+            } else if(which == 2) {
+                displayImageLinkDialog();
+            } else if(which == 3) {
                 dialog.dismiss();
             }
         });
         builder.show();
+    }
+
+    private void displayImageLinkDialog() {
+        final LinearLayout wrapper = new LinearLayout(this);
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        wrapper.setPaddingRelative(UI.pxFromDp(16), 0, UI.pxFromDp(16), 0);
+
+        final EditText desc = new EditText(this);
+        desc.setHint(R.string.hint_url_description);
+        wrapper.addView(desc);
+
+        final EditText url = new EditText(this);
+        url.setHint(R.string.hint_url_url);
+        wrapper.addView(url);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.title_insert_image_link);
+        builder.setView(wrapper);
+
+        builder.setPositiveButton(R.string.action_insert, (v, di) -> {
+            insertString(String.format(getString(R.string.text_image_link_with_desc),
+                    desc.getText().toString(),
+                    url.getText().toString()));
+        });
+        builder.setNegativeButton(R.string.action_cancel, null);
+
+        builder.create().show();
     }
 
     private void attemptTakePicture() {
@@ -140,7 +173,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 }
             } else if(requestCode == CharacterActivity.REQUEST_CODE_INSERT_CHARACTER) {
                 if(data.hasExtra(getString(R.string.intent_character))) {
-                    characterChosen(data.getStringExtra(getString(R.string.intent_character)));
+                    insertString(data.getStringExtra(getString(R.string.intent_character)));
                 }
             } else {
                 final ProgressDialog pd = new ProgressDialog(this);
@@ -161,7 +194,6 @@ public abstract class EditorActivity extends CircularRevealActivity {
 
                 } else if(requestCode == SELECT_FILE) {
                     final Uri selectedFile = data.getData();
-                    Logger.i(TAG, "onActivityResult: Uri is " + selectedFile.toString());
                     pd.setTitle(R.string.title_image_conversion);
                     pd.show();
                     AsyncTask.execute(() -> {
@@ -170,7 +202,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
                             pd.cancel();
                             imageLoadComplete(image);
                         } catch(IOException ioe) {
-                            Log.e(TAG, "onActivityResult: ", ioe);
+                            Logger.e(TAG, "onActivityResult: ", ioe);
                             pd.cancel();
                             imageLoadException(ioe);
                         }
@@ -184,7 +216,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
 
     }
 
-    protected void characterChosen(String c) {
+    protected void insertString(String c) {
 
     }
 

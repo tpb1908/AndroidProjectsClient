@@ -124,6 +124,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             for(Card c : cards) {
                 mCards.add(new Pair<>(c, null));
             }
+            mParent.mCardCount.setText(String.valueOf(mCards.size()));
             notifyItemRangeInserted(oldLength, mCards.size());
         } else {
             mMaxPageReached = true;

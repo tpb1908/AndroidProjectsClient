@@ -16,21 +16,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
+import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.common.ShortcutDialog;
+import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
-import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.common.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +42,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://raw.githubusercontent.com/tpb1908/AndroidProjectsClient/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
-    private FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
@@ -68,7 +66,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_issue);
         ButterKnife.bind(this);
-        mAnalytics = FirebaseAnalytics.getInstance(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 

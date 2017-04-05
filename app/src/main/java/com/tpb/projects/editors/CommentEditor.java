@@ -134,7 +134,7 @@ public class CommentEditor extends EditorActivity {
     }
 
     @Override
-    protected void characterChosen(String c) {
+    protected void insertString(String c) {
         Util.insertString(mEditor, c);
     }
 

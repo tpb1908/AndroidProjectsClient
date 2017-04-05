@@ -88,6 +88,7 @@
     <string name="text_take_a_picture">Take a picture</string>
     <string name="text_choose_from_gallery">Choose from gallery</string>
     <string name="text_upload_an_image">Upload an image</string>
+    <string name="text_insert_image_link">Insert image link</string>
 
     <!-- Issue activity -->
     <string name="text_comment_created">Comment created</string>
@@ -295,6 +296,7 @@
     <string name="title_save_issue_shortcut">Save issue</string>
 
     <string name="title_insert_link">Insert link</string>
+    <string name="title_insert_image_link">Insert image link</string>
 
     <string name="title_user_info_fragment">Info</string>
     <string name="title_user_repos_fragment">Repos</string>
@@ -369,6 +371,7 @@
     <string name="text_href"><![CDATA[<a href=\"%1$s\">%2$s</a>]]></string>
     <string name="text_md_link">[%1$s](%2$s)</string>
     <string name="text_image_link">![Description](%1$s)</string>
+    <string name="text_image_link_with_desc">![%1$s](%2$s)</string>
     <string name="text_card_url"><![CDATA[https://github.com/%1$s/projects/%2$d#-%3$d]]></string>
     <string name="text_issue_url"><![CDATA[https://github.com/%1$s/issues/%2$d]]></string>
     <string name="text_user_info">%1$s \nLocation: %2$s \nRepositories: %3$d \nFollowers: %4$d</string>
