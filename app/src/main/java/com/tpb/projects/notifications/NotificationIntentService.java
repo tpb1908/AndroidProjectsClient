@@ -114,7 +114,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
         final TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(Interceptor.class);
         stackBuilder.addNextIntent( new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
-
+        Logger.i(TAG, "buildNotification: URL " + notif.getUrl());
         builder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
         builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
         builder.setContentTitle(title);
