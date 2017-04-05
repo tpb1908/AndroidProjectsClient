@@ -52,6 +52,12 @@ public class Util {
         return ISO8601.format(new Date(t * 1000));
     }
 
+
+
+    private static final SimpleDateFormat UTCISO8061 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+    static {
+        UTCISO8061.setTimeZone(TimeZone.getTimeZone("UTCISO8061"));
+    }
     /**
      * Converts a UNIX time value in milliseconds to an ISO8061 string
      *
@@ -59,11 +65,12 @@ public class Util {
      * @return Time formatted as yyyy-MM-dd'T'HH:mm:ssZ
      */
     public static String toISO8061FromMilliseconds(long t) {
-        return ISO8601.format(new Date(t));
+        return UTCISO8061.format(new Date(t));
     }
 
+
     public static long getUTCTimeInMillis() {
-        return Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
+        return Calendar.getInstance(TimeZone.getTimeZone("UTCISO8061")).getTimeInMillis();
     }
 
     public static String shortenSha(@Nullable String sha) {

@@ -140,7 +140,8 @@
     <string name="text_notification_author">Comment on your thread on %1$s</string>
     <string name="text_notification_invitation">Invitation</string>
     <string name="text_notification_manual">Subscribed to %1$s</string>
-    <string name="text_notification_subscribed">Updated on %1$s</string>
+    <string name="text_notification_subscribed">Update on %1$s</string>
+    <string name="text_notification_issue">Issue on %1$s</string>
 
     <!-- User activity -->
 

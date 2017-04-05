@@ -104,8 +104,13 @@ public class NotificationIntentService extends IntentService implements Loader.L
                 builder.setSmallIcon(R.drawable.ic_mention_white);
                 break;
             case SUBSCRIBED:
-                title = getString(R.string.text_notification_subscribed, notif.getRepository().getFullName());
-                builder.setSmallIcon(R.drawable.ic_watchers_white);
+                if("issue".equalsIgnoreCase(notif.getType())) {
+                    title = String.format(getString(R.string.text_notification_issue), notif.getRepository().getName());
+                    builder.setSmallIcon(R.drawable.ic_issue_white);
+                } else {
+                    title = getString(R.string.text_notification_subscribed, notif.getRepository().getFullName());
+                    builder.setSmallIcon(R.drawable.ic_watchers_white);
+                }
                 break;
             default:
                 title = TextUtils.capitaliseFirst(notif.getReason().toString());

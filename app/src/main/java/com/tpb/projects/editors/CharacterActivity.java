@@ -77,33 +77,47 @@ public class CharacterActivity extends BaseActivity {
     class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
 
         private final ArrayList<Pair<String, String>> mCharacters = new ArrayList<>();
-        private final ArrayList<Pair<String, String>> mFilteredCharacters = new ArrayList<>();
+        private ArrayList<Integer> mFilteredPositions = new ArrayList<>();
+        private ArrayList<Integer> mWorkingPositions = new ArrayList<>();
         private int mSize = 0;
 
         void addCharacters(List<Pair<String, String>> characters) {
             mCharacters.addAll(characters);
-            final int originalSize = mFilteredCharacters.size();
-            mFilteredCharacters.addAll(characters);
+            final int originalSize = mFilteredPositions.size();
+            for(int i = originalSize; i < mCharacters.size(); i++) {
+                mFilteredPositions.add(i);
+            }
             CharacterActivity.this.runOnUiThread(() -> {
-                mSize = mFilteredCharacters.size();
-                notifyItemRangeInserted(originalSize, mFilteredCharacters.size());
+                mSize = mFilteredPositions.size();
+                notifyItemRangeInserted(originalSize, mFilteredPositions.size());
             });
         }
 
         void filter(String query) {
-            if(query.isEmpty()) {
-                mFilteredCharacters.addAll(mCharacters);
-                return;
-            }
-            mFilteredCharacters.clear();
-            for(Pair<String, String> p : mCharacters) {
-                if(p.second.contains(query)) mFilteredCharacters.add(p);
-            }
-            notifyDataSetChanged();
+            AsyncTask.execute(() -> {
+
+                mWorkingPositions = new ArrayList<>();
+                if(query.isEmpty()) {
+                    for(int i = 0; i < mCharacters.size(); i++) {
+                        mWorkingPositions.add(i);
+                    }
+                } else {
+                    for(int i = 0; i < mCharacters.size(); i++) {
+                        if(mCharacters.get(i).second.contains(query)) mWorkingPositions.add(i);
+                    }
+                }
+                CharacterActivity.this.runOnUiThread(() -> {
+                    mFilteredPositions = mWorkingPositions;
+                    mSize = mFilteredPositions.size();
+                    notifyDataSetChanged();
+                });
+            });
+
+
         }
 
         private void choose(int pos) {
-            CharacterActivity.this.choose(mFilteredCharacters.get(pos).first);
+            CharacterActivity.this.choose(mCharacters.get(mFilteredPositions.get(pos)).first);
         }
 
         @Override
@@ -116,8 +130,8 @@ public class CharacterActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(CharacterViewHolder holder, int position) {
-            holder.mCharacter.setText(mFilteredCharacters.get(position).first);
-            holder.mName.setText(mFilteredCharacters.get(position).second);
+            holder.mCharacter.setText(mCharacters.get(mFilteredPositions.get(position)).first);
+            holder.mName.setText(mCharacters.get(mFilteredPositions.get(position)).second);
         }
 
         @Override
