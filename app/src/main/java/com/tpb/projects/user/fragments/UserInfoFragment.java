@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
+import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
@@ -32,7 +34,7 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserInfoFragment extends UserFragment implements ContributionsView.ContributionsLoadListener {
+public class UserInfoFragment extends UserFragment implements ContributionsView.ContributionsLoadListener, Loader.ItemLoader<Boolean> {
     private static final String TAG = UserInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
@@ -43,6 +45,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     @BindView(R.id.user_contributions) ContributionsView mContributions;
     @BindView(R.id.user_contributions_info) TextView mContributionsInfo;
     @BindView(R.id.user_details) LinearLayout mUserInfoParent;
+    private Button mFollowButton;
 
     @Nullable
     @Override
@@ -91,7 +94,43 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         mContributions.setListener(this);
         mContributions.loadUser(user.getLogin());
         Spanner.displayUser(mUserInfoParent, mUser);
+
+        if(!GitHubSession.getSession(getContext()).getUserLogin().equals(user.getLogin())) {
+            new Loader(getContext()).checkIfFollowing(this, user.getLogin());
+        }
         mRefresher.setRefreshing(false);
+    }
+
+    @Override
+    public void loadComplete(Boolean following) {
+        if(mFollowButton == null) {
+            mFollowButton = new Button(getContext());
+            mFollowButton.setBackground(null);
+            //mFollowButton.setBackgroundResource(android.R.attr.selectableItemBackground);
+            mFollowButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            mUserInfoParent.addView(mFollowButton);
+        }
+
+        if(following) {
+            mFollowButton.setText(R.string.text_unfollow_user);
+        } else {
+            mFollowButton.setText(R.string.text_follow_user);
+        }
+        mFollowButton.setOnClickListener(v -> {
+            mRefresher.setRefreshing(true);
+            if(following) {
+                new Loader(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
+            } else {
+                new Loader(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
+            }
+        });
+        mRefresher.setRefreshing(false);
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+        // We don't care
     }
 
     @Override

@@ -171,7 +171,8 @@
     </plurals>
     <string name="text_repo_forked">Forked from %1$s</string>
     <string name="text_repo_forked_multiple">Forked from %1$s with source of %2$s</string>
-
+    <string name="text_follow_user">Follow</string>
+    <string name="text_unfollow_user">Unfollow</string>
 
     <!--Issues activity -->
     <string name="text_assignee_all">All</string>

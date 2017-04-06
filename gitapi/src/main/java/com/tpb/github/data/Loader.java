@@ -955,6 +955,74 @@ public class Loader extends APIHandler {
                          });
     }
 
+    public void checkIfFollowing(@Nullable final ItemLoader<Boolean> listener, String user) {
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(listener != null) {
+                            if(response.code() == 204) {
+                                listener.loadComplete(true);
+                            } else if(response.code() == 404) {
+                                listener.loadComplete(false);
+                            }
+                        }
+
+                    }
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.i(TAG, "Follow " + anError.getErrorCode());
+                        if(listener != null) {
+                            if(anError.getErrorCode() == 404) {
+                                listener.loadComplete(false);
+                            } else {
+                                listener.loadError(parseError(anError));
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void followUser(@NonNull final ItemLoader<Boolean> listener, String user) {
+        AndroidNetworking.put(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.code() == 204) {
+                            listener.loadComplete(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        listener.loadError(parseError(anError));
+                    }
+                });
+    }
+
+    public void unfollowUser(@NonNull final ItemLoader<Boolean> listener, String user) {
+        AndroidNetworking.delete(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
+                         .addHeaders(API_AUTH_HEADERS)
+                         .build()
+                         .getAsOkHttpResponse(new OkHttpResponseListener() {
+                             @Override
+                             public void onResponse(Response response) {
+                                 if(response.code() == 204) {
+                                     listener.loadComplete(false);
+                                 }
+                             }
+
+                             @Override
+                             public void onError(ANError anError) {
+                                 listener.loadError(parseError(anError));
+                             }
+                         });
+    }
+
     public void renderMarkDown(@Nullable final ItemLoader<String> loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
