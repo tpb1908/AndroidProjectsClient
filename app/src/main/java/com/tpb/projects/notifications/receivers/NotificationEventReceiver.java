@@ -19,8 +19,9 @@ import java.util.Date;
 public class NotificationEventReceiver extends WakefulBroadcastReceiver {
 
     private static final String ACTION_START_NOTIFICATION_SERVICE = "ACTION_START_NOTIFICATION_SERVICE";
+    private static final String ACTION_NOTIFICATION_DISMISSED = "ACTION_NOTIFICATION_DISMISSED";
 
-    private static int NOTIFICATIONS_INTERVAL_IN_MINUTES = 2;
+    private static int NOTIFICATIONS_INTERVAL_IN_MINUTES = 1;
 
     public static void setUpdateInterval(@IntRange(from = 1, to = 60) int minutes) {
         NOTIFICATIONS_INTERVAL_IN_MINUTES = minutes;

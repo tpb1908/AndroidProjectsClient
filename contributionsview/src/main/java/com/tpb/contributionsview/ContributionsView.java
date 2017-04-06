@@ -315,3 +315,5 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
 }
+
+

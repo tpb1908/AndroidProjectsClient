@@ -1125,7 +1125,7 @@ public class Loader extends APIHandler {
 
     public void loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
         AndroidNetworking
-                .get(GIT_BASE + SEGMENT_NOTIFICATIONS + "?all=true" + (from == 0 ? "" : "?since=" + Util
+                .get(GIT_BASE + SEGMENT_NOTIFICATIONS + (from == 0 ? "" : "?since=" + Util
                         .toISO8061FromMilliseconds(from)))
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.HIGH)

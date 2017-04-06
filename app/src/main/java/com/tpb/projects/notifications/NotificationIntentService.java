@@ -31,6 +31,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
     private static final String TAG = NotificationIntentService.class.getSimpleName();
 
     private static final String ACTION_CHECK = "ACTION_CHECK";
+    private static final String ACTION_DELETE = "ACTION_DELETE";
 
     private Loader mLoader;
     private long mLastLoadedSuccessfully = 0;
@@ -45,16 +46,18 @@ public class NotificationIntentService extends IntentService implements Loader.L
         return intent;
     }
 
-
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if(intent == null) return;
         try {
-            String action = intent.getAction();
+            final String action = intent.getAction();
             if(ACTION_CHECK.equals(action)) {
                 loadNotifications();
+            } else if(ACTION_DELETE.equals(action)) {
+                markNotificationRead(intent);
             }
         } finally {
+            Logger.i(TAG, "onHandleIntent: " + intent.toString());
             WakefulBroadcastReceiver.completeWakefulIntent(intent);
         }
     }
@@ -64,6 +67,10 @@ public class NotificationIntentService extends IntentService implements Loader.L
         Logger.i(TAG, "loadNotifications: Timestamp " + Util
                 .toISO8061FromMilliseconds(mLastLoadedSuccessfully));
         mLoader.loadNotifications(this, mLastLoadedSuccessfully);
+    }
+
+    private void markNotificationRead(Intent intent) {
+        Logger.i(TAG, "markNotificationRead: Should me marking read");
     }
 
     private android.app.Notification buildNotification(Notification notif) {
@@ -139,13 +146,23 @@ public class NotificationIntentService extends IntentService implements Loader.L
         builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
         builder.setContentTitle(title);
         builder.setContentText(notif.getTitle());
+        builder.setAutoCancel(true);
+        builder.setDeleteIntent(generateDismissIntent(notif));
         builder.setGroup("GITHUB_GROUP");
         return builder.build();
     }
 
+    private PendingIntent generateDismissIntent(Notification notif) {
+        final Intent i = new Intent(NotificationIntentService.this, NotificationIntentService.class);
+        i.setAction(ACTION_DELETE);
+        i.putExtra("notification", notif);
+        return PendingIntent.getService(this, 53253, i, PendingIntent.FLAG_ONE_SHOT);
+
+    }
+
     @Override
     public void listLoadComplete(List<Notification> notifications) {
-        Logger.i(TAG, "listLoadComplete: " + notifications);
+        Logger.i(TAG, "listLoadComplete: " + notifications.size());
         mLastLoadedSuccessfully = Util.getUTCTimeInMillis();
         final NotificationManager manager = (NotificationManager) this
                 .getSystemService(Context.NOTIFICATION_SERVICE);
