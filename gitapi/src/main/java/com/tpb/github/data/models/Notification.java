@@ -45,10 +45,13 @@ public class Notification extends DataModel implements Parcelable {
 
     private String url;
 
+    private String threadUrl;
+
     public Notification(JSONObject obj) {
         try {
             id = obj.getLong(ID);
             reason = GitNotificationReason.fromString(obj.getString(REASON));
+            threadUrl = obj.getString(URL);
             if(obj.has(REPOSITORY)) repository = Repository.parse(obj.getJSONObject(REPOSITORY));
             unread = obj.getBoolean(UNREAD);
             try {
@@ -107,6 +110,10 @@ public class Notification extends DataModel implements Parcelable {
         return url;
     }
 
+    public String getThreadUrl() {
+        return threadUrl;
+    }
+
     @Override
     public String toString() {
         return "Notification{" +
@@ -119,9 +126,9 @@ public class Notification extends DataModel implements Parcelable {
                 ", title='" + title + '\'' +
                 ", type='" + type + '\'' +
                 ", url='" + url + '\'' +
+                ", threadUrl='" + threadUrl + '\'' +
                 '}';
     }
-
 
     public enum GitNotificationReason {
         ASSIGN,
@@ -149,6 +156,7 @@ public class Notification extends DataModel implements Parcelable {
 
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -165,6 +173,7 @@ public class Notification extends DataModel implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.type);
         dest.writeString(this.url);
+        dest.writeString(this.threadUrl);
         dest.writeLong(this.createdAt);
     }
 
@@ -179,10 +188,11 @@ public class Notification extends DataModel implements Parcelable {
         this.title = in.readString();
         this.type = in.readString();
         this.url = in.readString();
+        this.threadUrl = in.readString();
         this.createdAt = in.readLong();
     }
 
-    public static final Parcelable.Creator<Notification> CREATOR = new Parcelable.Creator<Notification>() {
+    public static final Creator<Notification> CREATOR = new Creator<Notification>() {
         @Override
         public Notification createFromParcel(Parcel source) {
             return new Notification(source);

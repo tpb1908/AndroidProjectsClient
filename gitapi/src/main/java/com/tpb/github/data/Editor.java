@@ -24,7 +24,9 @@ import org.json.JSONObject;
 
 import okhttp3.Response;
 
+import static com.androidnetworking.AndroidNetworking.patch;
 import static com.androidnetworking.AndroidNetworking.post;
+import static com.androidnetworking.AndroidNetworking.put;
 
 /**
  * Created by theo on 18/12/16.
@@ -53,6 +55,8 @@ public class Editor extends APIHandler {
     private static final String POSITION_AFTER = "after:";
     private static final String POSITION_TOP = "top";
     private static final String COLUMN_ID = "column_id";
+
+    private static final String SEGMENT_THREADS = "/threads";
 
 
     public Editor(Context context) {
@@ -809,6 +813,41 @@ public class Editor extends APIHandler {
                     }
                 });
 
+    }
+
+    public void markNotificationsRead() {
+        put(GIT_BASE + SEGMENT_NOTIFICATIONS )
+                .addHeaders(API_AUTH_HEADERS)
+                .addPathParameter("last_read_at", Util.toISO8061FromMilliseconds(Util.getUTCTimeInMillis()))
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.i(TAG, response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, anError.toString());
+                    }
+                });
+    }
+
+    public void markNotificationThreadRead(long id) {
+        patch(GIT_BASE + SEGMENT_NOTIFICATIONS + SEGMENT_THREADS + "/" + id)
+                .addHeaders(API_AUTH_HEADERS)
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.i(TAG, response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, anError.toString());
+                    }
+                });
     }
 
     public interface CreationListener<T> {

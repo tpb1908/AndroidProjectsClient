@@ -12,6 +12,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.NotificationCompat;
 
 import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.Util;
 import com.tpb.github.data.models.Notification;
@@ -53,8 +54,8 @@ public class NotificationIntentService extends IntentService implements Loader.L
             final String action = intent.getAction();
             if(ACTION_CHECK.equals(action)) {
                 loadNotifications();
-            } else if(ACTION_DELETE.equals(action)) {
-                markNotificationRead(intent);
+            } else if(ACTION_DELETE.equals(action) && intent.hasExtra("notification")) {
+                markNotificationRead(((Notification)intent.getParcelableExtra("notification")).getId());
             }
         } finally {
             Logger.i(TAG, "onHandleIntent: " + intent.toString());
@@ -69,8 +70,9 @@ public class NotificationIntentService extends IntentService implements Loader.L
         mLoader.loadNotifications(this, mLastLoadedSuccessfully);
     }
 
-    private void markNotificationRead(Intent intent) {
+    private void markNotificationRead(long id) {
         Logger.i(TAG, "markNotificationRead: Should me marking read");
+        new Editor(this).markNotificationThreadRead(id);
     }
 
     private android.app.Notification buildNotification(Notification notif) {
