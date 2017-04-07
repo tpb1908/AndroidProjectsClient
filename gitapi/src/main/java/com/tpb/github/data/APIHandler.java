@@ -1,7 +1,6 @@
 package com.tpb.github.data;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -65,40 +64,32 @@ public abstract class APIHandler {
         }
     }
 
-    protected void initHeaders() {
+    protected final void initHeaders() {
+        final String accessToken = mSession.getAccessToken();
         API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
-                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
         API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
 
         ORGANIZATIONS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
-                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
 
         PROJECTS_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
-                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        PROJECTS_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         PROJECTS_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
 
         LICENSES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
-                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REPO_LICENSE_PREVIEW_ACCEPT_HEADER);
 
         PAGES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
-                String.format(AUTHORIZATION_TOKEN_FORMAT, mSession.getAccessToken())
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        PAGES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ACCEPT_HEADER);
         PAGES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PAGES_PREVIEW_ACCEPT_HEADER);
-    }
-
-    public static boolean isNetworkAvailable(Context context) {
-        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getActiveNetworkInfo() != null;
     }
 
     private static final String CONNECTION_ERROR = "connectionError";
@@ -111,21 +102,17 @@ public abstract class APIHandler {
     public static final int HTTP_302_TEMPORARY_REDIRECT = 302; //Redirect for this request only
     public static final int HTTP_307_TEMPORARY_REDIRECT = 307; //Same as above
 
-    private static final int HTTP_BAD_REQUEST_400 = 400; //Bad request problems passing JSON
+    private static final int HTTP_BAD_REQUEST_400 = 400; //Bad request problems parsing JSON
 
     public static final String KEY_MESSAGE = "message";
     private static final String MESSAGE_BAD_CREDENTIALS = "Bad credentials";
     private static final int HTTP_UNAUTHORIZED_401 = 401; //Login required, account locked, permission error
 
-    private static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded. Please try again later.";
+    private static final String MESSAGE_MAX_LOGIN_ATTEMPTS = "Maximum number of login attempts exceeded.";
 
-    /*
-    Unauthenticated requests have a 60/h limit which is unusable for the app
-    Authenticated requests have a 5000/h limit
-     */
     public static final String KEY_HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset";
     private static final String MESSAGE_RATE_LIMIT_START = "API rate limit exceeded";
-    private static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism and have been temporarily blocked from content creation. Please retry your request again later.";
+    private static final String MESSAGE_ABUSE_LIMIT = "You have triggered an abuse detection mechanism";
     private static final int HTTP_FORBIDDEN_403 = 403; //Forbidden server locked or other reasons
 
     private static final int HTTP_NOT_FOUND_404 = 404;
@@ -141,7 +128,7 @@ public abstract class APIHandler {
     public static final String ERROR_MESSAGE_VALIDATION_MISSING_FIELD = "missing_field";
     public static final String ERROR_MESSAGE_VALIDATION_INVALID = "invalid";
     public static final String ERROR_MESSAGE_VALIDATION_ALREADY_EXISTS = "already_exists";
-    public static final String ERROR_MESSAGE_EMPTY_REPOSITORY = "Git Repository is empty.";
+    private static final String ERROR_MESSAGE_EMPTY_REPOSITORY = "Git Repository is empty.";
     private static final int HTTP_UNPROCESSABLE_422 = 422; // Validation failed
 
     //600 codes are server codes https://github.com/GleSYS/API/wiki/API-Error-codes#6xx---server
@@ -254,11 +241,6 @@ public abstract class APIHandler {
 
         APIError(@StringRes int resId) {
             this.resId = resId;
-        }
-
-        APIError(@StringRes int resId, @Nullable ANError error) {
-            this.resId = resId;
-            this.error = error;
         }
     }
 

@@ -26,13 +26,14 @@ public class OAuthHandler extends APIHandler {
     private final String mTokenUrl;
     private String mAccessToken;
 
-
     private static String mCallbackUrl = "";
     private static final String AUTH_URL = "https://gitHub.com/login/oauth/authorize?";
     private static final String TOKEN_URL = "https://gitHub.com/login/oauth/access_token?";
     private static final String SCOPE = "user public_repo repo gist";
     private static final String RATE_LIMIT = "/rate_limit";
 
+    private static final String TOKEN_URL_FORMAT = TOKEN_URL + "client_id=%1$s&client_secret=%2$s&redirect_uri=%3$s";
+    private static final String AUTH_URL_FORMAT = AUTH_URL + "client_id=%1$s&scope=%2$s&redirect_uri=%3$s";
 
     public OAuthHandler(Context context, String clientId, String clientSecret,
                         String callbackUrl) {
@@ -40,10 +41,8 @@ public class OAuthHandler extends APIHandler {
         mSession = GitHubSession.getSession(context);
         mAccessToken = mSession.getAccessToken();
         mCallbackUrl = callbackUrl;
-        mTokenUrl = TOKEN_URL + "client_id=" + clientId + "&client_secret="
-                + clientSecret + "&redirect_uri=" + mCallbackUrl;
-        mAuthUrl = AUTH_URL + "client_id=" + clientId + "&scope=" + SCOPE
-                + "&redirect_uri=" + mCallbackUrl;
+        mTokenUrl = String.format(TOKEN_URL_FORMAT, clientId, clientSecret, mCallbackUrl);
+        mAuthUrl = String.format(AUTH_URL_FORMAT, clientId, SCOPE, mCallbackUrl);
     }
 
     public interface OAuthLoginListener {
@@ -125,10 +124,6 @@ public class OAuthHandler extends APIHandler {
 
     public String getAuthUrl() {
         return mAuthUrl;
-    }
-
-    public String getUserName() {
-        return mSession.getUserLogin();
     }
 
     public void resetAccessToken() {

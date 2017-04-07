@@ -78,11 +78,6 @@ public class GitHubSession {
         return prefs.getInt(API_ID, -1);
     }
 
-    /**
-     * Get the OAuth access token
-     *
-     * @return Access token
-     */
     public String getAccessToken() {
         return prefs.getString(API_ACCESS_TOKEN, null);
     }

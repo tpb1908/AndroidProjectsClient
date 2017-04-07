@@ -67,7 +67,7 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
         if(getIntent().hasExtra(Intent.EXTRA_INTENT)) {
             mLaunchIntent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
         } else {
-            new Intent(LoginActivity.this, UserActivity.class);
+            mLaunchIntent = new Intent(LoginActivity.this, UserActivity.class);
         }
 
         CookieSyncManager.createInstance(this);
