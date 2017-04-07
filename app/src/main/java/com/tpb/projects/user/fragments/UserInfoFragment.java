@@ -118,6 +118,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             mFollowButton.setText(R.string.text_follow_user);
         }
         mFollowButton.setOnClickListener(v -> {
+            mFollowButton.setEnabled(false);
             mRefresher.setRefreshing(true);
             if(following) {
                 new Loader(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
@@ -125,6 +126,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 new Loader(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
             }
         });
+        mFollowButton.setEnabled(true);
         mRefresher.setRefreshing(false);
     }
 
