@@ -1,0 +1,3 @@
+[submodule "CWDoc"]
+	path = CWDoc
+	url = git@github.com:tpb1908/CWDoc
