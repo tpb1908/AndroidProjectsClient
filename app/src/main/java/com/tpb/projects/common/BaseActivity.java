@@ -6,8 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.tpb.github.data.auth.OAuthHandler;
-import com.tpb.projects.BuildConfig;
+import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.notifications.receivers.NotificationEventReceiver;
 import com.tpb.projects.util.UI;
@@ -23,26 +22,20 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final OAuthHandler OAuthHandler = new OAuthHandler(
-                this,
-                BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET,
-                BuildConfig.GITHUB_REDIRECT_URL
-        );
+
         if(!(this instanceof LoginActivity)) {
-            if(!OAuthHandler.hasAccessToken()) {
+            if(GitHubSession.getSession(this).hasAccessToken()) {
+                mHasAccess = true;
+                NotificationEventReceiver.setupAlarm(getApplicationContext());
+            } else {
                 mHasAccess = false;
                 final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(Intent.EXTRA_INTENT, getIntent());
                 startActivity(intent);
                 finish();
-            } else {
-                mHasAccess = true;
-                NotificationEventReceiver.setupAlarm(getApplicationContext());
             }
         }
-
     }
 
     @Override

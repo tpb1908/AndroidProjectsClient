@@ -44,7 +44,6 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
     @BindView(R.id.progress_spinner) ProgressBar mSpinner;
     @BindView(R.id.user_details) LinearLayout mUserDetails;
 
-
     private Intent mLaunchIntent;
 
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
@@ -59,10 +58,12 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        final OAuthHandler OAuthHandler = new OAuthHandler(this, BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET, BuildConfig.GITHUB_REDIRECT_URL
+        final OAuthHandler OAuthHandler = new OAuthHandler(this,
+                BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET,
+                BuildConfig.GITHUB_REDIRECT_URL,
+                this
         );
-        OAuthHandler.setListener(this);
 
         if(getIntent().hasExtra(Intent.EXTRA_INTENT)) {
             mLaunchIntent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
@@ -70,12 +71,9 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
             mLaunchIntent = new Intent(LoginActivity.this, UserActivity.class);
         }
 
-        CookieSyncManager.createInstance(this);
-        final CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.removeAllCookie();
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-        mWebView.setWebViewClient(new OAuthWebViewClient(OAuthHandler.getListener()));
+        mWebView.setWebViewClient(new OAuthWebViewClient(OAuthHandler));
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(OAuthHandler.getAuthUrl());
         mWebView.setLayoutParams(FILL);
@@ -98,14 +96,14 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
     @Override
     public void userLoaded(User user) {
         mSpinner.setVisibility(View.GONE);
-
         Spanner.displayUser(ButterKnife.findById(this, R.id.user_details), user);
-
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-
         new Handler().postDelayed(() -> {
+            CookieSyncManager.createInstance(this);
+            final CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
             startActivity(mLaunchIntent);
             finish();
         }, 1500);
@@ -124,19 +122,10 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
 
 
     private class OAuthWebViewClient extends WebViewClient {
-        private final OAuthHandler.OAuthLoginListener mListener;
+        private final OAuthHandler mAuthHandler;
 
-        OAuthWebViewClient(OAuthHandler.OAuthLoginListener listener) {
-            mListener = listener;
-        }
-
-
-        @Override
-        public void onReceivedError(WebView view, int errorCode,
-                                    String description, String failingUrl) {
-
-            super.onReceivedError(view, errorCode, description, failingUrl);
-            mListener.onError(description);
+        OAuthWebViewClient(OAuthHandler handler) {
+            mAuthHandler = handler;
         }
 
         @Override
@@ -151,7 +140,7 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             if(url.contains("?code=")) {
                 final String[] parts = url.split("=");
-                mListener.onCodeCollected(parts[1]);
+                mAuthHandler.getAccessToken(parts[1]);
             }
             super.onPageStarted(view, url, favicon);
         }

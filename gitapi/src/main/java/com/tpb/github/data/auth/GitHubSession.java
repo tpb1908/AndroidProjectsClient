@@ -2,6 +2,7 @@ package com.tpb.github.data.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.tpb.github.data.models.User;
 
@@ -38,7 +39,7 @@ public class GitHubSession {
         editor.apply();
     }
 
-    void storeAccessToken(String accessToken) {
+    void storeAccessToken(@NonNull String accessToken) {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putString(API_ACCESS_TOKEN, accessToken);
         editor.apply();
@@ -57,12 +58,12 @@ public class GitHubSession {
         return prefs.getString(API_LOGIN, null);
     }
 
-    public int getUserId() {
-        return prefs.getInt(API_ID, -1);
-    }
-
     public String getAccessToken() {
         return prefs.getString(API_ACCESS_TOKEN, null);
+    }
+
+    public boolean hasAccessToken() {
+        return getAccessToken() != null;
     }
 
 }
