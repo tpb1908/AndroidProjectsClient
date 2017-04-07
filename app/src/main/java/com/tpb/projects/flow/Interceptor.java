@@ -28,7 +28,6 @@ import java.util.List;
 
 public class Interceptor extends Activity {
     private static final String TAG = Interceptor.class.getSimpleName();
-
     private Intent failIntent;
 
     @Override

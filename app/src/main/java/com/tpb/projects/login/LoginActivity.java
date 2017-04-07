@@ -25,6 +25,7 @@ import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
+import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -96,7 +97,7 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
     @Override
     public void userLoaded(User user) {
         mSpinner.setVisibility(View.GONE);
-        Spanner.displayUser(ButterKnife.findById(this, R.id.user_details), user);
+        Spanner.displayUser(mUserDetails, user);
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
@@ -104,7 +105,9 @@ public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAut
             CookieSyncManager.createInstance(this);
             final CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.removeAllCookie();
+            Logger.i(TAG, "userLoaded: Launching: " + mLaunchIntent);
             startActivity(mLaunchIntent);
+            overridePendingTransition(R.anim.slide_up, R.anim.none);
             finish();
         }, 1500);
     }

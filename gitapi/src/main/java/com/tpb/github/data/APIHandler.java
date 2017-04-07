@@ -34,7 +34,7 @@ public abstract class APIHandler {
     static final HashMap<String, String> LICENSES_API_API_AUTH_HEADERS = new HashMap<>();
     static final HashMap<String, String> PAGES_API_API_AUTH_HEADERS = new HashMap<>();
 
-    static final String SEGMENT_USER = "/user";
+    protected static final String SEGMENT_USER = "/user";
     static final String SEGMENT_USERS = "/users";
     static final String SEGMENT_REPOS = "/repos";
     static final String SEGMENT_README = "/readme";

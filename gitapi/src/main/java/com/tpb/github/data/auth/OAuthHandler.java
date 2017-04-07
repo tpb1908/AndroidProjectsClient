@@ -66,7 +66,7 @@ public class OAuthHandler extends APIHandler {
     }
 
     private void fetchUser() {
-        AndroidNetworking.get(GIT_BASE + "/user")
+        AndroidNetworking.get(GIT_BASE + SEGMENT_USER)
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
                          .getAsJSONObject(new JSONObjectRequestListener() {

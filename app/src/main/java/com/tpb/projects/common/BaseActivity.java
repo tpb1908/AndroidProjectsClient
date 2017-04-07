@@ -31,7 +31,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 mHasAccess = false;
                 final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(Intent.EXTRA_INTENT, getIntent());
+                if(getIntent() != null && !getIntent().getAction().equals(Intent.ACTION_MAIN)) {
+                    intent.putExtra(Intent.EXTRA_INTENT, getIntent());
+                }
                 startActivity(intent);
                 finish();
             }
