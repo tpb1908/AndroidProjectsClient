@@ -202,6 +202,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     @Override
     public void listLoadError(APIHandler.APIError error) {
         mIsLoading = false;
+        mRefresher.setRefreshing(false);
     }
 
     private void ensureLoadOfPinnedRepos() {

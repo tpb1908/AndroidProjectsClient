@@ -57,15 +57,17 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
                 }
             }
         });
-
+        mAreViewsValid = true;
+        if(mUser != null) userLoaded(mUser);
         return view;
     }
 
 
     @Override
     public void userLoaded(User user) {
-        mAdapter.setUser(user.getLogin(), true);
         mUser = user;
+        if(!mAreViewsValid) return;
+        mAdapter.setUser(user.getLogin(), true);
     }
 
     @Override

@@ -51,15 +51,16 @@ public class UserFollowingFragment extends UserFragment {
                 }
             }
         });
-
         mAreViewsValid = true;
+        if(mUser != null) userLoaded(mUser);
         return view;
     }
 
     @Override
     public void userLoaded(User user) {
-        mAdapter.setUser(user.getLogin(), false);
         mUser = user;
+        if(!mAreViewsValid) return;
+        mAdapter.setUser(user.getLogin(), false);
     }
 
     @Override

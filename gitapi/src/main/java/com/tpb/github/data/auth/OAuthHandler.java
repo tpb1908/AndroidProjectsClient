@@ -97,11 +97,7 @@ public class OAuthHandler extends APIHandler {
                              @Override
                              public void onResponse(JSONObject response) {
                                  mSession.storeUser(response);
-                                 final User user = mSession.getUser();
-                                 mSession.storeCredentials(mAccessToken, user.getId(),
-                                         user.getLogin()
-                                 );
-                                 mListener.userLoaded(user);
+                                 mListener.userLoaded(mSession.getUser());
                              }
 
                              @Override
@@ -124,13 +120,6 @@ public class OAuthHandler extends APIHandler {
 
     public String getAuthUrl() {
         return mAuthUrl;
-    }
-
-    public void resetAccessToken() {
-        if(mAccessToken != null) {
-            mSession.resetAccessToken();
-            mAccessToken = null;
-        }
     }
 
     //https://developer.github.com/v3/oauth_authorizations/#check-an-authorization

@@ -59,13 +59,15 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
             }
         });
         mAreViewsValid = true;
+        if(mUser != null) userLoaded(mUser);
         return view;
     }
 
     @Override
     public void userLoaded(User user) {
-        mAdapter.setUser(user.getLogin(), false);
         mUser = user;
+        if(!mAreViewsValid) return;;
+        mAdapter.setUser(user.getLogin(), false);
     }
 
     @Override

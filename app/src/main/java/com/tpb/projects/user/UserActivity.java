@@ -50,6 +50,7 @@ public class UserActivity extends CircularRevealActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!mHasAccess) return;
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
                 .getPreferences(this);
         setTheme(
@@ -59,6 +60,7 @@ public class UserActivity extends CircularRevealActivity {
         ButterKnife.bind(this);
         postponeEnterTransition();
 
+        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         final String user;
         final Loader loader = new Loader(this);
 
@@ -83,24 +85,10 @@ public class UserActivity extends CircularRevealActivity {
                 findViewById(R.id.back_button).setVisibility(View.GONE);
             }
             final GitHubSession session = GitHubSession.getSession(this);
+            mUser = session.getUser();
             mTitle.setText(session.getUserLogin());
-            loader.loadAuthenticatedUser(new Loader.ItemLoader<User>() {
-                @Override
-                public void loadComplete(User user) {
-                    mUser = user;
-                    mAdapter.notifyUserLoaded();
-                    mTitle.setText(user.getLogin());
-                    session.updateUserLogin(user.getLogin());
-                }
-
-                @Override
-                public void loadError(APIHandler.APIError error) {
-
-                }
-            });
-
+            mAdapter.notifyUserLoaded();
         }
-        if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(7);

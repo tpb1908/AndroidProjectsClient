@@ -51,19 +51,15 @@ public class UserFollowersFragment extends UserFragment {
             }
         });
         mAreViewsValid = true;
+        if(mUser != null) userLoaded(mUser);
         return view;
     }
 
     @Override
-    public void onResume() {
-        mRecycler.getRecycledViewPool().clear();
-        super.onResume();
-    }
-
-    @Override
     public void userLoaded(User user) {
-        mAdapter.setUser(user.getLogin(), true);
         mUser = user;
+        if(!mAreViewsValid) return;
+        mAdapter.setUser(user.getLogin(), true);
     }
 
     @Override

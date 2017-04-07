@@ -84,13 +84,14 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 }, getParent().getUser().getLogin()));
 
         mAreViewsValid = true;
+        if(mUser != null)  userLoaded(mUser);
         return view;
     }
 
     @Override
     public void userLoaded(User user) {
-        if(getActivity() == null) return;
         mUser = user;
+        if(!mAreViewsValid) return;
         mContributions.setListener(this);
         mContributions.loadUser(user.getLogin());
         Spanner.displayUser(mUserInfoParent, mUser);

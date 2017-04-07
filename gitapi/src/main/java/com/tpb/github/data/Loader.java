@@ -220,20 +220,17 @@ public class Loader extends APIHandler {
     }
 
     public void loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
-        Log.i(TAG, "Loading " + GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES);
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES)
                          .addHeaders(PAGES_API_API_AUTH_HEADERS)
                          .build()
                          .getAsJSONObject(new JSONObjectRequestListener() {
                              @Override
                              public void onResponse(JSONObject response) {
-                                 Log.i(TAG, "Page response " + response.toString());
                                  loader.loadComplete(new Page(response));
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 Log.i(TAG, "Page response " + anError.getMessage());
                                  loader.loadError(parseError(anError));
                              }
                          });

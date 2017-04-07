@@ -18,6 +18,8 @@ import com.tpb.projects.util.UI;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+    public boolean mHasAccess = true;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +29,20 @@ public abstract class BaseActivity extends AppCompatActivity {
                 BuildConfig.GITHUB_CLIENT_SECRET,
                 BuildConfig.GITHUB_REDIRECT_URL
         );
-        if(!OAuthHandler.hasAccessToken() && !(this instanceof LoginActivity)) {
-            final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_INTENT, getIntent());
-            startActivity(intent);
-        } else {
-            NotificationEventReceiver.setupAlarm(getApplicationContext());
+        if(!(this instanceof LoginActivity)) {
+            if(!OAuthHandler.hasAccessToken()) {
+                mHasAccess = false;
+                final Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(Intent.EXTRA_INTENT, getIntent());
+                startActivity(intent);
+                finish();
+            } else {
+                mHasAccess = true;
+                NotificationEventReceiver.setupAlarm(getApplicationContext());
+            }
         }
+
     }
 
     @Override
