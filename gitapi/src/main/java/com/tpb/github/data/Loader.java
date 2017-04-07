@@ -553,7 +553,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void loadIssue(@Nullable final ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
+    public void loadIssue(@NonNull final ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
@@ -562,12 +562,12 @@ public class Loader extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(loader != null) loader.loadComplete(Issue.parse(response));
+                        loader.loadComplete(Issue.parse(response));
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.loadError(parseError(anError));
+                        loader.loadError(parseError(anError));
                     }
                 });
     }

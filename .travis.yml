@@ -11,6 +11,14 @@ sudo: true
 #  - echo y | android update sdk -u -a -t extra-google-m2repository
 #  - echo y | android update sdk -u -a -t extra-android-m2repository
 
+# Handle git submodules yourself
+git:
+    submodules: false
+# Use sed to replace the SSH URL with the public URL, then initialize submodules
+before_install:
+    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
+
 android:
   components:
 

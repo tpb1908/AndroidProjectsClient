@@ -34,7 +34,6 @@ public class IssueEvent extends DataModel implements Parcelable {
     private String commitUrl;
 
     private static final String LABEL = "label";
-    private static final String NAME = "name";
     private String labelName;
     private static final String COLOR = "color";
     private int labelColor;
