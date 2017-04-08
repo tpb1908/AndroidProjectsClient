@@ -21,6 +21,8 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Page;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.User;
+import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.common.fab.FloatingActionButton;
@@ -53,6 +55,7 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.repo_info_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.user_avatar) NetworkImageView mAvatar;
     @BindView(R.id.user_name) TextView mUserName;
+    @BindView(R.id.repo_description) MarkdownTextView mDescription;
     @BindView(R.id.repo_collaborators) LinearLayout mCollaborators;
     @BindView(R.id.repo_contributors) LinearLayout mContributors;
 
@@ -105,6 +108,12 @@ public class RepoInfoFragment extends RepoFragment {
         mForks.setText(String.valueOf(repo.getForks()));
         mSize.setText(Util.formatKB(repo.getSize()));
         mStars.setText(String.valueOf(repo.getStarGazers()));
+        if(Util.isNotNullOrEmpty(mRepo.getDescription())) {
+            mDescription.setVisibility(View.VISIBLE);
+            mDescription.setMarkdown(Markdown.formatMD(mRepo.getDescription(), mRepo.getFullName()));
+        } else {
+            mDescription.setVisibility(View.GONE);
+        }
         if(mRepo.hasLicense()) {
             mLicense.setText(repo.getLicenseShortName());
         } else {

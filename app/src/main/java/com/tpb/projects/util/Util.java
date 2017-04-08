@@ -4,10 +4,12 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.text.format.DateFormat;
 import android.widget.EditText;
 
+import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Repository;
 
 import java.text.SimpleDateFormat;
@@ -105,6 +107,10 @@ public class Util {
         if(b < 1024 * 1024) return String.format("%.2f", b / 1024f) + " KB";
         if(b < 1024 * 1024 * 1024) return String.format("%.2f", b / (1024f * 1024f)) + " MB";
         return String.format("%.2f", b / (1024f * 1024f * 1024f)) + " GB";
+    }
+
+    public static boolean isNotNullOrEmpty(@Nullable String s) {
+        return s != null && !s.isEmpty() && !DataModel.JSON_NULL.equals(s);
     }
 
     //http://stackoverflow.com/a/10621553/4191572

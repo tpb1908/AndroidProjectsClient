@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
-import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.views.MarkdownTextView;
@@ -117,13 +116,13 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
                 (r.getUserLogin().equals(mUser) ? r.getName() : r.getFullName()) + (r
                         .isFork() ? " (Forked) " : "")
         );
-        if(!DataModel.JSON_NULL.equals(r.getLanguage())) {
+        if(Util.isNotNullOrEmpty(r.getLanguage())) {
             holder.mLanguage.setVisibility(View.VISIBLE);
             holder.mLanguage.setText(r.getLanguage());
         } else {
             holder.mLanguage.setVisibility(View.GONE);
         }
-        if(!DataModel.JSON_NULL.equals(r.getDescription())) {
+        if(Util.isNotNullOrEmpty(r.getDescription())) {
             holder.mDescription.setVisibility(View.VISIBLE);
             holder.mDescription.setMarkdown(Markdown.formatMD(r.getDescription(), r.getFullName()));
         } else {

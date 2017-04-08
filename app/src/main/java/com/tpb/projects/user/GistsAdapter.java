@@ -11,10 +11,10 @@ import android.widget.TextView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
-import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Gist;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,9 +135,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
             holder.mTitle.setText(g.getFiles()[0].getName());
             holder.mAvatar.setVisibility(View.GONE);
         }
-        if(g.getDescription() != null &&
-                !DataModel.JSON_NULL.equals(g.getDescription()) &&
-                !g.getDescription().isEmpty()) {
+        if(Util.isNotNullOrEmpty(g.getDescription())) {
             holder.mInfo.setVisibility(View.VISIBLE);
             holder.mInfo.setText(g.getDescription());
         } else {

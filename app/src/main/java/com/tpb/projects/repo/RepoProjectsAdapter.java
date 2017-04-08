@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
-import com.tpb.github.data.models.DataModel;
 import com.tpb.github.data.models.Project;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
@@ -22,6 +21,7 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.fragments.RepoProjectsFragment;
+import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,10 +116,10 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
                         DateUtils.getRelativeTimeSpanString(p.getUpdatedAt())
                 )
         );
-        if(!(DataModel.JSON_NULL.equals(p.getBody()) || p.getBody().isEmpty())) {
+        if(Util.isNotNullOrEmpty(p.getBody())) {
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setMarkdown(
-                    mProjects.get(holder.getAdapterPosition()).getBody(),
+                    p.getBody(),
                     new HttpImageGetter(holder.mBody, holder.mBody),
                     null
             );
