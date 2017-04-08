@@ -124,7 +124,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      */
     private int tableTagLevel = 0;
 
-    private static final int indent = 10;
+    private static int indent = 10;
     private static final int listItemIndent = indent * 2;
     private static final BulletSpan bullet = new BulletSpan(indent);
     private ClickableTableSpan clickableTableSpan;
@@ -135,10 +135,10 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
         mTextPaint = tv.getPaint();
+        indent = (int) mTextPaint.measureText("tt");
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
     }
-
 
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
@@ -246,17 +246,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                         }
 
                         if(lists.peek().second) {
-                            // Nested BulletSpans increases distance between bullet and text, so we must prevent it.
-                            int bulletMargin = indent;
-                            if(lists.size() > 1) {
-                                bulletMargin = indent - bullet.getLeadingMargin(true);
-                                if(lists.size() > 2) {
-                                    // This gets more complicated when we add a LeadingMarginSpan into the same line:
-                                    // we have also counter it's effect to BulletSpan
-                                    bulletMargin -= (lists.size() - 2) * listItemIndent;
-                                }
-                            }
-
                             //Check for checkboxes
                             if(output.length() > 2 &&
                                     ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
@@ -272,7 +261,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                                 end(output, Ul.class, false,
                                         new LeadingMarginSpan.Standard(
                                                 listItemIndent * (lists.size() - 1)),
-                                        new BulletSpan(bulletMargin)
+                                        new BulletSpan(indent)
                                 );
                             }
                         } else {
