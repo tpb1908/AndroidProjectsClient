@@ -23,7 +23,7 @@ public class ListNumberSpan implements LeadingMarginSpan {
 
     public ListNumberSpan(TextPaint textPaint, int number, ListType type) {
         mNumber = ListType.getFormattedNumber(number, type).concat(". ");
-        mTextWidth = (int) textPaint.measureText(mNumber);
+        mTextWidth = (int) textPaint.measureText(type.start + mNumber);
     }
 
     @Override
