@@ -126,7 +126,6 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static int indent = 10;
     private static final int listItemIndent = indent * 2;
-    private static final BulletSpan bullet = new BulletSpan(indent);
     private ClickableTableSpan clickableTableSpan;
     private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
@@ -135,7 +134,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
         mTextPaint = tv.getPaint();
-        indent = (int) mTextPaint.measureText("tt");
+        indent = (int) mTextPaint.measureText("t");
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
     }
@@ -151,8 +150,6 @@ public class HtmlTagHandler implements Html.TagHandler {
     }
 
     private void handleOpeningTag(final String tag, Editable output, final XMLReader xmlReader) {
-        // opening tag
-
         if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
             lists.push(
                     new Triple<>(
@@ -164,16 +161,17 @@ public class HtmlTagHandler implements Html.TagHandler {
                     )
             );
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
+            final ListNumberSpan.ListType type =  ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""));
             lists.push(
                     new Triple<>(
                             tag,
                             safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
                                     true
                             ),
-                            ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""))
+                            type
                     )
             );
-            olNextIndex.push(Pair.create(1, ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""))));
+            olNextIndex.push(Pair.create(1, type));
         } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                 output.append("\n");
@@ -188,11 +186,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 }
             } else {
                 start(output, new Ol());
-                if(olNextIndex.isEmpty()) {
-                    olNextIndex.push(Pair.create(0, ListNumberSpan.ListType.NUMBER));
-                }
-                final Pair<Integer, ListNumberSpan.ListType> p = olNextIndex.pop();
-                olNextIndex.push(Pair.create(p.first + 1, p.second));
+                olNextIndex.push(Pair.create(1, ListNumberSpan.ListType.NUMBER));
             }
         } else if(tag.equalsIgnoreCase("code")) {
             start(output, new Code());
