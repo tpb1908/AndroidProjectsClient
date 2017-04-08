@@ -22,6 +22,7 @@ package com.tpb.mdtext;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Layout;
@@ -36,7 +37,6 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.TextView;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
@@ -47,7 +47,7 @@ import com.tpb.mdtext.views.spans.CodeSpan;
 import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
 import com.tpb.mdtext.views.spans.HorizontalRuleSpan;
 import com.tpb.mdtext.views.spans.InlineCodeSpan;
-import com.tpb.mdtext.views.spans.NumberSpan;
+import com.tpb.mdtext.views.spans.ListNumberSpan;
 import com.tpb.mdtext.views.spans.QuoteSpan;
 import com.tpb.mdtext.views.spans.RoundedBackgroundEndSpan;
 
@@ -111,12 +111,12 @@ public class HtmlTagHandler implements Html.TagHandler {
      * Keeps track of lists (ol, ul). On bottom of Stack is the outermost list
      * and on top of Stack is the most nested list
      */
-    private final Stack<Pair<String, Boolean>> lists = new Stack<>();
+    private final Stack<Triple<String, Boolean, ListNumberSpan.ListType>> lists = new Stack<>();
     /**
      * Tracks indexes of ordered lists so that after a nested list ends
      * we can continue with correct index of outer list
      */
-    private final Stack<Integer> olNextIndex = new Stack<>();
+    private final Stack<Pair<Integer, ListNumberSpan.ListType>> olNextIndex = new Stack<>();
 
     private StringBuilder tableHtmlBuilder = new StringBuilder();
     /**
@@ -147,23 +147,25 @@ public class HtmlTagHandler implements Html.TagHandler {
 
             if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                 lists.push(
-                        Pair.create(
+                        new Triple<>(
                                 tag,
                                 safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
                                         true
-                                )
+                                ),
+                                ListNumberSpan.ListType.NUMBER
                         )
                 );
             } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                 lists.push(
-                        Pair.create(
+                        new Triple<>(
                                 tag,
                                 safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
                                         true
-                                )
+                                ),
+                                ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""))
                         )
                 );
-                olNextIndex.push(1);
+                olNextIndex.push(Pair.create(1, ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""))));
             } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
                 if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                     output.append("\n");
@@ -172,16 +174,16 @@ public class HtmlTagHandler implements Html.TagHandler {
                     String parentList = lists.peek().first;
                     if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                         start(output, new Ol());
-                        olNextIndex.push(olNextIndex.pop() + 1);
+                        olNextIndex.push(Pair.create(olNextIndex.pop().first + 1, lists.peek().third));
                     } else if(parentList.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                         start(output, new Ul());
                     }
                 } else {
                     start(output, new Ol());
                     if(olNextIndex.isEmpty()) {
-                        olNextIndex.push(0);
+                        olNextIndex.push(Pair.create(0, ListNumberSpan.ListType.NUMBER));
                     }
-                    olNextIndex.push(olNextIndex.pop() + 1);
+                    olNextIndex.push(Pair.create(olNextIndex.pop().first + 1, olNextIndex.pop().second));
                 }
             } else if(tag.equalsIgnoreCase("code")) {
                 start(output, new Code());
@@ -285,7 +287,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                         if(lists.peek().second) {
                             end(output, Ol.class, false,
                                     new LeadingMarginSpan.Standard(numberMargin),
-                                    new NumberSpan(mTextPaint, olNextIndex.lastElement() - 1)
+                                    new ListNumberSpan(mTextPaint, olNextIndex.lastElement().first - 1,
+                                            lists.peek().third)
                             );
                         } else {
                             end(output, Ol.class, false,
@@ -680,6 +683,20 @@ public class HtmlTagHandler implements Html.TagHandler {
         Font(String face) {
             this.face = face;
         }
+    }
+
+    private static class Triple<T, U, V> {
+
+        T first;
+        U second;
+        V third;
+
+        Triple(T t, U u, V v) {
+            first = t;
+            second = u;
+            third = v;
+        }
+
     }
 
 }
