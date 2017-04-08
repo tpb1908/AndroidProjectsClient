@@ -35,6 +35,7 @@ public class InlineCodeSpan extends ReplacementSpan {
     public void updateDrawState(TextPaint tp) {
         tp.setTextSize(mTextSize);
         tp.setTypeface(Typeface.MONOSPACE);
+
     }
 
     @Override
@@ -43,7 +44,7 @@ public class InlineCodeSpan extends ReplacementSpan {
                        @IntRange(from = 0) int start,
                        @IntRange(from = 0) int end,
                        @Nullable Paint.FontMetricsInt fm) {
-        mPadding = paint.measureText("t");
+        mPadding = paint.measureText("c");
         mWidth = (int) (paint.measureText(text, start, end) + padding * 2);
         return mWidth;
     }
@@ -61,7 +62,7 @@ public class InlineCodeSpan extends ReplacementSpan {
         final int leading = paint.getFontMetricsInt().leading;
         mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
         mDrawable.draw(canvas);
-        // Log.i(InlineCodeSpan.class.getSimpleName(), "draw: From " + start + " to " + end + " string " + text.subSequence(start, end));
+
         canvas.drawText(text, start, end, x + mPadding, y, paint);
     }
 

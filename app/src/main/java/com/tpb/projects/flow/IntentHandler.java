@@ -12,6 +12,7 @@ import android.view.View;
 import com.tpb.github.data.models.Commit;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
@@ -20,7 +21,6 @@ import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.Util;
 
 /**
  * Created by theo on 24/02/17.
@@ -31,7 +31,7 @@ public class IntentHandler {
 
     public static void addOnClickHandler(Activity activity, MarkdownTextView tv) {
         tv.setLinkClickHandler(url -> {
-            if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
+            if(url.startsWith("https://github.com/") && TextUtils.instancesOf(url, "/") == 3) {
                 openUser(activity, tv, url.substring(url.lastIndexOf('/') + 1));
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
                 openIssue(activity, tv, url);
@@ -52,7 +52,7 @@ public class IntentHandler {
 
     public static void addOnClickHandler(Activity activity, MarkdownTextView tv, NetworkImageView iv, @Nullable CardView cv, Issue issue) {
         tv.setLinkClickHandler(url -> {
-            if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
+            if(url.startsWith("https://github.com/") && TextUtils.instancesOf(url, "/") == 3) {
                 if(issue.getOpenedBy().getLogin().equals(url.substring(url.lastIndexOf('/') + 1))) {
                     openUser(activity, iv, issue.getOpenedBy().getLogin());
                 } else {
@@ -69,7 +69,7 @@ public class IntentHandler {
 
     public static void addOnClickHandler(Activity activity, MarkdownTextView tv, NetworkImageView iv, String login) {
         tv.setLinkClickHandler(url -> {
-            if(url.startsWith("https://github.com/") && Util.instancesOf(url, "/") == 3) {
+            if(url.startsWith("https://github.com/") && TextUtils.instancesOf(url, "/") == 3) {
                 openUser(activity, iv, login);
             } else if(url.startsWith("https://github.com/") & url.contains("/issues")) {
                 openIssue(activity, tv, url);

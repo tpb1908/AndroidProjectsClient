@@ -160,7 +160,6 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
-
                 final Spanned text;
                 if(removeFromHtmlSpace) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

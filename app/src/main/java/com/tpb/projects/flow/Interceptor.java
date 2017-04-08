@@ -133,7 +133,6 @@ public class Interceptor extends Activity {
                             i.setClass(Interceptor.this, RepoActivity.class);
                         }
                 }
-
                 if(i.getComponent() != null && i.getComponent().getClassName() != null) {
                     startActivity(i);
                     overridePendingTransition(R.anim.slide_up, R.anim.none);

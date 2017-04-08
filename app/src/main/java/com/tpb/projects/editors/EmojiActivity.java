@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.tpb.mdtext.TextUtils;
 import com.tpb.projects.R;
 import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
@@ -141,7 +141,7 @@ public class EmojiActivity extends BaseActivity {
                 final int index = current.indexOf(emoji);
                 current = current.substring(0, index) + current.substring(index + emoji.length());
             }
-            if(Util.instancesOf(current, ",") > 5) {
+            if(TextUtils.instancesOf(current, ",") > 5) {
                 current = current.substring(current.indexOf(',') + 1);
             }
             common += current;

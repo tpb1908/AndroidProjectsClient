@@ -133,25 +133,6 @@ public class Util {
         return DateFormat.getMediumDateFormat(context).format(date);
     }
 
-    /**
-     * Counts the instances of a string within another string
-     *
-     * @param s1 The string to search
-     * @param s2 The string to count instances of
-     * @return The number of instances of s2 in s1
-     */
-    public static int instancesOf(@NonNull String s1, @NonNull String s2) {
-        int last = 0;
-        int count = 0;
-        while(last != -1) {
-            last = s1.indexOf(s2, last);
-            if(last != -1) {
-                count++;
-                last += s2.length();
-            }
-        }
-        return count;
-    }
 
     /**
      * @return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP

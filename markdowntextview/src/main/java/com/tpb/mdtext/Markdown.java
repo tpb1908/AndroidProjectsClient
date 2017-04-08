@@ -3,6 +3,7 @@ package com.tpb.mdtext;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
+import android.util.Log;
 
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
@@ -37,6 +38,7 @@ import static android.webkit.URLUtil.isValidUrl;
  */
 
 public class Markdown {
+    private static final String TAG = Markdown.class.getSimpleName();
 
     private Markdown() {
     }
@@ -69,6 +71,12 @@ public class Markdown {
             nodeTypes.add(Code.class);
             nodeTypes.add(Strikethrough.class);
             nodeTypes.add(Image.class);
+        }
+
+        private static Map<String, String> codeBackgroundAttrs = new HashMap<>();
+        static {
+            codeBackgroundAttrs.put("bgcolor", "#808080");
+            codeBackgroundAttrs.put("face", "monospace");
         }
 
         BlockRenderer(HtmlNodeRendererContext context) {
@@ -111,12 +119,18 @@ public class Markdown {
                         block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;")
                 ));
                 html.tag("/code");
-                html.tag("br");
             } else if(node instanceof Code) {
-                html.tag("inlinecode");
-                html.raw(((Code) node).getLiteral().replace(" ", "&nbsp;"));
-                html.tag("/inlinecode");
-                html.tag("br");
+                final String literal = ((Code) node).getLiteral();
+                if(TextUtils.instancesOf(literal, "\n") == 0) {
+                    html.tag("font", codeBackgroundAttrs);
+                    html.text(literal);
+                    html.tag("/font");
+                } else {
+                    html.tag("inlinecode");
+                    html.raw(literal.replace(" ", "&nbsp;"));
+                    html.tag("/inlinecode");
+                }
+
             } else if(node instanceof Strikethrough) {
                 html.line();
                 html.tag("s"); //Proper tag

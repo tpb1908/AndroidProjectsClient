@@ -392,7 +392,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final int len = output.length();
                 output.removeSpan(obj);
                 output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
                 );
             } else if(tag.equalsIgnoreCase(FONT_TAG)) {
                 final ForegroundColor fgc = getLast(output, ForegroundColor.class);
@@ -426,7 +426,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                         );
                     } else {
                         output.setSpan(new BackgroundColorSpan(color), where, len,
-                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                         );
                     }
 
