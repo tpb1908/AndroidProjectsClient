@@ -109,9 +109,6 @@ public class Interceptor extends Activity {
                     default:
                         if("tree".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, ContentActivity.class);
-                            i.putExtra(getString(R.string.intent_repo),
-                                    segments.get(0) + "/" + segments.get(1)
-                            );
                             final StringBuilder path = new StringBuilder();
                             for(int j = 3; j < segments.size(); j++) {
                                 path.append(segments.get(j));
@@ -132,9 +129,12 @@ public class Interceptor extends Activity {
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
                             );
+                        } else if("releases".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, RepoActivity.class);
                         }
                 }
-                if(i.getClass() != null) {
+
+                if(i.getComponent() != null && i.getComponent().getClassName() != null) {
                     startActivity(i);
                     overridePendingTransition(R.anim.slide_up, R.anim.none);
                     finish();
