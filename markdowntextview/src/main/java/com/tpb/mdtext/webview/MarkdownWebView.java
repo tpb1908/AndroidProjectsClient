@@ -1,4 +1,4 @@
-package com.mittsu.markedview;
+package com.tpb.mdtext.webview;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -8,7 +8,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.webkit.JavascriptInterface;
@@ -17,13 +16,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
- * The MarkedView is the Markdown viewer.
- * <p>
- * Created by mittsu on 2016/04/25.
+ * Created by theo on 08/04/17.
  */
-public final class MarkedView extends WebView implements NestedScrollingChild {
 
-    private static final String TAG = MarkedView.class.getSimpleName();
+public final class MarkdownWebView extends WebView implements NestedScrollingChild {
+
+    private static final String TAG = MarkdownWebView.class.getSimpleName();
 
     private int mLastY;
     private final int[] mScrollOffset = new int[2];
@@ -31,22 +29,18 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     private int mNestedOffsetY;
     private NestedScrollingChildHelper mChildHelper;
     private boolean mInterceptTouchEvent = false;
-
-    private SwipeRefreshLayout mParent;
-
     private String previewText;
-    private boolean codeScrollDisable = false;
     private boolean darkTheme = false;
 
-    public MarkedView(Context context) {
+    public MarkdownWebView(Context context) {
         this(context, null);
     }
 
-    public MarkedView(Context context, AttributeSet attrs) {
+    public MarkdownWebView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MarkedView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MarkdownWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mChildHelper = new NestedScrollingChildHelper(this);
         setNestedScrollingEnabled(true);
@@ -81,10 +75,6 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
         }
     }
 
-    public void setParent(SwipeRefreshLayout parent) {
-        mParent = parent;
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return true;
@@ -103,9 +93,9 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     public void setMarkdown(String mdText) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             previewText = String
-                    .format("javascript:preview('%s', %b)", escape(mdText), isCodeScrollDisable());
+                    .format("javascript:preview('%s')", escape(mdText));
         } else {
-            previewText = String.format("preview('%s', %b)", escape(mdText), isCodeScrollDisable());
+            previewText = String.format("preview('%s')", escape(mdText));
         }
     }
 
@@ -118,14 +108,6 @@ public final class MarkedView extends WebView implements NestedScrollingChild {
     }
 
     /* options */
-
-    public void setCodeScrollDisable() {
-        codeScrollDisable = true;
-    }
-
-    private boolean isCodeScrollDisable() {
-        return codeScrollDisable;
-    }
 
     public void enableDarkTheme() {
         darkTheme = true;

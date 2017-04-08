@@ -34,8 +34,6 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.State;
 import com.tpb.github.data.models.User;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
@@ -106,8 +104,6 @@ public class IssueInfoFragment extends IssueFragment {
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(manager);
 
-        mInfo.setImageHandler(new ImageDialog(getContext()));
-        mInfo.setCodeClickHandler(new CodeDialog(getContext()));
         mInfo.setConsumeNonUrlClicks(false);
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();

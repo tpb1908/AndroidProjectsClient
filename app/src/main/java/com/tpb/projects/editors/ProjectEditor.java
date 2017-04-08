@@ -14,8 +14,6 @@ import com.androidnetworking.error.ANError;
 import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Project;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
@@ -117,8 +115,6 @@ public class ProjectEditor extends EditorActivity {
                 mHasBeenEdited = true;
             }
         });
-        mDescriptionEditor.setCodeClickHandler(new CodeDialog(this));
-        mDescriptionEditor.setImageHandler(new ImageDialog(this));
 
         if(getIntent().hasExtra(getString(R.string.parcel_project))) {
             final Project project = getIntent()

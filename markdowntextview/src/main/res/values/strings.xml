@@ -3,5 +3,6 @@
 
     <string name="code_span_language_format">%1$s code</string>
     <string name="code_span_no_language">Code</string>
+    <string name="table_span">Table</string>
 
 </resources>

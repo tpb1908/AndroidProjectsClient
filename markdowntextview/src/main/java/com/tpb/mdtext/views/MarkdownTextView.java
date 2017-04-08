@@ -40,13 +40,16 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.SpanCache;
 import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.URLPattern;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
+import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.views.spans.ClickableTableSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
-import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
+import com.tpb.mdtext.views.spans.TableSpan;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -60,16 +63,13 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
     public static final boolean DEBUG = false;
 
     public boolean linkHit;
-    @Nullable
-    private ClickableTableSpan clickableTableSpan;
-    @Nullable
-    private DrawTableLinkSpan drawTableLinkSpan;
 
     private boolean consumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
+    @Nullable private TableClickHandler mTableHandler;
     private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
@@ -81,16 +81,22 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
     public MarkdownTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
     }
 
     public MarkdownTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
     }
 
     public MarkdownTextView(Context context) {
         super(context);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
     }
 
     public void setLinkClickHandler(LinkClickHandler handler) {
@@ -107,6 +113,16 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
     public void setCodeClickHandler(CodeClickHandler handler) {
         mCodeHandler = handler;
+    }
+
+    public void setTableClickHandler(TableClickHandler handler) {
+        mTableHandler = handler;
+    }
+
+    public void setDefaultHandlers(Context context) {
+        setCodeClickHandler(new CodeDialog(context));
+        setImageHandler(new ImageDialog(context));
+        setTableClickHandler(new TableDialog(context));
     }
 
     /**
@@ -153,10 +169,8 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(MarkdownTextView.this,
-                        mLinkHandler, mCodeHandler
+                        mLinkHandler, mCodeHandler, mTableHandler
                 );
-                htmlTagHandler.setClickableTableSpan(clickableTableSpan);
-                htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
@@ -260,14 +274,6 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
      */
     public void setRemoveFromHtmlSpace(boolean removeFromHtmlSpace) {
         this.removeFromHtmlSpace = removeFromHtmlSpace;
-    }
-
-    public void setClickableTableSpan(@Nullable ClickableTableSpan clickableTableSpan) {
-        this.clickableTableSpan = clickableTableSpan;
-    }
-
-    public void setDrawTableLinkSpan(@Nullable DrawTableLinkSpan drawTableLinkSpan) {
-        this.drawTableLinkSpan = drawTableLinkSpan;
     }
 
     public float[] getLastClickPosition() {

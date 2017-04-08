@@ -25,8 +25,6 @@ import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
@@ -153,9 +151,6 @@ public class CardEditor extends EditorActivity {
                 mHasBeenEdited = mHasBeenEdited || mEditor.isEditing();
             }
         });
-
-        mEditor.setCodeClickHandler(new CodeDialog(this));
-        mEditor.setImageHandler(new ImageDialog(this));
     }
 
     private void bindIssue(Issue issue) {

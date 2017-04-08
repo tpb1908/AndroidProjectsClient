@@ -7,7 +7,7 @@
     android:id="@+id/repo_readme_refresher"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.mittsu.markedview.MarkedView
+    <com.tpb.mdtext.webview.MarkdownWebView
         android:id="@+id/repo_readme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -23,8 +23,6 @@ import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
@@ -372,8 +370,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(this));
             mText.setParseHandler(mParseHandler);
-            mText.setImageHandler(new ImageDialog(mText.getContext()));
-            mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mTitle.setConsumeNonUrlClicks(true);
             mText.setConsumeNonUrlClicks(false);
         }

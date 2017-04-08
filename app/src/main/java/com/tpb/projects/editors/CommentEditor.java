@@ -18,8 +18,6 @@ import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
@@ -122,8 +120,6 @@ public class CommentEditor extends EditorActivity {
                     }
                 }
         );
-        mEditor.setImageHandler(new ImageDialog(this));
-        mEditor.setCodeClickHandler(new CodeDialog(this));
         mKeyBoardChecker = new KeyBoardVisibilityChecker(findViewById(android.R.id.content));
 
     }

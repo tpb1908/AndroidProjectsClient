@@ -6,11 +6,11 @@ function touchEnd(event) {
     TouchIntercept.endTouchIntercept();
 }
 
-function preview(md_text, codeScrollDisable) {
-    if(md_text == "") {
+function preview(md_html) {
+    if(md_html == "") {
         return false;
     }
-    document.getElementById("preview").innerHTML = md_text.replace(/\\n/g, "\n")
+    document.getElementById("preview").innerHTML = md_html.replace(/\\n/g, "\n")
     var codes = document.getElementsByClassName('code');
     for(var i = 0; i < codes.length; i++) {
         codes[i].style.display = 'block';

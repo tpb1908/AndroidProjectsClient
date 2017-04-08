@@ -24,13 +24,16 @@ import com.tpb.mdtext.LocalLinkMovementMethod;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.URLPattern;
+import com.tpb.mdtext.dialogs.CodeDialog;
+import com.tpb.mdtext.dialogs.ImageDialog;
+import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
+import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.views.spans.ClickableTableSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
-import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
+import com.tpb.mdtext.views.spans.TableSpan;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -50,14 +53,13 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
     private Editable mSavedText = new SpannableStringBuilder();
 
     public boolean linkHit;
-    @Nullable private ClickableTableSpan clickableTableSpan;
-    @Nullable private DrawTableLinkSpan drawTableLinkSpan;
 
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
 
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
+    @Nullable private TableClickHandler mTableHandler;
     private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
@@ -68,18 +70,24 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
     public MarkdownEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
         setPadding(0, getPaddingTop(), 0, getPaddingBottom());
     }
 
     public MarkdownEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
         setPadding(0, getPaddingTop(), 0, getPaddingBottom());
     }
 
     public MarkdownEditText(Context context) {
         super(context);
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
+        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
+        setDefaultHandlers(context);
         setPadding(0, getPaddingTop(), 0, getPaddingBottom());
     }
 
@@ -87,12 +95,22 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
         mLinkHandler = handler;
     }
 
-    public void setParseHandler(Handler parseHandler) {
+    public void setParseHandler(@Nullable Handler parseHandler) {
         mParseHandler = parseHandler;
     }
 
     public void setImageHandler(ImageClickHandler imageHandler) {
         mImageClickHandler = imageHandler;
+    }
+
+    public void setTableClickHandler(TableClickHandler handler) {
+        mTableHandler = handler;
+    }
+
+    public void setDefaultHandlers(Context context) {
+        setCodeClickHandler(new CodeDialog(context));
+        setImageHandler(new ImageDialog(context));
+        setTableClickHandler(new TableDialog(context));
     }
 
     public void setCodeClickHandler(CodeClickHandler handler) {
@@ -136,10 +154,8 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
                 mDrawables.clear(); // Clear the drawables that were cached for use earlier
 
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(MarkdownEditText.this,
-                        mLinkHandler, mCodeHandler
+                        mLinkHandler, mCodeHandler, mTableHandler
                 );
-                htmlTagHandler.setClickableTableSpan(clickableTableSpan);
-                htmlTagHandler.setDrawTableLinkSpan(drawTableLinkSpan);
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
@@ -228,13 +244,6 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
         this.removeFromHtmlSpace = removeFromHtmlSpace;
     }
 
-    public void setClickableTableSpan(@Nullable ClickableTableSpan clickableTableSpan) {
-        this.clickableTableSpan = clickableTableSpan;
-    }
-
-    public void setDrawTableLinkSpan(@Nullable DrawTableLinkSpan drawTableLinkSpan) {
-        this.drawTableLinkSpan = drawTableLinkSpan;
-    }
 
     public float[] getLastClickPosition() {
         if(mLastClickPosition[0] == -1) {

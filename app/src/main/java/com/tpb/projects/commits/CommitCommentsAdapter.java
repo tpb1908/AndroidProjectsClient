@@ -15,8 +15,6 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Commit;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
@@ -213,8 +211,6 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         CommentHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mText.setImageHandler(new ImageDialog(mText.getContext()));
-            mText.setCodeClickHandler(new CodeDialog(mText.getContext()));
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
             // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }

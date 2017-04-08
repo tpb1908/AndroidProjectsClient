@@ -7,7 +7,6 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
-import android.util.Log;
 
 import com.tpb.mdtext.TextUtils;
 
@@ -54,7 +53,6 @@ public class ListNumberSpan implements LeadingMarginSpan {
         int start = 1;
 
         public static ListType fromString(@NonNull String val) {
-            Log.i(ListType.class.getSimpleName(), "Type is " + val);
             if(TextUtils.isInteger(val)) {
                 final ListType num = NUMBER;
                 num.start = Integer.parseInt(val);

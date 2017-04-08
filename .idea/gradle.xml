@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/contributionsview" />
             <option value="$PROJECT_DIR$/gitapi" />
             <option value="$PROJECT_DIR$/markdowntextview" />
-            <option value="$PROJECT_DIR$/markedview" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

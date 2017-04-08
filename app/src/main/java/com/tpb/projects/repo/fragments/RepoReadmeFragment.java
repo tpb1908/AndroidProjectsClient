@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.mittsu.markedview.MarkedView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.webview.MarkdownWebView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.repo.RepoActivity;
@@ -32,7 +32,7 @@ public class RepoReadmeFragment extends RepoFragment {
     private Loader mLoader;
 
     @BindView(R.id.repo_readme_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_readme) MarkedView mReadme;
+    @BindView(R.id.repo_readme) MarkdownWebView mReadme;
 
     public static RepoReadmeFragment newInstance(RepoActivity parent) {
         final RepoReadmeFragment rrf = new RepoReadmeFragment();

@@ -35,7 +35,7 @@
             android:imeOptions="actionNone"
             android:scrollHorizontally="false"/>
 
-        <com.mittsu.markedview.MarkedView
+        <com.tpb.mdtext.webview.MarkdownWebView
             android:id="@+id/project_description_markdwon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
 
-        </com.mittsu.markedview.MarkedView>
+        </com.tpb.mdtext.webview.MarkdownWebView>
 
     </LinearLayout>
 

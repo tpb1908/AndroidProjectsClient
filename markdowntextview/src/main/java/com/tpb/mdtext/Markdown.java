@@ -3,7 +3,6 @@ package com.tpb.mdtext;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
-import android.util.Log;
 
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
@@ -239,11 +238,6 @@ public class Markdown {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, chars, i);
-            } else if(chars[i] == '-' && p == '-' && pp == '-') {
-                //Full width bar
-                builder.setLength(builder.length() - 2);
-                builder.append("<hr></hr>");
-
             } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);
             } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {

@@ -26,8 +26,6 @@ import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.User;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.dialogs.CodeDialog;
-import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.mdtext.views.MarkdownTextView;
@@ -141,8 +139,6 @@ public class IssueEditor extends EditorActivity {
 
         mTitleEdit.addTextChangedListener(editWatcher);
         mBodyEdit.addTextChangedListener(editWatcher);
-        mBodyEdit.setCodeClickHandler(new CodeDialog(this));
-        mBodyEdit.setImageHandler(new ImageDialog(this));
 
         final View content = findViewById(android.R.id.content);
 

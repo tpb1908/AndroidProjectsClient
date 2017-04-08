@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.mittsu.markedview.MarkedView;
 import com.tpb.github.data.models.Project;
+import com.tpb.mdtext.webview.MarkdownWebView;
 import com.tpb.projects.R;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by theo on 17/12/16.
@@ -29,11 +31,9 @@ public class ProjectDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle bundle) {
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_project, null);
-        final EditText nameEdit = (EditText) view.findViewById(R.id.project_name_edit);
-        final EditText descriptionEdit = (EditText) view
-                .findViewById(R.id.project_description_edit);
-        final MarkedView descriptionMarkDown = (MarkedView) view
-                .findViewById(R.id.project_description_markdwon);
+        final EditText nameEdit = ButterKnife.findById(view, R.id.project_name_edit);
+        final EditText descriptionEdit = ButterKnife.findById(view, R.id.project_description_edit);
+        final MarkdownWebView descriptionMarkDown = ButterKnife.findById(view, R.id.project_description_markdwon);
         final Project project;
         final boolean isNewProject;
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(view);

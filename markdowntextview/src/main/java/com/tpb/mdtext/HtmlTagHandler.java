@@ -41,15 +41,15 @@ import android.widget.TextView;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
+import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.views.spans.CleanURLSpan;
-import com.tpb.mdtext.views.spans.ClickableTableSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
-import com.tpb.mdtext.views.spans.DrawTableLinkSpan;
 import com.tpb.mdtext.views.spans.HorizontalRuleSpan;
 import com.tpb.mdtext.views.spans.InlineCodeSpan;
 import com.tpb.mdtext.views.spans.ListNumberSpan;
 import com.tpb.mdtext.views.spans.QuoteSpan;
 import com.tpb.mdtext.views.spans.RoundedBackgroundEndSpan;
+import com.tpb.mdtext.views.spans.TableSpan;
 
 import org.xml.sax.XMLReader;
 
@@ -126,17 +126,17 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static int indent = 10;
     private static final int listItemIndent = indent * 2;
-    private ClickableTableSpan clickableTableSpan;
-    private DrawTableLinkSpan drawTableLinkSpan;
     private final TextPaint mTextPaint;
     private LinkClickHandler mLinkHandler;
     private CodeClickHandler mCodeHandler;
+    private TableClickHandler mTableHandler;
 
-    public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler) {
+    public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler, @Nullable TableClickHandler tableHandler) {
         mTextPaint = tv.getPaint();
         indent = (int) mTextPaint.measureText("t");
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
+        mTableHandler = tableHandler;
     }
 
     @Override
@@ -144,7 +144,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         if(opening) {
             handleOpeningTag(tag, output, xmlReader);
         } else {
-            handleClosingTag(tag, output, xmlReader);
+            handleClosingTag(tag, output);
         }
         storeTableTags(opening, tag);
     }
@@ -200,7 +200,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 tableHtmlBuilder = new StringBuilder();
                 // We need some text for the table to be replaced by the span because
                 // the other tags will remove their text when their text is extracted
-                output.append("table placeholder");
+                //output.append("table placeholder");
             }
 
             tableTagLevel++;
@@ -237,7 +237,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
     }
 
-    private void handleClosingTag(final String tag, Editable output, final XMLReader xmlReader) {
+    private void handleClosingTag(final String tag, Editable output) {
         if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
             lists.pop();
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
@@ -338,20 +338,18 @@ public class HtmlTagHandler implements Html.TagHandler {
 
             // When we're back at the root-level table
             if(tableTagLevel == 0) {
-                final String tableHtml = tableHtmlBuilder.toString();
 
-                ClickableTableSpan myClickableTableSpan = null;
-                if(clickableTableSpan != null) {
-                    myClickableTableSpan = clickableTableSpan.newInstance();
-                    myClickableTableSpan.setTableHtml(tableHtml);
-                }
+                final Table obj = getLast(output, Table.class);
+                final int where = output.getSpanStart(obj);
+                output.removeSpan(obj); //Remove the old span
+                output.insert(where, "\n");
+                output.replace(where + 1, output.length(), "  "); //We need a non-empty span
 
-                DrawTableLinkSpan myDrawTableLinkSpan = null;
-                if(drawTableLinkSpan != null) {
-                    myDrawTableLinkSpan = drawTableLinkSpan.newInstance();
-                }
+                final TableSpan table = new TableSpan(tableHtmlBuilder.toString(), mTableHandler);
+                output.setSpan(table, where, where + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new TableSpan.ClickableTableSpan(table), where, where + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                end(output, Table.class, false, myDrawTableLinkSpan, myClickableTableSpan);
+                //end(output, Table.class, false, myDrawTableLinkSpan, myClickableTableSpan);
             } else {
                 end(output, Table.class, false);
             }
@@ -601,15 +599,6 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
             return null;
         }
-    }
-
-
-    public void setClickableTableSpan(ClickableTableSpan clickableTableSpan) {
-        this.clickableTableSpan = clickableTableSpan;
-    }
-
-    public void setDrawTableLinkSpan(DrawTableLinkSpan drawTableLinkSpan) {
-        this.drawTableLinkSpan = drawTableLinkSpan;
     }
 
     private static class Ul {
