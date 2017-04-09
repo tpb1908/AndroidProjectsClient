@@ -8,6 +8,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class Node implements Parcelable {
     private String submoduleGitUrl;
 
     private Node parent;
-    private List<Node> children;
+    private List<Node> children = new ArrayList<>();
 
     private static final String TYPE_KEY = "type";
     private static final String SIZE_KEY = "size";
@@ -44,7 +45,6 @@ public class Node implements Parcelable {
     private static final String HTML_URL_KEY = "html_url";
     private static final String DOWNLOAD_URL_KEY = "download_url";
     private static final String SUBMODULE_GIT_URL_KEY = "submodule_git_url";
-
 
     public Node(JSONObject obj) {
         try {
@@ -141,6 +141,16 @@ public class Node implements Parcelable {
 
     public List<Node> getChildren() {
         return children;
+    }
+
+    public String getRef() {
+        if(htmlUrl.contains("/tree/")) {
+            final int index = htmlUrl.indexOf("/tree/") + 6;
+            return htmlUrl.substring(index, htmlUrl.indexOf('/', index));
+        } else {
+            final int index = htmlUrl.indexOf("/blob/") + 6;
+            return htmlUrl.substring(index, htmlUrl.indexOf('/', index));
+        }
     }
 
     public void setParent(Node parent) {

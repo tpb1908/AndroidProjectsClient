@@ -10,21 +10,24 @@ import android.widget.TextView;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.FileLoader;
+import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.content.Node;
 import com.tpb.projects.R;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by theo on 17/02/17.
  */
 
-public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeViewHolder> implements FileLoader.DirectoryLoader {
+public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeViewHolder> implements Loader.ListLoader<Node> {
     private static final String TAG = ContentAdapter.class.getSimpleName();
 
     private List<Node> mRootNodes = new ArrayList<>();
@@ -35,14 +38,15 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
     private final String mRepo;
     private final FileLoader mLoader;
     private boolean mIsLoading = false;
+    private String mRef;
 
     ContentAdapter(FileLoader loader, ContentActivity parent, String repo, @Nullable String path) {
         mLoader = loader;
         mParent = parent;
         mRepo = repo;
         mParent.mRefresher.setRefreshing(true);
-        mLoader.loadDirectory(this, repo, path, null);
         mIsLoading = true;
+        mLoader.loadDirectory(this, repo, path, null, mRef);
     }
 
     @Override
@@ -70,13 +74,25 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     }
 
+    void setRef(String ref) {
+        if(mRef == null) {
+            mRef = ref;
+        } else {
+            mRef = ref;
+            mPreviousNode = null;
+            reload();
+        }
+
+
+    }
+
     void reload() {
         mCurrentNodes.clear();
         notifyDataSetChanged();
         if(mPreviousNode == null) {
-            mLoader.loadDirectory(this, mRepo, null, null);
+            mLoader.loadDirectory(this, mRepo, null, null, mRef);
         } else {
-            mLoader.loadDirectory(this, mRepo, mPreviousNode.getPath(), mPreviousNode);
+            mLoader.loadDirectory(this, mRepo, mPreviousNode.getPath(), mPreviousNode, mRef);
         }
     }
 
@@ -125,71 +141,63 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             path = path.substring(path.indexOf("com/") + 4, path.indexOf("/tree"));
             i.putExtra(mParent.getString(R.string.intent_repo), path);
             mParent.startActivity(i);
-            //TODO Open the submodule in another instance
         } else {
             mParent.addRibbonItem(node);
             mPreviousNode = node;
             mParent.mRefresher.setRefreshing(true);
             mIsLoading = true;
-            if(node.getChildren() == null) {
-                mLoader.loadDirectory(this, mRepo, node.getPath(), node);
+            if(node.getChildren().size() == 0) {
+                mLoader.loadDirectory(this, mRepo, node.getPath(), node, mRef);
             } else {
                 mParent.mRefresher.setRefreshing(true);
-                directoryLoaded(node.getChildren());
+                listLoadComplete(node.getChildren());
             }
         }
     }
 
-    private final FileLoader.DirectoryLoader backgroundLoader = new FileLoader.DirectoryLoader() {
-
+    private Loader.ListLoader<Node> backgroundLoader = new Loader.ListLoader<Node>() {
         @Override
-        public void directoryLoaded(List<Node> directory) {
-            if(directory.size() > 0) {
-                final Node parent = directory.get(0).getParent();
-                for(Node n : mCurrentNodes) { //Most likely here
-                    if(parent.equals(n)) {
-                        Logger.i(TAG, "directoryLoaded: Found parent");
-                        n.setChildren(directory);
-                        return;
-                    }
-                }
-
-                final Stack<Node> stack = new Stack<>();
-                Node current;
-                int depth = 0;
-                for(Node n : mRootNodes) {
-                    stack.push(n);
-                    while(!stack.isEmpty()) {
-                        current = stack.pop();
-                        if(current.getChildren() != null) {
-                            for(Node child : current.getChildren()) {
-                                if(parent.equals(child)) {
-                                    parent.setChildren(directory);
-                                    return;
-                                }
-                                stack.push(child);
-                            }
-                            depth += 1;
-                        }
-                    }
+        public void listLoadComplete(List<Node> directory) {
+            if(directory.size() == 0) return;
+            final Node parent = directory.get(0).getParent();
+            for(Node n : mCurrentNodes) { //Most likely here
+                if(parent.equals(n)) {
+                    n.setChildren(directory);
+                    return;
                 }
             }
 
+            final Stack<Node> stack = new Stack<>();
+            Node current;
+            for(Node n : mRootNodes) {
+                stack.push(n);
+                while(!stack.isEmpty()) {
+                    current = stack.pop();
+                    for(Node child : current.getChildren()) {
+                        if(parent.equals(child)) {
+                            parent.setChildren(directory);
+                            return;
+                        }
+                        stack.push(child);
+                    }
+                }
+            }
         }
 
         @Override
-        public void directoryLoadError(APIHandler.APIError error) {
+        public void listLoadError(APIHandler.APIError error) {
 
         }
     };
 
     @Override
-    public void directoryLoaded(List<Node> directory) {
+    public void listLoadComplete(List<Node> directory) {
         if(mPreviousNode == null) { //We are at the root
             mRootNodes = directory;
             mCurrentNodes = directory;
             mPreviousNode = null;
             notifyItemRangeInserted(0, mCurrentNodes.size());
+            if(mCurrentNodes.size() > 0) mParent.setDefaultRef(mCurrentNodes.get(0).getRef());
         } else {
             mPreviousNode.setChildren(directory);
             mCurrentNodes = directory;
@@ -198,15 +206,16 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         mIsLoading = false;
         mParent.mRefresher.setRefreshing(false);
         for(Node n : directory) {
-            if(n.getType() == Node.NodeType.DIRECTORY && n.getChildren() == null) {
-                mLoader.loadDirectory(backgroundLoader, mRepo, n.getPath(), n);
+            if(n.getType() == Node.NodeType.DIRECTORY && n.getChildren().size() == 0) {
+                mLoader.loadDirectory(backgroundLoader, mRepo, n.getPath(), n, mRef);
             }
         }
     }
 
     @Override
-    public void directoryLoadError(APIHandler.APIError error) {
-
+    public void listLoadError(APIHandler.APIError error) {
+        mIsLoading = false;
+        mParent.mRefresher.setRefreshing(false);
     }
 
     @Override
@@ -216,13 +225,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
 
     class NodeViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView mText;
-        private final TextView mSize;
+        @BindView(R.id.node_text) TextView mText;
+        @BindView(R.id.node_size) TextView mSize;
 
-        public NodeViewHolder(View itemView) {
+        NodeViewHolder(View itemView) {
             super(itemView);
-            mText = (TextView) itemView.findViewById(R.id.node_text);
-            mSize = (TextView) itemView.findViewById(R.id.node_size);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener((v) -> loadNode(getAdapterPosition()));
         }
     }

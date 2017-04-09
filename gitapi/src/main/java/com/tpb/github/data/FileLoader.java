@@ -2,7 +2,6 @@ package com.tpb.github.data;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -31,34 +30,35 @@ public class FileLoader extends APIHandler {
         super(context);
     }
 
-    public void loadDirectory(final DirectoryLoader loader, String repo, @Nullable final String path, @Nullable final Node parent) {
-        String PATH = GIT_BASE + SEGMENT_REPOS + "/" + repo + SEGMENT_CONTENTS;
-        if(path != null) PATH += "/" + path;
-        AndroidNetworking.get(PATH)
+    public void loadDirectory(final Loader.ListLoader<Node> loader, String repo, @Nullable final String path, @Nullable final Node parent, @Nullable String ref) {
+        String fullPath = GIT_BASE + SEGMENT_REPOS + "/" + repo + SEGMENT_CONTENTS;
+        if(path != null) fullPath += "/" + path;
+        if(ref != null) fullPath += "?ref=" + ref;
+        AndroidNetworking.get(fullPath)
                          .addHeaders(API_AUTH_HEADERS)
                          .getResponseOnlyFromNetwork()
                          .build()
                          .getAsJSONArray(new JSONArrayRequestListener() {
                              @Override
                              public void onResponse(JSONArray response) {
-                                 final List<Node> nodes = new ArrayList<>(response.length());
                                  try {
+                                     final List<Node> nodes = new ArrayList<>(response.length());
                                      for(int i = 0; i < response.length(); i++) {
-                                         nodes.add(new Node(response.getJSONObject(i)));
-                                         nodes.get(i).setParent(parent);
+                                         final Node n = new Node(response.getJSONObject(i));
+                                         n.setParent(parent);
+                                         nodes.add(n);
                                      }
+                                     Collections.sort(nodes, sorter);
+                                     loader.listLoadComplete(nodes);
                                  } catch(JSONException jse) {
-                                     Log.e(TAG, "onResponse: ", jse);
-                                     if(loader != null)
-                                         loader.directoryLoadError(APIError.UNPROCESSABLE);
+                                     loader.listLoadError(APIError.UNPROCESSABLE);
                                  }
-                                 Collections.sort(nodes, sorter);
-                                 if(loader != null) loader.directoryLoaded(nodes);
+
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(loader != null) loader.directoryLoadError(parseError(anError));
+                                 loader.listLoadError(parseError(anError));
                              }
                          });
     }
@@ -88,14 +88,6 @@ public class FileLoader extends APIHandler {
                                  if(listener != null) listener.onError(anError);
                              }
                          });
-    }
-
-    public interface DirectoryLoader {
-
-        void directoryLoaded(List<Node> directory);
-
-        void directoryLoadError(APIError error);
-
     }
 
 }
