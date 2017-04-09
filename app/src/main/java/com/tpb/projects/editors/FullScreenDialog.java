@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
+import com.tpb.mdtext.webview.MarkdownWebView;
 import com.tpb.projects.R;
 
 /**
@@ -21,7 +21,7 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final WebView wv = new WebView(getContext());
+        final MarkdownWebView wv = new MarkdownWebView(getContext());
         wv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
@@ -34,11 +34,10 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
 
             final Loader.ItemLoader<String> loader = new Loader.ItemLoader<String>() {
                 @Override
-                public void loadComplete(String data) {
+                public void loadComplete(String html) {
                     ad.setContentView(wv);
-
-                    wv.getSettings().setJavaScriptEnabled(true);
-                    wv.loadDataWithBaseURL("", data, "text/html", "UTF-8", "");
+                    wv.enableDarkTheme();
+                    wv.setMarkdown(html);
                 }
 
                 @Override

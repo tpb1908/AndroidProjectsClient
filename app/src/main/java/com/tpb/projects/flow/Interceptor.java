@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import com.tpb.projects.R;
+import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.milestones.MilestoneActivity;
 import com.tpb.projects.milestones.MilestonesActivity;
@@ -104,6 +105,9 @@ public class Interceptor extends Activity {
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
                             );
+                        }  else if("commit".equals(segments.get(2))) {
+                            i.setClass(Interceptor.this, CommitActivity.class);
+                            i.putExtra(getString(R.string.intent_commit_sha), segments.get(3));
                         }
                         break;
                     default:

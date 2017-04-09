@@ -76,6 +76,10 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
             mCommit = launchIntent.getParcelableExtra(getString(R.string.parcel_commit));
             loadComplete(mCommit);
             new Loader(this).loadCommit(this, mCommit.getFullRepoName(), mCommit.getSha());
+        } else if(launchIntent.hasExtra(getString(R.string.intent_commit_sha))) {
+            new Loader(this).loadCommit(this,
+                    launchIntent.getStringExtra(getString(R.string.intent_repo)),
+                    launchIntent.getStringExtra(getString(R.string.intent_commit_sha)));
         }
 
     }

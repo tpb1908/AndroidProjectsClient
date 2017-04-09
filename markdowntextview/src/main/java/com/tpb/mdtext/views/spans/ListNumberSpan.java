@@ -21,8 +21,8 @@ public class ListNumberSpan implements LeadingMarginSpan {
     private final int mTextWidth;
 
     public ListNumberSpan(TextPaint textPaint, int number, ListType type) {
-        mNumber = ListType.getFormattedNumber(number, type).concat(". ");
-        mTextWidth = (int) textPaint.measureText(type.start + mNumber);
+        mNumber = ListType.getFormattedNumber(number + type.start, type).concat(". ");
+        mTextWidth = (int) textPaint.measureText(mNumber);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class ListNumberSpan implements LeadingMarginSpan {
         ROMAN,
         ROMAN_CAP;
 
-        int start = 1;
+        int start = 0;
 
         public static ListType fromString(@NonNull String val) {
             if(TextUtils.isInteger(val)) {
                 final ListType num = NUMBER;
-                num.start = Integer.parseInt(val);
+                num.start = Integer.parseInt(val) -1;
                 return num;
             } else if("i".equals(val)){
                 return ROMAN;

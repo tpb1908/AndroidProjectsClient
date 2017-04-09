@@ -258,25 +258,19 @@ public class HtmlTagHandler implements Html.TagHandler {
                                         .charAt(1) <= '\u2612')
                                 )) {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(
-                                            listItemIndent * (lists.size() - 1)),
-                                    null
+                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1))
                             );
                         } else {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(
-                                            listItemIndent * (lists.size() - 1)),
+                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
                                     new BulletSpan(indent)
                             );
                         }
                     } else {
                         end(output, Ul.class, false,
-                                new LeadingMarginSpan.Standard(
-                                        listItemIndent * (lists.size() - 1)),
-                                null
+                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1))
                         );
                     }
-
 
                 } else if(lists.peek().first.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                     if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
@@ -295,38 +289,37 @@ public class HtmlTagHandler implements Html.TagHandler {
                         );
                     } else {
                         end(output, Ol.class, false,
-                                new LeadingMarginSpan.Standard(numberMargin),
-                                null
+                                new LeadingMarginSpan.Standard(numberMargin)
                         );
                     }
                 }
             } else {
-                end(output, Ol.class, true, new LeadingMarginSpan.Standard(1));
+                end(output, Ol.class, true);
             }
         } else if(tag.equalsIgnoreCase("code")) {
             Object obj = getLast(output, Code.class);
             // start of the tag
-            int where = output.getSpanStart(obj);
+            int start = output.getSpanStart(obj);
             // end of the tag
-            int len = output.length();
-            if(len > where + 1) {
+            int end= output.length();
+            if(end> start + 1) {
                 output.removeSpan(obj);
-                final char[] chars = new char[len - where];
-                output.getChars(where, len, chars, 0);
-                output.insert(where, "\n"); // Another line for our CodeSpan to cover
-                output.replace(where + 1, len, " ");
+                final char[] chars = new char[end- start];
+                output.getChars(start, end, chars, 0);
+                output.insert(start, "\n"); // Another line for our CodeSpan to cover
+                output.replace(start + 1, end, " ");
                 final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
-                output.setSpan(code, where, where + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new CodeSpan.ClickableCodeSpan(code), where, where + 3,
+                output.setSpan(code, start, start + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new CodeSpan.ClickableCodeSpan(code), start, start + 3,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
         } else if(tag.equals("hr")) {
             final Object obj = getLast(output, HorizontalRule.class);
-            final int where = output.getSpanStart(obj);
+            final int start = output.getSpanStart(obj);
             output.removeSpan(obj); //Remove the old span
-            output.replace(where, output.length(), " "); //We need a non-empty span
-            output.setSpan(new HorizontalRuleSpan(), where, where + 1, 0); //Insert the bar span
+            output.replace(start, output.length(), " "); //We need a non-empty span
+            output.setSpan(new HorizontalRuleSpan(), start, start + 1, 0); //Insert the bar span
         } else if(tag.equalsIgnoreCase("center")) {
             end(output, Center.class, true,
                     new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER)
@@ -335,21 +328,18 @@ public class HtmlTagHandler implements Html.TagHandler {
             end(output, Strike.class, false, new StrikethroughSpan());
         } else if(tag.equalsIgnoreCase("table")) {
             tableTagLevel--;
-
             // When we're back at the root-level table
             if(tableTagLevel == 0) {
-
                 final Table obj = getLast(output, Table.class);
-                final int where = output.getSpanStart(obj);
+                final int start = output.getSpanStart(obj);
                 output.removeSpan(obj); //Remove the old span
-                output.insert(where, "\n");
-                output.replace(where + 1, output.length(), "  "); //We need a non-empty span
+                output.insert(start, "\n");
+                output.replace(start + 1, output.length(), "  "); //We need a non-empty span
 
                 final TableSpan table = new TableSpan(tableHtmlBuilder.toString(), mTableHandler);
-                output.setSpan(table, where, where + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new TableSpan.ClickableTableSpan(table), where, where + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new TableSpan.ClickableTableSpan(table), start, start + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                //end(output, Table.class, false, myDrawTableLinkSpan, myClickableTableSpan);
             } else {
                 end(output, Table.class, false);
             }
@@ -362,29 +352,29 @@ public class HtmlTagHandler implements Html.TagHandler {
         } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
             Object obj = getLast(output, BlockQuote.class);
             // start of the tag
-            int where = output.getSpanStart(obj);
+            int start = output.getSpanStart(obj);
             // end of the tag
-            int len = output.length();
+            int end= output.length();
             output.removeSpan(obj);
-            output.setSpan(new QuoteSpan(), where, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         } else if(tag.equalsIgnoreCase(A_TAG)) {
             A obj = getLast(output, A.class);
             // start of the tag
-            int where = output.getSpanStart(obj);
+            int start = output.getSpanStart(obj);
             // end of the tag
-            int len = output.length();
+            int end= output.length();
             output.removeSpan(obj);
             if(isValidURL(obj.href)) {
-                output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), where, len,
+                output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE
                 );
             }
         } else if(tag.equalsIgnoreCase("inlinecode")) {
             final InlineCode obj = getLast(output, InlineCode.class);
-            final int where = output.getSpanStart(obj);
-            final int len = output.length();
+            final int start = output.getSpanStart(obj);
+            final int end= output.length();
             output.removeSpan(obj);
-            output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), where, len,
+            output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), start, end,
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             );
         } else if(tag.equalsIgnoreCase(FONT_TAG)) {
@@ -392,43 +382,43 @@ public class HtmlTagHandler implements Html.TagHandler {
             final BackgroundColor bgc = getLast(output, BackgroundColor.class);
             final Font f = getLast(output, Font.class);
             if(fgc != null) {
-                final int where = output.getSpanStart(fgc);
-                final int len = output.length();
+                final int start = output.getSpanStart(fgc);
+                final int end= output.length();
                 output.removeSpan(fgc);
-                output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), where, len,
+                output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
             if(bgc != null) {
-                final int where = output.getSpanStart(bgc);
-                final int len = output.length();
+                final int start = output.getSpanStart(bgc);
+                final int end= output.length();
                 output.removeSpan(bgc);
 
                 final int color = safelyParseColor(bgc.color);
                 if(bgc.rounded) {
-                    output.insert(len, " ");
-                    output.insert(where, " ");
-                    output.setSpan(new RoundedBackgroundEndSpan(color, false), where, where + 1,
+                    output.insert(end, " ");
+                    output.insert(start, " ");
+                    output.setSpan(new RoundedBackgroundEndSpan(color, false), start, start + 1,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                     );
-                    output.setSpan(new RoundedBackgroundEndSpan(color, true), len, len + 1,
+                    output.setSpan(new RoundedBackgroundEndSpan(color, true), end, end + 1,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                     );
-                    output.setSpan(new BackgroundColorSpan(color), where + 1, len,
+                    output.setSpan(new BackgroundColorSpan(color), start + 1, end,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                     );
                 } else {
-                    output.setSpan(new BackgroundColorSpan(color), where, len,
+                    output.setSpan(new BackgroundColorSpan(color), start, end,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     );
                 }
 
             }
             if(f != null) {
-                final int where = output.getSpanStart(f);
-                final int len = output.length();
+                final int start = output.getSpanStart(f);
+                final int end= output.length();
                 output.removeSpan(f);
-                output.setSpan(new TypefaceSpan(f.face), where, len,
+                output.setSpan(new TypefaceSpan(f.face), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
@@ -468,7 +458,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                     return Color.parseColor("#808000");
                 case "purple":
                     return Color.parseColor("#800080");
-
                 case "silver":
                     return Color.parseColor("#C0C0C0");
                 case "teal":
@@ -490,18 +479,18 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static String getAttribute(@NonNull String attr, @NonNull XMLReader reader, String defaultAttr) {
         try {
-            final Field elementField = reader.getClass().getDeclaredField("theNewElement");
-            elementField.setAccessible(true);
-            final Object element = elementField.get(reader);
-            final Field attsField = element.getClass().getDeclaredField("theAtts");
-            attsField.setAccessible(true);
-            final Object atts = attsField.get(element);
-            final Field dataField = atts.getClass().getDeclaredField("data");
-            dataField.setAccessible(true);
-            final String[] data = (String[]) dataField.get(atts);
-            final Field lengthField = atts.getClass().getDeclaredField("length");
-            lengthField.setAccessible(true);
-            final int len = (Integer) lengthField.get(atts);
+            final Field fElement = reader.getClass().getDeclaredField("theNewElement");
+            fElement.setAccessible(true);
+            final Object element = fElement.get(reader);
+            final Field fAtts = element.getClass().getDeclaredField("theAtts");
+            fAtts.setAccessible(true);
+            final Object attrs = fAtts.get(element);
+            final Field fData = attrs.getClass().getDeclaredField("data");
+            fData.setAccessible(true);
+            final String[] data = (String[]) fData.get(attrs);
+            final Field fLength = attrs.getClass().getDeclaredField("length");
+            fLength.setAccessible(true);
+            final int len = (Integer) fLength.get(attrs);
             for(int i = 0; i < len; i++) {
                 if(attr.equals(data[i * 5 + 1])) {
                     return data[i * 5 + 4];
@@ -534,8 +523,8 @@ public class HtmlTagHandler implements Html.TagHandler {
      * Mark the opening tag by using private classes
      */
     private void start(Editable output, Object mark) {
-        int len = output.length();
-        output.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
+        final int point = output.length();
+        output.setSpan(mark, point, point, Spannable.SPAN_MARK_MARK);
     }
 
     /**
@@ -544,9 +533,9 @@ public class HtmlTagHandler implements Html.TagHandler {
     private void end(Editable output, Class kind, boolean paragraphStyle, Object... replaces) {
         Object obj = getLast(output, kind);
         // start of the tag
-        int where = output.getSpanStart(obj);
+        int start = output.getSpanStart(obj);
         // end of the tag
-        int len = output.length();
+        int end= output.length();
 
         // If we're in a table, then we need to store the raw HTML for later
         if(tableTagLevel > 0) {
@@ -556,15 +545,15 @@ public class HtmlTagHandler implements Html.TagHandler {
 
         output.removeSpan(obj);
 
-        if(where != len) {
-            int thisLen = len;
+        if(start != end) {
+            int thisLen = end;
             // paragraph styles like AlignmentSpan need to end with a new line!
             if(paragraphStyle) {
                 output.append("\n");
                 thisLen++;
             }
             for(Object replace : replaces) {
-                output.setSpan(replace, where, thisLen, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(replace, start, thisLen, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
     }
@@ -574,13 +563,11 @@ public class HtmlTagHandler implements Html.TagHandler {
      */
     private CharSequence extractSpanText(Editable output, Class kind) {
         final Object obj = getLast(output, kind);
-        // start of the tag
-        final int where = output.getSpanStart(obj);
-        // end of the tag
-        final int len = output.length();
+        final int start = output.getSpanStart(obj);
+        final int end= output.length();
 
-        final CharSequence extractedSpanText = output.subSequence(where, len);
-        output.delete(where, len);
+        final CharSequence extractedSpanText = output.subSequence(start, end);
+        output.delete(start, end);
         return extractedSpanText;
     }
 

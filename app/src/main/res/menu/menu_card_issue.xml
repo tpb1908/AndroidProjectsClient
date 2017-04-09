@@ -18,7 +18,7 @@
         android:title="@string/menu_edit_issue"/>
 
     <item
-        android:id="@+id/menu_card_fullscreen"
+        android:id="@+id/menu_fullscreen"
         android:title="@string/menu_fullscreen_note"/>
 
 

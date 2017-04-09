@@ -38,8 +38,8 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
-import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.IssueEditor;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
@@ -381,7 +381,7 @@ public class ColumnFragment extends Fragment {
                             card.getIssue().getNumber()
                     ));
                     break;
-                case R.id.menu_card_fullscreen:
+                case R.id.menu_fullscreen:
                     showFullscreen(card);
                     break;
                 case R.id.menu_convert_to_issue:
@@ -735,12 +735,7 @@ public class ColumnFragment extends Fragment {
     }
 
     private void showFullscreen(Card card) {
-        final FullScreenDialog dialog = new FullScreenDialog();
-        final Bundle b = new Bundle();
-        b.putString(getString(R.string.intent_markdown), card.getNote());
-        b.putString(getString(R.string.intent_repo), mParent.mProject.getRepoPath());
-        dialog.setArguments(b);
-        dialog.show(getFragmentManager(), TAG);
+        IntentHandler.showFullScreen(getContext(), card.getNote(), mParent.mProject.getRepoPath(), getFragmentManager());
     }
 
     void cardClick(View view, Card card) {

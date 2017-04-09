@@ -424,6 +424,9 @@ public class IssueInfoFragment extends IssueFragment {
                 case 2:
                     editIssue(view);
                     break;
+                case R.id.menu_fullscreen:
+                    IntentHandler.showFullScreen(getContext(), mIssue.getBody(), mIssue.getRepoFullName(), getFragmentManager());
+                    break;
             }
             return false;
         });

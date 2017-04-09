@@ -1,10 +1,13 @@
 package com.tpb.projects.flow;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.view.View;
@@ -17,6 +20,7 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.common.NetworkImageView;
+import com.tpb.projects.editors.FullScreenDialog;
 import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.user.UserActivity;
@@ -185,6 +189,15 @@ public class IntentHandler {
 
     public static String getUserUrl(String login) {
         return "https://github.com/" + login;
+    }
+
+    public static void showFullScreen(Context context, String markdown, @Nullable String repo, FragmentManager manager) {
+        final FullScreenDialog dialog = new FullScreenDialog();
+        final Bundle b = new Bundle();
+        b.putString(context.getString(R.string.intent_markdown), markdown);
+        b.putString(context.getString(R.string.intent_repo), repo);
+        dialog.setArguments(b);
+        dialog.show(manager, TAG);
     }
 
 }
