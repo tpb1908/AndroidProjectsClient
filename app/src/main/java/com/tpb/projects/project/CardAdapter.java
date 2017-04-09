@@ -111,6 +111,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
     @Override
     public void listLoadComplete(List<Card> cards) {
+        if(!mParent.isAdded()) return;
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(cards.size() > 0) {
@@ -370,8 +371,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(this));
             mText.setParseHandler(mParseHandler);
-            mTitle.setConsumeNonUrlClicks(true);
-            mText.setConsumeNonUrlClicks(false);
         }
 
     }

@@ -15,6 +15,7 @@
         <!--<item name="android:textColorSecondaryInverse">@color/colorSecondaryTextInverse</item>-->
         <item name="drawableColor">@color/md_grey_600</item>
         <item name="drawableColorSecondary">@color/iconColorSecondaryLight</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
@@ -31,6 +32,7 @@
         <item name="android:textColorSecondaryInverse">@color/colorSecondaryText</item>
         <item name="drawableColor">@color/md_white_1000</item>
         <item name="drawableColorSecondary">@color/iconColorSecondaryDark</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
     </style>
 
     <style name="AppTheme.Transparent.Dark" parent="AppTheme.Dark">

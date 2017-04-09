@@ -58,6 +58,8 @@ import butterknife.Unbinder;
 
 public class IssueInfoFragment extends IssueFragment {
 
+    private static final String TAG = IssueInfoFragment.class.getSimpleName();
+
     private Unbinder unbinder;
 
     @BindView(R.id.issue_header_card) CardView mHeader;
@@ -104,7 +106,7 @@ public class IssueInfoFragment extends IssueFragment {
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(manager);
 
-        mInfo.setConsumeNonUrlClicks(false);
+
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
             new Loader(getContext()).loadIssue(new Loader.ItemLoader<Issue>() {
@@ -401,7 +403,7 @@ public class IssueInfoFragment extends IssueFragment {
         }
     }
 
-    @OnClick(R.id.issue_header_card)
+    @OnClick({R.id.issue_header_card, R.id.issue_info, R.id.issue_title})
     void onHeaderClick() {
         if(mIssue != null && mAccessLevel == Repository.AccessLevel.ADMIN) editIssue(mInfo);
     }
@@ -469,23 +471,6 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     public void checkSharedElementExit() {
-//        if(getActivity().getIntent().hasExtra(getString(R.string.transition_card))) {
-//            mCount.setVisibility(View.INVISIBLE);
-//            mTitle.setMarkdown(Spanner.bold(mIssue.getTitle()));
-//            mInfo.setMarkdown(
-//                    Markdown.parseMD(
-//                        Spanner.buildIssueSpan(
-//                            getContext(),
-//                            mIssue,
-//                            false,
-//                            true,
-//                            true,
-//                            true,
-//                            true
-//                        ).toString()
-//                    )
-//            );
-//        }
     }
 
     @Override

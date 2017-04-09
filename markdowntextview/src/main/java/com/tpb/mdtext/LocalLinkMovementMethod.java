@@ -42,7 +42,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
 
     @Override
     public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
-        int action = event.getAction();
+        final int action = event.getAction();
 
         if(action == MotionEvent.ACTION_UP ||
                 action == MotionEvent.ACTION_DOWN) {
@@ -56,15 +56,15 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
             y += widget.getScrollY();
 
             final Layout layout = widget.getLayout();
-            int line = layout.getLineForVertical(y);
-            int off = layout.getOffsetForHorizontal(line, x);
+            final int line = layout.getLineForVertical(y);
+            final int off = layout.getOffsetForHorizontal(line, x);
 
             final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
             if(link.length != 0) {
                 if(action == MotionEvent.ACTION_UP) {
                     link[0].onClick(widget);
-                } else if(action == MotionEvent.ACTION_DOWN) {
+                } else {
                     Selection.setSelection(buffer,
                             buffer.getSpanStart(link[0]),
                             buffer.getSpanEnd(link[0])

@@ -238,8 +238,8 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             ButterKnife.bind(this, view);
             mMenuButton.setOnClickListener(
                     (v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
-            mContent.setConsumeNonUrlClicks(false);
-            mTitle.setConsumeNonUrlClicks(false);
+            mTitle.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
+            mContent.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
             view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
         }
     }

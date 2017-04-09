@@ -64,9 +64,6 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
     public boolean linkHit;
 
-    private boolean consumeNonUrlClicks = true;
-    private boolean removeFromHtmlSpace = true;
-
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
@@ -80,24 +77,28 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
     public MarkdownTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
-        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
-        setDefaultHandlers(context);
+        init(context);
     }
 
     public MarkdownTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
-        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
-        setDefaultHandlers(context);
+        init(context);
     }
 
     public MarkdownTextView(Context context) {
         super(context);
+        init(context);
+    }
+
+    private void init(Context context) {
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
         if(!TableSpan.isInitialised()) TableSpan.initialise(context);
         setDefaultHandlers(context);
+        setTextIsSelectable(true);
+        setCursorVisible(false);
+        setClickable(true);
     }
+
 
     public void setLinkClickHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
@@ -175,24 +176,14 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
                 final Spanned text;
-                if(removeFromHtmlSpace) {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        text = removeHtmlBottomPadding(
-                                Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
-                                        htmlTagHandler
-                                ));
-                    } else {
-                        text = removeHtmlBottomPadding(
-                                Html.fromHtml(overridden, imageGetter, htmlTagHandler));
-                    }
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    text = removeHtmlBottomPadding(
+                            Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                    htmlTagHandler
+                            ));
                 } else {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        text = Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
-                                htmlTagHandler
-                        );
-                    } else {
-                        text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
-                    }
+                    text = removeHtmlBottomPadding(
+                            Html.fromHtml(overridden, imageGetter, htmlTagHandler));
                 }
 
                 // Convert to a buffer to allow editing
@@ -269,13 +260,6 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
         }
     }
 
-    /**
-     * Note that this must be called before setting text for it to work
-     */
-    public void setRemoveFromHtmlSpace(boolean removeFromHtmlSpace) {
-        this.removeFromHtmlSpace = removeFromHtmlSpace;
-    }
-
     public float[] getLastClickPosition() {
         if(mLastClickPosition[0] == -1) {
             // If we haven't been clicked yet, get the centre of the view
@@ -285,10 +269,6 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
             mLastClickPosition[1] = pos[1] + getHeight() / 2;
         }
         return mLastClickPosition;
-    }
-
-    public void setConsumeNonUrlClicks(boolean consume) {
-        consumeNonUrlClicks = consume;
     }
 
     /**
@@ -322,14 +302,18 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             mLastClickPosition[0] = event.getRawX();
             mLastClickPosition[1] = event.getRawY();
+            if(hasSelection()) clearFocus();
         }
-        linkHit = false;
-        boolean res = super.onTouchEvent(event);
-
-        if(!consumeNonUrlClicks) {
-            return linkHit;
-        }
-        return res;
+        return super.onTouchEvent(event);
     }
 
+    @Override
+    protected boolean getDefaultEditable() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N|| super.getDefaultEditable();
+    }
+
+    @Override
+    public boolean isSuggestionsEnabled() {
+        return false;
+    }
 }

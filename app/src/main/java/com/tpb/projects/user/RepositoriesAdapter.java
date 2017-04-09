@@ -241,8 +241,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         RepoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mDescription.setConsumeNonUrlClicks(false);
             view.setOnClickListener(v -> openItem(getAdapterPosition()));
+            mDescription.setOnClickListener(v -> openItem(getAdapterPosition()));
             if(!mIsShowingStars) {
                 mImage.setOnClickListener((v) -> {
                     togglePin(getAdapterPosition());

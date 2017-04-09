@@ -315,7 +315,6 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
         setBackground(null);
         setFocusable(false);
         setCursorVisible(false);
-        //setEnabled(false);
         mIsEditing = false;
     }
 
