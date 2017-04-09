@@ -61,9 +61,6 @@ import java.util.regex.Pattern;
 
 import static com.tpb.mdtext.TextUtils.isValidURL;
 
-/**
- * Some parts of this code are based on android.text.Html
- */
 public class HtmlTagHandler implements Html.TagHandler {
     private static final String TAG = HtmlTagHandler.class.getSimpleName();
 
@@ -94,38 +91,28 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final Pattern ESCAPE_PATTERN = TextUtils.generatePattern(ESCAPE_MAP.keySet());
 
     /**
-     * Newer versions of the Android SDK's {@link Html.TagHandler} handles &lt;ul&gt; and &lt;li&gt;
-     * tags itself which means they never get delegated to this class. We want to handle the tags
-     * ourselves so before passing the string html into Html.fromHtml(), we can use this method to
-     * replace the &lt;ul&gt; and &lt;li&gt; tags with tags of our own.
-     *
-     * @param html String containing HTML, for example: "<b>Hello world!</b>"
-     * @return html with replaced <ul> and <li> tags
-     * @see <a href="https://github.com/android/platform_frameworks_base/commit/8b36c0bbd1503c61c111feac939193c47f812190">Specific Android SDK Commit</a>
+     * Android captures some tags before they get here, so we escape them
      */
     public String overrideTags(@Nullable String html) {
         return TextUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
     /**
-     * Keeps track of lists (ol, ul). On bottom of Stack is the outermost list
-     * and on top of Stack is the most nested list
+     * Stack of nested list tags, bulleted flag and list type (For OL)
      */
-    private final Stack<Triple<String, Boolean, ListNumberSpan.ListType>> lists = new Stack<>();
+    private final Stack<Triple<String, Boolean, ListNumberSpan.ListType>> mLists = new Stack<>();
     /**
      * Tracks indexes of ordered lists so that after a nested list ends
      * we can continue with correct index of outer list
      */
-    private final Stack<Pair<Integer, ListNumberSpan.ListType>> olNextIndex = new Stack<>();
+    private final Stack<Pair<Integer, ListNumberSpan.ListType>> mOlIndices = new Stack<>();
 
-    private StringBuilder tableHtmlBuilder = new StringBuilder();
-    /**
-     * Tells us which level of table tag we're on; ultimately used to find the root table tag.
-     */
-    private int tableTagLevel = 0;
+    private StringBuilder mTableHtmlBuilder = new StringBuilder();
 
-    private static int indent = 10;
-    private static final int listItemIndent = indent * 2;
+    private int mTableLevel = 0;
+
+    private static int mSingleIndent = 10;
+    private static final int mListIndent = mSingleIndent * 2;
     private final TextPaint mTextPaint;
     private LinkClickHandler mLinkHandler;
     private CodeClickHandler mCodeHandler;
@@ -133,7 +120,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler, @Nullable TableClickHandler tableHandler) {
         mTextPaint = tv.getPaint();
-        indent = (int) mTextPaint.measureText("t");
+        mSingleIndent = (int) mTextPaint.measureText("t");
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
         mTableHandler = tableHandler;
@@ -151,7 +138,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private void handleOpeningTag(final String tag, Editable output, final XMLReader xmlReader) {
         if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-            lists.push(
+            mLists.push(
                     new Triple<>(
                             tag,
                             safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
@@ -162,7 +149,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             );
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
             final ListNumberSpan.ListType type =  ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""));
-            lists.push(
+            mLists.push(
                     new Triple<>(
                             tag,
                             safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
@@ -171,22 +158,22 @@ public class HtmlTagHandler implements Html.TagHandler {
                             type
                     )
             );
-            olNextIndex.push(Pair.create(1, type));
+            mOlIndices.push(Pair.create(1, type));
         } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                 output.append("\n");
             }
-            if(!lists.isEmpty()) {
-                String parentList = lists.peek().first;
+            if(!mLists.isEmpty()) {
+                String parentList = mLists.peek().first;
                 if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                     start(output, new Ol());
-                    olNextIndex.push(Pair.create(olNextIndex.pop().first + 1, lists.peek().third));
+                    mOlIndices.push(Pair.create(mOlIndices.pop().first + 1, mLists.peek().third));
                 } else if(parentList.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                     start(output, new Ul());
                 }
             } else {
                 start(output, new Ol());
-                olNextIndex.push(Pair.create(1, ListNumberSpan.ListType.NUMBER));
+                mOlIndices.push(Pair.create(1, ListNumberSpan.ListType.NUMBER));
             }
         } else if(tag.equalsIgnoreCase("code")) {
             start(output, new Code());
@@ -196,14 +183,10 @@ public class HtmlTagHandler implements Html.TagHandler {
             start(output, new Strike());
         } else if(tag.equalsIgnoreCase("table")) {
             start(output, new Table());
-            if(tableTagLevel == 0) {
-                tableHtmlBuilder = new StringBuilder();
-                // We need some text for the table to be replaced by the span because
-                // the other tags will remove their text when their text is extracted
-                //output.append("table placeholder");
+            if(mTableLevel == 0) {
+                mTableHtmlBuilder = new StringBuilder();
             }
-
-            tableTagLevel++;
+            mTableLevel++;
         } else if(tag.equalsIgnoreCase("tr")) {
             start(output, new Tr());
         } else if(tag.equalsIgnoreCase("th")) {
@@ -239,18 +222,18 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private void handleClosingTag(final String tag, Editable output) {
         if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-            lists.pop();
+            mLists.pop();
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-            lists.pop();
-            olNextIndex.pop();
+            mLists.pop();
+            mOlIndices.pop();
         } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
-            if(!lists.isEmpty()) {
-                if(lists.peek().first.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
+            if(!mLists.isEmpty()) {
+                if(mLists.peek().first.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
                     if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                         output.append("\n");
                     }
 
-                    if(lists.peek().second) {
+                    if(mLists.peek().second) {
                         //Check for checkboxes
                         if(output.length() > 2 &&
                                 ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
@@ -258,34 +241,34 @@ public class HtmlTagHandler implements Html.TagHandler {
                                         .charAt(1) <= '\u2612')
                                 )) {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1))
+                                    new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
                             );
                         } else {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1)),
-                                    new BulletSpan(indent)
+                                    new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1)),
+                                    new BulletSpan(mSingleIndent)
                             );
                         }
                     } else {
                         end(output, Ul.class, false,
-                                new LeadingMarginSpan.Standard(listItemIndent * (lists.size() - 1))
+                                new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
                         );
                     }
 
-                } else if(lists.peek().first.equalsIgnoreCase(ORDERED_LIST_TAG)) {
+                } else if(mLists.peek().first.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                     if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                         output.append("\n");
                     }
-                    int numberMargin = listItemIndent * (lists.size() - 1);
-                    if(lists.size() > 2) {
-                        // Same as in ordered lists: counter the effect of nested Spans
-                        numberMargin -= (lists.size() - 2) * listItemIndent;
+                    int numberMargin = mListIndent * (mLists.size() - 1);
+                    if(mLists.size() > 2) {
+                        // Same as in ordered mLists: counter the effect of nested Spans
+                        numberMargin -= (mLists.size() - 2) * mListIndent;
                     }
-                    if(lists.peek().second) {
+                    if(mLists.peek().second) {
                         end(output, Ol.class, false,
                                 new LeadingMarginSpan.Standard(numberMargin),
-                                new ListNumberSpan(mTextPaint, olNextIndex.lastElement().first - 1,
-                                        lists.peek().third)
+                                new ListNumberSpan(mTextPaint, mOlIndices.lastElement().first - 1,
+                                        mLists.peek().third)
                         );
                     } else {
                         end(output, Ol.class, false,
@@ -327,16 +310,16 @@ public class HtmlTagHandler implements Html.TagHandler {
         } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
             end(output, Strike.class, false, new StrikethroughSpan());
         } else if(tag.equalsIgnoreCase("table")) {
-            tableTagLevel--;
+            mTableLevel--;
             // When we're back at the root-level table
-            if(tableTagLevel == 0) {
+            if(mTableLevel == 0) {
                 final Table obj = getLast(output, Table.class);
                 final int start = output.getSpanStart(obj);
                 output.removeSpan(obj); //Remove the old span
                 output.insert(start, "\n");
                 output.replace(start + 1, output.length(), "  "); //We need a non-empty span
 
-                final TableSpan table = new TableSpan(tableHtmlBuilder.toString(), mTableHandler);
+                final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
                 output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 output.setSpan(new TableSpan.ClickableTableSpan(table), start, start + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -445,23 +428,23 @@ public class HtmlTagHandler implements Html.TagHandler {
                 case "yellow":
                     return Color.YELLOW;
                 case "aqua":
-                    return Color.parseColor("#00FFFF");
+                    return 0xff00ffff;
                 case "fuchsia":
-                    return Color.parseColor("#FF00FF");
+                    return 0xffff00ff;
                 case "lime":
-                    return Color.parseColor("#00FF00");
+                    return 0xff00ff00;
                 case "maroon":
-                    return Color.parseColor("#800000");
+                    return 0xff800000;
                 case "navy":
-                    return Color.parseColor("#FF00FF");
+                    return 0xffff00ff;
                 case "olive":
-                    return Color.parseColor("#808000");
+                    return 0xff808000;
                 case "purple":
-                    return Color.parseColor("#800080");
+                    return 0xff800080;
                 case "silver":
-                    return Color.parseColor("#C0C0C0");
+                    return 0xffc0c0c0;
                 case "teal":
-                    return Color.parseColor("#008080");
+                    return 0xff008080;
                 default:
                     return Color.WHITE;
 
@@ -508,12 +491,12 @@ public class HtmlTagHandler implements Html.TagHandler {
      * the raw HTML for our ClickableTableSpan
      */
     private void storeTableTags(boolean opening, String tag) {
-        if(tableTagLevel > 0 || tag.equalsIgnoreCase("table")) {
-            tableHtmlBuilder.append("<");
+        if(mTableLevel > 0 || tag.equalsIgnoreCase("table")) {
+            mTableHtmlBuilder.append("<");
             if(!opening) {
-                tableHtmlBuilder.append("/");
+                mTableHtmlBuilder.append("/");
             }
-            tableHtmlBuilder
+            mTableHtmlBuilder
                     .append(tag.toLowerCase())
                     .append(">");
         }
@@ -538,9 +521,9 @@ public class HtmlTagHandler implements Html.TagHandler {
         int end= output.length();
 
         // If we're in a table, then we need to store the raw HTML for later
-        if(tableTagLevel > 0) {
+        if(mTableLevel > 0) {
             final CharSequence extractedSpanText = extractSpanText(output, kind);
-            tableHtmlBuilder.append(extractedSpanText);
+            mTableHtmlBuilder.append(extractedSpanText);
         }
 
         output.removeSpan(obj);
