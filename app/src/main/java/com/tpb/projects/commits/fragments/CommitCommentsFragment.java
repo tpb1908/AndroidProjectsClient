@@ -1,5 +1,6 @@
 package com.tpb.projects.commits.fragments;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -50,10 +51,8 @@ public class CommitCommentsFragment extends CommitFragment {
 
     private CommitCommentsAdapter mAdapter;
 
-    public static CommitCommentsFragment getInstance(FloatingActionButton fab) {
-        final CommitCommentsFragment ccf = new CommitCommentsFragment();
-        ccf.mFab = fab;
-        return ccf;
+    public static CommitCommentsFragment getInstance() {
+        return new CommitCommentsFragment();
     }
 
     @Nullable
@@ -62,10 +61,29 @@ public class CommitCommentsFragment extends CommitFragment {
         final View view = inflater.inflate(R.layout.fragment_commit_comments, container, false);
         unbinder = ButterKnife.bind(this, view);
         mEditor = new Editor(getContext());
-        final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mAdapter = new CommitCommentsAdapter(this, mRefresher);
-        mRecycler.setLayoutManager(manager);
+        mRecycler.setLayoutManager(new FixedLinearLayoutManger(getContext()));
         mRecycler.setAdapter(mAdapter);
+
+        mAreViewsValid = true;
+        if(mFab != null) addListeners();
+        if(mCommit != null) commitLoaded(mCommit);
+        return view;
+    }
+
+    public void setFab(FloatingActionButton fab) {
+        mFab = fab;
+        if(mAreViewsValid) addListeners();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(mFab != null && mAreViewsValid) addListeners();
+    }
+
+    private void addListeners() {
+        final LinearLayoutManager manager = (LinearLayoutManager) mRecycler.getLayoutManager();
         mRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -85,9 +103,6 @@ public class CommitCommentsFragment extends CommitFragment {
             UI.setViewPositionForIntent(i, mFab);
             startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
         });
-        mAreViewsValid = true;
-        if(mCommit != null) commitLoaded(mCommit);
-        return view;
     }
 
     @Override

@@ -88,11 +88,22 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
     public void loadComplete(Commit data) {
         mCommit = data;
         mHash.setText(com.tpb.github.data.Util.shortenSha(mCommit.getSha()));
-        mAdapter.setCommit();
+        mAdapter.notifyCommitLoaded();
     }
 
     @Override
     public void loadError(APIHandler.APIError error) {
+
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if(mAdapter == null) mAdapter = new CommitPagerAdapter(getSupportFragmentManager());
+        mAdapter.attachFragment(fragment);
+        if(fragment instanceof CommitCommentsFragment && mFab != null) {
+            ((CommitCommentsFragment) fragment).setFab(mFab);
+        }
 
     }
 
@@ -105,22 +116,28 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
             super(fm);
         }
 
-        void setCommit() {
-            if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
-            if(mCommentsFragment != null) mCommentsFragment.commitLoaded(mCommit);
-        }
-
         @Override
         public Fragment getItem(int position) {
             if(position == 0) {
-                mInfoFragment = CommitInfoFragment.getInstance(CommitActivity.this);
+                mInfoFragment = CommitInfoFragment.getInstance();
                 if(mCommit != null) mInfoFragment.commitLoaded(mCommit);
                 return mInfoFragment;
             } else {
-                mCommentsFragment = CommitCommentsFragment.getInstance(mFab);
+                mCommentsFragment = CommitCommentsFragment.getInstance();
+                if(mFab != null) mCommentsFragment.setFab(mFab);
                 if(mCommit != null) mCommentsFragment.commitLoaded(mCommit);
                 return mCommentsFragment;
             }
+        }
+
+        void attachFragment(Fragment fragment) {
+            if(fragment instanceof CommitInfoFragment) mInfoFragment = (CommitInfoFragment) fragment;
+            if(fragment instanceof CommitCommentsFragment) mCommentsFragment = (CommitCommentsFragment) fragment;
+        }
+
+        void notifyCommitLoaded() {
+            if(mInfoFragment != null) mInfoFragment.commitLoaded(mCommit);
+            if(mCommentsFragment != null) mCommentsFragment.commitLoaded(mCommit);
         }
 
         @Override

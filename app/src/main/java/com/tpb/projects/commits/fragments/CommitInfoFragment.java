@@ -20,7 +20,6 @@ import com.tpb.github.data.models.Status;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
-import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.common.NetworkImageView;
@@ -53,10 +52,8 @@ public class CommitInfoFragment extends CommitFragment {
 
     private CommitDiffAdapter mAdapter;
 
-    public static CommitInfoFragment getInstance(CommitActivity parent) {
-        final CommitInfoFragment cif = new CommitInfoFragment();
-        cif.mParent = parent;
-        return cif;
+    public static CommitInfoFragment getInstance() {
+        return new CommitInfoFragment();
     }
 
     @Nullable
@@ -108,7 +105,7 @@ public class CommitInfoFragment extends CommitFragment {
             IntentHandler.addOnClickHandler(getActivity(), mAvatar, user);
         }
         if(mCommit.getFiles() != null) {
-            String builder =
+            final String commitText =
                     "<br>" +
                             getResources()
                                     .getQuantityString(R.plurals.text_commit_additions,
@@ -127,7 +124,7 @@ public class CommitInfoFragment extends CommitFragment {
                                             new Date(mCommit.getCreatedAt())
                                     )
                             );
-            mInfo.setMarkdown(Markdown.formatMD(builder, mCommit.getFullRepoName()));
+            mInfo.setMarkdown(Markdown.formatMD(commitText, mCommit.getFullRepoName()));
             mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
         }

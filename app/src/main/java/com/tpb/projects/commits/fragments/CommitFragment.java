@@ -12,10 +12,13 @@ import com.tpb.projects.commits.CommitActivity;
 public abstract class CommitFragment extends Fragment {
 
     protected boolean mAreViewsValid;
-    protected CommitActivity mParent;
     protected Commit mCommit;
 
     public abstract void commitLoaded(Commit commit);
+
+    public CommitActivity getParent() {
+        return (CommitActivity) getActivity();
+    }
 
     @Override
     public void onDestroyView() {
