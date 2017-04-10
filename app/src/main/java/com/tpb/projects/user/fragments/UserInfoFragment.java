@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
 import com.tpb.github.data.APIHandler;
+import com.tpb.github.data.Editor;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.User;
@@ -34,7 +35,7 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserInfoFragment extends UserFragment implements ContributionsView.ContributionsLoadListener, Loader.ItemLoader<Boolean> {
+public class UserInfoFragment extends UserFragment implements ContributionsView.ContributionsLoadListener, Editor.UpdateListener<Boolean>, Loader.ItemLoader<Boolean> {
     private static final String TAG = UserInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
@@ -103,7 +104,17 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     }
 
     @Override
-    public void loadComplete(Boolean following) {
+    public void loadComplete(Boolean isFollowing) {
+        updated(isFollowing);
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
+
+    }
+
+    @Override
+    public void updated(Boolean isFollowing) {
         if(mFollowButton == null) {
             mFollowButton = new Button(getContext());
             mFollowButton.setBackground(null);
@@ -113,7 +124,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             mUserInfoParent.addView(mFollowButton);
         }
 
-        if(following) {
+        if(isFollowing) {
             mFollowButton.setText(R.string.text_unfollow_user);
         } else {
             mFollowButton.setText(R.string.text_follow_user);
@@ -121,10 +132,10 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         mFollowButton.setOnClickListener(v -> {
             mFollowButton.setEnabled(false);
             mRefresher.setRefreshing(true);
-            if(following) {
-                new Loader(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
+            if(isFollowing) {
+                new Editor(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
             } else {
-                new Loader(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
+                new Editor(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
             }
         });
         mFollowButton.setEnabled(true);
@@ -132,8 +143,8 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     }
 
     @Override
-    public void loadError(APIHandler.APIError error) {
-        // We don't care
+    public void updateError(APIHandler.APIError error) {
+
     }
 
     @Override

@@ -55,21 +55,6 @@ public class File extends DataModel implements Parcelable {
         return rawUrl;
     }
 
-    public static File parse(JSONObject obj) {
-        final File f = new File();
-        try {
-            f.name = obj.getString(FILE_NAME);
-            f.size = obj.getInt(SIZE);
-            f.rawUrl = obj.getString(RAW_URL);
-            f.type = obj.getString(TYPE);
-            f.truncated = obj.has(TRUNCATED) && obj.getBoolean(TRUNCATED);
-            f.language = obj.getString(LANGUAGE);
-        } catch(JSONException jse) {
-            Log.e(File.class.getSimpleName(), "parse: ", jse);
-        }
-        return f;
-    }
-
     @Override
     public long getCreatedAt() {
         return 0;
@@ -90,7 +75,17 @@ public class File extends DataModel implements Parcelable {
         dest.writeString(this.language);
     }
 
-    public File() {
+    public File(JSONObject obj) {
+        try {
+            name = obj.getString(FILE_NAME);
+            size = obj.getInt(SIZE);
+            rawUrl = obj.getString(RAW_URL);
+            type = obj.getString(TYPE);
+            truncated = obj.has(TRUNCATED) && obj.getBoolean(TRUNCATED);
+            language = obj.getString(LANGUAGE);
+        } catch(JSONException jse) {
+            Log.e(File.class.getSimpleName(), "parse: ", jse);
+        }
     }
 
     protected File(Parcel in) {

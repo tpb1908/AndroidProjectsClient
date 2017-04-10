@@ -18,10 +18,7 @@ import java.text.ParseException;
 
 public class User extends DataModel implements Parcelable {
     private static final String TAG = User.class.getSimpleName();
-
-    private User() {
-    }
-
+    
     private static final String LOGIN = "login";
     private String login;
 
@@ -146,72 +143,48 @@ public class User extends DataModel implements Parcelable {
     public long getCreatedAt() {
         return createdAt;
     }
-
-    public static User parse(JSONObject obj) {
-        final User u = new User();
+    
+    public User(JSONObject obj) {
         try {
-            u.id = obj.getInt(ID);
-            u.login = obj.getString(LOGIN);
-            u.avatarUrl = obj.getString(AVATAR_URL);
-            u.url = obj.getString(URL);
+            id = obj.getInt(ID);
+            login = obj.getString(LOGIN);
+            avatarUrl = obj.getString(AVATAR_URL);
+            url = obj.getString(URL);
 
             if(obj.has(CREATED_AT)) {
                 try {
-                    u.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                    createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
             }
             if(obj.has(HTML_URL)) {
-                u.htmlUrl = obj.getString(HTML_URL);
+                htmlUrl = obj.getString(HTML_URL);
             } else {
-                u.htmlUrl = "https://github.com/" + u.getLogin();
+                htmlUrl = "https://github.com/" + getLogin();
             }
             if(obj.has(REPOS_URL) && !JSON_NULL.equals(obj.getString(REPOS_URL)))
-                u.reposUrl = obj.getString(REPOS_URL);
-            if(obj.has(REPOS)) u.repos = obj.getInt(REPOS);
-            if(obj.has(FOLLOWERS)) u.followers = obj.getInt(FOLLOWERS);
-            if(obj.has(BIO) && !JSON_NULL.equals(obj.getString(BIO))) u.bio = obj.getString(BIO);
+                reposUrl = obj.getString(REPOS_URL);
+            if(obj.has(REPOS)) repos = obj.getInt(REPOS);
+            if(obj.has(FOLLOWERS)) followers = obj.getInt(FOLLOWERS);
+            if(obj.has(BIO) && !JSON_NULL.equals(obj.getString(BIO))) bio = obj.getString(BIO);
             if(obj.has(EMAIL) && !JSON_NULL.equals(obj.getString(EMAIL)))
-                u.email = obj.getString(EMAIL);
+                email = obj.getString(EMAIL);
             if(obj.has(LOCATION) && !JSON_NULL.equals(obj.getString(LOCATION)))
-                u.location = obj.getString(LOCATION);
+                location = obj.getString(LOCATION);
             if(obj.has(NAME) && !JSON_NULL.equals(obj.getString(NAME)))
-                u.name = obj.getString(NAME);
+                name = obj.getString(NAME);
             if(obj.has(BLOG) && !JSON_NULL.equals(obj.getString(BLOG)))
-                u.blog = obj.getString(BLOG);
+                blog = obj.getString(BLOG);
             if(obj.has(COMPANY) && !JSON_NULL.equals(obj.getString(COMPANY)))
-                u.company = obj.getString(COMPANY);
-            if(obj.has(GISTS)) u.gists = obj.getInt(GISTS);
-            if(obj.has(FOLLOWING)) u.following = obj.getInt(FOLLOWING);
-            if(obj.has(CONTRIBUTIONS)) u.contributions = obj.getInt(CONTRIBUTIONS);
+                company = obj.getString(COMPANY);
+            if(obj.has(GISTS)) gists = obj.getInt(GISTS);
+            if(obj.has(FOLLOWING)) following = obj.getInt(FOLLOWING);
+            if(obj.has(CONTRIBUTIONS)) contributions = obj.getInt(CONTRIBUTIONS);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
-        }
-
-        return u;
+        }   
     }
-
-    public static JSONObject parse(User user) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, user.id);
-            obj.put(LOGIN, user.login);
-            obj.put(AVATAR_URL, user.avatarUrl);
-            obj.put(URL, user.url);
-            obj.put(REPOS_URL, user.reposUrl);
-            obj.put(REPOS, user.repos);
-            obj.put(FOLLOWERS, user.followers);
-            if(user.bio != null) obj.put(BIO, user.bio);
-            if(user.email != null) obj.put(EMAIL, user.email);
-            if(user.location != null) obj.put(LOCATION, user.location);
-            if(user.name != null) obj.put(NAME, user.name);
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
-    }
-
     @Override
     public boolean equals(Object obj) {
         return obj instanceof User && ((User) obj).id == id;

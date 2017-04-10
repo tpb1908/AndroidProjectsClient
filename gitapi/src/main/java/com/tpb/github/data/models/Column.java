@@ -18,7 +18,20 @@ import java.text.ParseException;
 public class Column extends DataModel implements Parcelable {
     private static final String TAG = Column.class.getSimpleName();
 
-    private Column() {
+    public Column(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            name = obj.getString(NAME);
+            projectUrl = obj.getString(PROJECT_URL);
+            try {
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
     }
 
     private int id;
@@ -57,38 +70,6 @@ public class Column extends DataModel implements Parcelable {
 
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public static Column parse(JSONObject object) {
-        final Column c = new Column();
-        try {
-            c.id = object.getInt(ID);
-            c.name = object.getString(NAME);
-            c.projectUrl = object.getString(PROJECT_URL);
-            try {
-                c.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
-                c.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return c;
-    }
-
-    public static JSONObject parse(Column column) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, column.id);
-            obj.put(NAME, column.name);
-            obj.put(PROJECT_URL, column.projectUrl);
-            obj.put(CREATED_AT, Util.toISO8061FromSeconds(column.createdAt));
-            obj.put(UPDATED_AT, Util.toISO8061FromSeconds(column.updatedAt));
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
     }
 
     @Override

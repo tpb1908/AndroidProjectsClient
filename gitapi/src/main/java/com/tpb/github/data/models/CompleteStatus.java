@@ -36,7 +36,7 @@ public class CompleteStatus extends DataModel implements Parcelable {
             state = obj.getString(STATE);
             sha = obj.getString(SHA);
             totalCount = obj.getInt(TOTAL_COUNT);
-            repo = Repository.parse(obj.getJSONObject(REPOSITORY));
+            repo = new Repository(obj.getJSONObject(REPOSITORY));
             statuses = new ArrayList<>();
             final JSONArray array = obj.getJSONArray(STATUSES);
             try {

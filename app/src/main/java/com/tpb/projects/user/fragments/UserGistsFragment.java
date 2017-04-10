@@ -71,7 +71,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
     @Override
     public void openGist(Gist gist, View view) {
         final Intent i = new Intent(getContext(), FileActivity.class);
-        i.putExtra(getString(R.string.intent_gist_url), gist.getFiles()[0].getRawUrl());
+        i.putExtra(getString(R.string.intent_gist_url), gist.getFiles().get(0).getRawUrl());
         startActivity(i);
     }
 

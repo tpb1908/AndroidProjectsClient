@@ -67,6 +67,61 @@ public class Issue extends DataModel implements Parcelable {
 
     private static final String MILESTONE = "milestone";
     private Milestone milestone;
+    
+    public Issue(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            number = obj.getInt(NUMBER);
+            stateString = obj.getString(STATE);
+            state = State.fromString(stateString);
+            title = obj.getString(TITLE);
+            body = obj.getString(BODY);
+            comments = obj.getInt(COMMENTS);
+            isLocked = obj.getBoolean(LOCKED);
+            repoFullName = obj.getString(REPOSITORY_URL).substring(29);
+            if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
+                try {
+                    closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                    closed = true;
+                } catch(ParseException pe) {
+                    Log.e(TAG, "parse: ", pe);
+                }
+            }
+            try {
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(JSON_NULL)) {
+                assignees = new User[] {new User(obj.getJSONObject(ASSIGNEE))};
+            }
+            if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
+                final JSONArray as = obj.getJSONArray(ASSIGNEES);
+                assignees = new User[as.length()];
+                for(int j = 0; j < as.length(); j++) {
+                    assignees[j] = new User(as.getJSONObject(j));
+                }
+            }
+            openedBy = new User(obj.getJSONObject(USER));
+            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(JSON_NULL)) {
+                closedBy = new User(obj.getJSONObject(CLOSED_BY));
+            }
+            try {
+                final JSONArray lbs = obj.getJSONArray(LABELS);
+                labels = new Label[lbs.length()];
+                for(int j = 0; j < lbs.length(); j++) {
+                    labels[j] = new Label(lbs.getJSONObject(j));
+                }
+            } catch(JSONException jse) {
+                Log.e(TAG, "parse: Labels: ", jse);
+            }
+            if(obj.has(MILESTONE) && !obj.getString(MILESTONE).equals(JSON_NULL)) {
+                milestone = new Milestone(obj.getJSONObject(MILESTONE));
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+    }
 
     public int getId() {
         return id;
@@ -145,80 +200,6 @@ public class Issue extends DataModel implements Parcelable {
 
     public User getClosedBy() {
         return closedBy;
-    }
-
-    public static Issue parse(JSONObject obj) {
-        final Issue i = new Issue();
-
-        try {
-            i.id = obj.getInt(ID);
-            i.number = obj.getInt(NUMBER);
-            i.stateString = obj.getString(STATE);
-            i.state = State.fromString(i.stateString);
-            i.title = obj.getString(TITLE);
-            i.body = obj.getString(BODY);
-            i.comments = obj.getInt(COMMENTS);
-            i.isLocked = obj.getBoolean(LOCKED);
-            //https://api.github.com/repos/user/repo
-            i.repoFullName = obj.getString(REPOSITORY_URL).substring(29);
-            if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
-                try {
-                    i.closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
-                    i.closed = true;
-                } catch(ParseException pe) {
-                    Log.e(TAG, "parse: ", pe);
-                }
-            }
-            try {
-                i.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-            if(obj.has(ASSIGNEE) && !obj.getString(ASSIGNEE).equals(JSON_NULL)) {
-                i.assignees = new User[] {User.parse(obj.getJSONObject(ASSIGNEE))};
-            }
-            if(obj.has(ASSIGNEES) && obj.getJSONArray(ASSIGNEES).length() > 0) {
-                final JSONArray as = obj.getJSONArray(ASSIGNEES);
-                i.assignees = new User[as.length()];
-                for(int j = 0; j < as.length(); j++) {
-                    i.assignees[j] = User.parse(as.getJSONObject(j));
-                }
-            }
-            i.openedBy = User.parse(obj.getJSONObject(USER));
-            if(obj.has(CLOSED_BY) && !obj.getString(CLOSED_BY).equals(JSON_NULL)) {
-                i.closedBy = User.parse(obj.getJSONObject(CLOSED_BY));
-            }
-            try {
-                final JSONArray lbs = obj.getJSONArray(LABELS);
-                i.labels = new Label[lbs.length()];
-                for(int j = 0; j < lbs.length(); j++) {
-                    i.labels[j] = Label.parse(lbs.getJSONObject(j));
-                }
-            } catch(JSONException jse) {
-                Log.e(TAG, "parse: Labels: ", jse);
-            }
-            if(obj.has(MILESTONE) && !obj.getString(MILESTONE).equals(JSON_NULL)) {
-                i.milestone = Milestone.parse(obj.getJSONObject(MILESTONE));
-            }
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return i;
-    }
-
-    public static JSONObject parse(Issue issue) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, issue.id);
-            obj.put(NUMBER, issue.number);
-            obj.put(STATE, issue.stateString);
-            obj.put(TITLE, issue.title);
-            obj.put(BODY, issue.body);
-            if(issue.closedAt != 0) obj.put(CLOSED_AT, issue.closedAt);
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
     }
 
     @Override

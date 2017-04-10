@@ -54,7 +54,51 @@ public class IssueEvent extends DataModel implements Parcelable {
     private String renameFrom;
     private String renameTo;
 
-    private Milestone milestone;
+    
+    public IssueEvent(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            actor = new User(obj.getJSONObject(ACTOR));
+            if(obj.has(EVENT))
+                event = GitIssueEvent.fromString(obj.getString(EVENT).toLowerCase());
+
+            try {
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+            if(obj.has(COMMIT_ID)) {
+                commitId = obj.getString(COMMIT_ID);
+            }
+            if(obj.has(COMMIT_URL)) {
+                commitUrl = obj.getString(COMMIT_URL);
+            }
+
+            if(obj.has(LABEL) && !JSON_NULL.equals(obj.getString(LABEL))) {
+                labelName = obj.getJSONObject(LABEL).getString(NAME);
+                labelColor = Color.parseColor("#" + obj.getJSONObject(LABEL).getString(COLOR));
+            }
+            if(obj.has(ASSIGNEE)) {
+                assignee = new User(obj.getJSONObject(ASSIGNEE));
+            }
+            if(obj.has(ASSIGNER)) {
+                assigner = new User(obj.getJSONObject(ASSIGNER));
+            }
+            if(obj.has(REVIEW_REQUESTER)) {
+                reviewRequester = new User(obj.getJSONObject(REVIEW_REQUESTER));
+            }
+            if(obj.has(REQUESTED_REVIEWER)) {
+                requestedReviewer = new User(obj.getJSONObject(REQUESTED_REVIEWER));
+            }
+            if(obj.has(RENAME)) {
+                renameFrom = obj.getJSONObject(RENAME).getString(RENAME_FROM);
+                renameTo = obj.getJSONObject(RENAME).getString(RENAME_TO);
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+            Log.e(TAG, "parse: " + obj.toString());
+        }
+    }
 
     public int getId() {
         return id;
@@ -116,53 +160,7 @@ public class IssueEvent extends DataModel implements Parcelable {
     public String getRenameTo() {
         return renameTo;
     }
-
-    public static IssueEvent parse(JSONObject obj) {
-        final IssueEvent e = new IssueEvent();
-        try {
-            e.id = obj.getInt(ID);
-            e.actor = User.parse(obj.getJSONObject(ACTOR));
-            if(obj.has(EVENT))
-                e.event = GitIssueEvent.fromString(obj.getString(EVENT).toLowerCase());
-
-            try {
-                e.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-            if(obj.has(COMMIT_ID)) {
-                e.commitId = obj.getString(COMMIT_ID);
-            }
-            if(obj.has(COMMIT_URL)) {
-                e.commitUrl = obj.getString(COMMIT_URL);
-            }
-
-            if(obj.has(LABEL) && !JSON_NULL.equals(obj.getString(LABEL))) {
-                e.labelName = obj.getJSONObject(LABEL).getString(NAME);
-                e.labelColor = Color.parseColor("#" + obj.getJSONObject(LABEL).getString(COLOR));
-            }
-            if(obj.has(ASSIGNEE)) {
-                e.assignee = User.parse(obj.getJSONObject(ASSIGNEE));
-            }
-            if(obj.has(ASSIGNER)) {
-                e.assigner = User.parse(obj.getJSONObject(ASSIGNER));
-            }
-            if(obj.has(REVIEW_REQUESTER)) {
-                e.reviewRequester = User.parse(obj.getJSONObject(REVIEW_REQUESTER));
-            }
-            if(obj.has(REQUESTED_REVIEWER)) {
-                e.requestedReviewer = User.parse(obj.getJSONObject(REQUESTED_REVIEWER));
-            }
-            if(obj.has(RENAME)) {
-                e.renameFrom = obj.getJSONObject(RENAME).getString(RENAME_FROM);
-                e.renameTo = obj.getJSONObject(RENAME).getString(RENAME_TO);
-            }
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-            Log.e(TAG, "parse: " + obj.toString());
-        }
-        return e;
-    }
+    
 
     @Override
     public String toString() {

@@ -50,7 +50,7 @@ public class Status extends DataModel implements Parcelable {
             description = obj.getString(DESCRIPTION);
             url = obj.getString(URL);
             context = obj.getString(CONTEXT);
-            if(obj.has(KEY_CREATOR)) creator = User.parse(obj.getJSONObject(KEY_CREATOR));
+            if(obj.has(KEY_CREATOR)) creator = new User(obj.getJSONObject(KEY_CREATOR));
         } catch(JSONException jse) {
         }
     }

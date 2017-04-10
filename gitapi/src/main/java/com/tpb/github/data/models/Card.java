@@ -20,6 +20,32 @@ public class Card extends DataModel implements Parcelable {
 
     public Card() {
     }
+    
+    public Card(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            columnUrl = obj.getString(COLUMN_URL);
+            if(obj.has(CONTENT_URL)) {
+                contentUrl = obj.getString(CONTENT_URL);
+                issueId = Integer
+                        .parseInt(contentUrl.substring(contentUrl.lastIndexOf('/') + 1));
+
+            }
+            note = obj.getString(NOTE);
+            if(JSON_NULL.equals(note)) {
+                note = "";
+                requiresLoadingFromIssue = true;
+            }
+            try {
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+    }
 
     private static final String COLUMN_URL = "column_url";
     private String columnUrl;
@@ -111,52 +137,6 @@ public class Card extends DataModel implements Parcelable {
                                                                            .isEmpty() ? '\n' + issue
                 .getBody() : "");
         this.issue = issue;
-    }
-
-    public static Card parse(JSONObject object) {
-        final Card c = new Card();
-        try {
-            c.id = object.getInt(ID);
-            c.columnUrl = object.getString(COLUMN_URL);
-            if(object.has(CONTENT_URL)) {
-                c.contentUrl = object.getString(CONTENT_URL);
-                c.issueId = Integer
-                        .parseInt(c.contentUrl.substring(c.contentUrl.lastIndexOf('/') + 1));
-
-            }
-            c.note = object.getString(NOTE);
-            if(JSON_NULL.equals(c.note)) {
-                c.note = "";
-                c.requiresLoadingFromIssue = true;
-            }
-            try {
-                c.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
-                c.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return c;
-    }
-
-    public static JSONObject parse(Card card) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, card.id);
-            obj.put(COLUMN_URL, card.columnUrl);
-            if(card.contentUrl != null) {
-                obj.put(CONTENT_URL, card.contentUrl);
-            }
-            obj.put(NOTE, card.note);
-            obj.put(CREATED_AT, Util.toISO8061FromSeconds(card.createdAt));
-            obj.put(UPDATED_AT, Util.toISO8061FromSeconds(card.updatedAt));
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-
-        return obj;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class Notification extends DataModel implements Parcelable {
             id = obj.getLong(ID);
             reason = GitNotificationReason.fromString(obj.getString(REASON));
             threadUrl = obj.getString(URL);
-            if(obj.has(REPOSITORY)) repository = Repository.parse(obj.getJSONObject(REPOSITORY));
+            if(obj.has(REPOSITORY)) repository = new Repository(obj.getJSONObject(REPOSITORY));
             unread = obj.getBoolean(UNREAD);
             try {
                 lastReadAt = Util.toCalendar(obj.getString(LAST_READ_AT)).getTimeInMillis();

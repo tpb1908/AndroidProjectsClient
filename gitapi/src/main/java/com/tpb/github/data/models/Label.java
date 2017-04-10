@@ -15,8 +15,16 @@ import org.json.JSONObject;
 public class Label extends DataModel implements Parcelable {
     private static final String TAG = Label.class.getSimpleName();
 
-    private Label() {
-
+    public Label(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            url = obj.getString(URL);
+            name = obj.getString(NAME);
+            color = Color.parseColor("#" + obj.getString(COLOR));
+            isDefault = obj.getBoolean(DEFAULT);
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
     }
 
     private int id;
@@ -51,37 +59,9 @@ public class Label extends DataModel implements Parcelable {
         return isDefault;
     }
 
-    public static Label parse(JSONObject obj) {
-        final Label l = new Label();
-        try {
-            l.id = obj.getInt(ID);
-            l.url = obj.getString(URL);
-            l.name = obj.getString(NAME);
-            l.color = Color.parseColor("#" + obj.getString(COLOR));
-            l.isDefault = obj.getBoolean(DEFAULT);
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return l;
-    }
-
     @Override
     public long getCreatedAt() {
         return 0;
-    }
-
-    public static JSONObject parse(Label label) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, label.id);
-            obj.put(URL, label.url);
-            obj.put(NAME, label.name);
-            obj.put(COLOR, label.color);
-            obj.put(DEFAULT, label.isDefault);
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
     }
 
     @Override

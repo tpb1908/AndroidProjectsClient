@@ -44,40 +44,39 @@ public class Milestone extends DataModel implements Parcelable {
     private static final String DUE_ON = "due_on";
     private long dueOn;
 
-    public static Milestone parse(JSONObject obj) {
-        final Milestone m = new Milestone();
+    public Milestone(JSONObject obj) {
         try {
-            m.id = obj.getInt(ID);
-            m.number = obj.getInt(NUMBER);
-            m.url = obj.getString(URL);
-            m.htmlUrl = obj.getString(HTML_URL);
-            m.stateString = obj.getString(STATE);
-            m.state = State.fromString(m.stateString);
-            m.title = obj.getString(TITLE);
-            m.description = obj.getString(DESCRIPTION);
-            m.creator = User.parse(obj.getJSONObject(KEY_CREATOR));
-            m.openIssues = obj.getInt(OPEN_ISSUES);
-            m.closedIssues = obj.getInt(CLOSED_ISSUES);
+            id = obj.getInt(ID);
+            number = obj.getInt(NUMBER);
+            url = obj.getString(URL);
+            htmlUrl = obj.getString(HTML_URL);
+            stateString = obj.getString(STATE);
+            state = State.fromString(stateString);
+            title = obj.getString(TITLE);
+            description = obj.getString(DESCRIPTION);
+            creator = new User(obj.getJSONObject(KEY_CREATOR));
+            openIssues = obj.getInt(OPEN_ISSUES);
+            closedIssues = obj.getInt(CLOSED_ISSUES);
             try {
-                m.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
             try {
-                m.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+                updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
             if(!obj.getString(CLOSED_AT).equals(JSON_NULL)) {
                 try {
-                    m.closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
+                    closedAt = Util.toCalendar(obj.getString(CLOSED_AT)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
             }
             if(!obj.getString(DUE_ON).equals(JSON_NULL)) {
                 try {
-                    m.dueOn = Util.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
+                    dueOn = Util.toCalendar(obj.getString(DUE_ON)).getTimeInMillis();
                 } catch(ParseException pe) {
                     Log.e(TAG, "parse: ", pe);
                 }
@@ -85,8 +84,9 @@ public class Milestone extends DataModel implements Parcelable {
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
-        return m;
     }
+    
+    
 
     @Override
     public long getCreatedAt() {

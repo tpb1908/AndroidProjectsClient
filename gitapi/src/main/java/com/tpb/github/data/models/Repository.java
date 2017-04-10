@@ -18,7 +18,47 @@ import java.text.ParseException;
 public class Repository extends DataModel implements Parcelable {
     private static final String TAG = Repository.class.getSimpleName();
 
-    private Repository() {
+    public Repository(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            userLogin = obj.getJSONObject(OWNER).getString(USER_LOGIN);
+            userId = obj.getJSONObject(OWNER).getInt(ID);
+            userAvatarUrl = obj.getJSONObject(OWNER).getString(USER_AVATAR);
+            name = obj.getString(NAME);
+            fullName = obj.getString(FULL_NAME);
+            description = obj.getString(DESCRIPTION);
+            isPrivate = obj.getBoolean(PRIVATE);
+            isFork = obj.getBoolean(FORK);
+            url = obj.getString(URL);
+            htmlUrl = obj.getString(HTML_URL);
+            if(obj.has(HAS_ISSUES)) hasIssues = obj.getBoolean(HAS_ISSUES);
+            if(obj.has(STAR_GAZERS)) starGazers = obj.getInt(STAR_GAZERS);
+            if(obj.has(FORKS)) forks = obj.getInt(FORKS);
+            if(obj.has(WATCHERS)) watchers = obj.getInt(WATCHERS);
+            if(obj.has(ISSUES)) issues = obj.getInt(ISSUES);
+            if(obj.has(SIZE)) size = obj.getInt(SIZE);
+            if(obj.has(LANGUAGE)) language = obj.getString(LANGUAGE);
+            if(obj.has(PARENT)) parent = new Repository(obj.getJSONObject(PARENT));
+            if(obj.has(SOURCE)) source = new Repository(obj.getJSONObject(SOURCE));
+            if(obj.has(LICENSE) && !JSON_NULL.equals(obj.getString(LICENSE))) {
+                final JSONObject license = obj.getJSONObject(LICENSE);
+                licenseKey = license.getString(KEY);
+                licenseName = license.getString(LICENSE_NAME);
+                licenseShortName = license.getString(SPDX_ID);
+                licenseUrl = license.getString(LICENSE_URL);
+            }
+            try {
+                if(obj.has(CREATED_AT))
+                    createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                if(obj.has(UPDATED_AT))
+                    updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
     }
 
     private int id;
@@ -204,82 +244,6 @@ public class Repository extends DataModel implements Parcelable {
     @Override
     public long getCreatedAt() {
         return createdAt;
-    }
-
-    public static Repository parse(JSONObject obj) {
-        final Repository r = new Repository();
-
-        try {
-            r.id = obj.getInt(ID);
-            r.userLogin = obj.getJSONObject(OWNER).getString(USER_LOGIN);
-            r.userId = obj.getJSONObject(OWNER).getInt(ID);
-            r.userAvatarUrl = obj.getJSONObject(OWNER).getString(USER_AVATAR);
-            r.name = obj.getString(NAME);
-            r.fullName = obj.getString(FULL_NAME);
-            r.description = obj.getString(DESCRIPTION);
-            r.isPrivate = obj.getBoolean(PRIVATE);
-            r.isFork = obj.getBoolean(FORK);
-            r.url = obj.getString(URL);
-            r.htmlUrl = obj.getString(HTML_URL);
-            if(obj.has(HAS_ISSUES)) r.hasIssues = obj.getBoolean(HAS_ISSUES);
-            if(obj.has(STAR_GAZERS)) r.starGazers = obj.getInt(STAR_GAZERS);
-            if(obj.has(FORKS)) r.forks = obj.getInt(FORKS);
-            if(obj.has(WATCHERS)) r.watchers = obj.getInt(WATCHERS);
-            if(obj.has(ISSUES)) r.issues = obj.getInt(ISSUES);
-            if(obj.has(SIZE)) r.size = obj.getInt(SIZE);
-            if(obj.has(LANGUAGE)) r.language = obj.getString(LANGUAGE);
-            if(obj.has(PARENT)) r.parent = Repository.parse(obj.getJSONObject(PARENT));
-            if(obj.has(SOURCE)) r.source = Repository.parse(obj.getJSONObject(SOURCE));
-            if(obj.has(LICENSE) && !JSON_NULL.equals(obj.getString(LICENSE))) {
-                final JSONObject license = obj.getJSONObject(LICENSE);
-                r.licenseKey = license.getString(KEY);
-                r.licenseName = license.getString(LICENSE_NAME);
-                r.licenseShortName = license.getString(SPDX_ID);
-                r.licenseUrl = license.getString(LICENSE_URL);
-            }
-            try {
-                if(obj.has(CREATED_AT))
-                    r.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-                if(obj.has(UPDATED_AT))
-                    r.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-
-        return r;
-    }
-
-    public static JSONObject parse(Repository repo) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, repo.id);
-            final JSONObject owner = new JSONObject();
-            owner.put(USER_LOGIN, repo.userLogin);
-            owner.put(ID, repo.userId);
-            owner.put(USER_AVATAR, repo.userAvatarUrl);
-            obj.put(OWNER, owner);
-            obj.put(NAME, repo.name);
-            obj.put(FULL_NAME, repo.fullName);
-            obj.put(DESCRIPTION, repo.description);
-            obj.put(PRIVATE, repo.isPrivate);
-            obj.put(FORK, repo.isFork);
-            obj.put(URL, repo.url);
-            obj.put(HTML_URL, repo.htmlUrl);
-            obj.put(LANGUAGE, repo.language);
-            obj.put(HAS_ISSUES, repo.hasIssues);
-            obj.put(STAR_GAZERS, repo.starGazers);
-            obj.put(FORK, repo.forks);
-            obj.put(WATCHERS, repo.watchers);
-            obj.put(ISSUES, repo.issues);
-            obj.put(SIZE, repo.size);
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
     }
 
     @Override

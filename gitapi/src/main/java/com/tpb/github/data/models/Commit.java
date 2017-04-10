@@ -77,10 +77,10 @@ public class Commit extends DataModel implements Parcelable {
             }
             commentCount = commit.getInt(COMMENT_COUNT);
             if(obj.has(AUTHOR)) {
-                author = User.parse(obj.getJSONObject(AUTHOR));
+                author = new User(obj.getJSONObject(AUTHOR));
             }
             if(obj.has(COMMITTER)) {
-                committer = User.parse(obj.getJSONObject(COMMITTER));
+                committer = new User(obj.getJSONObject(COMMITTER));
             }
             if(obj.has(PARENTS)) {
                 final JSONArray ps = obj.getJSONArray(PARENTS);

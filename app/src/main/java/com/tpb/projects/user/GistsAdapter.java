@@ -127,12 +127,12 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
                             holder.itemView.getResources()
                                            .getString(R.string.text_gist_viewholder_title),
                             g.getOwner().getLogin(),
-                            g.getFiles()[0].getName()
+                            g.getFiles().get(0).getName()
                     )
             );
             holder.mAvatar.setImageUrl(g.getOwner().getAvatarUrl());
         } else {
-            holder.mTitle.setText(g.getFiles()[0].getName());
+            holder.mTitle.setText(g.getFiles().get(0).getName());
             holder.mAvatar.setVisibility(View.GONE);
         }
         if(Util.isNotNullOrEmpty(g.getDescription())) {

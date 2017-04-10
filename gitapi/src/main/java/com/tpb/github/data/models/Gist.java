@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,7 +47,7 @@ public class Gist extends DataModel implements Parcelable {
     private User user;
 
     private static final String FILES = "files";
-    private File[] files;
+    private List<File> files;
 
     private static final String TRUNCATED = "truncated";
     private boolean isTruncated;
@@ -59,40 +58,37 @@ public class Gist extends DataModel implements Parcelable {
     private static final String UPDATED_AT = "updated_at";
     private long updatedAt;
 
-
-    public static Gist parse(JSONObject obj) {
-        final Gist g = new Gist();
+    public Gist(JSONObject obj) {
         try {
-            g.url = obj.getString(URL);
-            g.id = obj.getString(ID);
-            g.description = obj.getString(DESCRIPTION);
-            g.isPublic = obj.getBoolean(PUBLIC);
-            g.owner = User.parse(obj.getJSONObject(OWNER));
+            url = obj.getString(URL);
+            id = obj.getString(ID);
+            description = obj.getString(DESCRIPTION);
+            isPublic = obj.getBoolean(PUBLIC);
+            owner = new User(obj.getJSONObject(OWNER));
             if(obj.has(USER) && !JSON_NULL.equals(obj.getString(USER)))
-                g.user = User.parse(obj.getJSONObject(USER));
-            g.htmlUrl = obj.getString(HTML_URL);
-            g.commitsUrl = obj.getString(COMMITS_URL);
-            g.forksUrl = obj.getString(FORKS_URL);
-            g.isTruncated = obj.getBoolean(TRUNCATED);
-            g.comments = obj.getInt(COMMENTS);
+                user = new User(obj.getJSONObject(USER));
+            htmlUrl = obj.getString(HTML_URL);
+            commitsUrl = obj.getString(COMMITS_URL);
+            forksUrl = obj.getString(FORKS_URL);
+            isTruncated = obj.getBoolean(TRUNCATED);
+            comments = obj.getInt(COMMENTS);
             try {
-                g.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-                g.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
                 Log.e(Gist.class.getSimpleName(), "parse: ", pe);
             }
             final JSONObject filesObj = obj.getJSONObject(FILES);
             final Iterator<String> keys = filesObj.keys();
-            final List<File> files = new ArrayList<>();
+            files = new ArrayList<>();
             while(keys.hasNext()) {
-                files.add(File.parse(filesObj.getJSONObject(keys.next())));
+                files.add(new File(filesObj.getJSONObject(keys.next())));
             }
-            g.files = files.toArray(new File[0]);
         } catch(JSONException jse) {
             Log.e(Gist.class.getSimpleName(), "parse: ", jse);
         }
-        return g;
     }
+
 
     @Override
     public long getCreatedAt() {
@@ -135,7 +131,7 @@ public class Gist extends DataModel implements Parcelable {
         return user;
     }
 
-    public File[] getFiles() {
+    public List<File> getFiles() {
         return files;
     }
 
@@ -163,7 +159,7 @@ public class Gist extends DataModel implements Parcelable {
                 "\n, isPublic=" + isPublic +
                 "\n, owner=" + owner +
                 "\n, user=" + user +
-                "\n, files=" + Arrays.toString(files) +
+                "\n, files=" + files.toString() +
                 "\n, isTruncated=" + isTruncated +
                 "\n, comments=" + comments +
                 "\n, updatedAt=" + updatedAt +
@@ -187,14 +183,11 @@ public class Gist extends DataModel implements Parcelable {
         dest.writeByte(this.isPublic ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.owner, flags);
         dest.writeParcelable(this.user, flags);
-        dest.writeTypedArray(this.files, flags);
+        dest.writeTypedList(this.files);
         dest.writeByte(this.isTruncated ? (byte) 1 : (byte) 0);
         dest.writeInt(this.comments);
         dest.writeLong(this.updatedAt);
         dest.writeLong(this.createdAt);
-    }
-
-    public Gist() {
     }
 
     protected Gist(Parcel in) {
@@ -207,7 +200,7 @@ public class Gist extends DataModel implements Parcelable {
         this.isPublic = in.readByte() != 0;
         this.owner = in.readParcelable(User.class.getClassLoader());
         this.user = in.readParcelable(User.class.getClassLoader());
-        this.files = in.createTypedArray(File.CREATOR);
+        this.files = in.createTypedArrayList(File.CREATOR);
         this.isTruncated = in.readByte() != 0;
         this.comments = in.readInt();
         this.updatedAt = in.readLong();

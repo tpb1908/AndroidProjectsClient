@@ -33,7 +33,7 @@ public class GitHubSession {
     void storeUser(JSONObject json) {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putString(INFO_USER, json.toString());
-        final User user = User.parse(json);
+        final User user = new User(json);
         editor.putInt(API_ID, user.getId());
         editor.putString(API_LOGIN, user.getLogin());
         editor.apply();
@@ -48,7 +48,7 @@ public class GitHubSession {
     public User getUser() {
         try {
             final JSONObject obj = new JSONObject(prefs.getString(INFO_USER, ""));
-            return User.parse(obj);
+            return new User(obj);
         } catch(JSONException jse) {
             return null;
         }

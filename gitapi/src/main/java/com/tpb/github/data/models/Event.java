@@ -90,41 +90,36 @@ public class Event extends DataModel implements Parcelable {
     private User sender;
 
 
-    @Override
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
     public Event(JSONObject obj) {
         try {
             if(obj.has(ID)) id = obj.getInt(ID);
             if(obj.has(ACTION)) action = GitAction.fromString(obj.getString(ACTION));
             if(obj.has(TYPE)) event = GitEvent.fromString(obj.getString(TYPE));
-            if(obj.has(SENDER)) sender = User.parse(obj.getJSONObject(SENDER));
-            if(obj.has(COMMENT)) comment = Comment.parse(obj.getJSONObject(COMMENT));
+            if(obj.has(SENDER)) sender = new User(obj.getJSONObject(SENDER));
+            if(obj.has(COMMENT)) comment = new Comment(obj.getJSONObject(COMMENT));
             if(obj.has(REF_TYPE)) ref_type = obj.getString(REF_TYPE);
             if(obj.has(REF)) ref = obj.getString(REF);
             if(obj.has(DESCRIPTION)) description = obj.getString(DESCRIPTION);
-            if(obj.has(REPOSITORY)) repository = Repository.parse(obj.getJSONObject(REPOSITORY));
+            if(obj.has(REPOSITORY)) repository = new Repository(obj.getJSONObject(REPOSITORY));
             if(obj.has(STATUS)) status = obj.getString(STATUS);
-            if(obj.has(TARGET)) effected = User.parse(obj.getJSONObject(TARGET));
-            if(obj.has(FORKEE)) repository = Repository.parse(obj.getJSONObject(FORKEE));
-            if(obj.has(GIST)) gist = Gist.parse(obj.getJSONObject(GIST));
-            if(obj.has(ISSUE)) issue = Issue.parse(obj.getJSONObject(ISSUE));
+            if(obj.has(TARGET)) effected = new User(obj.getJSONObject(TARGET));
+            if(obj.has(FORKEE)) repository = new Repository(obj.getJSONObject(FORKEE));
+            if(obj.has(GIST)) gist = new Gist(obj.getJSONObject(GIST));
+            if(obj.has(ISSUE)) issue = new Issue(obj.getJSONObject(ISSUE));
             if(obj.has(LABELS)) {
                 final JSONArray labeljson = obj.getJSONArray(LABELS);
                 labels = new Label[labeljson.length()];
                 for(int i = 0; i < labeljson.length(); i++) {
-                    labels[i] = Label.parse(labeljson.getJSONObject(i));
+                    labels[i] = new Label(labeljson.getJSONObject(i));
                 }
             }
-            if(obj.has(LABEL)) label = Label.parse(obj.getJSONObject(LABEL));
-            if(obj.has(MEMBER)) effected = User.parse(obj.getJSONObject(MEMBER));
-            if(obj.has(MILESTONE)) milestone = Milestone.parse(obj.getJSONObject(MILESTONE));
-            if(obj.has(BLOCKED_USER)) effected = User.parse(obj.getJSONObject(BLOCKED_USER));
-            if(obj.has(PROJECT_CARD)) card = Card.parse(obj.getJSONObject(PROJECT_CARD));
-            if(obj.has(PROJECT_COLUMN)) column = Column.parse(obj.getJSONObject(PROJECT_COLUMN));
-            if(obj.has(PROJECT)) project = Project.parse(obj.getJSONObject(PROJECT));
+            if(obj.has(LABEL)) label = new Label(obj.getJSONObject(LABEL));
+            if(obj.has(MEMBER)) effected = new User(obj.getJSONObject(MEMBER));
+            if(obj.has(MILESTONE)) milestone = new Milestone(obj.getJSONObject(MILESTONE));
+            if(obj.has(BLOCKED_USER)) effected = new User(obj.getJSONObject(BLOCKED_USER));
+            if(obj.has(PROJECT_CARD)) card = new Card(obj.getJSONObject(PROJECT_CARD));
+            if(obj.has(PROJECT_COLUMN)) column = new Column(obj.getJSONObject(PROJECT_COLUMN));
+            if(obj.has(PROJECT)) project = new Project(obj.getJSONObject(PROJECT));
             try {
                 createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
             } catch(ParseException pe) {
@@ -133,6 +128,11 @@ public class Event extends DataModel implements Parcelable {
         } catch(JSONException jse) {
 
         }
+    }
+
+    @Override
+    public long getCreatedAt() {
+        return createdAt;
     }
 
     public int getId() {

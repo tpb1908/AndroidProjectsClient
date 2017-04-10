@@ -21,6 +21,24 @@ public class Comment extends DataModel implements Parcelable {
     public Comment() {
     }
 
+    public Comment(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            url = obj.getString(URL);
+            htmlUrl = obj.getString(HTML_URL);
+            body = obj.getString(BODY);
+            user = new User(obj.getJSONObject(USER));
+            try {
+                createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+                updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            } catch(ParseException pe) {
+                Log.e(TAG, "parse: ", pe);
+            }
+        } catch(JSONException jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
+    }
+    
     private int id;
 
     private String url;
@@ -67,26 +85,6 @@ public class Comment extends DataModel implements Parcelable {
 
     public long getUpdatedAt() {
         return updatedAt;
-    }
-
-    public static Comment parse(JSONObject obj) {
-        final Comment c = new Comment();
-        try {
-            c.id = obj.getInt(ID);
-            c.url = obj.getString(URL);
-            c.htmlUrl = obj.getString(HTML_URL);
-            c.body = obj.getString(BODY);
-            c.user = User.parse(obj.getJSONObject(USER));
-            try {
-                c.createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
-                c.updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
-            } catch(ParseException pe) {
-                Log.e(TAG, "parse: ", pe);
-            }
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return c;
     }
 
     @Override

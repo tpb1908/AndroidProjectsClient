@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.tpb.github.data.Util;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -16,7 +15,24 @@ import org.json.JSONObject;
 public class Project extends DataModel implements Parcelable {
     private static final String TAG = Project.class.getSimpleName();
 
-    public Project() {
+    public Project(JSONObject obj) {
+        try {
+            id = obj.getInt(ID);
+            creatorUserName = obj.getJSONObject(CREATOR_KEY).getString(LOGIN);
+            number = obj.getInt(NUMBER);
+            body = obj.getString(BODY);
+            if(body != null) {
+                body = body.replace("\n", "\n\n");
+            }
+            name = obj.getString(NAME);
+            url = obj.getString(URL);
+            ownerUrl = obj.getString(OWNER_URL);
+            createdAt = Util.toCalendar(obj.getString(CREATED_AT)).getTimeInMillis();
+            updatedAt = Util.toCalendar(obj.getString(UPDATED_AT)).getTimeInMillis();
+            state = State.fromString(obj.getString(STATE));
+        } catch(Exception jse) {
+            Log.e(TAG, "parse: ", jse);
+        }
     }
 
     private int id;
@@ -96,48 +112,6 @@ public class Project extends DataModel implements Parcelable {
         return state;
     }
 
-    public static Project parse(JSONObject object) {
-        final Project p = new Project();
-        try {
-            p.id = object.getInt(ID);
-            p.creatorUserName = object.getJSONObject(CREATOR_KEY).getString(LOGIN);
-            p.number = object.getInt(NUMBER);
-            p.body = object.getString(BODY);
-            if(p.body != null) {
-                p.body = p.body.replace("\n", "\n\n");
-            }
-            p.name = object.getString(NAME);
-            p.url = object.getString(URL);
-            p.ownerUrl = object.getString(OWNER_URL);
-            p.createdAt = Util.toCalendar(object.getString(CREATED_AT)).getTimeInMillis();
-            p.updatedAt = Util.toCalendar(object.getString(UPDATED_AT)).getTimeInMillis();
-            p.state = State.fromString(object.getString(STATE));
-        } catch(Exception jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return p;
-    }
-
-    public static JSONObject parse(Project project) {
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(ID, project.id);
-            final JSONObject creator = new JSONObject();
-            creator.put(LOGIN, project.creatorUserName);
-            obj.put(CREATOR_KEY, creator);
-            obj.put(NUMBER, project.number);
-            obj.put(BODY, project.body);
-            obj.put(NAME, project.name);
-            obj.put(URL, project.url);
-            obj.put(OWNER_URL, project.ownerUrl);
-            obj.put(CREATED_AT, Util.toISO8061FromSeconds(project.createdAt));
-            obj.put(UPDATED_AT, Util.toISO8061FromSeconds(project.updatedAt));
-        } catch(JSONException jse) {
-            Log.e(TAG, "parse: ", jse);
-        }
-        return obj;
-    }
-
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Project && ((Project) obj).id == id;
@@ -157,8 +131,7 @@ public class Project extends DataModel implements Parcelable {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-
-
+    
     @Override
     public int describeContents() {
         return 0;
