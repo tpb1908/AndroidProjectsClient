@@ -72,6 +72,7 @@
             android:layout_alignParentEnd="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/content_description_menu"
+            android:elevation="1000dp"
             android:src="@drawable/ic_chevron_down"/>
 
         <com.tpb.mdtext.views.MarkdownTextView

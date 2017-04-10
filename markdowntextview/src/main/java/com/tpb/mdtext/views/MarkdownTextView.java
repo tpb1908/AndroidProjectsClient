@@ -17,6 +17,7 @@
 package com.tpb.mdtext.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -97,6 +98,7 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
         setTextIsSelectable(true);
         setCursorVisible(false);
         setClickable(true);
+        setTextColor(Color.WHITE);
     }
 
 

@@ -27,9 +27,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorPrimaryTextInverse</item>
-        <item name="android:textColorSecondary">@color/colorSecondaryTextInverse</item>
+        <item name="android:textColorSecondary">@color/md_grey_400</item>
         <item name="android:textColorPrimaryInverse">@color/colorPrimaryText</item>
-        <item name="android:textColorSecondaryInverse">@color/colorSecondaryText</item>
+        <item name="android:textColorSecondaryInverse">@color/md_grey_400</item>
         <item name="drawableColor">@color/md_white_1000</item>
         <item name="drawableColorSecondary">@color/iconColorSecondaryDark</item>
         <item name="android:windowSoftInputMode">stateHidden</item>

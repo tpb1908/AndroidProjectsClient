@@ -178,6 +178,32 @@ public class Commit extends DataModel implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        final Commit commit = (Commit) o;
+
+        if(commentCount != commit.commentCount) return false;
+        if(!sha.equals(commit.sha)) return false;
+        if(message != null ? !message.equals(commit.message) : commit.message != null) return false;
+        if(!authorName.equals(commit.authorName)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(files, commit.files);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sha.hashCode();
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = 31 * result + commentCount;
+        result = 31 * result + authorName.hashCode();
+        result = 31 * result + Arrays.hashCode(files);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Commit{" +
                 "url='" + url + '\'' +
@@ -197,7 +223,6 @@ public class Commit extends DataModel implements Parcelable {
                 ", files=" + Arrays.toString(files) +
                 '}';
     }
-
 
     @Override
     public int describeContents() {

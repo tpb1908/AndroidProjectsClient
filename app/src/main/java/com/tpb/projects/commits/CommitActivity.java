@@ -15,6 +15,7 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
+import com.tpb.projects.commits.fragments.CommitFragment;
 import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.common.fab.FloatingActionButton;
@@ -101,6 +102,7 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         super.onAttachFragment(fragment);
         if(mAdapter == null) mAdapter = new CommitPagerAdapter(getSupportFragmentManager());
         mAdapter.attachFragment(fragment);
+        if(mCommit != null && fragment instanceof CommitFragment) ((CommitFragment) fragment).commitLoaded(mCommit);
         if(fragment instanceof CommitCommentsFragment && mFab != null) {
             ((CommitCommentsFragment) fragment).setFab(mFab);
         }
@@ -120,12 +122,10 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         public Fragment getItem(int position) {
             if(position == 0) {
                 mInfoFragment = CommitInfoFragment.getInstance();
-                if(mCommit != null) mInfoFragment.commitLoaded(mCommit);
                 return mInfoFragment;
             } else {
                 mCommentsFragment = CommitCommentsFragment.getInstance();
                 if(mFab != null) mCommentsFragment.setFab(mFab);
-                if(mCommit != null) mCommentsFragment.commitLoaded(mCommit);
                 return mCommentsFragment;
             }
         }
