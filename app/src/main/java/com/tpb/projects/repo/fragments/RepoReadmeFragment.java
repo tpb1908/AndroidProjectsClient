@@ -15,7 +15,6 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.webview.MarkdownWebView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FloatingActionButton;
-import com.tpb.projects.repo.RepoActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,10 +33,8 @@ public class RepoReadmeFragment extends RepoFragment {
     @BindView(R.id.repo_readme_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.repo_readme) MarkdownWebView mReadme;
 
-    public static RepoReadmeFragment newInstance(RepoActivity parent) {
-        final RepoReadmeFragment rrf = new RepoReadmeFragment();
-        rrf.mParent = parent;
-        return rrf;
+    public static RepoReadmeFragment newInstance() {
+        return new RepoReadmeFragment();
     }
 
     @Nullable
@@ -63,7 +60,6 @@ public class RepoReadmeFragment extends RepoFragment {
         });
         if(mRepo != null) repoLoaded(mRepo);
         mReadme.enableDarkTheme();
-        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

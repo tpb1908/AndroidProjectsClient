@@ -26,7 +26,6 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.common.fab.FloatingActionButton;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Logger;
@@ -65,10 +64,8 @@ public class RepoInfoFragment extends RepoFragment {
     @BindView(R.id.repo_forks) TextView mForks;
     @BindView(R.id.repo_license) TextView mLicense;
 
-    public static RepoInfoFragment newInstance(RepoActivity parent) {
-        final RepoInfoFragment rif = new RepoInfoFragment();
-        rif.mParent = parent;
-        return rif;
+    public static RepoInfoFragment newInstance() {
+        return new RepoInfoFragment();
     }
 
     @Nullable
@@ -93,7 +90,6 @@ public class RepoInfoFragment extends RepoFragment {
             }, mRepo.getFullName());
         });
         if(mRepo != null) repoLoaded(mRepo);
-        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

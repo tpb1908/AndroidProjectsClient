@@ -19,7 +19,6 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Repository;
 import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FloatingActionButton;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoCommitsAdapter;
 
 import java.util.ArrayList;
@@ -47,10 +46,8 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
     private boolean mIsLoadingBranches = false;
     private String mLatestSHA;
 
-    public static RepoCommitsFragment newInstance(RepoActivity parent) {
-        final RepoCommitsFragment rcf = new RepoCommitsFragment();
-        rcf.mParent = parent;
-        return rcf;
+    public static RepoCommitsFragment newInstance() {
+        return new RepoCommitsFragment();
     }
 
     @Nullable
@@ -76,7 +73,6 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
         if(mBranches != null) listLoadComplete(mBranches);
-        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

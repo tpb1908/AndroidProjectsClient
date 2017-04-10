@@ -18,10 +18,6 @@
         android:fullBackupContent="true"
         android:theme="@style/AppTheme">
 
-        <meta-data
-            android:name="firebase_analytics_collection_enabled"
-            android:value="false"/>
-
         <activity
             android:name=".user.UserActivity"
             android:theme="@style/AppTheme.Transparent.Dark"

@@ -33,7 +33,6 @@ import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
 
@@ -70,10 +69,8 @@ public class RepoIssuesFragment extends RepoFragment {
 
     private Editor mEditor;
 
-    public static RepoIssuesFragment newInstance(RepoActivity parent) {
-        final RepoIssuesFragment rif = new RepoIssuesFragment();
-        rif.mParent = parent;
-        return rif;
+    public static RepoIssuesFragment newInstance() {
+        return new RepoIssuesFragment();
     }
 
     @Nullable
@@ -114,7 +111,6 @@ public class RepoIssuesFragment extends RepoFragment {
         });
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
-        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

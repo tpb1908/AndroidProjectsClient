@@ -22,7 +22,6 @@ import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FabHideScrollListener;
 import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.ProjectEditor;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.RepoProjectsAdapter;
 import com.tpb.projects.util.UI;
 
@@ -43,10 +42,8 @@ public class RepoProjectsFragment extends RepoFragment {
     private FabHideScrollListener mFabHideScrollListener;
     private RepoProjectsAdapter mAdapter;
 
-    public static RepoProjectsFragment newInstance(RepoActivity parent) {
-        final RepoProjectsFragment rpf = new RepoProjectsFragment();
-        rpf.mParent = parent;
-        return rpf;
+    public static RepoProjectsFragment newInstance() {
+        return new RepoProjectsFragment();
     }
 
     @Nullable
@@ -61,7 +58,6 @@ public class RepoProjectsFragment extends RepoFragment {
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());
         mAreViewsValid = true;
         if(mRepo != null) repoLoaded(mRepo);
-        mParent.notifyFragmentViewCreated(this);
         return view;
     }
 

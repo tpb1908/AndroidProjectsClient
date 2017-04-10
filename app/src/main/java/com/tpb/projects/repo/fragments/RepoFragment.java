@@ -16,7 +16,6 @@ import com.tpb.projects.repo.RepoActivity;
 public abstract class RepoFragment extends Fragment {
 
     protected Repository mRepo;
-    protected RepoActivity mParent;
     protected boolean mAreViewsValid;
 
     public abstract void repoLoaded(Repository repo);

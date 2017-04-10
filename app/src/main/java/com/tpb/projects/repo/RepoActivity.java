@@ -40,6 +40,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
     public static final int PAGE_ISSUES = 3;
     public static final int PAGE_PROJECTS = 4;
     private int mLaunchPage = 0;
+    private boolean mLaunchPageAttached = false; //When fragments are attached during rotation
 
     @BindView(R.id.title_repo) TextView mTitle;
     @BindView(R.id.repo_fragment_tabs) TabLayout mTabs;
@@ -81,6 +82,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
 
             }
         });
+        if(mLaunchPageAttached) mPager.setCurrentItem(mLaunchPage);
 
         final Intent launchIntent = getIntent();
         final Loader loader = new Loader(this);
@@ -120,6 +122,13 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         super.onAttachFragment(fragment);
         if(mAdapter == null) mAdapter = new RepoFragmentAdapter(getSupportFragmentManager());
         if(fragment instanceof RepoFragment) mAdapter.ensureAttached((RepoFragment) fragment);
+        if(mAdapter.indexOf(fragment) == mLaunchPage) {
+            if(mPager == null) {
+                mLaunchPageAttached = true;
+            } else {
+                mPager.setCurrentItem(mLaunchPage);
+            }
+        }
     }
 
     @Override
@@ -127,12 +136,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         mAdapter.notifyBackPressed();
         super.onBackPressed();
     }
-
-    public void notifyFragmentViewCreated(RepoFragment fragment) {
-        if(mAdapter.indexOf(fragment) == mLaunchPage) {
-            mPager.setCurrentItem(mLaunchPage);
-        }
-    }
+    
 
     private class RepoFragmentAdapter extends FragmentPagerAdapter {
 
@@ -167,7 +171,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
             }
         }
 
-        int indexOf(RepoFragment rf) {
+        int indexOf(Fragment rf) {
             return Util.indexOf(mFragments, rf);
         }
 
@@ -175,19 +179,19 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    mFragments[0] = RepoInfoFragment.newInstance(RepoActivity.this);
+                    mFragments[0] = RepoInfoFragment.newInstance();
                     break;
                 case 1:
-                    mFragments[1] = RepoReadmeFragment.newInstance(RepoActivity.this);
+                    mFragments[1] = RepoReadmeFragment.newInstance();
                     break;
                 case 2:
-                    mFragments[2] = RepoCommitsFragment.newInstance(RepoActivity.this);
+                    mFragments[2] = RepoCommitsFragment.newInstance();
                     break;
                 case 3:
-                    mFragments[3] = RepoIssuesFragment.newInstance(RepoActivity.this);
+                    mFragments[3] = RepoIssuesFragment.newInstance();
                     break;
                 case 4:
-                    mFragments[4] = RepoProjectsFragment.newInstance(RepoActivity.this);
+                    mFragments[4] = RepoProjectsFragment.newInstance();
                     break;
             }
             if(mRepo != null) mFragments[position].repoLoaded(mRepo);
