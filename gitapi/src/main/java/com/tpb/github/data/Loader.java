@@ -266,32 +266,33 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void loadGists(@Nullable final ListLoader<Gist> loader, int page) {
+    public void loadGists(@NonNull final ListLoader<Gist> loader, int page) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_GISTS + appendPage(page))
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
                          .getAsJSONArray(new JSONArrayRequestListener() {
                              @Override
                              public void onResponse(JSONArray response) {
-                                 final List<Gist> gists = new ArrayList<>(response.length());
-                                 for(int i = 0; i < response.length(); i++) {
-                                     try {
+                                 try {
+                                     final List<Gist> gists = new ArrayList<>(response.length());
+                                     for(int i = 0; i < response.length(); i++) {
                                          gists.add(Gist.parse(response.getJSONObject(i)));
-                                     } catch(JSONException ignored) {
                                      }
+                                     loader.listLoadComplete(gists);
+                                 } catch(JSONException jse) {
+                                     loader.listLoadError(APIError.UNPROCESSABLE);
                                  }
-                                 if(loader != null) loader.listLoadComplete(gists);
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(loader != null) loader.listLoadError(parseError(anError));
+                                 loader.listLoadError(parseError(anError));
                              }
                          });
 
     }
 
-    public void loadGists(@Nullable final ListLoader<Gist> loader, String user, int page) {
+    public void loadGists(@NonNull final ListLoader<Gist> loader, String user, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_GISTS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
@@ -299,25 +300,26 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final List<Gist> gists = new ArrayList<>(response.length());
-                        for(int i = 0; i < response.length(); i++) {
-                            try {
-                                gists.add(Gist.parse(response.getJSONObject(i)));
-                            } catch(JSONException ignored) {
+                        try {
+                            final List<Gist> gists = new ArrayList<>(response.length());
+                            for(int i = 0; i < response.length(); i++) {
+                                    gists.add(Gist.parse(response.getJSONObject(i)));
                             }
+                            loader.listLoadComplete(gists);
+                        } catch(JSONException jse) {
+                            loader.listLoadError(APIError.UNPROCESSABLE);
                         }
-                        if(loader != null) loader.listLoadComplete(gists);
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.listLoadError(parseError(anError));
+                        loader.listLoadError(parseError(anError));
                     }
                 });
 
     }
 
-    public void loadReadMe(@Nullable final ItemLoader<String> loader, String repoFullName) {
+    public void loadReadMe(@NonNull final ItemLoader<String> loader, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_README)
                          .addHeaders(API_AUTH_HEADERS)
                          .build()
@@ -327,7 +329,7 @@ public class Loader extends APIHandler {
                                  try {
                                      final String readme = Util
                                              .base64Decode(response.getString(CONTENT));
-                                     if(loader != null) loader.loadComplete(readme);
+                                     loader.loadComplete(readme);
                                  } catch(JSONException jse) {
                                      Log.e(TAG, "onResponse: ", jse);
                                  }
@@ -351,15 +353,15 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<User> collabs = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<User> collabs = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             collabs.add(User.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
                         }
+                        loader.listLoadComplete(collabs);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(collabs);
                 }
 
                 @Override
@@ -381,15 +383,15 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<User> collabs = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<User> collabs = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             collabs.add(User.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
                         }
+                        loader.listLoadComplete(collabs);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(collabs);
                 }
 
                 @Override
@@ -412,15 +414,16 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Label> labels = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<Label> labels = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
+
                             labels.add(Label.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: Label parsing: ", jse);
                         }
+                        loader.listLoadComplete(labels);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(labels);
                 }
 
                 @Override
@@ -482,7 +485,7 @@ public class Loader extends APIHandler {
                         });
                         loader.listLoadComplete(projects);
                     } catch(JSONException jse) {
-                        Log.e(TAG, "onResponse: ", jse);
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
                 }
 
@@ -506,15 +509,15 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Column> columns = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<Column> columns = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             columns.add(Column.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
                         }
+                        loader.listLoadComplete(columns);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(columns);
                 }
 
                 @Override
@@ -525,7 +528,7 @@ public class Loader extends APIHandler {
         }
     }
 
-    public void loadCards(@Nullable final ListLoader<Card> loader, int columnId, int page) {
+    public void loadCards(@NonNull final ListLoader<Card> loader, int columnId, int page) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + appendPage(
                         page))
@@ -535,20 +538,21 @@ public class Loader extends APIHandler {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        final List<Card> cards = new ArrayList<>(response.length());
-                        for(int i = 0; i < response.length(); i++) {
-                            try {
+                        try {
+                            final List<Card> cards = new ArrayList<>(response.length());
+                            for(int i = 0; i < response.length(); i++) {
                                 cards.add(Card.parse(response.getJSONObject(i)));
-                            } catch(JSONException jse) {
-                                Log.e(TAG, "onResponse: ", jse);
                             }
+                            loader.listLoadComplete(cards);
+                        } catch(JSONException jse) {
+                            loader.listLoadError(APIError.UNPROCESSABLE);
                         }
-                        if(loader != null) loader.listLoadComplete(cards);
+
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.listLoadError(parseError(anError));
+                        loader.listLoadError(parseError(anError));
                     }
                 });
     }
@@ -584,16 +588,17 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Issue> issues = new ArrayList<>();
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<Issue> issues = new ArrayList<>();
+                        for(int i = 0; i < response.length(); i++) {
                             final Issue is = Issue.parse(response.getJSONObject(i));
                             if(!is.isClosed()) issues.add(is);
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: Parsing open issues", jse);
+
                         }
+                        loader.listLoadComplete(issues);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(issues);
                 }
 
                 @Override
@@ -636,17 +641,17 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Issue> issues = new ArrayList<>();
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<Issue> issues = new ArrayList<>();
+                        for(int i = 0; i < response.length(); i++) {
                             if(!response.getJSONObject(i).has("pull_request")) {
                                 issues.add(Issue.parse(response.getJSONObject(i)));
                             }
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: Parsing open issues", jse);
                         }
+                        loader.listLoadComplete(issues);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(issues);
                 }
 
                 @Override
@@ -669,15 +674,16 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<Comment> comments = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<Comment> comments = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             comments.add(Comment.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: ", jse);
                         }
+                        loader.listLoadComplete(comments);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    loader.listLoadComplete(comments);
+
                 }
 
                 @Override
@@ -700,21 +706,22 @@ public class Loader extends APIHandler {
             req.getAsJSONArray(new JSONArrayRequestListener() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    final List<IssueEvent> events = new ArrayList<>(response.length());
-                    for(int i = 0; i < response.length(); i++) {
-                        try {
+                    try {
+                        final List<IssueEvent> events = new ArrayList<>(response.length());
+                        for(int i = 0; i < response.length(); i++) {
                             events.add(IssueEvent.parse(response.getJSONObject(i)));
-                        } catch(JSONException jse) {
-                            Log.e(TAG, "onResponse: Events: ", jse);
+
                         }
+                        Collections.sort(events, new Comparator<IssueEvent>() {
+                            @Override
+                            public int compare(IssueEvent e1, IssueEvent e2) {
+                                return e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0;
+                            }
+                        });
+                        loader.listLoadComplete(events);
+                    } catch(JSONException jse) {
+                        loader.listLoadError(APIError.UNPROCESSABLE);
                     }
-                    Collections.sort(events, new Comparator<IssueEvent>() {
-                        @Override
-                        public int compare(IssueEvent e1, IssueEvent e2) {
-                            return e1.getCreatedAt() > e2.getCreatedAt() ? 1 : 0;
-                        }
-                    });
-                    loader.listLoadComplete(events);
                 }
 
                 @Override
@@ -726,7 +733,7 @@ public class Loader extends APIHandler {
 
     }
 
-    public void loadMilestone(@Nullable final ItemLoader<Milestone> loader, String repoFullName, int number) {
+    public void loadMilestone(@NonNull final ItemLoader<Milestone> loader, String repoFullName, int number) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + "/" + number)
                 .addHeaders(API_AUTH_HEADERS)
@@ -734,13 +741,13 @@ public class Loader extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(loader != null) loader.loadComplete(Milestone.parse(response));
+                        loader.loadComplete(Milestone.parse(response));
 
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(loader != null) loader.loadError(parseError(anError));
+                        loader.loadError(parseError(anError));
 
                     }
                 });
@@ -828,7 +835,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkAccessToRepository(@Nullable final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public void checkAccessToRepository(@NonNull final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         AndroidNetworking
                 .get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
@@ -843,33 +850,29 @@ public class Loader extends APIHandler {
                             } catch(JSONException ignored) {
                             }
                         }
-                        if(listener != null) {
-                            switch(permission) {
-                                case PERMISSION_ADMIN:
-                                    listener.loadComplete(Repository.AccessLevel.ADMIN);
-                                    break;
-                                case PERMISSION_WRITE:
-                                    listener.loadComplete(Repository.AccessLevel.WRITE);
-                                    break;
-                                case PERMISSION_READ:
-                                    listener.loadComplete(Repository.AccessLevel.READ);
-                                    break;
-                                case PERMISSION_NONE:
-                                    listener.loadComplete(Repository.AccessLevel.NONE);
-                                    break;
-                            }
+                        switch(permission) {
+                            case PERMISSION_ADMIN:
+                                listener.loadComplete(Repository.AccessLevel.ADMIN);
+                                break;
+                            case PERMISSION_WRITE:
+                                listener.loadComplete(Repository.AccessLevel.WRITE);
+                                break;
+                            case PERMISSION_READ:
+                                listener.loadComplete(Repository.AccessLevel.READ);
+                                break;
+                            case PERMISSION_NONE:
+                                listener.loadComplete(Repository.AccessLevel.NONE);
+                                break;
                         }
                     }
 
                     @Override
                     public void onError(ANError anError) {
-                        if(listener != null) {
-                            if(anError.getErrorCode() == 403) {
-                                //403 Must have push access to view collaborator permission
-                                listener.loadComplete(Repository.AccessLevel.NONE);
-                            } else {
-                                listener.loadError(parseError(anError));
-                            }
+                        if(anError.getErrorCode() == 403) {
+                            //403 Must have push access to view collaborator permission
+                            listener.loadComplete(Repository.AccessLevel.NONE);
+                        } else {
+                            listener.loadError(parseError(anError));
                         }
                     }
                 });
@@ -902,7 +905,7 @@ public class Loader extends APIHandler {
                 });
     }
 
-    public void checkIfStarred(@Nullable final ItemLoader<Boolean> listener, String repoFullName) {
+    public void checkIfStarred(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + repoFullName)
                          .addHeaders(API_AUTH_HEADERS)
                          .setPriority(Priority.IMMEDIATE)
@@ -911,20 +914,20 @@ public class Loader extends APIHandler {
                              @Override
                              public void onResponse(Response response) {
                                  if(response.code() == 204) {
-                                     if(listener != null) listener.loadComplete(true);
+                                     listener.loadComplete(true);
                                  } else if(response.code() == 404) {
-                                     if(listener != null) listener.loadComplete(false);
+                                     listener.loadComplete(false);
                                  }
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(listener != null) listener.loadComplete(false);
+                                 listener.loadComplete(false);
                              }
                          });
     }
 
-    public void checkIfWatched(@Nullable final ItemLoader<Boolean> listener, String repoFullName) {
+    public void checkIfWatched(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_SUBSCRIPTION)
                          .addHeaders(API_AUTH_HEADERS)
                          .setPriority(Priority.IMMEDIATE)
@@ -934,11 +937,10 @@ public class Loader extends APIHandler {
                              public void onResponse(JSONObject response) {
                                  try {
                                      if(response.has("subscribed")) {
-                                         if(listener != null)
                                              listener.loadComplete(
                                                      response.getBoolean("subscribed"));
                                      } else {
-                                         if(listener != null) listener.loadComplete(false);
+                                         listener.loadComplete(false);
                                      }
                                  } catch(JSONException jse) {
                                      listener.loadComplete(false);
@@ -947,36 +949,31 @@ public class Loader extends APIHandler {
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(listener != null) listener.loadComplete(false);
+                                 listener.loadComplete(false);
                              }
                          });
     }
 
-    public void checkIfFollowing(@Nullable final ItemLoader<Boolean> listener, String user) {
+    public void checkIfFollowing(@NonNull final ItemLoader<Boolean> listener, String user) {
         AndroidNetworking.get(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
                 .getAsOkHttpResponse(new OkHttpResponseListener() {
                     @Override
                     public void onResponse(Response response) {
-                        if(listener != null) {
-                            if(response.code() == 204) {
-                                listener.loadComplete(true);
-                            } else if(response.code() == 404) {
-                                listener.loadComplete(false);
-                            }
+                        if(response.code() == 204) {
+                            listener.loadComplete(true);
+                        } else if(response.code() == 404) {
+                            listener.loadComplete(false);
                         }
 
                     }
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "Follow " + anError.getErrorCode());
-                        if(listener != null) {
-                            if(anError.getErrorCode() == 404) {
-                                listener.loadComplete(false);
-                            } else {
-                                listener.loadError(parseError(anError));
-                            }
+                        if(anError.getErrorCode() == 404) {
+                            listener.loadComplete(false);
+                        } else {
+                            listener.loadError(parseError(anError));
                         }
                     }
                 });
@@ -1020,7 +1017,7 @@ public class Loader extends APIHandler {
                          });
     }
 
-    public void renderMarkDown(@Nullable final ItemLoader<String> loader, String markdown) {
+    public void renderMarkDown(@NonNull final ItemLoader<String> loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -1033,13 +1030,12 @@ public class Loader extends APIHandler {
                          .getAsString(new StringRequestListener() {
                              @Override
                              public void onResponse(String response) {
-                                 Log.i(TAG, "onResponse: Markdown: " + response);
-                                 if(loader != null) loader.loadComplete(response);
+                                 loader.loadComplete(response);
                              }
 
                              @Override
                              public void onError(ANError anError) {
-                                 if(loader != null) loader.loadError(parseError(anError));
+                                 loader.loadError(parseError(anError));
                              }
                          });
     }
@@ -1132,7 +1128,6 @@ public class Loader extends APIHandler {
                         } catch(JSONException jse) {
                             loader.listLoadError(APIError.UNPROCESSABLE);
                         }
-
                     }
 
                     @Override
@@ -1178,7 +1173,6 @@ public class Loader extends APIHandler {
                     @Override
                     public void onResponse(JSONObject response) {
                         loader.loadComplete(new CompleteStatus(response));
-
                     }
 
                     @Override
@@ -1213,14 +1207,11 @@ public class Loader extends APIHandler {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i(TAG, "onError: " + anError.getErrorBody());
-                        Log.i(TAG, "onError: " + anError.getErrorDetail());
-                        Log.i(TAG, "onError: " + anError.getErrorCode());
-                        Log.i(TAG, "onError: " + anError.getMessage());
                         loader.listLoadError(parseError(anError));
                     }
                 });
     }
+
 
     private static String appendPage(int page) {
         return page > 1 ? "?page=" + page : "";

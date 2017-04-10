@@ -17,4 +17,5 @@ public abstract class DataModel {
 
     public abstract long getCreatedAt();
 
+
 }
