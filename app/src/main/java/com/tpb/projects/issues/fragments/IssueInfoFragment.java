@@ -140,7 +140,6 @@ public class IssueInfoFragment extends IssueFragment {
                 ).toString(),
                 new HttpImageGetter(mInfo, mInfo), null
         );
-
         mUserAvatar.setOnClickListener(v -> IntentHandler
                 .openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
         mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
@@ -427,7 +426,9 @@ public class IssueInfoFragment extends IssueFragment {
                     editIssue(view);
                     break;
                 case R.id.menu_fullscreen:
-                    IntentHandler.showFullScreen(getContext(), mIssue.getBody(), mIssue.getRepoFullName(), getFragmentManager());
+                    IntentHandler.showFullScreen(getContext(), mIssue.getBody(),
+                            mIssue.getRepoFullName(), getFragmentManager()
+                    );
                     break;
             }
             return false;

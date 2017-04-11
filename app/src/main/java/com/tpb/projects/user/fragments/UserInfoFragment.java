@@ -85,7 +85,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 }, getParent().getUser().getLogin()));
 
         mAreViewsValid = true;
-        if(mUser != null)  userLoaded(mUser);
+        if(mUser != null) userLoaded(mUser);
         return view;
     }
 
@@ -119,8 +119,10 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             mFollowButton = new Button(getContext());
             mFollowButton.setBackground(null);
             //mFollowButton.setBackgroundResource(android.R.attr.selectableItemBackground);
-            mFollowButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            mFollowButton.setLayoutParams(
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    ));
             mUserInfoParent.addView(mFollowButton);
         }
 

@@ -70,7 +70,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
 
-    public boolean spanHit = false;
+    private boolean mSpanHit = false;
 
     private float[] mLastClickPosition = new float[] {-1, -1};
 
@@ -292,13 +292,18 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         return super.onTouchEvent(event);
     }
 
+    public void setSpanHit() {
+        mSpanHit = true;
+    }
+
     @Override
     public void onClick(View v) {
-        if(!spanHit && mOnClickListener != null) mOnClickListener.onClick(v);
-        spanHit = false;
+        if(!mSpanHit && mOnClickListener != null) mOnClickListener.onClick(v);
+        mSpanHit = false;
     }
 
     private OnClickListener mOnClickListener;
+
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         mOnClickListener = l;

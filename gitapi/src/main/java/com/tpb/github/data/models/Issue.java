@@ -67,7 +67,7 @@ public class Issue extends DataModel implements Parcelable {
 
     private static final String MILESTONE = "milestone";
     private Milestone milestone;
-    
+
     public Issue(JSONObject obj) {
         try {
             id = obj.getInt(ID);

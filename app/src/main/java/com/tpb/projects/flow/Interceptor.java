@@ -105,7 +105,7 @@ public class Interceptor extends Activity {
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
                             );
-                        }  else if("commit".equals(segments.get(2))) {
+                        } else if("commit".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, CommitActivity.class);
                             i.putExtra(getString(R.string.intent_commit_sha), segments.get(3));
                         }

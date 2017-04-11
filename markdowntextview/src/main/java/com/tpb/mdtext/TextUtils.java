@@ -154,7 +154,7 @@ public class TextUtils {
     }
 
     public static boolean isInteger(String s) {
-        return isInteger(s,10);
+        return isInteger(s, 10);
     }
 
     public static boolean isInteger(String s, int radix) {
@@ -164,7 +164,7 @@ public class TextUtils {
                 if(s.length() == 1) return false;
                 else continue;
             }
-            if(Character.digit(s.charAt(i),radix) < 0) return false;
+            if(Character.digit(s.charAt(i), radix) < 0) return false;
         }
         return true;
     }

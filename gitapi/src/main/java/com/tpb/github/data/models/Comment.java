@@ -38,7 +38,7 @@ public class Comment extends DataModel implements Parcelable {
             Log.e(TAG, "parse: ", jse);
         }
     }
-    
+
     private int id;
 
     private String url;

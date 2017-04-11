@@ -18,7 +18,7 @@ import java.text.ParseException;
 
 public class User extends DataModel implements Parcelable {
     private static final String TAG = User.class.getSimpleName();
-    
+
     private static final String LOGIN = "login";
     private String login;
 
@@ -143,7 +143,7 @@ public class User extends DataModel implements Parcelable {
     public long getCreatedAt() {
         return createdAt;
     }
-    
+
     public User(JSONObject obj) {
         try {
             id = obj.getInt(ID);
@@ -183,8 +183,9 @@ public class User extends DataModel implements Parcelable {
             if(obj.has(CONTRIBUTIONS)) contributions = obj.getInt(CONTRIBUTIONS);
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
-        }   
+        }
     }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof User && ((User) obj).id == id;

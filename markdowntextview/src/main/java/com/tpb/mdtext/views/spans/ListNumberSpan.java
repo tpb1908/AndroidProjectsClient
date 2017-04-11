@@ -55,9 +55,9 @@ public class ListNumberSpan implements LeadingMarginSpan {
         public static ListType fromString(@NonNull String val) {
             if(TextUtils.isInteger(val)) {
                 final ListType num = NUMBER;
-                num.start = Integer.parseInt(val) -1;
+                num.start = Integer.parseInt(val) - 1;
                 return num;
-            } else if("i".equals(val)){
+            } else if("i".equals(val)) {
                 return ROMAN;
             } else if("I".equals(val)) {
                 return ROMAN_CAP;
@@ -70,11 +70,16 @@ public class ListNumberSpan implements LeadingMarginSpan {
 
         public static String getFormattedNumber(int num, ListType type) {
             switch(type) {
-                case LETTER: return getLetter(num);
-                case LETTER_CAP: return getLetter(num).toUpperCase();
-                case ROMAN: return getRoman(num);
-                case ROMAN_CAP: return getRoman(num).toUpperCase();
-                default: return Integer.toString(num);
+                case LETTER:
+                    return getLetter(num);
+                case LETTER_CAP:
+                    return getLetter(num).toUpperCase();
+                case ROMAN:
+                    return getRoman(num);
+                case ROMAN_CAP:
+                    return getRoman(num).toUpperCase();
+                default:
+                    return Integer.toString(num);
             }
         }
 
@@ -84,12 +89,13 @@ public class ListNumberSpan implements LeadingMarginSpan {
                 num--;
                 final int rmdr = num % 26;
                 builder.append((char) (rmdr + 97));
-                num = (num-rmdr)/26;
+                num = (num - rmdr) / 26;
             }
             return builder.toString();
         }
 
         private static TreeMap<Integer, String> map = new TreeMap<>();
+
         static {
             map.put(1000, "m");
             map.put(900, "cm");

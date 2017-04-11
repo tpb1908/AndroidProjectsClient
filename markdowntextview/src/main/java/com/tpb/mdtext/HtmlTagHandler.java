@@ -149,7 +149,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                     )
             );
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-            final ListNumberSpan.ListType type =  ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""));
+            final ListNumberSpan.ListType type = ListNumberSpan.ListType
+                    .fromString(getAttribute("type", xmlReader, ""));
             mLists.push(
                     new Triple<>(
                             tag,
@@ -242,11 +243,13 @@ public class HtmlTagHandler implements Html.TagHandler {
                                         .charAt(1) <= '\u2612')
                                 )) {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
+                                    new LeadingMarginSpan.Standard(
+                                            mListIndent * (mLists.size() - 1))
                             );
                         } else {
                             end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1)),
+                                    new LeadingMarginSpan.Standard(
+                                            mListIndent * (mLists.size() - 1)),
                                     new BulletSpan(mSingleIndent)
                             );
                         }
@@ -269,7 +272,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                         end(output, Ol.class, false,
                                 new LeadingMarginSpan.Standard(numberMargin),
                                 new ListNumberSpan(mTextPaint, mOlIndices.lastElement().first - 1,
-                                        mLists.peek().third)
+                                        mLists.peek().third
+                                )
                         );
                     } else {
                         end(output, Ol.class, false,
@@ -285,10 +289,10 @@ public class HtmlTagHandler implements Html.TagHandler {
             // start of the tag
             int start = output.getSpanStart(obj);
             // end of the tag
-            int end= output.length();
-            if(end> start + 1) {
+            int end = output.length();
+            if(end > start + 1) {
                 output.removeSpan(obj);
-                final char[] chars = new char[end- start];
+                final char[] chars = new char[end - start];
                 output.getChars(start, end, chars, 0);
                 output.insert(start, "\n"); // Another line for our CodeSpan to cover
                 output.replace(start + 1, end, " ");
@@ -322,7 +326,9 @@ public class HtmlTagHandler implements Html.TagHandler {
 
                 final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
                 output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new WrappingClickableSpan(table), start, start + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new WrappingClickableSpan(table), start, start + 3,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
 
             } else {
                 end(output, Table.class, false);
@@ -338,7 +344,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             // start of the tag
             int start = output.getSpanStart(obj);
             // end of the tag
-            int end= output.length();
+            int end = output.length();
             output.removeSpan(obj);
             output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         } else if(tag.equalsIgnoreCase(A_TAG)) {
@@ -346,7 +352,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             // start of the tag
             int start = output.getSpanStart(obj);
             // end of the tag
-            int end= output.length();
+            int end = output.length();
             output.removeSpan(obj);
             if(isValidURL(obj.href)) {
                 output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), start, end,
@@ -356,7 +362,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         } else if(tag.equalsIgnoreCase("inlinecode")) {
             final InlineCode obj = getLast(output, InlineCode.class);
             final int start = output.getSpanStart(obj);
-            final int end= output.length();
+            final int end = output.length();
             output.removeSpan(obj);
             output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), start, end,
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE
@@ -367,7 +373,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             final Font f = getLast(output, Font.class);
             if(fgc != null) {
                 final int start = output.getSpanStart(fgc);
-                final int end= output.length();
+                final int end = output.length();
                 output.removeSpan(fgc);
                 output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -375,7 +381,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
             if(bgc != null) {
                 final int start = output.getSpanStart(bgc);
-                final int end= output.length();
+                final int end = output.length();
                 output.removeSpan(bgc);
 
                 final int color = safelyParseColor(bgc.color);
@@ -400,7 +406,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
             if(f != null) {
                 final int start = output.getSpanStart(f);
-                final int end= output.length();
+                final int end = output.length();
                 output.removeSpan(f);
                 output.setSpan(new TypefaceSpan(f.face), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -519,7 +525,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         // start of the tag
         int start = output.getSpanStart(obj);
         // end of the tag
-        int end= output.length();
+        int end = output.length();
 
         // If we're in a table, then we need to store the raw HTML for later
         if(mTableLevel > 0) {
@@ -548,7 +554,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private CharSequence extractSpanText(Editable output, Class kind) {
         final Object obj = getLast(output, kind);
         final int start = output.getSpanStart(obj);
-        final int end= output.length();
+        final int end = output.length();
 
         final CharSequence extractedSpanText = output.subSequence(start, end);
         output.delete(start, end);

@@ -80,7 +80,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         } else if(launchIntent.hasExtra(getString(R.string.intent_commit_sha))) {
             new Loader(this).loadCommit(this,
                     launchIntent.getStringExtra(getString(R.string.intent_repo)),
-                    launchIntent.getStringExtra(getString(R.string.intent_commit_sha)));
+                    launchIntent.getStringExtra(getString(R.string.intent_commit_sha))
+            );
         }
 
     }
@@ -102,7 +103,8 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         super.onAttachFragment(fragment);
         if(mAdapter == null) mAdapter = new CommitPagerAdapter(getSupportFragmentManager());
         mAdapter.attachFragment(fragment);
-        if(mCommit != null && fragment instanceof CommitFragment) ((CommitFragment) fragment).commitLoaded(mCommit);
+        if(mCommit != null && fragment instanceof CommitFragment)
+            ((CommitFragment) fragment).commitLoaded(mCommit);
         if(fragment instanceof CommitCommentsFragment && mFab != null) {
             ((CommitCommentsFragment) fragment).setFab(mFab);
         }
@@ -131,8 +133,10 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
         }
 
         void attachFragment(Fragment fragment) {
-            if(fragment instanceof CommitInfoFragment) mInfoFragment = (CommitInfoFragment) fragment;
-            if(fragment instanceof CommitCommentsFragment) mCommentsFragment = (CommitCommentsFragment) fragment;
+            if(fragment instanceof CommitInfoFragment)
+                mInfoFragment = (CommitInfoFragment) fragment;
+            if(fragment instanceof CommitCommentsFragment)
+                mCommentsFragment = (CommitCommentsFragment) fragment;
         }
 
         void notifyCommitLoaded() {

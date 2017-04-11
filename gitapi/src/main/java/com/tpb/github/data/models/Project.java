@@ -131,7 +131,7 @@ public class Project extends DataModel implements Parcelable {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-    
+
     @Override
     public int describeContents() {
         return 0;

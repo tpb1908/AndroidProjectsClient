@@ -35,6 +35,7 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
         mHtml = html;
         mHandler = new WeakReference<>(handler);
     }
+
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, @Nullable Paint.FontMetricsInt fm) {
         return 0;
@@ -65,7 +66,6 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
             canvas.drawBitmap(mTableBM, x + 7, textStart - textHeight, paint);
         }
     }
-
 
 
     public void onClick() {

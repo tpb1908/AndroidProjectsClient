@@ -85,8 +85,7 @@ public class Milestone extends DataModel implements Parcelable {
             Log.e(TAG, "parse: ", jse);
         }
     }
-    
-    
+
 
     @Override
     public long getCreatedAt() {

@@ -44,8 +44,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
     public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
         final int action = event.getAction();
 
-        if(action == MotionEvent.ACTION_UP ||
-                action == MotionEvent.ACTION_DOWN) {
+        if(action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
 
@@ -65,7 +64,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
                     clickable[0].onClick(widget);
                 }
                 if(widget instanceof MarkdownTextView) {
-                    ((MarkdownTextView) widget).spanHit = true;
+                    ((MarkdownTextView) widget).setSpanHit();
                 } else if(widget instanceof MarkdownEditText) {
                     ((MarkdownEditText) widget).spanHit = true;
                 }

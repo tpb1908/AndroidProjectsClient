@@ -55,7 +55,8 @@ public class NotificationIntentService extends IntentService implements Loader.L
             if(ACTION_CHECK.equals(action)) {
                 loadNotifications();
             } else if(ACTION_DELETE.equals(action) && intent.hasExtra("notification")) {
-                markNotificationRead(((Notification)intent.getParcelableExtra("notification")).getId());
+                markNotificationRead(
+                        ((Notification) intent.getParcelableExtra("notification")).getId());
             }
         } finally {
             Logger.i(TAG, "onHandleIntent: " + intent.toString());
@@ -155,7 +156,9 @@ public class NotificationIntentService extends IntentService implements Loader.L
     }
 
     private PendingIntent generateDismissIntent(Notification notif) {
-        final Intent i = new Intent(NotificationIntentService.this, NotificationIntentService.class);
+        final Intent i = new Intent(NotificationIntentService.this,
+                NotificationIntentService.class
+        );
         i.setAction(ACTION_DELETE);
         i.putExtra("notification", notif);
         return PendingIntent.getService(this, 53253, i, PendingIntent.FLAG_ONE_SHOT);

@@ -735,7 +735,9 @@ public class ColumnFragment extends Fragment {
     }
 
     private void showFullscreen(Card card) {
-        IntentHandler.showFullScreen(getContext(), card.getNote(), mParent.mProject.getRepoPath(), getFragmentManager());
+        IntentHandler.showFullScreen(getContext(), card.getNote(), mParent.mProject.getRepoPath(),
+                getFragmentManager()
+        );
     }
 
     void cardClick(View view, Card card) {

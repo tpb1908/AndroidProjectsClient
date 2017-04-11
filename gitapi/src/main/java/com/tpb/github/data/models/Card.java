@@ -20,7 +20,7 @@ public class Card extends DataModel implements Parcelable {
 
     public Card() {
     }
-    
+
     public Card(JSONObject obj) {
         try {
             id = obj.getInt(ID);

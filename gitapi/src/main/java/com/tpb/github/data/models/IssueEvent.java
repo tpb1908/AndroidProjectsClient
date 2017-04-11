@@ -54,7 +54,7 @@ public class IssueEvent extends DataModel implements Parcelable {
     private String renameFrom;
     private String renameTo;
 
-    
+
     public IssueEvent(JSONObject obj) {
         try {
             id = obj.getInt(ID);
@@ -160,7 +160,7 @@ public class IssueEvent extends DataModel implements Parcelable {
     public String getRenameTo() {
         return renameTo;
     }
-    
+
 
     @Override
     public String toString() {

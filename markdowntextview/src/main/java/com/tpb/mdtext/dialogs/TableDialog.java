@@ -19,30 +19,30 @@ import org.sufficientlysecure.htmltextview.R;
 
 public class TableDialog implements TableClickHandler {
 
-        private Context mContext;
+    private Context mContext;
 
-        public TableDialog(Context context) {
-            mContext = context;
-        }
+    public TableDialog(Context context) {
+        mContext = context;
+    }
 
-        @Override
-        public void onClick(String html) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            final LayoutInflater inflater = LayoutInflater.from(mContext);
+    @Override
+    public void onClick(String html) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        final LayoutInflater inflater = LayoutInflater.from(mContext);
 
-            final View view = inflater.inflate(R.layout.dialog_table, null);
+        final View view = inflater.inflate(R.layout.dialog_table, null);
 
-            builder.setView(view);
+        builder.setView(view);
 
-            final MarkdownWebView wv = (MarkdownWebView) view.findViewById(R.id.dialog_web_view);
-            wv.enableDarkTheme();
-            wv.setMarkdown(html);
-            final Dialog dialog = builder.create();
+        final MarkdownWebView wv = (MarkdownWebView) view.findViewById(R.id.dialog_web_view);
+        wv.enableDarkTheme();
+        wv.setMarkdown(html);
+        final Dialog dialog = builder.create();
 
-            dialog.getWindow()
-                  .setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.show();
-        }
+        dialog.getWindow()
+              .setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.show();
+    }
 
 }

@@ -106,7 +106,8 @@ public class RepoInfoFragment extends RepoFragment {
         mStars.setText(String.valueOf(repo.getStarGazers()));
         if(Util.isNotNullOrEmpty(mRepo.getDescription())) {
             mDescription.setVisibility(View.VISIBLE);
-            mDescription.setMarkdown(Markdown.formatMD(mRepo.getDescription(), mRepo.getFullName()));
+            mDescription
+                    .setMarkdown(Markdown.formatMD(mRepo.getDescription(), mRepo.getFullName()));
         } else {
             mDescription.setVisibility(View.GONE);
         }
