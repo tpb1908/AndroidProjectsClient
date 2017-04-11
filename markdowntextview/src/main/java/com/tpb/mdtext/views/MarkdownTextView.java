@@ -29,11 +29,9 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -51,6 +49,7 @@ import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
+import com.tpb.mdtext.views.spans.CleanURLSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
 import com.tpb.mdtext.views.spans.TableSpan;
 
@@ -178,7 +177,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
-                Log.i(TAG, "HTML is " + overridden);
                 final Spanned text;
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     text = removeHtmlBottomPadding(
@@ -201,10 +199,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
                 //Copy back the spans from the original text
                 for(URLSpan us : spans) {
-                    final int start = text.getSpanStart(us);
-                    final int end = text.getSpanEnd(us);
-                    buffer.setSpan(us, start, end, 0);
-
+                    buffer.setSpan(us, text.getSpanStart(us), text.getSpanEnd(us), 0);
                 }
 
                 if(mImageClickHandler != null) {
@@ -241,24 +236,15 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
     private void enableImageClicks(final Spannable s) {
         for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-            s.setSpan(new URLSpan(span.getSource()) {
+            s.setSpan(new CleanURLSpan(span.getSource()) {
                 @Override
                 public void onClick(View widget) {
-                    if(mImageClickHandler == null) {
+                    if(mImageClickHandler == null || !mDrawables.containsKey(span.getSource())) {
                         super.onClick(widget); //Opens image link
                     } else {
                         //Get the drawable from our map and call the handler
-                        if(mDrawables.containsKey(span.getSource())) {
-                            mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
-                        }
+                        mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
                     }
-                }
-
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    // We don't want to show a line below the image
-                    ds.setUnderlineText(false);
                 }
             }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
         }
@@ -287,13 +273,8 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     /**
      * Html.fromHtml sometimes adds extra space at the bottom.
      * This methods removes this space again.
-     * See https://github.com/SufficientlySecure/html-textview/issues/19
      */
-    @Nullable
-    static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
-        if(text == null) {
-            return null;
-        }
+    private static Spanned removeHtmlBottomPadding(Spanned text) {
 
         while(text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
             text = (Spanned) text.subSequence(0, text.length() - 1);
@@ -324,11 +305,9 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         super.setOnClickListener(this);
     }
 
-
-
     @Override
     protected boolean getDefaultEditable() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N|| super.getDefaultEditable();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || super.getDefaultEditable();
     }
 
     @Override
