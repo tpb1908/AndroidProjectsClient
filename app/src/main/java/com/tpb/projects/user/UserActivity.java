@@ -95,10 +95,6 @@ public class UserActivity extends BaseActivity {
 
     }
 
-    public User getUser() {
-        return mUser;
-    }
-
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);

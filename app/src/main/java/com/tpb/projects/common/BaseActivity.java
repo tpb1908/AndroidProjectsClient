@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.androidnetworking.AndroidNetworking;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.projects.login.LoginActivity;
 import com.tpb.projects.notifications.receivers.NotificationEventReceiver;
@@ -17,6 +19,7 @@ import com.tpb.projects.notifications.receivers.NotificationEventReceiver;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by theo on 10/03/17.
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 public abstract class BaseActivity extends AppCompatActivity {
 
     public boolean mHasAccess = true;
+    private final List<WeakReference<Fragment>> mWeakFragments = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,10 +50,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+    public void onToolbarBackPressed(View view) {
+        onBackPressed();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         removeActivityFromTransitionManager();
+        cancelNetworkRequests();
     }
 
     private void removeActivityFromTransitionManager() {
@@ -74,8 +83,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void onToolbarBackPressed(View view) {
-        onBackPressed();
+    @Override
+    public void onAttachFragment (Fragment fragment) {
+        mWeakFragments.add(new WeakReference<>(fragment));
+    }
+
+    private void cancelNetworkRequests() {
+        AndroidNetworking.cancel(this);
+        for(WeakReference<Fragment> ref : mWeakFragments) {
+            if(ref.get() != null) {
+                AndroidNetworking.cancel(ref.get());
+            }
+        }
     }
 
 }

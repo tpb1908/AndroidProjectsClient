@@ -74,16 +74,17 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         mRefresher.setOnRefreshListener(
                 () -> new Loader(getContext()).loadUser(new Loader.ItemLoader<User>() {
                     @Override
-                    public void loadComplete(User data) {
-                        userLoaded(data);
+                    public void loadComplete(User user) {
+                        userLoaded(user);
                     }
 
                     @Override
                     public void loadError(APIHandler.APIError error) {
                         mRefresher.setRefreshing(false);
                     }
-                }, getParent().getUser().getLogin()));
-
+                }, mUser.getLogin())
+        );
+        
         mAreViewsValid = true;
         if(mUser != null) userLoaded(mUser);
         return view;
