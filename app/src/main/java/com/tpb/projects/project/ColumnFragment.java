@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -36,6 +35,7 @@ import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.ViewSafeFragment;
 import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
@@ -58,13 +58,12 @@ import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY
  * Created by theo on 19/12/16.
  */
 
-public class ColumnFragment extends Fragment {
+public class ColumnFragment extends ViewSafeFragment {
     private static final String TAG = ColumnFragment.class.getSimpleName();
 
     FirebaseAnalytics mAnalytics;
 
     private Unbinder unbinder;
-    private boolean mViewsValid = false;
 
     Column mColumn;
 
@@ -100,11 +99,11 @@ public class ColumnFragment extends Fragment {
         }
         mName.setText(mColumn.getName());
 
-        mViewsValid = true;
         mAdapter = new CardAdapter(this, mNavListener, mAccessLevel, mParent.mRefresher);
         mAdapter.setColumn(mColumn.getId());
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAreViewsValid = true;
         if(mAccessLevel == Repository.AccessLevel.ADMIN || mAccessLevel == Repository.AccessLevel.WRITE) {
             enableAccess(view);
         } else {
@@ -135,7 +134,7 @@ public class ColumnFragment extends Fragment {
 
                         @Override
                         public void updated(Column column) {
-                            if(mViewsValid) {
+                            if(mAreViewsValid) {
                                 mColumn.setName(mName.getText().toString());
                                 resetLastUpdate();
                             }
@@ -805,7 +804,7 @@ public class ColumnFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        mViewsValid = false;
+        mAreViewsValid = false;
     }
 
     @Override

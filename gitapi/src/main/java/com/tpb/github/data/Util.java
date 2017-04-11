@@ -22,7 +22,6 @@ import java.util.TimeZone;
 
 public class Util {
 
-    //http://stackoverflow.com/a/10621553/4191572
     private static final SimpleDateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     /**
@@ -53,11 +52,10 @@ public class Util {
     }
 
 
-    private static final SimpleDateFormat UTCISO8061 = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm'Z'");
+    private static final SimpleDateFormat UTC8061 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 
     static {
-        UTCISO8061.setTimeZone(TimeZone.getTimeZone("UTCISO8061"));
+        UTC8061.setTimeZone(TimeZone.getTimeZone("UTC8061"));
     }
 
     /**
@@ -67,12 +65,12 @@ public class Util {
      * @return Time formatted as yyyy-MM-dd'T'HH:mm:ssZ
      */
     public static String toISO8061FromMilliseconds(long t) {
-        return UTCISO8061.format(new Date(t));
+        return UTC8061.format(new Date(t));
     }
 
 
     public static long getUTCTimeInMillis() {
-        return Calendar.getInstance(TimeZone.getTimeZone("UTCISO8061")).getTimeInMillis();
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC8061")).getTimeInMillis();
     }
 
     public static String shortenSha(@Nullable String sha) {
@@ -84,7 +82,7 @@ public class Util {
      * @param base64 A base64 encoded String
      * @return The decoded value with Base64.DEFAULT
      */
-    public static String base64Decode(String base64) {
+    static String base64Decode(String base64) {
         return new String(Base64.decode(base64, Base64.DEFAULT));
     }
 

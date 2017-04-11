@@ -14,6 +14,7 @@ import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Editor;
 import com.tpb.github.data.Loader;
+import com.tpb.github.data.Util;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.Milestone;
 import com.tpb.github.data.models.Repository;
@@ -24,7 +25,6 @@ import com.tpb.projects.editors.MilestoneEditor;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
-import com.tpb.projects.util.Util;
 
 import java.util.List;
 

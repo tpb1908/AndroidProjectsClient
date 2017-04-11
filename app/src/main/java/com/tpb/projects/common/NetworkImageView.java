@@ -67,9 +67,9 @@ public class NetworkImageView extends AppCompatImageView {
     }
 
     private void loadImage(final boolean isInLayoutPass) {
-        int width = getWidth();
-        int height = getHeight();
-        final ScaleType scaleType = getScaleType();
+        final int width = getWidth();
+        final int height = getHeight();
+
 
         boolean wrapWidth = false, wrapHeight = false;
         if(getLayoutParams() != null) {
@@ -77,8 +77,8 @@ public class NetworkImageView extends AppCompatImageView {
             wrapHeight = getLayoutParams().height == ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
-        boolean isFullyWrapContent = wrapWidth && wrapHeight;
-        if(width == 0 && height == 0 && !isFullyWrapContent) {
+        if(width == 0 && height == 0 && !(wrapWidth && wrapHeight)) {
+            //Can't display the image as not size
             return;
         }
 
@@ -99,9 +99,10 @@ public class NetworkImageView extends AppCompatImageView {
             }
         }
 
-        int maxWidth = wrapWidth ? 0 : width;
-        int maxHeight = wrapHeight ? 0 : height;
+        final int maxWidth = wrapWidth ? 0 : width;
+        final int maxHeight = wrapHeight ? 0 : height;
 
+        final ScaleType scaleType = getScaleType();
         mImageContainer = ANImageLoader.getInstance().get(mUrl,
                 new ANImageLoader.ImageListener() {
                     @Override

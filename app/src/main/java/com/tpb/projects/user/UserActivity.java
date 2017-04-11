@@ -1,5 +1,7 @@
 package com.tpb.projects.user;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -19,7 +21,7 @@ import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.BaseActivity;
-import com.tpb.projects.user.fragments.UserEventsFragment;
+import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.user.fragments.UserFollowersFragment;
 import com.tpb.projects.user.fragments.UserFollowingFragment;
 import com.tpb.projects.user.fragments.UserFragment;
@@ -28,7 +30,6 @@ import com.tpb.projects.user.fragments.UserInfoFragment;
 import com.tpb.projects.user.fragments.UserReposFragment;
 import com.tpb.projects.user.fragments.UserStarsFragment;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,8 +38,9 @@ import butterknife.ButterKnife;
  * Created by theo on 10/03/17.
  */
 
-public class UserActivity extends BaseActivity {
+public class UserActivity extends BaseActivity implements Loader.ItemLoader<User> {
     private static final String TAG = UserActivity.class.getSimpleName();
+    private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/user/UserActivity.java";
 
     @BindView(R.id.title_user) TextView mTitle;
     @BindView(R.id.user_fragment_tablayout) TabLayout mTabs;
@@ -51,47 +53,40 @@ public class UserActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(!mHasAccess) return;
-        final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
-                .getPreferences(this);
-        setTheme(
-                prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
-        UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
+        setTheme(SettingsActivity.Preferences.getPreferences(this).isDarkThemeEnabled()
+                ? R.style.AppTheme_Dark : R.style.AppTheme);
         setContentView(R.layout.activity_user);
         ButterKnife.bind(this);
         postponeEnterTransition();
 
         if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
-        final String user;
         final Loader loader = new Loader(this);
 
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
-            user = getIntent().getStringExtra(getString(R.string.intent_username));
+            final String user = getIntent().getStringExtra(getString(R.string.intent_username));
             mTitle.setText(user);
-            loader.loadUser(new Loader.ItemLoader<User>() {
-                @Override
-                public void loadComplete(User u) {
-                    mUser = u;
-                    mAdapter.notifyUserLoaded();
-                }
-
-                @Override
-                public void loadError(APIHandler.APIError error) {
-
-                }
-            }, user);
-
+            loader.loadUser(this, user);
         } else {
             if(isTaskRoot()) {
                 findViewById(R.id.back_button).setVisibility(View.GONE);
             }
-            final GitHubSession session = GitHubSession.getSession(this);
-            mUser = session.getUser();
-            mTitle.setText(session.getUserLogin());
-            mAdapter.notifyUserLoaded();
+            loadComplete(GitHubSession.getSession(this).getUser());
         }
         mTabs.setupWithViewPager(mPager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(7);
+
+    }
+
+    @Override
+    public void loadComplete(User user) {
+        mUser = user;
+        mTitle.setText(mUser.getLogin());
+        mAdapter.notifyUserLoaded();
+    }
+
+    @Override
+    public void loadError(APIHandler.APIError error) {
 
     }
 
@@ -104,7 +99,7 @@ public class UserActivity extends BaseActivity {
 
     private class UserFragmentAdapter extends FragmentPagerAdapter {
 
-        private UserFragment[] fragments = new UserFragment[7];
+        private UserFragment[] mFragments = new UserFragment[6];
 
         UserFragmentAdapter(FragmentManager fm) {
             super(fm);
@@ -114,50 +109,46 @@ public class UserActivity extends BaseActivity {
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    fragments[0] = new UserInfoFragment();
+                    mFragments[0] = new UserInfoFragment();
                     break;
                 case 1:
-                    fragments[1] = new UserReposFragment();
+                    mFragments[1] = new UserReposFragment();
                     break;
                 case 2:
-                    fragments[2] = new UserStarsFragment();
+                    mFragments[2] = new UserStarsFragment();
                     break;
                 case 3:
-                    fragments[3] = new UserGistsFragment();
+                    mFragments[3] = new UserGistsFragment();
                     break;
                 case 4:
-                    fragments[4] = new UserFollowingFragment();
+                    mFragments[4] = new UserFollowingFragment();
                     break;
                 case 5:
-                    fragments[5] = new UserFollowersFragment();
-                    break;
-                case 6:
-                    fragments[6] = new UserEventsFragment();
+                    mFragments[5] = new UserFollowersFragment();
                     break;
             }
-            if(mUser != null) fragments[position].userLoaded(mUser);
-            return fragments[position];
+            if(mUser != null) mFragments[position].userLoaded(mUser);
+            return mFragments[position];
         }
 
         void ensureAttached(UserFragment fragment) {
-            if(fragment instanceof UserInfoFragment) fragments[0] = fragment;
-            else if(fragment instanceof UserReposFragment) fragments[1] = fragment;
-            else if(fragment instanceof UserStarsFragment) fragments[2] = fragment;
-            else if(fragment instanceof UserGistsFragment) fragments[3] = fragment;
-            else if(fragment instanceof UserFollowingFragment) fragments[4] = fragment;
-            else if(fragment instanceof UserFollowersFragment) fragments[5] = fragment;
-            else if(fragment instanceof UserEventsFragment) fragments[6] = fragment;
+            if(fragment instanceof UserInfoFragment) mFragments[0] = fragment;
+            else if(fragment instanceof UserReposFragment) mFragments[1] = fragment;
+            else if(fragment instanceof UserStarsFragment) mFragments[2] = fragment;
+            else if(fragment instanceof UserGistsFragment) mFragments[3] = fragment;
+            else if(fragment instanceof UserFollowingFragment) mFragments[4] = fragment;
+            else if(fragment instanceof UserFollowersFragment) mFragments[5] = fragment;
         }
 
         void notifyUserLoaded() {
-            for(UserFragment f : fragments) {
+            for(UserFragment f : mFragments) {
                 if(f != null) f.userLoaded(mUser);
             }
         }
 
         @Override
         public int getCount() {
-            return 7;
+            return mFragments.length;
         }
 
         @Override
@@ -175,8 +166,6 @@ public class UserActivity extends BaseActivity {
                     return getString(R.string.title_user_following_fragment);
                 case 5:
                     return getString(R.string.title_user_followers_fragment);
-                case 6:
-                    return getString(R.string.title_user_events_fragment);
                 default:
                     return "Error";
             }
@@ -192,47 +181,43 @@ public class UserActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()) {
-//            case R.id.menu_settings:
-//                startActivity(new Intent(UserActivity.this, SettingsActivity.class));
-//                break;
-//            case R.id.menu_source:
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
-//                break;
-//            case R.id.menu_share:
-//                final Intent share = new Intent();
-//                share.setAction(Intent.ACTION_SEND);
-//                share.putExtra(Intent.EXTRA_TEXT, "https://github.com/" + mUser.getLogin());
-//                share.setType("text/plain");
-//                startActivity(share);
-//                break;
-//            case R.id.menu_save_to_homescreen:
-//                final ShortcutDialog dialog = new ShortcutDialog();
-//                final Bundle args = new Bundle();
-//                args.putInt(getString(R.string.intent_title_res), R.string.title_save_user_shortcut);
-//                args.putBoolean(getString(R.string.intent_drawable), mUserImage.getDrawable() != null);
-//                args.putString(getString(R.string.intent_name), mUserName.getText().toString());
-//
-//                dialog.setArguments(args);
-//                dialog.setListener((name, iconFlag) -> {
-//                    final Intent i = new Intent(getApplicationContext(), UserActivity.class);
-//                    i.putExtra(getString(R.string.intent_username), mUserName.getText().toString());
-//
-//                    final Intent add = new Intent();
-//                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
-//                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-//                    add.putExtra("duplicate", false);
-//                    if(iconFlag) {
-//                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON, ((BitmapDrawable) mUserImage.getDrawable()).getBitmap());
-//                    } else {
-//                        add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-//                    }
-//                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-//                    getApplicationContext().sendBroadcast(add);
-//                });
-//                dialog.show(getSupportFragmentManager(), TAG);
-//                break;
-//        }
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(UserActivity.this, SettingsActivity.class));
+                break;
+            case R.id.menu_source:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL)));
+                break;
+            case R.id.menu_share:
+                final Intent share = new Intent();
+                share.setAction(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_TEXT, mUser.getHtmlUrl());
+                share.addCategory(Intent.CATEGORY_BROWSABLE);
+                share.setType("text/plain");
+                startActivity(share);
+                break;
+            case R.id.menu_save_to_homescreen:
+                final ShortcutDialog dialog = new ShortcutDialog();
+                final Bundle args = new Bundle();
+                args.putInt(getString(R.string.intent_title_res), R.string.title_save_user_shortcut);
+                args.putString(getString(R.string.intent_name), mUser.getLogin());
+
+                dialog.setArguments(args);
+                dialog.setListener((name, iconFlag) -> {
+                    final Intent i = new Intent(getApplicationContext(), UserActivity.class);
+                    i.putExtra(getString(R.string.intent_username), mUser.getLogin());
+
+                    final Intent add = new Intent();
+                    add.putExtra(Intent.EXTRA_SHORTCUT_INTENT, i);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                    add.putExtra("duplicate", false);
+                    add.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    add.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                    getApplicationContext().sendBroadcast(add);
+                });
+                dialog.show(getSupportFragmentManager(), TAG);
+                break;
+        }
         return true;
     }
 

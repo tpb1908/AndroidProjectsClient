@@ -2,26 +2,19 @@ package com.tpb.projects.user.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
+import com.tpb.projects.common.ViewSafeFragment;
 import com.tpb.projects.user.UserActivity;
 
 /**
  * Created by theo on 10/03/17.
  */
 
-public abstract class UserFragment extends Fragment {
+public abstract class UserFragment extends ViewSafeFragment {
 
     protected User mUser;
-    protected boolean mAreViewsValid;
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mAreViewsValid = false;
-    }
 
     protected UserActivity getParent() {
         return (UserActivity) getActivity();

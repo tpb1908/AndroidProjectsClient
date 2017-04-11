@@ -159,7 +159,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     }
 
     public void updateIssue(Issue issue) {
-        int index = Util.indexInPair(mIssues, issue);
+        int index = Util.indexOf(mIssues, issue);
         if(index != -1) {
             mIssues.set(index, Pair.create(issue, null));
             notifyItemChanged(index);
