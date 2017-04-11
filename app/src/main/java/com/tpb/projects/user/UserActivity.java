@@ -18,7 +18,7 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
-import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.user.fragments.UserEventsFragment;
 import com.tpb.projects.user.fragments.UserFollowersFragment;
 import com.tpb.projects.user.fragments.UserFollowingFragment;
@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
  * Created by theo on 10/03/17.
  */
 
-public class UserActivity extends CircularRevealActivity {
+public class UserActivity extends BaseActivity {
     private static final String TAG = UserActivity.class.getSimpleName();
 
     @BindView(R.id.title_user) TextView mTitle;
@@ -54,7 +54,7 @@ public class UserActivity extends CircularRevealActivity {
         final SettingsActivity.Preferences prefs = SettingsActivity.Preferences
                 .getPreferences(this);
         setTheme(
-                prefs.isDarkThemeEnabled() ? R.style.AppTheme_Transparent_Dark : R.style.AppTheme_Transparent);
+                prefs.isDarkThemeEnabled() ? R.style.AppTheme_Dark : R.style.AppTheme);
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_user);
         ButterKnife.bind(this);

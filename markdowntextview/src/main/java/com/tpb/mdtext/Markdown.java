@@ -74,7 +74,7 @@ public class Markdown {
 
         private static Map<String, String> codeBackgroundAttrs = new HashMap<>();
         static {
-            codeBackgroundAttrs.put("bgcolor", "#808080");
+            codeBackgroundAttrs.put("background-color", "#808080");
             codeBackgroundAttrs.put("face", "monospace");
         }
 

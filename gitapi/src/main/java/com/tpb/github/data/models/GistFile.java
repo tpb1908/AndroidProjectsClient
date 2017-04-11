@@ -11,7 +11,7 @@ import org.json.JSONObject;
  * Created by theo on 11/03/17.
  */
 
-public class File extends DataModel implements Parcelable {
+public class GistFile extends DataModel implements Parcelable {
 
     private static final String FILE_NAME = "filename";
     private String name;
@@ -75,7 +75,7 @@ public class File extends DataModel implements Parcelable {
         dest.writeString(this.language);
     }
 
-    public File(JSONObject obj) {
+    public GistFile(JSONObject obj) {
         try {
             name = obj.getString(FILE_NAME);
             size = obj.getInt(SIZE);
@@ -84,11 +84,11 @@ public class File extends DataModel implements Parcelable {
             truncated = obj.has(TRUNCATED) && obj.getBoolean(TRUNCATED);
             language = obj.getString(LANGUAGE);
         } catch(JSONException jse) {
-            Log.e(File.class.getSimpleName(), "parse: ", jse);
+            Log.e(GistFile.class.getSimpleName(), "parse: ", jse);
         }
     }
 
-    protected File(Parcel in) {
+    protected GistFile(Parcel in) {
         this.name = in.readString();
         this.size = in.readInt();
         this.rawUrl = in.readString();
@@ -97,21 +97,21 @@ public class File extends DataModel implements Parcelable {
         this.language = in.readString();
     }
 
-    public static final Creator<File> CREATOR = new Creator<File>() {
+    public static final Creator<GistFile> CREATOR = new Creator<GistFile>() {
         @Override
-        public File createFromParcel(Parcel source) {
-            return new File(source);
+        public GistFile createFromParcel(Parcel source) {
+            return new GistFile(source);
         }
 
         @Override
-        public File[] newArray(int size) {
-            return new File[size];
+        public GistFile[] newArray(int size) {
+            return new GistFile[size];
         }
     };
 
     @Override
     public String toString() {
-        return "File{" +
+        return "GistFile{" +
                 "name='" + name + '\'' +
                 ", size=" + size +
                 ", rawUrl='" + rawUrl + '\'' +

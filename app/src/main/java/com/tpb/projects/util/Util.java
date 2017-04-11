@@ -10,11 +10,9 @@ import android.text.format.DateFormat;
 import android.widget.EditText;
 
 import com.tpb.github.data.models.DataModel;
-import com.tpb.github.data.models.Repository;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -23,19 +21,6 @@ import java.util.List;
  */
 
 public class Util {
-    private static final String TAG = Util.class.getSimpleName();
-
-    public static final Comparator<Repository> repoAlphaSort = (r1, r2) -> r1.getName()
-                                                                             .compareToIgnoreCase(
-                                                                                     r2.getName());
-
-    public static String intArrayForPrefs(List<Integer> values) {
-        final StringBuilder builder = new StringBuilder();
-        for(int i : values) {
-            builder.append(i).append(",");
-        }
-        return builder.toString();
-    }
 
     public static String stringArrayForPrefs(List<String> values) {
         final StringBuilder builder = new StringBuilder();
@@ -47,14 +32,6 @@ public class Util {
 
     public static String[] stringArrayFromPrefs(String value) {
         return value.split(",");
-    }
-
-    public static int[] intArrayFromPrefs(String value) {
-        final String[] values = value.split(",");
-        final int[] ints = new int[values.length];
-        if(value.length() == 0) return ints;
-        for(int i = 0; i < values.length; i++) ints[i] = Integer.parseInt(values[i]);
-        return ints;
     }
 
     /**

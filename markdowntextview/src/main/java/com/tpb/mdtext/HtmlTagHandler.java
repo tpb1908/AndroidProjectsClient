@@ -204,7 +204,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         } else if(tag.equalsIgnoreCase(FONT_TAG)) {
             final String font = getAttribute("face", xmlReader, "");
             final String fgColor = getAttribute("color", xmlReader, "");
-            final String bgColor = getAttribute("bgcolor", xmlReader, "");
+            final String bgColor = getAttribute("background-color", xmlReader, "");
             final boolean rounded = safelyParseBoolean(getAttribute("rounded", xmlReader, ""),
                     false
             );

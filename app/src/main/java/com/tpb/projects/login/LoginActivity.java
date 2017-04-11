@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,6 @@ import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.markdown.Spanner;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
@@ -35,7 +35,7 @@ import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends BaseActivity implements OAuthHandler.OAuthAuthenticationListener {
+public class LoginActivity extends AppCompatActivity implements OAuthHandler.OAuthAuthenticationListener {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private boolean mLoginShown = false;
 

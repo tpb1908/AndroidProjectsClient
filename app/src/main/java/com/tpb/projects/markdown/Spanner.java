@@ -323,7 +323,7 @@ public class Spanner {
         return
                 "<font color=\"" +
                         String.format("#%06X", getTextColorForBackground((0xFFFFFF & color))) +
-                        "\" bgcolor=\"" +
+                        "\" background-color=\"" +
                         String.format("#%06X", (0xFFFFFF & color)) +
                         "\" " +
                         " rounded=\"true\">" +

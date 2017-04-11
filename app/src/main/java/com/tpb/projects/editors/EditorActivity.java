@@ -127,7 +127,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_CAMERA);
             } else {
-                imageLoadException(new IOException("File not created"));
+                imageLoadException(new IOException("GistFile not created"));
             }
         } else {
             Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT)

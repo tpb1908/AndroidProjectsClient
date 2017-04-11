@@ -47,7 +47,7 @@ public class Gist extends DataModel implements Parcelable {
     private User user;
 
     private static final String FILES = "files";
-    private List<File> files;
+    private List<GistFile> files;
 
     private static final String TRUNCATED = "truncated";
     private boolean isTruncated;
@@ -82,7 +82,7 @@ public class Gist extends DataModel implements Parcelable {
             final Iterator<String> keys = filesObj.keys();
             files = new ArrayList<>();
             while(keys.hasNext()) {
-                files.add(new File(filesObj.getJSONObject(keys.next())));
+                files.add(new GistFile(filesObj.getJSONObject(keys.next())));
             }
         } catch(JSONException jse) {
             Log.e(Gist.class.getSimpleName(), "parse: ", jse);
@@ -131,7 +131,7 @@ public class Gist extends DataModel implements Parcelable {
         return user;
     }
 
-    public List<File> getFiles() {
+    public List<GistFile> getFiles() {
         return files;
     }
 
@@ -200,7 +200,7 @@ public class Gist extends DataModel implements Parcelable {
         this.isPublic = in.readByte() != 0;
         this.owner = in.readParcelable(User.class.getClassLoader());
         this.user = in.readParcelable(User.class.getClassLoader());
-        this.files = in.createTypedArrayList(File.CREATOR);
+        this.files = in.createTypedArrayList(GistFile.CREATOR);
         this.isTruncated = in.readByte() != 0;
         this.comments = in.readInt();
         this.updatedAt = in.readLong();
