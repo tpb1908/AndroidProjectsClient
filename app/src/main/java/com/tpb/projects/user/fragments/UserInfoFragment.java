@@ -58,7 +58,6 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                    @Override
                    public boolean onPreDraw() {
-                       mAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
                        if(getActivity().getIntent() != null && getActivity().getIntent().hasExtra(
                                getString(R.string.intent_drawable))) {
                            final Bitmap bm = getActivity().getIntent().getParcelableExtra(
@@ -67,6 +66,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                                    getString(R.string.intent_username)));
                            mAvatar.setImageBitmap(bm);
                        }
+                       mAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
                        getActivity().startPostponedEnterTransition();
                        return true;
                    }
@@ -84,7 +84,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                     }
                 }, mUser.getLogin())
         );
-        
+
         mAreViewsValid = true;
         if(mUser != null) userLoaded(mUser);
         return view;
@@ -95,7 +95,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         mUser = user;
         if(!mAreViewsValid) return;
         mContributions.setListener(this);
-        mContributions.loadUser(user.getLogin());
+        mContributions.loadContributions(user.getLogin());
         Spanner.displayUser(mUserInfoParent, mUser);
 
         if(!GitHubSession.getSession(getContext()).getUserLogin().equals(user.getLogin())) {
@@ -111,7 +111,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void loadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     @Override
@@ -119,7 +119,6 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         if(mFollowButton == null) {
             mFollowButton = new Button(getContext());
             mFollowButton.setBackground(null);
-            //mFollowButton.setBackgroundResource(android.R.attr.selectableItemBackground);
             mFollowButton.setLayoutParams(
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -151,20 +150,18 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     }
 
     @Override
-    public void contributionsLoaded(List<ContributionsLoader.GitDay> contributions) {
-        if(!mAreViewsValid) return;
-        int total = 0;
+    public void contributionsLoaded(List<ContributionsLoader.ContributionsDay> contributions) {
+        int totalContributions = 0;
         int daysActive = 0;
-        int daysTotal = contributions.size();
-        int max = 0;
+        int maxContributions = 0;
         int streak = 0;
         int maxStreak = 0;
-        for(ContributionsLoader.GitDay gd : contributions) {
-            total += gd.contributions;
+        for(ContributionsLoader.ContributionsDay gd : contributions) {
             if(gd.contributions > 0) {
+                totalContributions += gd.contributions;
                 daysActive += 1;
-                if(gd.contributions > max) {
-                    max = gd.contributions;
+                if(gd.contributions > maxContributions) {
+                    maxContributions = gd.contributions;
                 }
                 streak += 1;
                 if(streak > maxStreak) {
@@ -174,20 +171,19 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                 streak = 0;
             }
         }
-        if(total > 0) {
-
+        if(totalContributions > 0) {
             final String info = getResources()
-                    .getQuantityString(R.plurals.text_user_contributions, total, total) +
+                    .getQuantityString(R.plurals.text_user_contributions, totalContributions, totalContributions) +
                     "\n" +
                     String.format(getString(R.string.text_user_average),
-                            (float) total / daysTotal
+                            (float) totalContributions / contributions.size()
                     ) +
                     "\n" +
                     String.format(getString(R.string.text_user_average_active),
-                            ((float) total / daysActive)
+                            ((float) totalContributions / daysActive)
                     ) +
                     "\n" +
-                    String.format(getString(R.string.text_user_max_contributions), max) +
+                    String.format(getString(R.string.text_user_max_contributions), maxContributions) +
                     "\n" +
                     String.format(getString(R.string.text_user_streak), maxStreak);
             final boolean isEmpty = mContributionsInfo.getText().toString().isEmpty();

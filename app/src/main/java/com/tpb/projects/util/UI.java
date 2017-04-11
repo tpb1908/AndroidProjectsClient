@@ -57,7 +57,7 @@ public class UI {
     }
 
     public static void setDrawableForIntent(@NonNull ImageView iv, @NonNull Intent i) {
-        if(iv.getDrawable() != null && iv.getDrawable() instanceof BitmapDrawable) {
+        if(iv.getDrawable() instanceof BitmapDrawable) {
             i.putExtra(iv.getResources().getString(R.string.intent_drawable),
                     ((BitmapDrawable) iv.getDrawable()).getBitmap()
             );

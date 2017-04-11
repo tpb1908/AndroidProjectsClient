@@ -24,7 +24,6 @@ public class ProjectsApplication extends Application {
         if(LeakCanary.isInAnalyzerProcess(this)) return; //Heap analysis process, not our stuff
         if(BuildConfig.IS_IN_DEBUG) {
             LeakCanary.install(this);
-            Logger.i(ProjectsApplication.class.getSimpleName(), "onCreate: Installed canary");
             AndroidNetworking.initialize(this, new OkHttpClient.Builder()
                     .addNetworkInterceptor(new Logger.LoggingInterceptor()).build());
         } else {

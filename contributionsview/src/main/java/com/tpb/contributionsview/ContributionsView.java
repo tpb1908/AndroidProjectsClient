@@ -17,21 +17,17 @@
 
 package com.tpb.contributionsview;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -40,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,22 +43,22 @@ import java.util.List;
  */
 
 public class ContributionsView extends View implements ContributionsLoader.ContributionsRequestListener {
-    private static final String TAG = ContributionsView.class.getSimpleName();
 
-    private boolean shouldDisplayMonths;
-    private int textColor;
-    private int textSize;
-    private int backGroundColor;
-    private ArrayList<ContributionsLoader.GitDay> contribs = new ArrayList<>();
+    private static final Calendar mCalendar = Calendar.getInstance();
 
-    private Paint dayPainter;
-    private Paint textPainter;
+    private boolean mShouldDisplayMonths;
+    private int mTextColor;
+    private int mTextSize;
+    private int mBackGroundColor;
+    private ArrayList<ContributionsLoader.ContributionsDay> mContributions = new ArrayList<>();
 
-    private Rect rect;
-    private final Rect textBounds = new Rect();
-    private float gridY;
+    private Paint mDayPainter;
+    private Paint mTextPainter;
 
-    private WeakReference<ContributionsLoadListener> listener;
+    private Rect mRect;
+    private final Rect mTextBounds = new Rect();
+
+    private WeakReference<ContributionsLoadListener> mListener;
 
     public ContributionsView(Context context) {
         super(context);
@@ -80,76 +75,65 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         initView(context, attrs, defStyleAttr, 0);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private ContributionsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        initView(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     private void initView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        rect = new Rect();
+        mRect = new Rect();
 
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.ContributionsView, defStyleAttr, defStyleRes
         );
         useAttributes(attributes);
 
-        textPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
-        dayPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
-        dayPainter.setStyle(Paint.Style.FILL);
+        mTextPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDayPainter = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDayPainter.setStyle(Paint.Style.FILL);
     }
 
     private void useAttributes(TypedArray ta) {
-        shouldDisplayMonths = ta.getBoolean(R.styleable.ContributionsView_showMonths, true);
-        backGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor,
+        mShouldDisplayMonths = ta.getBoolean(R.styleable.ContributionsView_showMonths, true);
+        mBackGroundColor = ta.getColor(R.styleable.ContributionsView_backgroundColor,
                 0xD6E685
         ); //GitHub default color
-        textColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
-        textSize = ta.getDimensionPixelSize(R.styleable.ContributionsView_textSize, 7);
+        mTextColor = ta.getColor(R.styleable.ContributionsView_textColor, Color.BLACK);
+        mTextSize = ta.getDimensionPixelSize(R.styleable.ContributionsView_textSize, 7);
         if(ta.getString(R.styleable.ContributionsView_username) != null && !isInEditMode()) {
-            loadUser(ta.getString(R.styleable.ContributionsView_username));
+            loadContributions(ta.getString(R.styleable.ContributionsView_username));
         }
     }
 
-    public void loadUser(String user) {
+    public void loadContributions(String user) {
         new ContributionsLoader(this).beginRequest(getContext(), user);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.getClipBounds(rect);
+        canvas.getClipBounds(mRect);
 
-        final int w = rect.width();
-        final int h = rect.height();
+        final int w = mRect.width();
+        final int h = mRect.height();
 
-        final int hnum = contribs.size() == 0 ? 52 : (int) Math
-                .ceil(contribs.size() / 7d); //The number of days to show horizontally
+        final int hnum = mContributions.size() == 0 ? 52 : (int) Math
+                .ceil(mContributions.size() / 7d); //The number of columns to show horizontally
 
         final float bd = (w / (float) hnum) * 0.9f; //The dimension of a single block
         final float m = (w / (float) hnum) - bd; //The margin around a block
 
-        final float tm = shouldDisplayMonths ? textSize : 0; //Top margin if we are displaying months
-        final float mth = shouldDisplayMonths ? textSize : 0; //Height of month text
+        final float mth = mShouldDisplayMonths ? mTextSize : 0; //Height of month text
 
         //Draw the background
-        dayPainter.setColor(backGroundColor);
-        canvas.drawRect(0, (tm * mth), w, h + mth, dayPainter);
-
-        textPainter.setColor(textColor);
-        textPainter.setTextSize(mth);
+        mDayPainter.setColor(mBackGroundColor);
+        canvas.drawRect(0, (2 * mth), w, h + mth, mDayPainter);
         float x = 0;
-        if(contribs.size() > 0) {
-            int dow = getDayOfWeek(contribs.get(0).date) - 1;
-            float y = (dow * (bd + m)) + tm + mth;
-            gridY = y;
-            for(ContributionsLoader.GitDay d : contribs) {
-                dayPainter.setColor(d.color);
-                canvas.drawRect(x, y, x + bd, y + bd, dayPainter);
+        if(mContributions.size() > 0) {
+            int dow = getDayOfWeek(mContributions.get(0).date) - 1;
+            float y = (dow * (bd + m)) + 2 * mth;
+            for(ContributionsLoader.ContributionsDay d : mContributions) {
+                mDayPainter.setColor(d.color);
+                canvas.drawRect(x, y, x + bd, y + bd, mDayPainter);
                 dow = getDayOfWeek(d.date) - 1;
                 if(dow == 6) { //We just drew the last day of the week
                     x += bd + m;
-                    y = tm + mth;
+                    y = 2 * mth;
                 } else {
                     y += bd + m;
                 }
@@ -157,14 +141,13 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
             }
         } else {
             int dow = 0;
-            float y = tm + mth;
-            gridY = y;
-            dayPainter.setColor(Color.parseColor("#EEEEEE"));
+            float y = 2 * mth;
+            mDayPainter.setColor(0xffeeeeee);
             for(int i = 0; i < 364; i++) {
-                canvas.drawRect(x, y, x + bd, y + bd, dayPainter);
+                canvas.drawRect(x, y, x + bd, y + bd, mDayPainter);
                 if(dow == 6) { //We just drew the last day of the week
                     x += bd + m;
-                    y = tm + mth;
+                    y = 2 * mth;
                     dow = 0;
                 } else {
                     y += bd + m;
@@ -172,22 +155,26 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
                 }
             }
         }
-        if(shouldDisplayMonths) {
-            cal.setTimeInMillis(System.currentTimeMillis());
-            cal.add(Calendar.MONTH, -12);
+        if(mShouldDisplayMonths) {
+            mTextPainter.setColor(mTextColor);
+            mTextPainter.setTextSize(mth);
+            mCalendar.setTimeInMillis(System.currentTimeMillis());
+            mCalendar.add(Calendar.MONTH, -12);
             x = 0;
             for(int i = 0; i < 12; i++) {
-                final String month = getMonthName(cal.getTimeInMillis());
-                textPainter.getTextBounds(month, 0, month.length(), textBounds);
-                if(w > x + textBounds.width()) {
+                final String month = getMonthName(mCalendar.getTimeInMillis());
+                mTextPainter.getTextBounds(month, 0, month.length(), mTextBounds);
+                if(w > x + mTextBounds.width()) {
                     canvas.drawText(
                             month,
                             x,
                             mth,
-                            textPainter
+                            mTextPainter
                     );
+                } else {
+                    break;
                 }
-                cal.add(Calendar.MONTH, 1);
+                mCalendar.add(Calendar.MONTH, 1);
                 x += w / 12;
             }
         }
@@ -196,34 +183,10 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         setLayoutParams(lp);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_UP) {
-            final float cols = contribs.size() / 7f;
-            final float pcr = event.getX() / rect.width();
-            final int col = (int) (pcr * cols);
-            if(event.getY() > textSize) {
-                final float pcc = (event.getY() - gridY) / (rect.height() - gridY);
-                final int row = (int) (pcc * 7);
-                final int pos = (7 * col) + row;
-                if(pos < contribs.size() && pos >= 0) {
-                    final String date = new SimpleDateFormat("dd-MM-yyyy")
-                            .format(new Date(contribs.get(pos).date));
-                    Toast.makeText(getContext(), String.format("%1$d contributions on %2$s",
-                            contribs.get(pos).contributions, date
-                    ), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-        return super.onTouchEvent(event);
-    }
-
-    private static final Calendar cal = Calendar.getInstance();
-
     private int getDayOfWeek(long stamp) {
-        cal.setTimeInMillis(stamp);
+        mCalendar.setTimeInMillis(stamp);
         //Day of week is indexed 1 to 7
-        return cal.get(Calendar.DAY_OF_WEEK);
+        return mCalendar.get(Calendar.DAY_OF_WEEK);
     }
 
     private static final SimpleDateFormat month = new SimpleDateFormat("MMM");
@@ -232,16 +195,13 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
         return month.format(stamp);
     }
 
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
-    }
-
     @Override
-    public void onResponse(ArrayList<ContributionsLoader.GitDay> contributions) {
-        contribs = contributions;
+    public void onResponse(ArrayList<ContributionsLoader.ContributionsDay> contributions) {
+        mContributions = contributions;
         invalidate();
-        if(listener != null && listener.get() != null)
-            listener.get().contributionsLoaded(contributions);
+        if(mListener != null && mListener.get() != null) {
+            mListener.get().contributionsLoaded(contributions);
+        }
     }
 
     @Override
@@ -250,23 +210,20 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     }
 
     public void setListener(ContributionsLoadListener listener) {
-        this.listener = new WeakReference<>(listener);
+        mListener = new WeakReference<>(listener);
     }
 
-    public List<ContributionsLoader.GitDay> getContributions() {
-        return contribs;
-    }
 
     public interface ContributionsLoadListener {
 
-        void contributionsLoaded(List<ContributionsLoader.GitDay> contributions);
+        void contributionsLoaded(List<ContributionsLoader.ContributionsDay> contributions);
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable ss = super.onSaveInstanceState();
-        final ContribState state = new ContribState(ss);
-        state.contribs = contribs.toArray(new ContributionsLoader.GitDay[0]);
+        final ContributionsState state = new ContributionsState(ss);
+        state.contributions = mContributions.toArray(new ContributionsLoader.ContributionsDay[0]);
         return state;
     }
 
@@ -274,42 +231,42 @@ public class ContributionsView extends View implements ContributionsLoader.Contr
     protected void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(state);
 
-        if(!(state instanceof ContribState)) {
+        if(!(state instanceof ContributionsState)) {
             super.onRestoreInstanceState(state);
             return;
         }
-        final ContribState cs = (ContribState) state;
+        final ContributionsState cs = (ContributionsState) state;
         super.onRestoreInstanceState(cs.getSuperState());
-        this.contribs = new ArrayList<>(Arrays.asList(cs.contribs));
+        this.mContributions = new ArrayList<>(Arrays.asList(cs.contributions));
         invalidate();
     }
 
-    private static class ContribState extends BaseSavedState {
-        ContributionsLoader.GitDay[] contribs;
+    private static class ContributionsState extends BaseSavedState {
+        ContributionsLoader.ContributionsDay[] contributions;
 
-        ContribState(Parcel source) {
+        ContributionsState(Parcel source) {
             super(source);
-            this.contribs = source.createTypedArray(ContributionsLoader.GitDay.CREATOR);
+            this.contributions = source.createTypedArray(ContributionsLoader.ContributionsDay.CREATOR);
         }
 
-        ContribState(Parcelable superState) {
+        ContributionsState(Parcelable superState) {
             super(superState);
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeTypedArray(contribs, flags);
+            out.writeTypedArray(contributions, flags);
         }
 
-        public static final Parcelable.Creator<ContribState> CREATOR =
-                new Parcelable.Creator<ContribState>() {
-                    public ContribState createFromParcel(Parcel in) {
-                        return new ContribState(in);
+        public static final Parcelable.Creator<ContributionsState> CREATOR =
+                new Parcelable.Creator<ContributionsState>() {
+                    public ContributionsState createFromParcel(Parcel in) {
+                        return new ContributionsState(in);
                     }
 
-                    public ContribState[] newArray(int size) {
-                        return new ContribState[size];
+                    public ContributionsState[] newArray(int size) {
+                        return new ContributionsState[size];
                     }
                 };
     }

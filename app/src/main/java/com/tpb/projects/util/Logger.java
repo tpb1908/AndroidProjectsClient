@@ -16,7 +16,6 @@ import okhttp3.Response;
 public class Logger {
     private static final boolean DEBUG = com.tpb.projects.BuildConfig.IS_IN_DEBUG;
 
-
     public static void logLong(String TAG, String s) {
         if(s.length() > 4000) {
             Log.d(TAG, s.substring(0, 4000));

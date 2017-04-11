@@ -1,8 +1,6 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowActivityTransitions">true</item>
@@ -19,7 +17,6 @@
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowActivityTransitions">true</item>
@@ -47,25 +44,9 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="LoginEditText" parent="TextAppearance.AppCompat">
-        <item name="android:textColorHint">@color/md_white_1000</item>
-        <item name="android:colorAccent">@color/md_white_1000</item>
-        <item name="android:colorPrimary">@color/md_white_1000</item>
-        <item name="android:colorPrimaryDark">@color/md_white_1000</item>
-        <item name="android:textColor">@color/md_white_1000</item>
-        <item name="android:colorControlNormal">@color/md_white_1000</item>
-        <item name="android:colorControlActivated">@color/md_white_1000</item>
-        <item name="android:backgroundTint">@color/md_white_1000</item>
-    </style>
-
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
-    </style>
-
-    <style name="TextList">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:includeFontPadding">false</item>
     </style>
 
 </resources>

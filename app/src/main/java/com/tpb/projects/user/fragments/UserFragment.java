@@ -16,11 +16,11 @@ public abstract class UserFragment extends ViewSafeFragment {
 
     protected User mUser;
 
+    public abstract void userLoaded(User user);
+
     protected UserActivity getParent() {
         return (UserActivity) getActivity();
     }
-
-    public abstract void userLoaded(User user);
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

@@ -40,7 +40,6 @@ import java.util.ArrayList;
  */
 
 public class ContributionsLoader {
-    private static final String TAG = ContributionsLoader.class.getSimpleName();
 
     // Format string for svg path
     private static final String IMAGE_BASE = "https://github.com/users/%s/contributions";
@@ -51,7 +50,7 @@ public class ContributionsLoader {
         mListener = new WeakReference<>(listener);
     }
 
-    void beginRequest(Context context, String login) {
+    void beginRequest(@NonNull Context context, @NonNull String login) {
         final String URL = String.format(IMAGE_BASE, login);
         // Load the svg as a string
         final StringRequest req = new StringRequest(Request.Method.GET, URL,
@@ -61,36 +60,36 @@ public class ContributionsLoader {
                         parse(response);
                     }
                 }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if(mListener.get() != null) mListener.get().onError(error);
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if(mListener.get() != null) mListener.get().onError(error);
+                }
             }
-        }
         );
         Volley.newRequestQueue(context).add(req);
     }
 
     private void parse(String response) {
-        final ArrayList<GitDay> contribs = new ArrayList<>();
+        final ArrayList<ContributionsDay> contributions = new ArrayList<>();
         int first = response.indexOf("<rect");
         int last;
         // Find each rectangle in the image
         while(first != -1) {
             last = response.indexOf("/>", first);
-            contribs.add(new GitDay(response.substring(first, last)));
+            contributions.add(new ContributionsDay(response.substring(first, last)));
             first = response.indexOf("<rect", last);
         }
-        if(mListener.get() != null) mListener.get().onResponse(contribs);
+        if(mListener.get() != null) mListener.get().onResponse(contributions);
 
     }
 
-    public static class GitDay implements Parcelable {
+    public static class ContributionsDay implements Parcelable {
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        @ColorInt final int color;
-        long date;
+        @ColorInt public final int color;
+        public long date;
         public final int contributions;
 
-        GitDay(String rect) {
+        ContributionsDay(String rect) {
             //rect is <rect class="day" width="10" height="10" x="" y="" fill="#FFFFF" data-count="n" data-date="yyyy-mm-dd"/>
             final int colorIndex = rect.indexOf("fill=\"") + 6;
             color = Color.parseColor(rect.substring(colorIndex, colorIndex + 7));
@@ -102,15 +101,13 @@ public class ContributionsLoader {
             final int dateIndex = rect.indexOf("data-date=\"") + 11;
             try {
                 date = sdf.parse(rect.substring(dateIndex, dateIndex + 11)).getTime();
-            } catch(ParseException ignored) {
-            }
-            //Log.i(TAG, "GitDay: Contributions" + color + ", " + date + ", " + contributions);
+            } catch(ParseException ignored) {}
         }
 
 
         @Override
         public String toString() {
-            return "GitDay{" +
+            return "ContributionsDay{" +
                     "color=" + color +
                     ", date=" + date +
                     ", contributions=" + contributions +
@@ -129,28 +126,28 @@ public class ContributionsLoader {
             dest.writeInt(this.contributions);
         }
 
-        protected GitDay(Parcel in) {
+        protected ContributionsDay(Parcel in) {
             this.color = in.readInt();
             this.date = in.readLong();
             this.contributions = in.readInt();
         }
 
-        public static final Creator<GitDay> CREATOR = new Creator<GitDay>() {
+        public static final Creator<ContributionsDay> CREATOR = new Creator<ContributionsDay>() {
             @Override
-            public GitDay createFromParcel(Parcel source) {
-                return new GitDay(source);
+            public ContributionsDay createFromParcel(Parcel source) {
+                return new ContributionsDay(source);
             }
 
             @Override
-            public GitDay[] newArray(int size) {
-                return new GitDay[size];
+            public ContributionsDay[] newArray(int size) {
+                return new ContributionsDay[size];
             }
         };
     }
 
     interface ContributionsRequestListener {
 
-        void onResponse(ArrayList<GitDay> contributions);
+        void onResponse(ArrayList<ContributionsDay> contributions);
 
         void onError(VolleyError error);
 
