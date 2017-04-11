@@ -11,10 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
-import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.view.View;
 
 import com.tpb.mdtext.handlers.TableClickHandler;
 
@@ -26,7 +23,7 @@ import java.lang.ref.WeakReference;
  * Created by theo on 08/04/17.
  */
 
-public class TableSpan extends ReplacementSpan {
+public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.WrappedClickableSpan {
 
     private WeakReference<TableClickHandler> mHandler;
     private static String mTableString = "Table";
@@ -69,7 +66,9 @@ public class TableSpan extends ReplacementSpan {
         }
     }
 
-    private void onClick() {
+
+
+    public void onClick() {
         if(mHandler.get() != null) mHandler.get().onClick(mHtml);
     }
 
@@ -87,26 +86,6 @@ public class TableSpan extends ReplacementSpan {
 
     public static boolean isInitialised() {
         return mTableBM != null;
-    }
-
-    public static class ClickableTableSpan extends ClickableSpan {
-
-        private final TableSpan mParent;
-
-        public ClickableTableSpan(TableSpan parent) {
-            mParent = parent;
-        }
-
-        @Override
-        public void onClick(View widget) {
-            mParent.onClick();
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-        }
     }
 
 }

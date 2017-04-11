@@ -50,6 +50,7 @@ import com.tpb.mdtext.views.spans.ListNumberSpan;
 import com.tpb.mdtext.views.spans.QuoteSpan;
 import com.tpb.mdtext.views.spans.RoundedBackgroundEndSpan;
 import com.tpb.mdtext.views.spans.TableSpan;
+import com.tpb.mdtext.views.spans.WrappingClickableSpan;
 
 import org.xml.sax.XMLReader;
 
@@ -293,7 +294,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.replace(start + 1, end, " ");
                 final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
                 output.setSpan(code, start, start + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new CodeSpan.ClickableCodeSpan(code), start, start + 3,
+                output.setSpan(new WrappingClickableSpan(code), start, start + 3,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
@@ -321,7 +322,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
                 final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
                 output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new TableSpan.ClickableTableSpan(table), start, start + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new WrappingClickableSpan(table), start, start + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             } else {
                 end(output, Table.class, false);

@@ -11,10 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
-import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.view.View;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
 
@@ -26,7 +23,7 @@ import java.lang.ref.WeakReference;
  * Created by theo on 06/03/17.
  */
 
-public class CodeSpan extends ReplacementSpan {
+public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.WrappedClickableSpan {
     private WeakReference<CodeClickHandler> mHandler;
     private String mCode;
     private String mLanguage;
@@ -89,7 +86,7 @@ public class CodeSpan extends ReplacementSpan {
         }
     }
 
-    private void onClick() {
+    public void onClick() {
         if(mHandler.get() != null) mHandler.get().codeClicked(mCode, mLanguage);
     }
 
@@ -108,26 +105,6 @@ public class CodeSpan extends ReplacementSpan {
 
     public static boolean isInitialised() {
         return mCodeBM != null;
-    }
-
-    public static class ClickableCodeSpan extends ClickableSpan {
-
-        private final CodeSpan mParent;
-
-        public ClickableCodeSpan(CodeSpan parent) {
-            mParent = parent;
-        }
-
-        @Override
-        public void onClick(View widget) {
-            mParent.onClick();
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-        }
     }
 
 }
