@@ -59,22 +59,15 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
             final int line = layout.getLineForVertical(y);
             final int off = layout.getOffsetForHorizontal(line, x);
 
-            final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
-
-            if(link.length != 0) {
+            final ClickableSpan[] clickable = buffer.getSpans(off, off, ClickableSpan.class);
+            if(clickable.length != 0) {
                 if(action == MotionEvent.ACTION_UP) {
-                    link[0].onClick(widget);
-                } else {
-                    Selection.setSelection(buffer,
-                            buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0])
-                    );
+                    clickable[0].onClick(widget);
                 }
-
                 if(widget instanceof MarkdownTextView) {
-                    ((MarkdownTextView) widget).linkHit = true;
+                    ((MarkdownTextView) widget).spanHit = true;
                 } else if(widget instanceof MarkdownEditText) {
-                    ((MarkdownEditText) widget).linkHit = true;
+                    ((MarkdownEditText) widget).spanHit = true;
                 }
                 return true;
             } else {

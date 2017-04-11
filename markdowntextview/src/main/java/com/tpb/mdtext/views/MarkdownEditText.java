@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
@@ -44,15 +45,14 @@ import java.util.Scanner;
  * Created by theo on 27/02/17.
  */
 
-public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpImageGetter.DrawableCacheHandler {
+public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCacheHandler {
 
     public static final String TAG = MarkdownEditText.class.getSimpleName();
-    public static final boolean DEBUG = false;
 
     private boolean mIsEditing = true;
     private Editable mSavedText = new SpannableStringBuilder();
 
-    public boolean linkHit;
+    public boolean spanHit;
 
     private final boolean dontConsumeNonUrlClicks = true;
     private boolean removeFromHtmlSpace = true;
@@ -288,11 +288,11 @@ public class MarkdownEditText extends JellyBeanSpanFixEditText implements HttpIm
             mLastClickPosition[0] = event.getRawX();
             mLastClickPosition[1] = event.getRawY();
         }
-        linkHit = false;
+        spanHit = false;
         final boolean res = super.onTouchEvent(event);
         if(mIsEditing) return res;
         if(dontConsumeNonUrlClicks) {
-            return linkHit;
+            return spanHit;
         }
         return res;
     }

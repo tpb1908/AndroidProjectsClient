@@ -147,6 +147,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                             ListNumberSpan.ListType.NUMBER
                     )
             );
+            if(mLists.size() == 0)     output.append("\n");
         } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
             final ListNumberSpan.ListType type =  ListNumberSpan.ListType.fromString(getAttribute("type", xmlReader, ""));
             mLists.push(
@@ -158,6 +159,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                             type
                     )
             );
+            if(mLists.size() == 0)     output.append("\n");
             mOlIndices.push(Pair.create(1, type));
         } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
             if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {

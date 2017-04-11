@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -32,6 +33,7 @@ import android.text.TextPaint;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -58,12 +60,9 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpImageGetter.DrawableCacheHandler {
+public class MarkdownTextView extends AppCompatTextView implements HttpImageGetter.DrawableCacheHandler, View.OnClickListener {
 
     public static final String TAG = MarkdownTextView.class.getSimpleName();
-    public static final boolean DEBUG = false;
-
-    public boolean linkHit;
 
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
@@ -71,6 +70,8 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
     private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
+
+    public boolean spanHit = false;
 
     private float[] mLastClickPosition = new float[] {-1, -1};
 
@@ -177,6 +178,7 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
+                Log.i(TAG, "HTML is " + overridden);
                 final Spanned text;
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     text = removeHtmlBottomPadding(
@@ -308,6 +310,21 @@ public class MarkdownTextView extends JellyBeanSpanFixTextView implements HttpIm
         }
         return super.onTouchEvent(event);
     }
+
+    @Override
+    public void onClick(View v) {
+        if(!spanHit && mOnClickListener != null) mOnClickListener.onClick(v);
+        spanHit = false;
+    }
+
+    private OnClickListener mOnClickListener;
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        mOnClickListener = l;
+        super.setOnClickListener(this);
+    }
+
+
 
     @Override
     protected boolean getDefaultEditable() {
