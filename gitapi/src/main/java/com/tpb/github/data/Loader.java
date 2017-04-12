@@ -69,7 +69,7 @@ public class Loader extends APIHandler {
         super(context);
     }
 
-    public void loadAuthenticatedUser(@Nullable final ItemLoader<User> loader) {
+    public Loader loadAuthenticatedUser(@Nullable final ItemLoader<User> loader) {
         get(GIT_BASE + SEGMENT_USER)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -85,9 +85,10 @@ public class Loader extends APIHandler {
                         if(loader != null) loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadUser(@Nullable final ItemLoader<User> loader, String username) {
+    public Loader loadUser(@Nullable final ItemLoader<User> loader, String username) {
         final ANRequest req = get(GIT_BASE + SEGMENT_USERS + "/" + username)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -107,10 +108,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
-
+        return this;
     }
 
-    public void loadRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
+    public Loader loadRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + "?sort=updated" + appendPage(
                         page))
@@ -140,9 +141,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadRepositories(@Nullable final ListLoader<Repository> loader, int page) {
+    public Loader loadRepositories(@Nullable final ListLoader<Repository> loader, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + "?sort=updated" + appendPage(page))
                         .addHeaders(LICENSES_API_API_AUTH_HEADERS)
@@ -171,9 +173,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadStarredRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
+    public Loader loadStarredRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_STARRED + appendPage(page))
                         .addHeaders(LICENSES_API_API_AUTH_HEADERS)
@@ -202,9 +205,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadRepository(@Nullable final ItemLoader<Repository> loader, String repoFullName) {
+    public Loader loadRepository(@Nullable final ItemLoader<Repository> loader, String repoFullName) {
         final ANRequest req = get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName)
                 .addHeaders(LICENSES_API_API_AUTH_HEADERS)
                 .setTag(loader)
@@ -224,9 +228,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
+    public Loader loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES)
                 .addHeaders(PAGES_API_API_AUTH_HEADERS)
                 .setTag(loader)
@@ -242,9 +247,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadBranches(@NonNull final ListLoader<android.support.v4.util.Pair<String, String>> loader, String repoFullName) {
+    public Loader loadBranches(@NonNull final ListLoader<android.support.v4.util.Pair<String, String>> loader, String repoFullName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_BRANCHES)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -273,9 +279,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadGists(@NonNull final ListLoader<Gist> loader, int page) {
+    public Loader loadGists(@NonNull final ListLoader<Gist> loader, int page) {
         get(GIT_BASE + SEGMENT_GISTS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -299,10 +306,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
-
+        return this;
     }
 
-    public void loadGists(@NonNull final ListLoader<Gist> loader, String user, int page) {
+    public Loader loadGists(@NonNull final ListLoader<Gist> loader, String user, int page) {
         get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_GISTS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -326,10 +333,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
-
+        return this;
     }
 
-    public void loadReadMe(@NonNull final ItemLoader<String> loader, String repoFullName) {
+    public Loader loadReadMe(@NonNull final ItemLoader<String> loader, String repoFullName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_README)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -351,9 +358,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadCollaborators(@Nullable final ListLoader<User> loader, String repoFullName) {
+    public Loader loadCollaborators(@Nullable final ListLoader<User> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS)
                         .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
@@ -382,9 +390,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadContributors(@Nullable final ListLoader<User> loader, String repoFullName) {
+    public Loader loadContributors(@Nullable final ListLoader<User> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_CONTRIBUTORS)
                         .addHeaders(API_AUTH_HEADERS)
@@ -413,9 +422,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadLabels(@Nullable final ListLoader<Label> loader, String repoFullName) {
+    public Loader loadLabels(@Nullable final ListLoader<Label> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_LABELS)
                         .addHeaders(API_AUTH_HEADERS)
@@ -445,9 +455,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadProject(@Nullable final ItemLoader<Project> loader, int id) {
+    public Loader loadProject(@Nullable final ItemLoader<Project> loader, int id) {
         final ANRequest req = get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
                 .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                 .setTag(loader)
@@ -467,9 +478,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadProjects(@Nullable final ListLoader<Project> loader, String repoFullName) {
+    public Loader loadProjects(@Nullable final ListLoader<Project> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
                         .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
@@ -509,9 +521,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadColumns(@Nullable final ListLoader<Column> loader, int projectId) {
+    public Loader loadColumns(@Nullable final ListLoader<Column> loader, int projectId) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
                         .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
@@ -541,9 +554,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadCards(@NonNull final ListLoader<Card> loader, int columnId, int page) {
+    public Loader loadCards(@NonNull final ListLoader<Card> loader, int columnId, int page) {
         get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + appendPage(
                 page))
                 .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
@@ -570,9 +584,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadIssue(@NonNull final ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
+    public Loader loadIssue(@NonNull final ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
                 .addHeaders(API_AUTH_HEADERS)
                 .setPriority(highPriority ? Priority.HIGH : Priority.MEDIUM)
@@ -589,9 +604,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadOpenIssues(@Nullable final ListLoader<Issue> loader, String repoFullName) {
+    public Loader loadOpenIssues(@Nullable final ListLoader<Issue> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES)
                         .addHeaders(API_AUTH_HEADERS)
@@ -622,10 +638,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
-
+        return this;
     }
 
-    public void loadIssues(@Nullable final ListLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
+    public Loader loadIssues(@Nullable final ListLoader<Issue> loader, String repoFullName, State state, @Nullable String assignee, @Nullable List<String> labels, int page) {
         final HashMap<String, String> params = new HashMap<>();
         params.put("state", state.toString().toLowerCase());
         if(assignee != null) {
@@ -675,9 +691,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadIssueComments(@Nullable final ListLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
+    public Loader loadIssueComments(@Nullable final ListLoader<Comment> loader, String repoFullName, int issueNumber, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS + appendPage(
                         page))
@@ -708,9 +725,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadEvents(@Nullable final ListLoader<IssueEvent> loader, final String repoFullName, int issueNumber, int page) {
+    public Loader loadEvents(@Nullable final ListLoader<IssueEvent> loader, final String repoFullName, int issueNumber, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_EVENTS + appendPage(
                         page))
@@ -747,10 +765,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
-
+        return this;
     }
 
-    public void loadMilestone(@NonNull final ItemLoader<Milestone> loader, String repoFullName, int number) {
+    public Loader loadMilestone(@NonNull final ItemLoader<Milestone> loader, String repoFullName, int number) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + "/" + number)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -768,9 +786,10 @@ public class Loader extends APIHandler {
 
                     }
                 });
+        return this;
     }
 
-    public void loadMilestones(@Nullable final ListLoader<Milestone> loader, String repoFullName, State state, int page) {
+    public Loader loadMilestones(@Nullable final ListLoader<Milestone> loader, String repoFullName, State state, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_MILESTONES + appendPage(
                         page))
@@ -800,9 +819,10 @@ public class Loader extends APIHandler {
                 }
             });
         }
+        return this;
     }
 
-    public void loadFollowers(@NonNull final ListLoader<User> loader, String user, int page) {
+    public Loader loadFollowers(@NonNull final ListLoader<User> loader, String user, int page) {
         get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_FOLLOWERS + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -825,9 +845,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadFollowing(@NonNull final ListLoader<User> loader, String user, int page) {
+    public Loader loadFollowing(@NonNull final ListLoader<User> loader, String user, int page) {
         get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_FOLLOWING + appendPage(page))
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -850,9 +871,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void checkAccessToRepository(@NonNull final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public Loader checkAccessToRepository(@NonNull final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login + SEGMENT_PERMISSION)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
                 .setTag(listener)
@@ -893,9 +915,10 @@ public class Loader extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void checkIfCollaborator(@Nullable final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
+    public Loader checkIfCollaborator(@Nullable final ItemLoader<Repository.AccessLevel> listener, String login, String repoFullName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COLLABORATORS + "/" + login)
                 .addHeaders(ORGANIZATIONS_API_AUTH_HEADERS)
                 .setPriority(Priority.IMMEDIATE)
@@ -920,9 +943,10 @@ public class Loader extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void checkIfStarred(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
+    public Loader checkIfStarred(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
         get(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + repoFullName)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(listener)
@@ -942,9 +966,10 @@ public class Loader extends APIHandler {
                         listener.loadComplete(false);
                     }
                 });
+        return this;
     }
 
-    public void checkIfWatched(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
+    public Loader checkIfWatched(@NonNull final ItemLoader<Boolean> listener, String repoFullName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(listener)
@@ -969,9 +994,10 @@ public class Loader extends APIHandler {
                         listener.loadComplete(false);
                     }
                 });
+        return this;
     }
 
-    public void checkIfFollowing(@NonNull final ItemLoader<Boolean> listener, String user) {
+    public Loader checkIfFollowing(@NonNull final ItemLoader<Boolean> listener, String user) {
         get(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(listener)
@@ -996,9 +1022,10 @@ public class Loader extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void renderMarkDown(@NonNull final ItemLoader<String> loader, String markdown) {
+    public Loader renderMarkDown(@NonNull final ItemLoader<String> loader, String markdown) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -1020,9 +1047,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void renderMarkDown(@Nullable final ItemLoader<String> loader, String markdown, String context) {
+    public Loader renderMarkDown(@Nullable final ItemLoader<String> loader, String markdown, String context) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put("text", markdown);
@@ -1046,9 +1074,10 @@ public class Loader extends APIHandler {
                         if(loader != null) loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadLicenseBody(@NonNull final ItemLoader<String> loader, @NonNull String path) {
+    public Loader loadLicenseBody(@NonNull final ItemLoader<String> loader, @NonNull String path) {
         get(path)
                 .addHeaders(LICENSES_API_API_AUTH_HEADERS)
                 .setTag(loader)
@@ -1072,10 +1101,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
-
+        return this;
     }
 
-    public void loadCommit(@NonNull final ItemLoader<Commit> loader, String repoFullName, String sha) {
+    public Loader loadCommit(@NonNull final ItemLoader<Commit> loader, String repoFullName, String sha) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -1091,9 +1120,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadCommits(@NonNull final ListLoader<Commit> loader, String repoFullName, @Nullable String branch, int page) {
+    public Loader loadCommits(@NonNull final ListLoader<Commit> loader, String repoFullName, @Nullable String branch, int page) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + appendPage(
                 page) + (branch == null ? "" : "?sha=" + branch))
                 .addHeaders(API_AUTH_HEADERS)
@@ -1119,9 +1149,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadCommitComments(@NonNull final ListLoader<Comment> loader, String repoFullName, String sha, int page) {
+    public Loader loadCommitComments(@NonNull final ListLoader<Comment> loader, String repoFullName, String sha, int page) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS + appendPage(
                 page))
                 .addHeaders(API_AUTH_HEADERS)
@@ -1146,9 +1177,10 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadCommitStatuses(@NonNull final ItemLoader<CompleteStatus> loader, final String repoFullName, String sha) {
+    public Loader loadCommitStatuses(@NonNull final ItemLoader<CompleteStatus> loader, final String repoFullName, String sha) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_STATUS)
                 .addHeaders(API_AUTH_HEADERS)
                 .setTag(loader)
@@ -1164,9 +1196,10 @@ public class Loader extends APIHandler {
                         loader.loadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
+    public Loader loadNotifications(@NonNull final ListLoader<Notification> loader, long from) {
         get(GIT_BASE + SEGMENT_NOTIFICATIONS + (from == 0 ? "" : "?since=" + Util
                 .toISO8061FromMilliseconds(from)))
                 .addHeaders(API_AUTH_HEADERS)
@@ -1194,6 +1227,7 @@ public class Loader extends APIHandler {
                         loader.listLoadError(parseError(anError));
                     }
                 });
+        return this;
     }
 
 
