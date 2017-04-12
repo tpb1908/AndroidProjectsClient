@@ -71,7 +71,7 @@ public class ContentActivity extends BaseActivity implements Loader.ListLoader<P
         mRecycler.setAdapter(mAdapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRefresher.setOnRefreshListener(() -> mAdapter.reload());
-        new Loader(this).loadBranches(this, repo);
+        Loader.getLoader(this).loadBranches(this, repo);
     }
 
     @Override

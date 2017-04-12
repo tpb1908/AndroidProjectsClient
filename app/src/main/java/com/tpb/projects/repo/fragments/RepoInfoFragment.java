@@ -75,9 +75,9 @@ public class RepoInfoFragment extends RepoFragment {
         unbinder = ButterKnife.bind(this, view);
         mAreViewsValid = true;
         mRefresher.setRefreshing(true);
-        mLoader = new Loader(getContext());
+        mLoader = Loader.getLoader(getContext());
         mRefresher.setOnRefreshListener(() -> {
-            new Loader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
+            Loader.getLoader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     repoLoaded(data);
@@ -116,7 +116,7 @@ public class RepoInfoFragment extends RepoFragment {
         } else {
             mLicense.setText(R.string.text_no_license);
         }
-        new Loader(getContext()).loadPage(new Loader.ItemLoader<Page>() {
+        Loader.getLoader(getContext()).loadPage(new Loader.ItemLoader<Page>() {
             @Override
             public void loadComplete(Page data) {
                 Logger.i(TAG, "loadComplete: " + data.toString());

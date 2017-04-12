@@ -47,7 +47,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
     public IssueCommentsAdapter(IssueCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
-        mLoader = new Loader(parent.getContext());
+        mLoader = Loader.getLoader(parent.getContext());
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {

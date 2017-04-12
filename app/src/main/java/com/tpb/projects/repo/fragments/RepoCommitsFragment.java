@@ -79,7 +79,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        new Loader(getContext()).loadBranches(this, mRepo.getFullName());
+        Loader.getLoader(getContext()).loadBranches(this, mRepo.getFullName());
         mIsLoadingBranches = true;
         if(!mAreViewsValid) return;
         mAdapter.setRepo(mRepo);
@@ -99,7 +99,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
             if(mBranches != null && !mBranches.isEmpty()) {
                 bindBranches();
             } else if(!mIsLoadingBranches) {
-                new Loader(getContext()).loadBranches(this, mRepo.getFullName());
+                Loader.getLoader(getContext()).loadBranches(this, mRepo.getFullName());
             }
         }
     }

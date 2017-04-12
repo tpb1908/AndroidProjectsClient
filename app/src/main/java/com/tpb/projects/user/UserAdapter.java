@@ -43,7 +43,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
 
     public UserAdapter(Activity activity, SwipeRefreshLayout refresher) {
         mLauncher = activity;
-        mLoader = new Loader(activity);
+        mLoader = Loader.getLoader(activity);
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {

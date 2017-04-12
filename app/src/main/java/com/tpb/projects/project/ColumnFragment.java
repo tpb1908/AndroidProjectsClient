@@ -121,7 +121,7 @@ public class ColumnFragment extends ViewSafeFragment {
 
         mAnalytics = FirebaseAnalytics.getInstance(getContext());
 
-        mEditor = new Editor(getContext());
+        mEditor = Editor.getEditor(getContext());
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE) {
                 if(mName.getText().toString().isEmpty()) {

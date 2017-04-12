@@ -61,7 +61,7 @@ public class IssueCommentsFragment extends IssueFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mEditor = new Editor(getContext());
+        mEditor = Editor.getEditor(getContext());
     }
 
     @Nullable

@@ -215,7 +215,7 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadCollaborators(new Loader.ListLoader<User>() {
+        Loader.getLoader(this).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void listLoadComplete(List<User> collaborators) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
@@ -268,7 +268,7 @@ public class IssueEditor extends EditorActivity {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(this).loadLabels(new Loader.ListLoader<Label>() {
+        Loader.getLoader(this).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void listLoadComplete(List<Label> labels) {
                 Logger.i(TAG, "listLoadComplete: " + labels.toString());

@@ -53,7 +53,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     public RepositoriesAdapter(Activity activity, RepoOpener opener, SwipeRefreshLayout refresher) {
         mActivity = activity;
-        mLoader = new Loader(activity);
+        mLoader = Loader.getLoader(activity);
         mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);

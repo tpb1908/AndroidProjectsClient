@@ -53,7 +53,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
 
     public IssueEventsAdapter(IssueInfoFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
-        mLoader = new Loader(parent.getContext());
+        mLoader = Loader.getLoader(parent.getContext());
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {

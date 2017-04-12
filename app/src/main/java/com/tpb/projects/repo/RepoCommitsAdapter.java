@@ -50,7 +50,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
     public RepoCommitsAdapter(RepoCommitsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mRefresher = refresher;
-        mLoader = new Loader(parent.getContext());
+        mLoader = Loader.getLoader(parent.getContext());
         mRefresher.setOnRefreshListener(() -> {
             final int oldSize = mCommits.size();
             mCommits.clear();

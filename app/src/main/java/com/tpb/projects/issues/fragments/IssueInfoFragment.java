@@ -91,7 +91,7 @@ public class IssueInfoFragment extends IssueFragment {
         final View view = inflater.inflate(R.layout.fragment_issue_info, container, false);
         unbinder = ButterKnife.bind(this, view);
         mAccessLevel = ((IssueActivity) getActivity()).mAccessLevel;
-        mEditor = new Editor(getContext());
+        mEditor = Editor.getEditor(getContext());
         mAdapter = new IssueEventsAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -109,7 +109,7 @@ public class IssueInfoFragment extends IssueFragment {
 
         mRefresher.setOnRefreshListener(() -> {
             mAdapter.clear();
-            new Loader(getContext()).loadIssue(new Loader.ItemLoader<Issue>() {
+            Loader.getLoader(getContext()).loadIssue(new Loader.ItemLoader<Issue>() {
                 @Override
                 public void loadComplete(Issue issue) {
                     issueLoaded(issue);

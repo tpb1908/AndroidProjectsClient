@@ -58,12 +58,18 @@ public class Editor extends APIHandler {
 
     private static final String SEGMENT_THREADS = "/threads";
 
+    private static Editor editor;
 
-    public Editor(Context context) {
+    private Editor(Context context) {
         super(context);
     }
 
-    public void createProject(@NonNull final CreationListener<Project> listener, String name, String body, String repoFullName) {
+    public static Editor getEditor(Context context) {
+        if(editor == null) editor = new Editor(context);
+        return editor;
+    }
+
+    public Editor createProject(@NonNull final CreationListener<Project> listener, String name, String body, String repoFullName) {
         JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, name);
@@ -86,9 +92,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateProject(@NonNull final UpdateListener<Project> listener, String name, String body, int id) {
+    public Editor updateProject(@NonNull final UpdateListener<Project> listener, String name, String body, int id) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, name);
@@ -111,9 +118,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void deleteProject(@NonNull final DeletionListener<Project> listener, final Project project) {
+    public Editor deleteProject(@NonNull final DeletionListener<Project> listener, final Project project) {
         delete(GIT_BASE + SEGMENT_PROJECTS + "/" + project.getId())
                 .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                 .build()
@@ -132,9 +140,10 @@ public class Editor extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void openProject(@NonNull final UpdateListener<Project> listener, int projectId) {
+    public Editor openProject(@NonNull final UpdateListener<Project> listener, int projectId) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_OPEN);
@@ -155,9 +164,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void closeProject(@NonNull final UpdateListener<Project> listener, int projectId) {
+    public Editor closeProject(@NonNull final UpdateListener<Project> listener, int projectId) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_CLOSED);
@@ -178,9 +188,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateColumnName(@NonNull final UpdateListener<Column> listener, int columnId, String newName) {
+    public Editor updateColumnName(@NonNull final UpdateListener<Column> listener, int columnId, String newName) {
         final JSONObject obj = new JSONObject();
         // Again, if we use .addBodyParameter("name", newName), GitHub throws a parsing error
 
@@ -204,9 +215,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void addColumn(@NonNull final CreationListener<Column> listener, int projectId, String name) {
+    public Editor addColumn(@NonNull final CreationListener<Column> listener, int projectId, String name) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NAME, name);
@@ -228,9 +240,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void moveColumn(@NonNull final UpdateListener<Integer> listener, final int columnId, int dropPositionId, int position) {
+    public Editor moveColumn(@NonNull final UpdateListener<Integer> listener, final int columnId, int dropPositionId, int position) {
         final JSONObject obj = new JSONObject();
         try {
             if(position == 0) {
@@ -256,9 +269,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void deleteColumn(@NonNull final DeletionListener<Integer> listener, final int columnId) {
+    public Editor deleteColumn(@NonNull final DeletionListener<Integer> listener, final int columnId) {
         delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
                 .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
                 .build()
@@ -277,9 +291,10 @@ public class Editor extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void createCard(@NonNull final CreationListener<Pair<Integer, Card>> listener, final int columnId, String note) {
+    public Editor createCard(@NonNull final CreationListener<Pair<Integer, Card>> listener, final int columnId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -301,9 +316,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void createCard(@NonNull final CreationListener<Pair<Integer, Card>> listener, final int columnId, int issueId) {
+    public Editor createCard(@NonNull final CreationListener<Pair<Integer, Card>> listener, final int columnId, int issueId) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(CONTENT_TYPE, CONTENT_TYPE_ISSUE);
@@ -326,9 +342,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateCard(@NonNull final UpdateListener<Card> listener, final int cardId, String note) {
+    public Editor updateCard(@NonNull final UpdateListener<Card> listener, final int cardId, String note) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(NOTE, note);
@@ -350,9 +367,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void moveCard(@Nullable final UpdateListener<Integer> listener, final int columnId, final int cardId, int afterId) {
+    public Editor moveCard(@Nullable final UpdateListener<Integer> listener, final int columnId, final int cardId, int afterId) {
         final JSONObject obj = new JSONObject();
         try {
             if(afterId == -1) {
@@ -379,9 +397,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void deleteCard(@NonNull final DeletionListener<Card> listener, final Card card) {
+    public Editor deleteCard(@NonNull final DeletionListener<Card> listener, final Card card) {
         delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + card
                 .getId())
                 .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
@@ -401,9 +420,10 @@ public class Editor extends APIHandler {
                         }
                     }
                 });
+        return this;
     }
 
-    public void createIssue(@NonNull final CreationListener<Issue> listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
+    public Editor createIssue(@NonNull final CreationListener<Issue> listener, String repoFullName, String title, String body, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -428,9 +448,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void closeIssue(@Nullable final UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
+    public Editor closeIssue(@Nullable final UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_CLOSED);
@@ -452,9 +473,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void openIssue(@NonNull final UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
+    public Editor openIssue(@NonNull final UpdateListener<Issue> listener, String fullRepoName, int issueNumber) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(STATE, STATE_OPEN);
@@ -476,9 +498,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateIssue(@NonNull final UpdateListener<Issue> listener, String fullRepoName, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
+    public Editor updateIssue(@NonNull final UpdateListener<Issue> listener, String fullRepoName, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, issue.getTitle());
@@ -504,9 +527,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void createIssueComment(@NonNull final CreationListener<Comment> listener, String fullRepoName, int issueNumber, String body) {
+    public Editor createIssueComment(@NonNull final CreationListener<Comment> listener, String fullRepoName, int issueNumber, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -528,9 +552,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateIssueComment(@NonNull final UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
+    public Editor updateIssueComment(@NonNull final UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -552,9 +577,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void deleteIssueComment(@NonNull final DeletionListener<Integer> listener, String fullRepoName, final int commentId) {
+    public Editor deleteIssueComment(@NonNull final DeletionListener<Integer> listener, String fullRepoName, final int commentId) {
         delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_ISSUES + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -573,10 +599,10 @@ public class Editor extends APIHandler {
                         }
                     }
                 });
-
+        return this;
     }
 
-    public void createCommitComment(@NonNull final CreationListener<Comment> listener, String fullRepoName, String sha, String body) {
+    public Editor createCommitComment(@NonNull final CreationListener<Comment> listener, String fullRepoName, String sha, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -598,9 +624,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateCommitComment(@NonNull final UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
+    public Editor updateCommitComment(@NonNull final UpdateListener<Comment> listener, String fullRepoName, int commentId, String body) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(BODY, body);
@@ -622,9 +649,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void deleteCommitComment(@NonNull final DeletionListener<Integer> listener, String fullRepoName, final int commentId) {
+    public Editor deleteCommitComment(@NonNull final DeletionListener<Integer> listener, String fullRepoName, final int commentId) {
         delete(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_COMMENTS + "/" + commentId)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -643,10 +671,10 @@ public class Editor extends APIHandler {
                         }
                     }
                 });
-
+        return this;
     }
 
-    public void starRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
+    public Editor starRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
         put(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .addHeaders("Content-Length", "0")
@@ -666,9 +694,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updated(false);
                     }
                 });
+        return this;
     }
 
-    public void unstarRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
+    public Editor unstarRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
         delete(GIT_BASE + SEGMENT_USER + SEGMENT_STARRED + "/" + fullRepoName)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -687,9 +716,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updated(true);
                     }
                 });
+        return this;
     }
 
-    public void watchRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
+    public Editor watchRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
         put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "true")
@@ -713,9 +743,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updated(false);
                     }
                 });
+        return this;
     }
 
-    public void unwatchRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
+    public Editor unwatchRepo(@Nullable final UpdateListener<Boolean> listener, String fullRepoName) {
         put(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_SUBSCRIPTION)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("subscribed", "false")
@@ -740,9 +771,10 @@ public class Editor extends APIHandler {
                         if(listener != null) listener.updated(true);
                     }
                 });
+        return this;
     }
 
-    public void followUser(@NonNull final UpdateListener<Boolean> listener, String user) {
+    public Editor followUser(@NonNull final UpdateListener<Boolean> listener, String user) {
         put(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -759,9 +791,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void unfollowUser(@NonNull final UpdateListener<Boolean> listener, String user) {
+    public Editor unfollowUser(@NonNull final UpdateListener<Boolean> listener, String user) {
         delete(GIT_BASE + SEGMENT_USER + SEGMENT_FOLLOWING + "/" + user)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -778,9 +811,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void createMilestone(@NonNull final CreationListener<Milestone> listener, String fullRepoName, @NonNull String title, @Nullable String description, @Nullable String dueOn) {
+    public Editor createMilestone(@NonNull final CreationListener<Milestone> listener, String fullRepoName, @NonNull String title, @Nullable String description, @Nullable String dueOn) {
         final JSONObject obj = new JSONObject();
         try {
             obj.put(TITLE, title);
@@ -805,9 +839,10 @@ public class Editor extends APIHandler {
                         listener.creationError(parseError(anError));
                     }
                 });
+        return this;
     }
 
-    public void updateMilestone(@NonNull final UpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @Nullable State state) {
+    public Editor updateMilestone(@NonNull final UpdateListener<Milestone> listener, String fullRepoName, int number, @Nullable String title, @Nullable String description, @Nullable String dueOn, @Nullable State state) {
         final JSONObject obj = new JSONObject();
         try {
             if(title != null) obj.put(TITLE, title);
@@ -832,10 +867,10 @@ public class Editor extends APIHandler {
                         listener.updateError(parseError(anError));
                     }
                 });
-
+        return this;
     }
 
-    public void markNotificationsRead() {
+    public Editor markNotificationsRead() {
         put(GIT_BASE + SEGMENT_NOTIFICATIONS)
                 .addHeaders(API_AUTH_HEADERS)
                 .addPathParameter("last_read_at",
@@ -853,9 +888,10 @@ public class Editor extends APIHandler {
                         Log.e(TAG, anError.toString());
                     }
                 });
+        return this;
     }
 
-    public void markNotificationThreadRead(long id) {
+    public Editor markNotificationThreadRead(long id) {
         patch(GIT_BASE + SEGMENT_NOTIFICATIONS + SEGMENT_THREADS + "/" + id)
                 .addHeaders(API_AUTH_HEADERS)
                 .build()
@@ -870,6 +906,7 @@ public class Editor extends APIHandler {
                         Log.e(TAG, anError.toString());
                     }
                 });
+        return this;
     }
 
     public interface CreationListener<T> {

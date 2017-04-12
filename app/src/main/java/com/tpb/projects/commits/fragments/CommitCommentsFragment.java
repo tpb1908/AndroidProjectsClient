@@ -60,7 +60,7 @@ public class CommitCommentsFragment extends CommitFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mEditor = new Editor(getContext());
+        mEditor = Editor.getEditor(getContext());
         mAdapter = new CommitCommentsAdapter(this, mRefresher);
         mRecycler.setLayoutManager(new FixedLinearLayoutManger(getContext()));
         mRecycler.setAdapter(mAdapter);

@@ -42,7 +42,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
     private SwipeRefreshLayout mRefresher;
 
     public RepoProjectsAdapter(RepoProjectsFragment parent, SwipeRefreshLayout refresher) {
-        mLoader = new Loader(parent.getContext());
+        mLoader = Loader.getLoader(parent.getContext());
         mParent = parent;
         mRefresher = refresher;
     }

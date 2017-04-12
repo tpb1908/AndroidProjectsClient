@@ -172,7 +172,7 @@ public class CardEditor extends EditorActivity {
             pd.setTitle(R.string.text_loading_issues);
             pd.setCancelable(false);
             pd.show();
-            new Loader(CardEditor.this).loadOpenIssues(new Loader.ListLoader<Issue>() {
+            Loader.getLoader(CardEditor.this).loadOpenIssues(new Loader.ListLoader<Issue>() {
                 private int selectedIssuePosition = 0;
 
                 @Override

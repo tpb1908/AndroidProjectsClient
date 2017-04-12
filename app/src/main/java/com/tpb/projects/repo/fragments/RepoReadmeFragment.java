@@ -44,9 +44,9 @@ public class RepoReadmeFragment extends RepoFragment {
         unbinder = ButterKnife.bind(this, view);
         mAreViewsValid = true;
         mRefresher.setRefreshing(true);
-        mLoader = new Loader(getContext());
+        mLoader = Loader.getLoader(getContext());
         mRefresher.setOnRefreshListener(() -> {
-            new Loader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
+            Loader.getLoader(getContext()).loadRepository(new Loader.ItemLoader<Repository>() {
                 @Override
                 public void loadComplete(Repository data) {
                     repoLoaded(data);

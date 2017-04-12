@@ -67,8 +67,8 @@ public class MilestonesActivity extends CircularRevealActivity implements Loader
 
         if(getIntent().hasExtra(getString(R.string.intent_repo))) {
 
-            mLoader = new Loader(this);
-            mEditor = new Editor(this);
+            mLoader = Loader.getLoader(this);
+            mEditor = Editor.getEditor(this);
             mRepo = getIntent().getStringExtra(getString(R.string.intent_repo));
 
             mRecycler.setLayoutManager(new LinearLayoutManager(this));

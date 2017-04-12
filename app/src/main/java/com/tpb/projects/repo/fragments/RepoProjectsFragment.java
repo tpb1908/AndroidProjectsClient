@@ -98,9 +98,9 @@ public class RepoProjectsFragment extends RepoFragment {
             }
         };
         if(project.getState() == State.OPEN) {
-            new Editor(getContext()).closeProject(listener, project.getId());
+            Editor.getEditor(getContext()).closeProject(listener, project.getId());
         } else {
-            new Editor(getContext()).openProject(listener, project.getId());
+            Editor.getEditor(getContext()).openProject(listener, project.getId());
         }
     }
 
@@ -110,7 +110,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 .setMessage(R.string.text_delete_project_warning)
                 .setPositiveButton(R.string.action_ok, (dialog, which) -> {
                     mRefresher.setRefreshing(true);
-                    new Editor(getContext()).deleteProject(
+                    Editor.getEditor(getContext()).deleteProject(
                             new Editor.DeletionListener<Project>() {
                                 @Override
                                 public void deleted(Project project1) {
@@ -144,7 +144,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 final String name = data.getStringExtra(getString(R.string.intent_name));
                 final String body = data.getStringExtra(getString(R.string.intent_markdown));
                 mRefresher.setRefreshing(true);
-                new Editor(getContext()).createProject(
+                Editor.getEditor(getContext()).createProject(
                         new Editor.CreationListener<Project>() {
                             @Override
                             public void created(Project project) {
@@ -162,7 +162,7 @@ public class RepoProjectsFragment extends RepoFragment {
                 final int id = data.getIntExtra(getString(R.string.intent_project_number), -1);
                 final String name = data.getStringExtra(getString(R.string.intent_name));
                 final String body = data.getStringExtra(getString(R.string.intent_markdown));
-                new Editor(getContext()).updateProject(
+                Editor.getEditor(getContext()).updateProject(
                         new Editor.UpdateListener<Project>() {
                             @Override
                             public void updated(Project project) {

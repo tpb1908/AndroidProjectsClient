@@ -61,7 +61,7 @@ public class MilestoneActivity extends CircularRevealActivity implements Loader.
             final int number = launchIntent
                     .getIntExtra(getString(R.string.intent_milestone_number), -1);
 
-            new Loader(this).loadMilestone(this, mRepo, number);
+            Loader.getLoader(this).loadMilestone(this, mRepo, number);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo))) {
             //TODO Create new milestone
         } else {

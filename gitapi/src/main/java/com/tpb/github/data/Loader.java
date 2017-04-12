@@ -65,8 +65,15 @@ public class Loader extends APIHandler {
     private static final String SEGMENT_STATUS = "/status";
     private static final String SEGMENT_PAGES = "/pages";
 
-    public Loader(Context context) {
+    private static Loader loader;
+
+    private Loader(Context context) {
         super(context);
+    }
+
+    public static Loader getLoader(Context context) {
+        if(loader == null) loader = new Loader(context);
+        return loader;
     }
 
     public Loader loadAuthenticatedUser(@Nullable final ItemLoader<User> loader) {

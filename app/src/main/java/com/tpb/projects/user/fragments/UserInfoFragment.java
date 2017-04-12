@@ -73,7 +73,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
                    }
                });
         mRefresher.setOnRefreshListener(
-                () -> new Loader(getContext()).loadUser(new Loader.ItemLoader<User>() {
+                () -> Loader.getLoader(getContext()).loadUser(new Loader.ItemLoader<User>() {
                     @Override
                     public void loadComplete(User user) {
                         userLoaded(user);
@@ -100,7 +100,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         Formatter.displayUser(mUserInfoParent, mUser);
 
         if(!GitHubSession.getSession(getContext()).getUserLogin().equals(user.getLogin())) {
-            new Loader(getContext()).checkIfFollowing(this, user.getLogin());
+            Loader.getLoader(getContext()).checkIfFollowing(this, user.getLogin());
         }
         mRefresher.setRefreshing(false);
     }
@@ -136,9 +136,9 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
             mFollowButton.setEnabled(false);
             mRefresher.setRefreshing(true);
             if(isFollowing) {
-                new Editor(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
+                Editor.getEditor(getContext()).unfollowUser(UserInfoFragment.this, mUser.getLogin());
             } else {
-                new Editor(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
+                Editor.getEditor(getContext()).followUser(UserInfoFragment.this, mUser.getLogin());
             }
         });
         mFollowButton.setEnabled(true);

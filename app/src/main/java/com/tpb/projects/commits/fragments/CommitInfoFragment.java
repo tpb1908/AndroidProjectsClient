@@ -68,7 +68,7 @@ public class CommitInfoFragment extends CommitFragment {
         mRefresher.setOnRefreshListener(() -> {
             ButterKnife.findById(getActivity(), R.id.commit_status).setVisibility(View.GONE);
             mAdapter.clear();
-            new Loader(getContext()).loadCommit(new Loader.ItemLoader<Commit>() {
+            Loader.getLoader(getContext()).loadCommit(new Loader.ItemLoader<Commit>() {
                 @Override
                 public void loadComplete(Commit commit) {
                     commitLoaded(commit);
@@ -128,7 +128,7 @@ public class CommitInfoFragment extends CommitFragment {
             mRefresher.setRefreshing(false);
             mAdapter.setDiffs(mCommit.getFiles());
         }
-        new Loader(getContext()).loadCommitStatuses(new Loader.ItemLoader<CompleteStatus>() {
+        Loader.getLoader(getContext()).loadCommitStatuses(new Loader.ItemLoader<CompleteStatus>() {
             @Override
             public void loadComplete(CompleteStatus data) {
                 if(data.getTotalCount() == 0) return; //We don't care if there is no integration

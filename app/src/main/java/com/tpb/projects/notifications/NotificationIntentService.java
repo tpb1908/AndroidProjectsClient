@@ -65,7 +65,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
     }
 
     private void loadNotifications() {
-        if(mLoader == null) mLoader = new Loader(getApplicationContext());
+        if(mLoader == null) mLoader = Loader.getLoader(getApplicationContext());
         Logger.i(TAG, "loadNotifications: Timestamp " + Util
                 .toISO8061FromMilliseconds(mLastLoadedSuccessfully));
         mLoader.loadNotifications(this, mLastLoadedSuccessfully);
@@ -73,7 +73,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
 
     private void markNotificationRead(long id) {
         Logger.i(TAG, "markNotificationRead: Should me marking read");
-        new Editor(this).markNotificationThreadRead(id);
+        Editor.getEditor(this).markNotificationThreadRead(id);
     }
 
     private android.app.Notification buildNotification(Notification notif) {

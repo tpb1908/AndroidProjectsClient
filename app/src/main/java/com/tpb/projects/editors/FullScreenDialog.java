@@ -48,9 +48,9 @@ public class FullScreenDialog extends KeyboardDismissingDialogFragment {
 
             if(getArguments().containsKey(getString(R.string.intent_repo))) {
                 final String repo = getArguments().getString(getString(R.string.intent_repo));
-                new Loader(getContext()).renderMarkDown(loader, markdown, repo);
+                Loader.getLoader(getContext()).renderMarkDown(loader, markdown, repo);
             } else {
-                new Loader(getContext()).renderMarkDown(loader, markdown);
+                Loader.getLoader(getContext()).renderMarkDown(loader, markdown);
             }
         }
 

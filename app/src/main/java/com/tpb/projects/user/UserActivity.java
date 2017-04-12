@@ -60,7 +60,7 @@ public class UserActivity extends BaseActivity implements Loader.ItemLoader<User
         postponeEnterTransition();
 
         if(mAdapter == null) mAdapter = new UserFragmentAdapter(getSupportFragmentManager());
-        final Loader loader = new Loader(this);
+        final Loader loader = Loader.getLoader(this);
 
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.intent_username))) {
             final String user = getIntent().getStringExtra(getString(R.string.intent_username));

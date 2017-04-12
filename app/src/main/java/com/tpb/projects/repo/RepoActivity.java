@@ -85,7 +85,7 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         if(mLaunchPageAttached) mPager.setCurrentItem(mLaunchPage);
 
         final Intent launchIntent = getIntent();
-        final Loader loader = new Loader(this);
+        final Loader loader = Loader.getLoader(this);
         if(launchIntent.getParcelableExtra(getString(R.string.intent_repo)) != null) {
             mRepo = launchIntent.getParcelableExtra(getString(R.string.intent_repo));
             if(mRepo.isFork()) {

@@ -49,7 +49,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
     public CommitCommentsAdapter(CommitCommentsFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
         mRefresher = refresher;
-        mLoader = new Loader(mParent.getContext());
+        mLoader = Loader.getLoader(mParent.getContext());
         mRefresher.setOnRefreshListener(() -> {
             mPage = 1;
             mMaxPageReached = false;

@@ -43,7 +43,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     private GistOpener mOpener;
 
     public GistsAdapter(Context context, GistOpener opener, SwipeRefreshLayout refresher) {
-        mLoader = new Loader(context);
+        mLoader = Loader.getLoader(context);
         mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);

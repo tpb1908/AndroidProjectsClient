@@ -61,7 +61,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     public RepoIssuesAdapter(RepoIssuesFragment parent, SwipeRefreshLayout refresher) {
         mParent = parent;
-        mLoader = new Loader(mParent.getContext());
+        mLoader = Loader.getLoader(mParent.getContext());
         mRefresher = refresher;
         mRefresher.setOnRefreshListener(() -> {
             final int oldSize = mIssues.size();

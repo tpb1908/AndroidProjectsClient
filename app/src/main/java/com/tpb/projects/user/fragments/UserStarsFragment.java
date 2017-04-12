@@ -74,8 +74,8 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
     public void openRepo(Repository repo) {
         final Intent i = new Intent(getContext(), RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
-        new Loader(getContext()).loadProjects(null, repo.getFullName());
-        new Loader(getContext()).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
+        Loader.getLoader(getContext()).loadProjects(null, repo.getFullName());
+        Loader.getLoader(getContext()).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
         startActivity(i);
         getActivity().overridePendingTransition(R.anim.slide_up, R.anim.none);
     }

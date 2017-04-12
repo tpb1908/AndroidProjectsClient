@@ -73,7 +73,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
     public void openRepo(Repository repo) {
         final Intent i = new Intent(getContext(), RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
-        new Loader(getContext()).loadProjects(null, repo.getFullName())
+        Loader.getLoader(getContext()).loadProjects(null, repo.getFullName())
                                 .loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0)
                                 .loadProjects(null, repo.getFullName());
         startActivity(i);

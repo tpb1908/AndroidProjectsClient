@@ -69,7 +69,7 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mLoader = new Loader(this);
+        mLoader = Loader.getLoader(this);
         mAdapter = new IssueFragmentAdapter(getSupportFragmentManager());
         final Intent launchIntent = getIntent();
         if(launchIntent.hasExtra(getString(R.string.transition_card))) {

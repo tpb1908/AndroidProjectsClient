@@ -109,8 +109,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
 
         final Intent launchIntent = getIntent();
-        mLoader = new Loader(this);
-        mEditor = new Editor(this);
+        mLoader = Loader.getLoader(this);
+        mEditor = Editor.getEditor(this);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

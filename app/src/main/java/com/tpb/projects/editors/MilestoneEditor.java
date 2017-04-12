@@ -98,7 +98,7 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
             mLoadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialog.show();
             mIsEditing = true;
-            new Loader(this).loadMilestone(this, mFullRepoName, number);
+            Loader.getLoader(this).loadMilestone(this, mFullRepoName, number);
         } else if(launchIntent.hasExtra(getString(R.string.intent_repo))) {
             //TODO Create new milestone
         } else {

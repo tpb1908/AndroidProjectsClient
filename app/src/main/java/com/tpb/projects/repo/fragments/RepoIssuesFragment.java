@@ -78,7 +78,7 @@ public class RepoIssuesFragment extends RepoFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_repo_issues, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mEditor = new Editor(getContext());
+        mEditor = Editor.getEditor(getContext());
         mAdapter = new RepoIssuesAdapter(this, mRefresher);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.enableLineDecoration();
@@ -188,7 +188,7 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_labels);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadLabels(new Loader.ListLoader<Label>() {
+        Loader.getLoader(getContext()).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void listLoadComplete(List<Label> labels) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
@@ -244,7 +244,7 @@ public class RepoIssuesFragment extends RepoFragment {
         pd.setTitle(R.string.text_loading_collaborators);
         pd.setCancelable(false);
         pd.show();
-        new Loader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
+        Loader.getLoader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
             @Override
             public void listLoadComplete(List<User> collaborators) {
                 final String[] collabNames = new String[collaborators.size() + 2];
@@ -302,7 +302,7 @@ public class RepoIssuesFragment extends RepoFragment {
         final Intent intent = new Intent(getContext(), IssueEditor.class);
         intent.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
         intent.putExtra(getString(R.string.parcel_issue), issue);
-        final Loader loader = new Loader(getContext());
+        final Loader loader = Loader.getLoader(getContext());
         loader.loadLabels(null, issue.getRepoFullName());
         loader.loadCollaborators(null, issue.getRepoFullName());
         if(view instanceof MarkdownTextView) {

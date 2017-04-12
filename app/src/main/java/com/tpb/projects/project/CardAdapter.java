@@ -73,8 +73,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                 Repository.AccessLevel accessLevel,
                 SwipeRefreshLayout refresher) {
         mParent = parent;
-        mEditor = new Editor(mParent.getContext());
-        mLoader = new Loader(parent.getContext());
+        mEditor = Editor.getEditor(mParent.getContext());
+        mLoader = Loader.getLoader(parent.getContext());
         mAccessLevel = accessLevel;
         mNavListener = navListener;
         mRefresher = refresher;
