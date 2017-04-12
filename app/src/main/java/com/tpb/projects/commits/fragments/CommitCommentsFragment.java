@@ -43,8 +43,8 @@ public class CommitCommentsFragment extends CommitFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.commit_comments_recycler) RecyclerView mRecycler;
-    @BindView(R.id.commit_comments_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.fragment_recycler) RecyclerView mRecycler;
+    @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
     private FloatingActionButton mFab;
 
     private Editor mEditor;
@@ -58,7 +58,7 @@ public class CommitCommentsFragment extends CommitFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_commit_comments, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
         mEditor = new Editor(getContext());
         mAdapter = new CommitCommentsAdapter(this, mRefresher);

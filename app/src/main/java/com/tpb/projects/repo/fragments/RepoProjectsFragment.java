@@ -37,8 +37,8 @@ public class RepoProjectsFragment extends RepoFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.repo_projects_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.repo_projects_recycler) AnimatingRecyclerView mRecycler;
+    @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.fragment_recycler) AnimatingRecyclerView mRecycler;
     private FabHideScrollListener mFabHideScrollListener;
     private RepoProjectsAdapter mAdapter;
 
@@ -49,7 +49,7 @@ public class RepoProjectsFragment extends RepoFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_repo_projects, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
         mAdapter = new RepoProjectsAdapter(this, mRefresher);
         mRecycler.enableLineDecoration();

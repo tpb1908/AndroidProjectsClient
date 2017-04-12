@@ -32,14 +32,14 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
 
     private Unbinder unbinder;
 
-    @BindView(R.id.user_repos_recycler) AnimatingRecyclerView mRecycler;
-    @BindView(R.id.user_repos_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.fragment_recycler) AnimatingRecyclerView mRecycler;
+    @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
     private RepositoriesAdapter mAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_user_repos, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());

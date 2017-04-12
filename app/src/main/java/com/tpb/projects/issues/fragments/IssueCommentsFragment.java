@@ -41,8 +41,8 @@ public class IssueCommentsFragment extends IssueFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.issue_comments_recycler) RecyclerView mRecycler;
-    @BindView(R.id.issue_comments_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.fragment_recycler) RecyclerView mRecycler;
+    @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
     private FloatingActionButton mFab;
 
     private IssueCommentsAdapter mAdapter;
@@ -67,7 +67,7 @@ public class IssueCommentsFragment extends IssueFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_issue_comments, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {

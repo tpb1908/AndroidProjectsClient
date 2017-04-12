@@ -28,13 +28,13 @@ public class UserFollowingFragment extends UserFragment {
     private Unbinder unbinder;
 
     private UserAdapter mAdapter;
-    @BindView(R.id.user_following_refresher) SwipeRefreshLayout mRefresher;
-    @BindView(R.id.user_following_recycler) AnimatingRecyclerView mRecycler;
+    @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
+    @BindView(R.id.fragment_recycler) AnimatingRecyclerView mRecycler;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_user_following, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recycler, container, false);
         unbinder = ButterKnife.bind(this, view);
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);

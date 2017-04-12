@@ -15,7 +15,6 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Commit;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
-import com.tpb.projects.commits.fragments.CommitFragment;
 import com.tpb.projects.commits.fragments.CommitInfoFragment;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.common.fab.FloatingActionButton;
@@ -95,19 +94,6 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
 
     @Override
     public void loadError(APIHandler.APIError error) {
-
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        if(mAdapter == null) mAdapter = new CommitPagerAdapter(getSupportFragmentManager());
-        mAdapter.attachFragment(fragment);
-        if(mCommit != null && fragment instanceof CommitFragment)
-            ((CommitFragment) fragment).commitLoaded(mCommit);
-        if(fragment instanceof CommitCommentsFragment && mFab != null) {
-            ((CommitCommentsFragment) fragment).setFab(mFab);
-        }
 
     }
 
