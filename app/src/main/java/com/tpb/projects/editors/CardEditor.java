@@ -29,7 +29,7 @@ import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.DumbTextChangeWatcher;
@@ -154,8 +154,8 @@ public class CardEditor extends EditorActivity {
     }
 
     private void bindIssue(Issue issue) {
-        mEditor.setMarkdown(Spanner.buildIssueSpan(this, issue, true, true, true, true, false)
-                                   .toString(),
+        mEditor.setMarkdown(Formatter.buildIssueSpan(this, issue, true, true, true, true, false)
+                                     .toString(),
                 new HttpImageGetter(mEditor, mEditor)
         );
 

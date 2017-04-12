@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.tpb.github.data.models.DiffFile;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +58,7 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
         );
         if(mDiffs[position].getPatch() != null) {
             holder.mDiff.setVisibility(View.VISIBLE);
-            holder.mDiff.setText(Spanner.buildDiffSpan(mDiffs[position].getPatch()));
+            holder.mDiff.setText(Formatter.buildDiffSpan(mDiffs[position].getPatch()));
             holder.mDiff.post(() -> {
                 final int maxLines = holder.mDiff.getLineCount();
                 holder.mDiff.setMaxLines(3);

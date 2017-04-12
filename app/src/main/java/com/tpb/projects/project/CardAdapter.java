@@ -28,7 +28,7 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.Logger;
 
@@ -324,10 +324,10 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         );
         holder.mTitleLayout.setVisibility(View.VISIBLE);
 
-        holder.mTitle.setMarkdown(Spanner.bold(card.getIssue().getTitle()));
+        holder.mTitle.setMarkdown(Formatter.bold(card.getIssue().getTitle()));
         if(mCards.get(pos).second == null) {
             holder.mText.setMarkdown(
-                    Spanner.buildIssueSpan(
+                    Formatter.buildIssueSpan(
                             holder.itemView.getContext(),
                             card.getIssue(),
                             false,

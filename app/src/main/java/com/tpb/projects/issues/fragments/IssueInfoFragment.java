@@ -43,7 +43,7 @@ import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.issues.IssueEventsAdapter;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.UI;
 
@@ -127,9 +127,9 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayIssue(Issue issue) {
-        mTitle.setMarkdown(Spanner.header(issue.getTitle(), 1));
+        mTitle.setMarkdown(Formatter.header(issue.getTitle(), 1));
         mInfo.setMarkdown(
-                Spanner.buildIssueSpan(
+                Formatter.buildIssueSpan(
                         getContext(),
                         issue,
                         false, //Header title

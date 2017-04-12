@@ -24,7 +24,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueInfoFragment;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -247,7 +247,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             case LABELED:
                 final StringBuilder labels = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    labels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    labels.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
                     labels.append("&nbsp;");
                 }
                 labels.setLength(labels.length() - "&nbsp;".length());
@@ -263,7 +263,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             case UNLABELED:
                 final StringBuilder unlabels = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    unlabels.append(Spanner.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    unlabels.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
                     unlabels.append("&nbsp;");
                 }
                 unlabels.setLength(unlabels.length() - 2);
@@ -471,7 +471,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()
                         ),
-                        Spanner.getLabelString(event.getLabelName(), event.getLabelColor())
+                        Formatter.getLabelString(event.getLabelName(), event.getLabelColor())
                 );
                 break;
             case UNLABELED:
@@ -480,7 +480,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                                 event.getActor().getHtmlUrl(),
                                 event.getActor().getLogin()
                         ),
-                        Spanner.getLabelString(event.getLabelName(), event.getLabelColor())
+                        Formatter.getLabelString(event.getLabelName(), event.getLabelColor())
                 );
                 break;
             case MILESTONED:

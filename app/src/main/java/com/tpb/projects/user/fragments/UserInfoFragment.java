@@ -12,6 +12,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tpb.contributionsview.ContributionsLoader;
 import com.tpb.contributionsview.ContributionsView;
@@ -22,7 +23,7 @@ import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 
 import java.util.List;
 
@@ -96,7 +97,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
         if(!mAreViewsValid) return;
         mContributions.setListener(this);
         mContributions.loadContributions(user.getLogin());
-        Spanner.displayUser(mUserInfoParent, mUser);
+        Formatter.displayUser(mUserInfoParent, mUser);
 
         if(!GitHubSession.getSession(getContext()).getUserLogin().equals(user.getLogin())) {
             new Loader(getContext()).checkIfFollowing(this, user.getLogin());
@@ -146,7 +147,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void updateError(APIHandler.APIError error) {
-
+        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
     }
 
     @Override

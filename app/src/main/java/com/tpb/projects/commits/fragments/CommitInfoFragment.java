@@ -24,7 +24,7 @@ import com.tpb.projects.commits.CommitDiffAdapter;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.Util;
 
 import java.util.Date;
@@ -90,7 +90,7 @@ public class CommitInfoFragment extends CommitFragment {
     public void commitLoaded(Commit commit) {
         mCommit = commit;
         if(!mAreViewsValid) return;
-        mTitle.setMarkdown(Spanner.bold(mCommit.getMessage()));
+        mTitle.setMarkdown(Formatter.bold(mCommit.getMessage()));
         final String user;
         if(mCommit.getCommitter() != null) {
             mAvatar.setImageUrl(mCommit.getCommitter().getAvatarUrl());

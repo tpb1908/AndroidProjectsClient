@@ -39,7 +39,7 @@ import static com.tpb.mdtext.TextUtils.getTextColorForBackground;
  * Created by theo on 17/03/17.
  */
 
-public class Spanner {
+public class Formatter {
 
     public static StringBuilder buildIssueSpan(Context context, Issue issue,
                                                boolean headerTitle,
@@ -331,7 +331,7 @@ public class Spanner {
                         " </font>";
     }
 
-    public static void displayUser(LinearLayout userInfoParent, User user) {
+    public static void displayUser(ViewGroup userInfoParent, User user) {
         userInfoParent.setVisibility(View.VISIBLE);
 
         final NetworkImageView avatar = ButterKnife.findById(userInfoParent, R.id.user_avatar);
@@ -392,8 +392,7 @@ public class Spanner {
                     R.plurals.text_user_repositories,
                     user.getRepos(),
                     user.getRepos()
-                    )
-            );
+                    ));
             infoList.addView(tv, params);
         }
         if(user.getGists() > 0) {
@@ -402,8 +401,12 @@ public class Spanner {
                     R.plurals.text_user_gists,
                     user.getGists(),
                     user.getGists()
-                    )
-            );
+                    ));
+            infoList.addView(tv, params);
+        }
+        if(user.getBio() != null) {
+            tv = getInfoTextView(context, R.drawable.ic_bio);
+            tv.setText(user.getBio());
             infoList.addView(tv, params);
         }
         UI.expand(infoList);

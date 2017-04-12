@@ -31,7 +31,7 @@ import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
@@ -347,7 +347,7 @@ public class IssueEditor extends EditorActivity {
         for(int i = 0; i < names.size(); i++) {
             mSelectedLabels.add(names.get(i));
             builder.append("<li>");
-            builder.append(Spanner.getLabelString(names.get(i), colors.get(i)));
+            builder.append(Formatter.getLabelString(names.get(i), colors.get(i)));
             builder.append("</li>");
         }
         builder.append("</ul>");

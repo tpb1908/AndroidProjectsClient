@@ -24,7 +24,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.IssueActivity;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
@@ -181,7 +181,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             pos = holder.getAdapterPosition();
         }
         final Issue issue = mIssues.get(pos).first;
-        holder.mTitle.setMarkdown(Spanner.bold(issue.getTitle()));
+        holder.mTitle.setMarkdown(Formatter.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(
                 issue.isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open);
         holder.mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
@@ -194,7 +194,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
                 );
         if(mIssues.get(pos).second == null) {
             holder.mContent.setMarkdown(Markdown.formatMD(
-                    Spanner.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(),
+                    Formatter.buildCombinedIssueSpan(holder.itemView.getContext(), issue).toString(),
                     issue.getRepoFullName()
                     ),
                     null,

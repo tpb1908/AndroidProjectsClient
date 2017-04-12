@@ -22,7 +22,7 @@ import com.tpb.github.data.auth.OAuthHandler;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
-import com.tpb.projects.markdown.Spanner;
+import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.user.UserActivity;
 import com.tpb.projects.util.Analytics;
 import com.tpb.projects.util.UI;
@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements OAuthHandler.OAu
     @Override
     public void userLoaded(User user) {
         mSpinner.setVisibility(View.GONE);
-        Spanner.displayUser(mUserDetails, user);
+        Formatter.displayUser(mUserDetails, user);
         final Bundle bundle = new Bundle();
         bundle.putString(Analytics.TAG_LOGIN, Analytics.VALUE_SUCCESS);
         mAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);

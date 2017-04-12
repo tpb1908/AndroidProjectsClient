@@ -28,8 +28,6 @@ import com.tpb.projects.common.CircularRevealActivity;
  */
 
 public class UI {
-    private static final String TAG = UI.class.getSimpleName();
-
     /**
      * Sets the expansion point for a {@link CircularRevealActivity} Intent
      * to the midpoint of a View
@@ -56,20 +54,11 @@ public class UI {
         i.putExtra(context.getString(R.string.intent_position_y), (int) pos[1]);
     }
 
-    public static void setDrawableForIntent(@NonNull ImageView iv, @NonNull Intent i) {
-        if(iv.getDrawable() instanceof BitmapDrawable) {
-            i.putExtra(iv.getResources().getString(R.string.intent_drawable),
-                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
-            );
-        }
-    }
-
-    //http://stackoverflow.com/questions/4946295/android-expand-collapse-animation
     public static void expand(final View v) {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for com.tpb.mdtext.views with a height of 0.
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         v.getLayoutParams().height = 1;
         v.setVisibility(View.VISIBLE);
         final android.view.animation.Animation a = new android.view.animation.Animation() {
@@ -119,6 +108,28 @@ public class UI {
         v.startAnimation(a);
     }
 
+    /**
+     * Fades the background color of a View from original to flash and back
+     *
+     * @param view     The view to flash
+     * @param original The current background color
+     * @param flash    The color to fade to
+     */
+    public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
+        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
+                view,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                original,
+                flash
+        );
+        colorFade.setDuration(300);
+        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
+        colorFade.setRepeatCount(1);
+        colorFade.start();
+
+    }
+
     @Dimension
     public static float dpFromPx(final float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
@@ -151,28 +162,6 @@ public class UI {
     }
 
     /**
-     * Fades the background color of a View from original to flash and back
-     *
-     * @param view     The view to flash
-     * @param original The current background color
-     * @param flash    The color to fade to
-     */
-    public static void flashViewBackground(View view, @ColorInt int original, @ColorInt int flash) {
-        final ObjectAnimator colorFade = ObjectAnimator.ofObject(
-                view,
-                "backgroundColor",
-                new ArgbEvaluator(),
-                original,
-                flash
-        );
-        colorFade.setDuration(300);
-        colorFade.setRepeatMode(ObjectAnimator.REVERSE);
-        colorFade.setRepeatCount(1);
-        colorFade.start();
-
-    }
-
-    /**
      * Checks whether the device has a navigation bar, and if so returns a pair
      * for {@see ActivityOptionsCompat#makeSceneTransition}
      *
@@ -184,6 +173,15 @@ public class UI {
         return nav == null ?
                 new Pair<>(new View(activity), "not_for_transition") :
                 new Pair<>(nav, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
+    }
+
+
+    public static void setDrawableForIntent(@NonNull ImageView iv, @NonNull Intent i) {
+        if(iv.getDrawable() instanceof BitmapDrawable) {
+            i.putExtra(iv.getResources().getString(R.string.intent_drawable),
+                    ((BitmapDrawable) iv.getDrawable()).getBitmap()
+            );
+        }
     }
 
 
