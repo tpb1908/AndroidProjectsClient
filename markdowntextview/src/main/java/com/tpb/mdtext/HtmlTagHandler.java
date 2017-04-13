@@ -395,7 +395,6 @@ public class HtmlTagHandler implements Html.TagHandler {
                     new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
             );
         }
-
     }
 
     private void handleOLTag(Editable output) {
@@ -608,7 +607,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 len++;
             }
             for(Object replace : replaces) {
-                if(len < output.length()) {
+                if(output.length() > 0) {
                     output.setSpan(replace, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
