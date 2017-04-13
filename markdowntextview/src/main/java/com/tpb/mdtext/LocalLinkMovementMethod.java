@@ -66,7 +66,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod {
                 if(widget instanceof MarkdownTextView) {
                     ((MarkdownTextView) widget).setSpanHit();
                 } else if(widget instanceof MarkdownEditText) {
-                    ((MarkdownEditText) widget).spanHit = true;
+                    ((MarkdownEditText) widget).setSpanHit();
                 }
                 return true;
             } else {

@@ -61,6 +61,9 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
     public void setRepo(Repository repo) {
         mRepo = repo;
+        final int oldSize = mCommits.size();
+        mCommits.clear();
+        notifyItemRangeRemoved(0, oldSize);
         loadCommits(true);
     }
 
@@ -104,7 +107,6 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
             final int oldLength = mCommits.size();
             if(mPage == 1) {
                 mParent.setLatestSHA(commits.get(0).getSha());
-                mCommits.clear();
             }
             for(Commit c : commits) {
                 mCommits.add(Pair.create(c, null));

@@ -30,7 +30,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -71,7 +70,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     @Nullable private Handler mParseHandler;
 
     private boolean mSpanHit = false;
-
+    private OnClickListener mOnClickListener;
     private float[] mLastClickPosition = new float[] {-1, -1};
 
     private WeakReference<SpanCache> mSpanCache;
@@ -100,7 +99,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         setClickable(true);
         setTextColor(Color.WHITE);
     }
-
 
     public void setLinkClickHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
@@ -190,22 +188,13 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
                 // Convert to a buffer to allow editing
                 final SpannableString buffer = new SpannableString(text);
-                //Get the URLSpans that are present before Linkify destroys them
-                final URLSpan[] spans = buffer.getSpans(0, buffer.length(), URLSpan.class);
 
                 //Add links for emails and web-urls
-
                 TextUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
-
-                //Copy back the spans from the original text
-                for(URLSpan us : spans) {
-                    buffer.setSpan(us, text.getSpanStart(us), text.getSpanEnd(us), 0);
-                }
 
                 if(mImageClickHandler != null) {
                     enableImageClicks(buffer);
                 }
-
                 //Post back on UI thread
                 MarkdownTextView.this.post(new Runnable() {
                     @Override
@@ -301,8 +290,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         if(!mSpanHit && mOnClickListener != null) mOnClickListener.onClick(v);
         mSpanHit = false;
     }
-
-    private OnClickListener mOnClickListener;
 
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {

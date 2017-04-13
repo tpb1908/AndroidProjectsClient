@@ -138,280 +138,345 @@ public class HtmlTagHandler implements Html.TagHandler {
     }
 
     private void handleOpeningTag(final String tag, Editable output, final XMLReader xmlReader) {
-        if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-            mLists.push(
-                    new Triple<>(
-                            tag,
-                            safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
-                                    true
-                            ),
-                            ListNumberSpan.ListType.NUMBER
-                    )
-            );
-        } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-            final ListNumberSpan.ListType type = ListNumberSpan.ListType
-                    .fromString(getAttribute("type", xmlReader, ""));
-            mLists.push(
-                    new Triple<>(
-                            tag,
-                            safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
-                                    true
-                            ),
-                            type
-                    )
-            );
-            mOlIndices.push(Pair.create(1, type));
-        } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
-            if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                output.append("\n");
-            }
-            if(!mLists.isEmpty()) {
-                String parentList = mLists.peek().first;
-                if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-                    start(output, new Ol());
-                    mOlIndices.push(Pair.create(mOlIndices.pop().first + 1, mLists.peek().third));
-                } else if(parentList.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-                    start(output, new Ul());
+        switch(tag.toUpperCase()) {
+            case UNORDERED_LIST_TAG:
+                mLists.push(
+                        new Triple<>(
+                                tag,
+                                safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
+                                        true
+                                ),
+                                ListNumberSpan.ListType.NUMBER
+                        )
+                );
+                break;
+            case ORDERED_LIST_TAG:
+                final ListNumberSpan.ListType type = ListNumberSpan.ListType
+                        .fromString(getAttribute("type", xmlReader, ""));
+                mLists.push(
+                        new Triple<>(
+                                tag,
+                                safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
+                                        true
+                                ),
+                                type
+                        )
+                );
+                mOlIndices.push(Pair.create(1, type));
+                break;
+            case LIST_ITEM_TAG:
+                if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+                    output.append("\n");
                 }
-            } else {
-                start(output, new Ol());
-                mOlIndices.push(Pair.create(1, ListNumberSpan.ListType.NUMBER));
-            }
-        } else if(tag.equalsIgnoreCase("code")) {
-            start(output, new Code());
-        } else if(tag.equalsIgnoreCase("center")) {
-            start(output, new Center());
-        } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
-            start(output, new Strike());
-        } else if(tag.equalsIgnoreCase("table")) {
-            start(output, new Table());
-            if(mTableLevel == 0) {
-                mTableHtmlBuilder = new StringBuilder();
-            }
-            mTableLevel++;
-        } else if(tag.equalsIgnoreCase("tr")) {
-            start(output, new Tr());
-        } else if(tag.equalsIgnoreCase("th")) {
-            start(output, new Th());
-        } else if(tag.equalsIgnoreCase("td")) {
-            start(output, new Td());
-        } else if(tag.equalsIgnoreCase("hr")) {
-            start(output, new HorizontalRule());
-        } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
-            start(output, new BlockQuote());
-        } else if(tag.equalsIgnoreCase(A_TAG)) {
-            start(output, new A(getAttribute("href", xmlReader, "invalid_url")));
-        } else if(tag.equalsIgnoreCase("inlinecode")) {
-            start(output, new InlineCode());
-        } else if(tag.equalsIgnoreCase(FONT_TAG)) {
-            final String font = getAttribute("face", xmlReader, "");
-            final String fgColor = getAttribute("color", xmlReader, "");
-            final String bgColor = getAttribute("background-color", xmlReader, "");
-            final boolean rounded = safelyParseBoolean(getAttribute("rounded", xmlReader, ""),
-                    false
-            );
-            if(font != null && !font.isEmpty()) {
-                start(output, new Font(font));
-            }
-            if(fgColor != null && !fgColor.isEmpty()) {
-                start(output, new ForegroundColor(fgColor));
-            }
-            if(bgColor != null && !bgColor.isEmpty()) {
-                start(output, new BackgroundColor(bgColor, rounded));
-            }
+                if(!mLists.isEmpty()) {
+                    String parentList = mLists.peek().first;
+                    if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
+                        start(output, new Ol());
+                        mOlIndices.push(Pair.create(mOlIndices.pop().first + 1, mLists.peek().third));
+                    } else if(parentList.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
+                        start(output, new Ul());
+                    }
+                } else {
+                    start(output, new Ol());
+                    mOlIndices.push(Pair.create(1, ListNumberSpan.ListType.NUMBER));
+                }
+                break;
+            case "TABLE":
+                start(output, new Table());
+                if(mTableLevel == 0) {
+                    mTableHtmlBuilder = new StringBuilder();
+                }
+                mTableLevel++;
+                break;
+            case FONT_TAG:
+                final String font = getAttribute("face", xmlReader, "");
+                final String fgColor = getAttribute("color", xmlReader, "");
+                final String bgColor = getAttribute("background-color", xmlReader, "");
+                final boolean rounded = safelyParseBoolean(getAttribute("rounded", xmlReader, ""),
+                        false
+                );
+                if(font != null && !font.isEmpty()) {
+                    start(output, new Font(font));
+                }
+                if(fgColor != null && !fgColor.isEmpty()) {
+                    start(output, new ForegroundColor(fgColor));
+                }
+                if(bgColor != null && !bgColor.isEmpty()) {
+                    start(output, new BackgroundColor(bgColor, rounded));
+                }
+                break;
+            case "CODE":
+                start(output, new Code());
+                break;
+            case "CENTER":
+                start(output, new Center());
+                break;
+            case "S":
+            case "STRIKE":
+                start(output, new StrikeThrough());
+                break;
+            case "TR":
+                start(output, new Tr());
+                break;
+            case "TH":
+                start(output, new Th());
+                break;
+            case "TD":
+                start(output, new Td());
+                break;
+            case "HR":
+                start(output, new HorizontalRule());
+                break;
+            case BLOCKQUOTE_TAG:
+                start(output, new BlockQuote());
+                break;
+            case A_TAG:
+                start(output, new A(getAttribute("href", xmlReader, "invalid_url")));
+                break;
+            case "INLINECODE":
+                start(output, new InlineCode());
+                break;
+
         }
     }
 
     private void handleClosingTag(final String tag, Editable output) {
-        if(tag.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-            mLists.pop();
-        } else if(tag.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-            mLists.pop();
-            mOlIndices.pop();
-        } else if(tag.equalsIgnoreCase(LIST_ITEM_TAG)) {
-            if(!mLists.isEmpty()) {
-                if(mLists.peek().first.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
-                    if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                        output.append("\n");
+        switch(tag.toUpperCase()) {
+            case UNORDERED_LIST_TAG:
+                mLists.pop();
+                break;
+            case ORDERED_LIST_TAG:
+                mLists.pop();
+                mOlIndices.pop();
+                break;
+            case LIST_ITEM_TAG:
+                if(!mLists.isEmpty()) {
+                    if(mLists.peek().first.equalsIgnoreCase(UNORDERED_LIST_TAG)) {
+                        handleULTag(output);
+                    } else if(mLists.peek().first.equalsIgnoreCase(ORDERED_LIST_TAG)) {
+                        handleOLTag(output);
                     }
-
-                    if(mLists.peek().second) {
-                        //Check for checkboxes
-                        if(output.length() > 2 &&
-                                ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
-                                        || (output.charAt(1) >= '\u2610' && output
-                                        .charAt(1) <= '\u2612')
-                                )) {
-                            end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(
-                                            mListIndent * (mLists.size() - 1))
-                            );
-                        } else {
-                            end(output, Ul.class, false,
-                                    new LeadingMarginSpan.Standard(
-                                            mListIndent * (mLists.size() - 1)),
-                                    new BulletSpan(mSingleIndent)
-                            );
-                        }
-                    } else {
-                        end(output, Ul.class, false,
-                                new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
-                        );
-                    }
-
-                } else if(mLists.peek().first.equalsIgnoreCase(ORDERED_LIST_TAG)) {
-                    if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-                        output.append("\n");
-                    }
-                    int numberMargin = mListIndent * (mLists.size() - 1);
-                    if(mLists.size() > 2) {
-                        // Same as in ordered mLists: counter the effect of nested Spans
-                        numberMargin -= (mLists.size() - 2) * mListIndent;
-                    }
-                    if(mLists.peek().second) {
-                        end(output, Ol.class, false,
-                                new LeadingMarginSpan.Standard(numberMargin),
-                                new ListNumberSpan(mTextPaint, mOlIndices.lastElement().first - 1,
-                                        mLists.peek().third
-                                )
-                        );
-                    } else {
-                        end(output, Ol.class, false,
-                                new LeadingMarginSpan.Standard(numberMargin)
-                        );
-                    }
+                } else {
+                    end(output, Ol.class, true);
                 }
-            } else {
-                end(output, Ol.class, true);
-            }
-        } else if(tag.equalsIgnoreCase("code")) {
-            Object obj = getLast(output, Code.class);
-            // start of the tag
-            int start = output.getSpanStart(obj);
-            // end of the tag
-            int end = output.length();
-            if(end > start + 1) {
-                output.removeSpan(obj);
-                final char[] chars = new char[end - start];
-                output.getChars(start, end, chars, 0);
-                output.insert(start, "\n"); // Another line for our CodeSpan to cover
-                output.replace(start + 1, end, " ");
-                final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
-                output.setSpan(code, start, start + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new WrappingClickableSpan(code), start, start + 3,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                break;
+            case "CODE":
+                handleCodeTag(output);
+                break;
+            case "HR":
+                handleHorizontalRule(output);
+                break;
+            case "CENTER":
+                end(output, Center.class, true,
+                        new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER)
                 );
-            }
-        } else if(tag.equals("hr")) {
-            final Object obj = getLast(output, HorizontalRule.class);
+                break;
+            case "S":
+            case "STRIKE":
+                end(output, StrikeThrough.class, false, new StrikethroughSpan());
+                break;
+            case "TABLE":
+                handleTableTag(output);
+                break;
+            case BLOCKQUOTE_TAG:
+                handleBlockQuoteTag(output);
+                break;
+            case A_TAG:
+                handleATag(output);
+                break;
+            case "INLINECODE":
+                handleInlineCodeTag(output);
+                break;
+            case FONT_TAG:
+                handleFontTag(output);
+                break;
+            case "TR":
+                end(output, Tr.class, false);
+                break;
+            case "TH":
+                end(output, Th.class, false);
+                break;
+            case "TD":
+                end(output, Td.class, false);
+                break;
+        }
+    }
+
+    private void handleBlockQuoteTag(Editable output) {
+        Object obj = getLast(output, BlockQuote.class);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+        output.removeSpan(obj);
+        output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    private void handleInlineCodeTag(Editable output) {
+        final Object obj = getLast(output, InlineCode.class);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+        output.removeSpan(obj);
+        output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), start, end,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        );
+    }
+
+    private void handleTableTag(Editable output) {
+        mTableLevel--;
+        // When we're back at the root-level table
+        if(mTableLevel == 0) {
+            final Table obj = getLast(output, Table.class);
             final int start = output.getSpanStart(obj);
             output.removeSpan(obj); //Remove the old span
-            output.replace(start, output.length(), " "); //We need a non-empty span
-            output.setSpan(new HorizontalRuleSpan(), start, start + 1, 0); //Insert the bar span
-        } else if(tag.equalsIgnoreCase("center")) {
-            end(output, Center.class, true,
-                    new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER)
-            );
-        } else if(tag.equalsIgnoreCase("s") || tag.equalsIgnoreCase("strike")) {
-            end(output, Strike.class, false, new StrikethroughSpan());
-        } else if(tag.equalsIgnoreCase("table")) {
-            mTableLevel--;
-            // When we're back at the root-level table
-            if(mTableLevel == 0) {
-                final Table obj = getLast(output, Table.class);
-                final int start = output.getSpanStart(obj);
-                output.removeSpan(obj); //Remove the old span
-                output.insert(start, "\n");
-                output.replace(start + 1, output.length(), "  "); //We need a non-empty span
+            output.insert(start, "\n");
+            output.replace(start + 1, output.length(), "  "); //We need a non-empty span
 
-                final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
-                output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new WrappingClickableSpan(table), start, start + 3,
+            final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
+            output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            output.setSpan(new WrappingClickableSpan(table), start, start + 3,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+
+        } else {
+            end(output, Table.class, false);
+        }
+    }
+
+    private void handleHorizontalRule(Editable output) {
+        final Object obj = getLast(output, HorizontalRule.class);
+        final int start = output.getSpanStart(obj);
+        output.removeSpan(obj); //Remove the old span
+        output.replace(start, output.length(), " "); //We need a non-empty span
+        output.setSpan(new HorizontalRuleSpan(), start, start + 1, 0); //Insert the bar span
+    }
+
+    private void handleCodeTag(Editable output) {
+        final Object obj = getLast(output, Code.class);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+        if(end > start + 1) {
+            output.removeSpan(obj);
+            final char[] chars = new char[end - start];
+            output.getChars(start, end, chars, 0);
+            output.insert(start, "\n"); // Another line for our CodeSpan to cover
+            output.replace(start + 1, end, " ");
+            final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
+            output.setSpan(code, start, start + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            output.setSpan(new WrappingClickableSpan(code), start, start + 3,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+    }
+
+    private void handleULTag(Editable output) {
+        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+            output.append("\n");
+        }
+
+        if(mLists.peek().second) {
+            //Check for checkboxes
+            if(output.length() > 2 &&
+                    ((output.charAt(0) >= '\u2610' && output.charAt(0) <= '\u2612')
+                            || (output.charAt(1) >= '\u2610' && output
+                            .charAt(1) <= '\u2612')
+                    )) {
+                end(output, Ul.class, false,
+                        new LeadingMarginSpan.Standard(
+                                mListIndent * (mLists.size() - 1))
+                );
+            } else {
+                end(output, Ul.class, false,
+                        new LeadingMarginSpan.Standard(
+                                mListIndent * (mLists.size() - 1)),
+                        new BulletSpan(mSingleIndent)
+                );
+            }
+        } else {
+            end(output, Ul.class, false,
+                    new LeadingMarginSpan.Standard(mListIndent * (mLists.size() - 1))
+            );
+        }
+
+    }
+
+    private void handleOLTag(Editable output) {
+        if(output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
+            output.append("\n");
+        }
+        int numberMargin = mListIndent * (mLists.size() - 1);
+        if(mLists.size() > 2) {
+            // Same as in ordered lists: counter the effect of nested Spans
+            numberMargin -= (mLists.size() - 2) * mListIndent;
+        }
+        if(mLists.peek().second) {
+            end(output, Ol.class, false,
+                    new LeadingMarginSpan.Standard(numberMargin),
+                    new ListNumberSpan(mTextPaint, mOlIndices.lastElement().first - 1,
+                            mLists.peek().third
+                    )
+            );
+        } else {
+            end(output, Ol.class, false,
+                    new LeadingMarginSpan.Standard(numberMargin)
+            );
+        }
+    }
+
+    private void handleFontTag(Editable output) {
+        final ForegroundColor fgc = getLast(output, ForegroundColor.class);
+        final BackgroundColor bgc = getLast(output, BackgroundColor.class);
+        final Font f = getLast(output, Font.class);
+        if(fgc != null) {
+            final int start = output.getSpanStart(fgc);
+            final int end = output.length();
+            output.removeSpan(fgc);
+            output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), start, end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+        if(bgc != null) {
+            final int start = output.getSpanStart(bgc);
+            final int end = output.length();
+            output.removeSpan(bgc);
+
+            final int color = safelyParseColor(bgc.color);
+            if(bgc.rounded) {
+                output.insert(end, " ");
+                output.insert(start, " ");
+                output.setSpan(new RoundedBackgroundEndSpan(color, false), start, start + 1,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
-
+                output.setSpan(new RoundedBackgroundEndSpan(color, true), end, end + 1,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+                output.setSpan(new BackgroundColorSpan(color), start + 1, end,
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                );
             } else {
-                end(output, Table.class, false);
-            }
-        } else if(tag.equalsIgnoreCase("tr")) {
-            end(output, Tr.class, false);
-        } else if(tag.equalsIgnoreCase("th")) {
-            end(output, Th.class, false);
-        } else if(tag.equalsIgnoreCase("td")) {
-            end(output, Td.class, false);
-        } else if(tag.equalsIgnoreCase(BLOCKQUOTE_TAG)) {
-            Object obj = getLast(output, BlockQuote.class);
-            // start of the tag
-            int start = output.getSpanStart(obj);
-            // end of the tag
-            int end = output.length();
-            output.removeSpan(obj);
-            output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        } else if(tag.equalsIgnoreCase(A_TAG)) {
-            A obj = getLast(output, A.class);
-            // start of the tag
-            int start = output.getSpanStart(obj);
-            // end of the tag
-            int end = output.length();
-            output.removeSpan(obj);
-            if(isValidURL(obj.href)) {
-                output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                output.setSpan(new BackgroundColorSpan(color), start, end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
-        } else if(tag.equalsIgnoreCase("inlinecode")) {
-            final InlineCode obj = getLast(output, InlineCode.class);
-            final int start = output.getSpanStart(obj);
+
+        }
+        if(f != null) {
+            final int start = output.getSpanStart(f);
             final int end = output.length();
-            output.removeSpan(obj);
-            output.setSpan(new InlineCodeSpan(mTextPaint.getTextSize()), start, end,
+            output.removeSpan(f);
+            output.setSpan(new TypefaceSpan(f.face), start, end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+    }
+
+    private void handleATag(Editable output) {
+        final A obj = getLast(output, A.class);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+        output.removeSpan(obj);
+        if(isValidURL(obj.href)) {
+            output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), start, end,
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             );
-        } else if(tag.equalsIgnoreCase(FONT_TAG)) {
-            final ForegroundColor fgc = getLast(output, ForegroundColor.class);
-            final BackgroundColor bgc = getLast(output, BackgroundColor.class);
-            final Font f = getLast(output, Font.class);
-            if(fgc != null) {
-                final int start = output.getSpanStart(fgc);
-                final int end = output.length();
-                output.removeSpan(fgc);
-                output.setSpan(new ForegroundColorSpan(safelyParseColor(fgc.color)), start, end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
-            }
-            if(bgc != null) {
-                final int start = output.getSpanStart(bgc);
-                final int end = output.length();
-                output.removeSpan(bgc);
-
-                final int color = safelyParseColor(bgc.color);
-                if(bgc.rounded) {
-                    output.insert(end, " ");
-                    output.insert(start, " ");
-                    output.setSpan(new RoundedBackgroundEndSpan(color, false), start, start + 1,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    );
-                    output.setSpan(new RoundedBackgroundEndSpan(color, true), end, end + 1,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    );
-                    output.setSpan(new BackgroundColorSpan(color), start + 1, end,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-                    );
-                } else {
-                    output.setSpan(new BackgroundColorSpan(color), start, end,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    );
-                }
-
-            }
-            if(f != null) {
-                final int start = output.getSpanStart(f);
-                final int end = output.length();
-                output.removeSpan(f);
-                output.setSpan(new TypefaceSpan(f.face), start, end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
-            }
         }
     }
 
@@ -536,14 +601,16 @@ public class HtmlTagHandler implements Html.TagHandler {
         output.removeSpan(obj);
 
         if(start != end) {
-            int thisLen = end;
+            int len = end;
             // paragraph styles like AlignmentSpan need to end with a new line!
             if(paragraphStyle) {
                 output.append("\n");
-                thisLen++;
+                len++;
             }
             for(Object replace : replaces) {
-                output.setSpan(replace, start, thisLen, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if(len < output.length()) {
+                    output.setSpan(replace, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
         }
     }
@@ -591,7 +658,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static class Center {
     }
 
-    private static class Strike {
+    private static class StrikeThrough {
     }
 
     private static class Table {

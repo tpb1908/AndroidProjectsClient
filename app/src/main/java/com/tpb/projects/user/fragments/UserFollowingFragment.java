@@ -59,7 +59,7 @@ public class UserFollowingFragment extends UserFragment {
     @Override
     public void userLoaded(User user) {
         mUser = user;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setUser(user.getLogin(), false);
     }
 

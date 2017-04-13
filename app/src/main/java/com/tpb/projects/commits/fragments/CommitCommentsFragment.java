@@ -108,7 +108,7 @@ public class CommitCommentsFragment extends CommitFragment {
     @Override
     public void commitLoaded(Commit commit) {
         mCommit = commit;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setCommit(mCommit);
     }
 

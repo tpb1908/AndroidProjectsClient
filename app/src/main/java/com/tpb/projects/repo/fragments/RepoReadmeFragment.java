@@ -66,14 +66,14 @@ public class RepoReadmeFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mLoader.loadReadMe(new Loader.ItemLoader<String>() {
             @Override
             public void loadComplete(String data) {
                 mLoader.renderMarkDown(new Loader.ItemLoader<String>() {
                     @Override
                     public void loadComplete(String data) {
-                        if(!mAreViewsValid) return;
+                        if(!areViewsValid()) return;
                         mRefresher.setRefreshing(false);
                         mReadme.setVisibility(View.VISIBLE);
                         mReadme.setMarkdown(Markdown.fixRelativeLinks(data, mRepo.getFullName()));
@@ -91,7 +91,7 @@ public class RepoReadmeFragment extends RepoFragment {
 
             @Override
             public void loadError(APIHandler.APIError error) {
-                if(!mAreViewsValid) return;
+                if(!areViewsValid()) return;
                 mRefresher.setRefreshing(false);
                 if(error == APIHandler.APIError.NOT_FOUND) {
                     Toast.makeText(getContext(), R.string.error_readme_not_found,

@@ -94,7 +94,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
     @Override
     public void userLoaded(User user) {
         mUser = user;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mContributions.setListener(this);
         mContributions.loadContributions(user.getLogin());
         Formatter.displayUser(mUserInfoParent, mUser);
@@ -152,6 +152,7 @@ public class UserInfoFragment extends UserFragment implements ContributionsView.
 
     @Override
     public void contributionsLoaded(List<ContributionsLoader.ContributionsDay> contributions) {
+        if(!areViewsValid()) return;
         int totalContributions = 0;
         int daysActive = 0;
         int maxContributions = 0;

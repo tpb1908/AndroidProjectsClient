@@ -336,6 +336,7 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void toggleIssueState() {
+        if(mIssue == null || mAccessLevel != Repository.AccessLevel.ADMIN) return;
         final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
             @Override
             public void updated(Issue issue) {

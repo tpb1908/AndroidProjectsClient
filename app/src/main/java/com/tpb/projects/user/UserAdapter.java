@@ -91,7 +91,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> im
         mIsLoading = false;
         if(users.size() > 0) {
             int oldLength = mUsers.size();
-            if(mPage == 1) mUsers.clear();
             mUsers.addAll(users);
             notifyItemRangeInserted(oldLength, mUsers.size());
         } else {

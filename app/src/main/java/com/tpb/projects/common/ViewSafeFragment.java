@@ -10,6 +10,10 @@ public class ViewSafeFragment extends Fragment {
 
     protected boolean mAreViewsValid;
 
+    protected boolean areViewsValid() {
+        return mAreViewsValid && getActivity() != null;
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

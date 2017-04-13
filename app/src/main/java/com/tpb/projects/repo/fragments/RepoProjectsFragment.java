@@ -64,7 +64,7 @@ public class RepoProjectsFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setRepository(repo);
 
     }

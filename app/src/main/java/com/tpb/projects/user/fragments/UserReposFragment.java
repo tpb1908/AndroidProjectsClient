@@ -18,7 +18,7 @@ import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.user.RepositoriesAdapter;
+import com.tpb.projects.common.RepositoriesAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,7 +65,7 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
     @Override
     public void userLoaded(User user) {
         mUser = user;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setUser(user.getLogin(), false);
     }
 
@@ -73,9 +73,10 @@ public class UserReposFragment extends UserFragment implements RepositoriesAdapt
     public void openRepo(Repository repo) {
         final Intent i = new Intent(getContext(), RepoActivity.class);
         i.putExtra(getString(R.string.intent_repo), repo);
-        Loader.getLoader(getContext()).loadProjects(null, repo.getFullName())
-                                .loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0)
-                                .loadProjects(null, repo.getFullName());
+        Loader.getLoader(getContext())
+              .loadProjects(null, repo.getFullName())
+              .loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0)
+              .loadProjects(null, repo.getFullName());
         startActivity(i);
         getActivity().overridePendingTransition(R.anim.slide_up, R.anim.none);
     }

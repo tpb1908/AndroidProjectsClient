@@ -77,8 +77,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(comments.size() > 0) {
-            if(mPage == 1) mComments.clear();
-            int oldLength = mComments.size();
+            final int oldLength = mComments.size();
             for(Comment c : comments) {
                 mComments.add(new Pair<>(c, null));
             }

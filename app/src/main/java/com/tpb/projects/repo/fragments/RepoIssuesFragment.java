@@ -117,7 +117,7 @@ public class RepoIssuesFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setRepo(repo);
     }
 

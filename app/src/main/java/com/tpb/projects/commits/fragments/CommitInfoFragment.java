@@ -89,7 +89,7 @@ public class CommitInfoFragment extends CommitFragment {
     @Override
     public void commitLoaded(Commit commit) {
         mCommit = commit;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mTitle.setMarkdown(Formatter.bold(mCommit.getMessage()));
         final String user;
         if(mCommit.getCommitter() != null) {

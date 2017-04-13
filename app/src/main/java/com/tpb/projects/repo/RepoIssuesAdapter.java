@@ -74,6 +74,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     public void setRepo(Repository repo) {
         mRepo = repo;
+        mIssues.clear();
         loadIssues(true);
     }
 
@@ -119,7 +120,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         mIsLoading = false;
         if(issues.size() > 0) {
             final int oldLength = mIssues.size();
-            if(mPage == 1) mIssues.clear();
             for(Issue i : issues) {
                 mIssues.add(Pair.create(i, null));
             }

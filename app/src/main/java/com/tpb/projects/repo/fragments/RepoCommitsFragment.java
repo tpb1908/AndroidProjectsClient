@@ -81,7 +81,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
         mRepo = repo;
         Loader.getLoader(getContext()).loadBranches(this, mRepo.getFullName());
         mIsLoadingBranches = true;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setRepo(mRepo);
     }
 
@@ -89,7 +89,7 @@ public class RepoCommitsFragment extends RepoFragment implements Loader.ListLoad
     public void listLoadComplete(List<Pair<String, String>> branches) {
         mIsLoadingBranches = false;
         mBranches = branches;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         if(mLatestSHA != null) bindBranches();
     }
 

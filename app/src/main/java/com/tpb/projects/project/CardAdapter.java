@@ -89,6 +89,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
     void setColumn(int columnId) {
         mColumn = columnId;
+        mCards.clear();
+        notifyDataSetChanged();
         loadCards(true);
     }
 
@@ -105,6 +107,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         if(resetPage) {
             mPage = 1;
             mMaxPageReached = false;
+            final int oldSize = mCards.size();
+            mCards.clear();
+            notifyItemRangeRemoved(0, oldSize);
         }
         mLoader.loadCards(this, mParent.mColumn.getId(), mPage);
     }
@@ -118,7 +123,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             int oldLength = mCards.size();
             if(mPage == 1) {
                 mParent.mParent.notifyFragmentLoaded();
-                mCards.clear();
             }
             for(Card c : cards) {
                 mCards.add(new Pair<>(c, null));

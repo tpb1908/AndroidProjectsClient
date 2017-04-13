@@ -76,7 +76,6 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mRefresher.setRefreshing(false);
         mIsLoading = false;
         if(data.size() > 0) {
-            if(mPage == 1) mComments.clear();
             int oldLength = mComments.size();
             for(Comment c : data) {
                 mComments.add(new Pair<>(c, null));

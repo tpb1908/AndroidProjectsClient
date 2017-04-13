@@ -96,7 +96,7 @@ public class RepoInfoFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mRefresher.setRefreshing(false);
         mAvatar.setImageUrl(repo.getUserAvatarUrl());
         mUserName.setText(repo.getUserLogin());
@@ -179,7 +179,7 @@ public class RepoInfoFragment extends RepoFragment {
     }
 
     private void displayContributors(List<User> contributors) {
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mContributors.removeAllViews();
         if(contributors.size() > 1) {
             mContributors.setVisibility(View.VISIBLE);

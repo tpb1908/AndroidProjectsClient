@@ -1,4 +1,4 @@
-package com.tpb.projects.user;
+package com.tpb.projects.common;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,7 +19,6 @@ import com.tpb.github.data.models.Repository;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
-import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.Util;
 
@@ -170,31 +169,34 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         mIsLoading = false;
         if(repos.size() > 0) {
             int oldLength = mRepos.size();
-            if(mPage == 1) mRepos.clear();
             if(mIsShowingStars) {
                 mRepos.addAll(repos);
             } else {
-                if(mPage == 1) {
-                    for(Repository r : repos) {
-                        if(mPinChecker.isPinned(r.getFullName())) {
-                            mRepos.add(0, r);
-                        } else {
-                            mRepos.add(r);
-                        }
-                    }
-                    mPinChecker.setInitialPositions(mRepos);
-                    ensureLoadOfPinnedRepos();
-                } else {
-                    for(Repository repo : repos) {
-                        if(!mRepos.contains(repo)) mRepos.add(repo);
-                    }
-                    mPinChecker.appendInitialPositions(repos);
-                }
+                insertPinnedRepos(repos);
             }
             notifyItemRangeInserted(oldLength, mRepos.size());
 
         } else {
             mMaxPageReached = true;
+        }
+    }
+
+    private void insertPinnedRepos(List<Repository> repos) {
+        if(mPage == 1) {
+            for(Repository r : repos) {
+                if(mPinChecker.isPinned(r.getFullName())) {
+                    mRepos.add(0, r);
+                } else {
+                    mRepos.add(r);
+                }
+            }
+            mPinChecker.setInitialPositions(mRepos);
+            ensureLoadOfPinnedRepos();
+        } else {
+            for(Repository repo : repos) {
+                if(!mRepos.contains(repo)) mRepos.add(repo);
+            }
+            mPinChecker.appendInitialPositions(repos);
         }
     }
 

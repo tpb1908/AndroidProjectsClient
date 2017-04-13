@@ -18,7 +18,7 @@ import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.repo.RepoActivity;
-import com.tpb.projects.user.RepositoriesAdapter;
+import com.tpb.projects.common.RepositoriesAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +66,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
     @Override
     public void userLoaded(User user) {
         mUser = user;
-        if(!mAreViewsValid) return;
+        if(!areViewsValid()) return;
         mAdapter.setUser(user.getLogin(), true);
     }
 

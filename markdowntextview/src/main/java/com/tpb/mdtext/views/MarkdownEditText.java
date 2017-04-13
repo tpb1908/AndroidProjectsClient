@@ -2,6 +2,7 @@ package com.tpb.mdtext.views;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +18,6 @@ import android.text.TextPaint;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.tpb.mdtext.HtmlTagHandler;
@@ -45,18 +45,12 @@ import java.util.Scanner;
  * Created by theo on 27/02/17.
  */
 
-public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCacheHandler {
+public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCacheHandler{
 
     public static final String TAG = MarkdownEditText.class.getSimpleName();
 
     private boolean mIsEditing = true;
     private Editable mSavedText = new SpannableStringBuilder();
-
-    public boolean spanHit;
-
-    private final boolean dontConsumeNonUrlClicks = true;
-    private boolean removeFromHtmlSpace = true;
-
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
@@ -64,27 +58,24 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
 
-    private float[] mLastClickPosition = new float[] {-1, -1};
-
+    private boolean mSpanHit = false;
 
     public MarkdownEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
-        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
-        setDefaultHandlers(context);
-        setPadding(0, getPaddingTop(), 0, getPaddingBottom());
+        init(context);
     }
 
     public MarkdownEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
-        if(!TableSpan.isInitialised()) TableSpan.initialise(context);
-        setDefaultHandlers(context);
-        setPadding(0, getPaddingTop(), 0, getPaddingBottom());
+        init(context);
     }
 
     public MarkdownEditText(Context context) {
         super(context);
+        init(context);
+    }
+
+    private void init(Context context ){
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
         if(!TableSpan.isInitialised()) TableSpan.initialise(context);
         setDefaultHandlers(context);
@@ -107,14 +98,14 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
         mTableHandler = handler;
     }
 
+    public void setCodeClickHandler(CodeClickHandler handler) {
+        mCodeHandler = handler;
+    }
+
     public void setDefaultHandlers(Context context) {
         setCodeClickHandler(new CodeDialog(context));
         setImageHandler(new ImageDialog(context));
         setTableClickHandler(new TableDialog(context));
-    }
-
-    public void setCodeClickHandler(CodeClickHandler handler) {
-        mCodeHandler = handler;
     }
 
     public void setMarkdown(@RawRes int resId) {
@@ -159,34 +150,26 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
 
                 // Override tags to stop Html.fromHtml destroying some of them
                 final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
-
                 final Spanned text;
-                if(removeFromHtmlSpace) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    text = removeHtmlBottomPadding(
+                            Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                    htmlTagHandler
+                            ));
+                } else {
                     text = removeHtmlBottomPadding(
                             Html.fromHtml(overridden, imageGetter, htmlTagHandler));
-                } else {
-                    text = Html.fromHtml(overridden, imageGetter, htmlTagHandler);
                 }
 
                 // Convert to a buffer to allow editing
                 final SpannableString buffer = new SpannableString(text);
-                //Get the URLSpans that are present before Linkify destroys them
-                final URLSpan[] spans = buffer.getSpans(0, buffer.length(), URLSpan.class);
 
                 //Add links for emails and web-urls
                 TextUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
 
-                //Copy back the spans from the original text
-                for(URLSpan us : spans) {
-                    final int start = text.getSpanStart(us);
-                    final int end = text.getSpanEnd(us);
-                    buffer.setSpan(us, start, end, 0);
-                }
-
                 if(mImageClickHandler != null) {
                     enableImageClicks(buffer);
                 }
-
                 //Post back on UI thread
                 MarkdownEditText.this.post(new Runnable() {
                     @Override
@@ -238,25 +221,6 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
     }
 
     /**
-     * Note that this must be called before setting text for it to work
-     */
-    public void setRemoveFromHtmlSpace(boolean removeFromHtmlSpace) {
-        this.removeFromHtmlSpace = removeFromHtmlSpace;
-    }
-
-
-    public float[] getLastClickPosition() {
-        if(mLastClickPosition[0] == -1) {
-            // If we haven't been clicked yet, get the centre of the view
-            final int[] pos = new int[2];
-            getLocationOnScreen(pos);
-            mLastClickPosition[0] = pos[0] + getWidth() / 2;
-            mLastClickPosition[1] = pos[1] + getHeight() / 2;
-        }
-        return mLastClickPosition;
-    }
-
-    /**
      * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
      */
     @NonNull
@@ -271,7 +235,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
      * See https://github.com/SufficientlySecure/html-textview/issues/19
      */
     @Nullable
-    static private Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
+    private static Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
         if(text == null) {
             return null;
         }
@@ -282,19 +246,8 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
         return text;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            mLastClickPosition[0] = event.getRawX();
-            mLastClickPosition[1] = event.getRawY();
-        }
-        spanHit = false;
-        final boolean res = super.onTouchEvent(event);
-        if(mIsEditing) return res;
-        if(dontConsumeNonUrlClicks) {
-            return spanHit;
-        }
-        return res;
+    public void setSpanHit() {
+        mSpanHit = true;
     }
 
     public boolean isEditing() {
