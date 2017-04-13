@@ -1,22 +1,3 @@
-/*
- * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2013-2015 Juha Kuitunen
- * Copyright (C) 2013 Mohammed Lakkadshaw
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tpb.mdtext;
 
 import android.graphics.Color;
@@ -354,12 +335,10 @@ public class HtmlTagHandler implements Html.TagHandler {
         final int start = output.getSpanStart(obj);
         final int end = output.length();
         if(end > start + 1) {
+            final CharSequence chars = extractSpanText(output, Code.class);
             output.removeSpan(obj);
-            final char[] chars = new char[end - start];
-            output.getChars(start, end, chars, 0);
-            output.insert(start, "\n"); // Another line for our CodeSpan to cover
-            output.replace(start + 1, end, " ");
-            final CodeSpan code = new CodeSpan(new String(chars), mCodeHandler);
+            output.insert(start, "\n \n"); // Another line for our CodeSpan to cover
+            final CodeSpan code = new CodeSpan(chars.toString(), mCodeHandler);
             output.setSpan(code, start, start + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             output.setSpan(new WrappingClickableSpan(code), start, start + 3,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -479,6 +458,57 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
     }
 
+    /**
+     * Mark the opening tag by using private classes
+     */
+    private void start(Editable output, Object mark) {
+        final int point = output.length();
+        output.setSpan(mark, point, point, Spannable.SPAN_MARK_MARK);
+    }
+
+    /**
+     * Modified from {@link android.text.Html}
+     */
+    private void end(Editable output, Class kind, boolean paragraphStyle, Object... replaces) {
+        final Object obj = getLast(output, kind);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+
+        // If we're in a table, then we need to store the raw HTML for later
+        if(mTableLevel > 0) {
+            final CharSequence extractedSpanText = extractSpanText(output, kind);
+            mTableHtmlBuilder.append(extractedSpanText);
+        }
+
+        output.removeSpan(obj);
+        if(start != end) {
+            int len = end;
+            // paragraph styles like AlignmentSpan need to end with a new line!
+            if(paragraphStyle) {
+                output.append("\n");
+                len++;
+            }
+            for(Object replace : replaces) {
+                if(output.length() > 0) {
+                    output.setSpan(replace, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the text contained within a span and deletes it from the output string
+     */
+    private CharSequence extractSpanText(Editable output, Class kind) {
+        final Object obj = getLast(output, kind);
+        final int start = output.getSpanStart(obj);
+        final int end = output.length();
+
+        final CharSequence extractedSpanText = output.subSequence(start, end);
+        output.delete(start, end);
+        return extractedSpanText;
+    }
+
     private static int safelyParseColor(String color) {
         try {
             return Color.parseColor(color);
@@ -558,8 +588,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     }
 
     /**
-     * If we're arriving at a table tag or are already within a table tag, then we should store it
-     * the raw HTML for our ClickableTableSpan
+     * If we're arriving at a table tag or are already within a table tag, then we should store
+     * the raw HTML for our span
      */
     private void storeTableTags(boolean opening, String tag) {
         if(mTableLevel > 0 || tag.equalsIgnoreCase("table")) {
@@ -573,59 +603,6 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
     }
 
-    /**
-     * Mark the opening tag by using private classes
-     */
-    private void start(Editable output, Object mark) {
-        final int point = output.length();
-        output.setSpan(mark, point, point, Spannable.SPAN_MARK_MARK);
-    }
-
-    /**
-     * Modified from {@link android.text.Html}
-     */
-    private void end(Editable output, Class kind, boolean paragraphStyle, Object... replaces) {
-        Object obj = getLast(output, kind);
-        // start of the tag
-        int start = output.getSpanStart(obj);
-        // end of the tag
-        int end = output.length();
-
-        // If we're in a table, then we need to store the raw HTML for later
-        if(mTableLevel > 0) {
-            final CharSequence extractedSpanText = extractSpanText(output, kind);
-            mTableHtmlBuilder.append(extractedSpanText);
-        }
-
-        output.removeSpan(obj);
-
-        if(start != end) {
-            int len = end;
-            // paragraph styles like AlignmentSpan need to end with a new line!
-            if(paragraphStyle) {
-                output.append("\n");
-                len++;
-            }
-            for(Object replace : replaces) {
-                if(output.length() > 0) {
-                    output.setSpan(replace, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the text contained within a span and deletes it from the output string
-     */
-    private CharSequence extractSpanText(Editable output, Class kind) {
-        final Object obj = getLast(output, kind);
-        final int start = output.getSpanStart(obj);
-        final int end = output.length();
-
-        final CharSequence extractedSpanText = output.subSequence(start, end);
-        output.delete(start, end);
-        return extractedSpanText;
-    }
 
     /**
      * Get last marked position of a specific tag kind (private class)
@@ -635,6 +612,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         if(objs.length == 0) {
             return null;
         } else {
+            //In reverse as items are returned in order they were inserted
             for(int i = objs.length; i > 0; i--) {
                 if(text.getSpanFlags(objs[i - 1]) == Spannable.SPAN_MARK_MARK) {
                     return objs[i - 1];
