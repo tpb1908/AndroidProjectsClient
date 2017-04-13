@@ -1,5 +1,10 @@
 package com.tpb.mdtext;
 
+import android.nfc.Tag;
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -9,15 +14,20 @@ import java.util.regex.Pattern;
 
 public class Parser {
 
+    private static final String OPEN_ARROW = "<";
+    private static final String CLOSE_ARROW = ">";
+    private static final String CLOSE_SLASH = "/";
+    private static final String H_TAG = "h";
     private static final String P_TAG = "p";
     private static final String A_TAG = "a";
     private static final String UL_TAG = "ul";
     private static final String OL_TAG = "ol";
+    private static final String LI_TAG = "li";
     private static final String HR_TAG = "hr";
     private static final String TABLE_TAG = "table";
     private static final String TABLE_ROW = "tr";
     private static final String TABLE_DATA = "td";
-    private static final String TABLE_HEADING = "th";
+    private static final String TABLE_HEADING_TAG = "th";
     private static final String BR_TAG = "br";
     private static final String BLOCKQUOTE_TAG = "blockquote";
     private static final String CODE_TAG = "code";
@@ -30,16 +40,32 @@ public class Parser {
 
     public static String parseMarkdown(final String md) {
         final StringBuilder builder = new StringBuilder();
-
+        builder.append("<body>\n");
         final Stack<Element> elements = new Stack<>();
-
+        int start = 0;
+        int cinline = 0;
         for(int i = 0; i < md.length(); i++) {
+
+            if(cinline == 0) { //Start of line
+                if(isHeading(md, i)) {
+                    elements.push(new Element(start, i, H_TAG));
+                } else if(isBlockQuote(md, i)) {
+                    elements.push(new Element(start, i, BLOCKQUOTE_TAG));
+                }
+            }
+
+            if(isLineEnding(md, i)) {
+                cinline = 0;
+            } else {
+                cinline++;
+            }
+
             if(isMarkdownControl(md.charAt(i))) {
 
             }
         }
-
-        return "";
+        builder.append("</body>");
+        return builder.toString();
     }
 
     private static boolean isMarkdownControl(char c) {
@@ -144,7 +170,7 @@ public class Parser {
         return false;
     }
 
-    private static boolean isCodeBlocks(String s, int i) {
+    private static boolean isCodeBlock(String s, int i) {
         int indent = 0;
         for(; i < s.length(); i++) {
             if(s.charAt(i) == ' ') {
@@ -231,6 +257,19 @@ public class Parser {
         return false;
     }
 
+    private static int instancesOf(@NonNull String s1, @NonNull String s2) {
+        int last = 0;
+        int count = 0;
+        while(last != -1) {
+            last = s1.indexOf(s2, last);
+            if(last != -1) {
+                count++;
+                last += s2.length();
+            }
+        }
+        return count;
+    }
+
     private static String replaceUnsafe(String s) {
         return s.replace("\u0000", "\ufffd");
     }
@@ -240,13 +279,308 @@ public class Parser {
         int start;
         int end;
         String tag;
+        boolean paired;
+        boolean multiline;
 
-        Element(int start, int end, String tag) {
+        List<Element> children = new ArrayList<>();
+
+        Element(int start, int end, String tag, boolean paired, boolean multiline) {
             this.start = start;
             this.end = end;
             this.tag = tag;
+            this.paired = paired;
+            this.multiline = multiline;
         }
 
+        Element(int start, int end, String tag) {
+            this(start, end, tag, false, false);
+        }
+
+    }
+
+
+    private static abstract class TAG {
+
+        TAG parent;
+        String content;
+        List<Tag> children = new ArrayList<>();
+
+        static String close(String tag) {
+            return OPEN_ARROW + CLOSE_SLASH + tag + CLOSE_ARROW;
+        }
+
+        abstract void toHtmlString(StringBuilder builder);
+
+    }
+
+    private static class Literal extends TAG {
+
+        String literal;
+
+        Literal(String literal) {
+            this.literal = literal;
+        }
+
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(literal);
+        }
+    }
+
+    private static class Header extends TAG {
+
+        int value;
+
+        Header(int value) {
+            this.value = value;
+        }
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(H_TAG);
+            builder.append(value);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(H_TAG + value));
+        }
+    }
+
+    private static class Paragraph extends TAG {
+
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(P_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(P_TAG));
+        }
+
+    }
+
+    private static class HREF extends TAG {
+
+        String url;
+
+        HREF(String url) {
+            this.url = url;
+        }
+
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(A_TAG);
+            builder.append(" href=\"");
+            builder.append(url);
+            builder.append("\" ");
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(A_TAG));
+        }
+    }
+
+    private static class UnorderedList extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(UL_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(UL_TAG));
+        }
+    }
+
+    private static class OrderedList extends TAG {
+
+        String type;
+
+        OrderedList(String type) {
+            this.type = type;
+        }
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(OL_TAG);
+            if(type != null) {
+                builder.append(" type=\"");
+                builder.append(type);
+                builder.append("\" ");
+            }
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(OL_TAG));
+        }
+    }
+
+    private static class ListItem extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(LI_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(LI_TAG));
+        }
+
+    }
+
+    private static class HorizontalRule extends TAG {
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW + HR_TAG + CLOSE_ARROW + " " + OPEN_ARROW + CLOSE_SLASH + CLOSE_ARROW);
+        }
+    }
+
+    private static class Table extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(TABLE_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(TABLE_TAG));
+        }
+
+    }
+
+    private static class TableRow extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(TABLE_ROW);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(TABLE_ROW));
+        }
+
+    }
+
+    private static class TableHeading extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(TABLE_HEADING_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(TABLE_HEADING_TAG));
+        }
+    }
+
+    private static class TableData extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(TABLE_DATA);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(TABLE_DATA));
+        }
+
+    }
+
+    private static class Code extends TAG {
+
+        String code;
+        String language;
+
+        Code(String code, String language) {
+            this.code = code;
+            this.language = language;
+        }
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            if(instancesOf(code, "\n") > 10) {
+                builder.append(CODE_TAG);
+                builder.append(CLOSE_ARROW);
+                builder.append(String.format("[%1$s]%2$s<br>", language,
+                        code.replace(" ", "&nbsp;").replace("\n", "<br>")
+                ));
+                builder.append(close(CODE_TAG));
+            } else {
+                builder.append(INLINE_CODE);
+                builder.append(CLOSE_ARROW);
+                builder.append(code.replace("\n", "<br>").replace(" ", "&nbsp;"));
+                builder.append(close(INLINE_CODE));
+            }
+        }
+    }
+
+    private static class Image extends TAG {
+
+        String url;
+        String title;
+
+        Image(String url, String title) {
+            this.url = url;
+            this.title = title;
+        }
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(P_TAG);
+            builder.append(CLOSE_ARROW);
+            builder.append(OPEN_ARROW);
+            builder.append(IMAGE_TAG);
+            builder.append(" src=\"");
+            builder.append(url);
+            builder.append("\" title=\"");
+            builder.append(title);
+            builder.append("\" ");
+            builder.append(CLOSE_SLASH);
+            builder.append(CLOSE_ARROW);
+            builder.append(close(P_TAG));
+        }
+
+    }
+
+    private static class Bold extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(BOLD_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(BOLD_TAG));
+        }
+    }
+
+    private static class Italic extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(ITALIC_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(ITALIC_TAG));
+        }
+    }
+
+    private static class Strikethrough extends TAG {
+
+        @Override
+        void toHtmlString(StringBuilder builder) {
+            builder.append(OPEN_ARROW);
+            builder.append(STRIKETHROUGH_TAG);
+            builder.append(CLOSE_ARROW);
+            for(Tag t : children) builder.append(t.toString());
+            builder.append(close(STRIKETHROUGH_TAG));
+        }
     }
 
 
