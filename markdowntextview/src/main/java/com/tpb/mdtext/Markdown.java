@@ -189,13 +189,8 @@ public class Markdown {
             if(srcStart > "src=".length()) {
                 int srcEnd = s.indexOf("\"", srcStart);
                 if(srcEnd != -1) {
-                    final String url = s.substring(srcStart, srcEnd);
-                    int offset = -1;
-                    if(url.startsWith("./")) offset = 2;
-                    else if(url.startsWith("/")) offset = 1;
-                    else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
-                    s = s.substring(0, srcStart) + concatenateRawContentUrl(url, fullRepoName) +
-                            s.substring(srcEnd);
+                    s = s.substring(0, srcStart) + concatenateRawContentUrl(
+                            s.substring(srcStart, srcEnd), fullRepoName) + s.substring(srcEnd);
 
                 }
             }
@@ -276,7 +271,6 @@ public class Markdown {
             }
             pp = p;
             p = chars[i];
-
         }
         return builder.toString();
     }
@@ -337,7 +331,7 @@ public class Markdown {
         for(int i = ++pos; i < cs.length; i++) {
             if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
                 numBuilder.append(cs[i]);
-            } else if(i > pos && (cs[i] == ' ' || cs[i] == '\n' || i == cs.length - 1)) {
+            } else if(i > pos && (cs[i] == ' ' || isLineEnding(cs, i))) {
                 if(i == cs.length - 1) {
                     if(cs[i] >= '0' && cs[i] <= '9') {
                         numBuilder.append(cs[i]);
@@ -422,5 +416,13 @@ public class Markdown {
         builder.append(cs[pos]);
         return pos;
     }
+
+    private static boolean isLineEnding(char[] cs, int i) {
+        //Character is breaking, and (next character isn't or we are at end of string)
+        return i == cs.length - 1 || (cs[i] == '\n' || cs[i] == '\r') && (i == cs.length - 1 ||
+                (i + 1 < cs.length && (cs[i + 1] != '\n' && cs[i + 1] != '\r'))
+        );
+    }
+
 
 }

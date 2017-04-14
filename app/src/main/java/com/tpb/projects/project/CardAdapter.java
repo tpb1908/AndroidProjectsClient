@@ -241,8 +241,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                 view.setVisibility(View.INVISIBLE);
                 return true;
             });
-            holder.mCardView
-                    .setOnDragListener(new CardDragListener(mParent.getContext(), mNavListener));
+            holder.mCardView.setOnDragListener(
+                    new CardDragListener(mParent.getContext(), mNavListener)
+            );
         } else {
             holder.mMenuButton.setVisibility(View.GONE);
         }
@@ -277,7 +278,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                         loadCount++;
                         if(loadCount < 5) {
                             mParent.loadIssue(this, card.getIssueId());
-                        } //TODO make view tap to try again
+                        }
                     }
                 }
             }, card.getIssueId());
@@ -374,6 +375,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(this));
+            mText.setOnClickListener(v -> cardClick(this));
             mText.setParseHandler(mParseHandler);
         }
 
