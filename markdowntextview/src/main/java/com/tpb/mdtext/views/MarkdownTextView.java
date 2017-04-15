@@ -128,7 +128,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     }
 
     public void setNestedScrollHandler(NestedScrollHandler handler) {
-        setMovementMethod(new LocalLinkMovementMethod(getContext(), handler));
+        setMovementMethod(new LocalLinkMovementMethod(handler));
     }
 
     /**
@@ -224,17 +224,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
     private void checkMovementMethod() {
         if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
-            setMovementMethod(new LocalLinkMovementMethod(getContext(), new NestedScrollHandler() {
-                @Override
-                public void onScrollLocked() {
-
-                }
-
-                @Override
-                public void onScrollUnlocked() {
-
-                }
-            }));
+            setMovementMethod(new LocalLinkMovementMethod(null));
         }
     }
 

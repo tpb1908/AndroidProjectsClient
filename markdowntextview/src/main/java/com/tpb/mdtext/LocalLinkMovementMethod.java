@@ -16,17 +16,13 @@
 
 package com.tpb.mdtext;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v4.view.GestureDetectorCompat;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.method.Touch;
 import android.text.style.ClickableSpan;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -38,24 +34,16 @@ import com.tpb.mdtext.views.spans.InlineCodeSpan;
 /**
  * Copied from http://stackoverflow.com/questions/8558732
  */
-public class LocalLinkMovementMethod extends LinkMovementMethod implements GestureDetector.OnGestureListener {
-    private GestureDetectorCompat mGestureDetector;
+public class LocalLinkMovementMethod extends LinkMovementMethod {
     private NestedScrollHandler mScrollHandler;
-    private InlineCodeSpan mLastCodeSpanHit;
-    private TextView mParent;
 
-    public LocalLinkMovementMethod(Context context, @Nullable NestedScrollHandler nestedScrollHandler) {
-        mGestureDetector = new GestureDetectorCompat(context, this);
+    public LocalLinkMovementMethod(@Nullable NestedScrollHandler nestedScrollHandler) {
         mScrollHandler = nestedScrollHandler;
     }
 
     @Override
-    public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
-        Log.i("Code", "Touch event");
-        mGestureDetector.onTouchEvent(event);
-        mParent = widget;
+    public boolean onTouchEvent(final TextView widget, final Spannable buffer, MotionEvent event) {
         final int action = event.getAction();
-
         int x = (int) event.getX();
         int y = (int) event.getY();
 
@@ -76,13 +64,20 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
             if(mScrollHandler != null) {
                 final InlineCodeSpan[] code = buffer.getSpans(off, off, InlineCodeSpan.class);
                 if(code.length > 0 && action == MotionEvent.ACTION_DOWN) {
-                    mLastCodeSpanHit = code[0];
+                    code[0].onTouchEvent(x > layout.getWidth() /2);
+
+                    widget.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Selection.removeSelection(buffer);
+                        }
+                    });
                     mScrollHandler.onScrollLocked();
                 } else {
-                    mLastCodeSpanHit = null;
                     mScrollHandler.onScrollUnlocked();
-                }
 
+                }
+                return true;
             }
 
             if(clickable.length != 0) {
@@ -109,36 +104,4 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
         }
     }
 
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.i("Code", "OnScroll " + distanceX + ", " + distanceY);
-        if(mLastCodeSpanHit != null) mLastCodeSpanHit.onTouchEvent(mParent, distanceX);
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        Log.i("Code", "OnFling " + velocityX + ", " + velocityY );
-        return false;
-    }
 }

@@ -104,7 +104,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
     }
 
     public void setNestedScrollHandler(NestedScrollHandler handler) {
-        setMovementMethod(new LocalLinkMovementMethod(getContext(), handler));
+        setMovementMethod(new LocalLinkMovementMethod(handler));
     }
 
     public void setDefaultHandlers(Context context) {
@@ -195,7 +195,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
 
     private void checkMovementMethod() {
         if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
-            setMovementMethod(new LocalLinkMovementMethod(getContext(), null));
+            setMovementMethod(new LocalLinkMovementMethod(null));
         }
     }
 

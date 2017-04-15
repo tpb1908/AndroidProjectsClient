@@ -10,8 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
-import android.util.Log;
-import android.widget.TextView;
 
 import static android.R.attr.padding;
 
@@ -65,15 +63,12 @@ public class InlineCodeSpan extends ReplacementSpan {
         final int leading = paint.getFontMetricsInt().leading;
         mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
         mDrawable.draw(canvas);
-        Log.i("Code", "Drawing");
         start = Math.max(Math.min(start + offset, end), start);
         canvas.drawText(text, start, end, x + mPadding, y, paint);
     }
 
-    public void onTouchEvent(TextView parent, float distanceX) {
-        Log.i("Code", "Touch event ");
-        offset += Math.signum(distanceX);
-        parent.postInvalidate();
+    public void onTouchEvent(boolean direction) {
+        offset += direction ? 1 : -1;
     }
 
 
