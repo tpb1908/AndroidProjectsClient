@@ -9,6 +9,7 @@ import android.text.TextPaint;
 import android.text.style.URLSpan;
 import android.view.View;
 
+import com.tpb.mdtext.URLPattern;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 
 /**
@@ -40,7 +41,10 @@ public class CleanURLSpan extends URLSpan {
 
     private static String ensureValidUrl(@Nullable String url) {
         if(url == null) return null;
-        if(!url.startsWith("https://") && !url.startsWith("http://")) {
+
+        if(URLPattern.AUTOLINK_EMAIL_ADDRESS.matcher(url).matches()) {
+            return "mailto:" + url;
+        } else if(!url.startsWith("https://") && !url.startsWith("http://")) {
             return "http://" + url;
         }
         return url;
