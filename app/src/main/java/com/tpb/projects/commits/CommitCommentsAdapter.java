@@ -21,6 +21,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.commits.fragments.CommitCommentsFragment;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.markdown.Formatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +179,11 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mCommit.getFullRepoName()));
+            if(comment.getReaction().hasReaction()) {
+                builder.append("\n");
+                builder.append(Formatter.reactions(comment.getReaction()));
+            }
+
             commentHolder.mText.setMarkdown(
                     Markdown.formatMD(builder.toString()),
                     new HttpImageGetter(commentHolder.mText, commentHolder.mText),

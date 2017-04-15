@@ -21,6 +21,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
+import com.tpb.projects.markdown.Formatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,6 +178,11 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
+            if(comment.getReaction().hasReaction()) {
+                builder.append("\n");
+                builder.append(Formatter.reactions(comment.getReaction()));
+            }
+
             commentHolder.mText.setMarkdown(
                     builder.toString(),
                     new HttpImageGetter(commentHolder.mText, commentHolder.mText),

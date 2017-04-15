@@ -13,17 +13,17 @@ import org.json.JSONObject;
 public class Reaction implements Parcelable {
 
     private static final String PLUS = "+1";
-    int plus;
+    public int plus;
     private static final String MINUS = "-1";
-    int minus;
+    public int minus;
     private static final String LAUGH = "laugh";
-    int laugh;
+    public int laugh;
     private static final String HOORAY = "hooray";
-    int hooray;
+    public int hooray;
     private static final String CONFUSED = "confused";
-    int confused;
+    public int confused;
     private static final String HEART = "heart";
-    int heart;
+    public int heart;
 
     public Reaction(JSONObject obj) {
         try {
@@ -36,6 +36,10 @@ public class Reaction implements Parcelable {
         } catch(JSONException jse) {
 
         }
+    }
+
+    public boolean hasReaction() {
+        return plus > 0 || minus > 0 || laugh > 0 || hooray > 0 || confused > 0 || heart > 0;
     }
 
     @Override
