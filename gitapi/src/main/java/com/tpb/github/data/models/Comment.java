@@ -18,6 +18,24 @@ import java.text.ParseException;
 public class Comment extends DataModel implements Parcelable {
     private static final String TAG = Comment.class.getSimpleName();
 
+    private int id;
+
+    private String url;
+
+    private static final String HTML_URL = "html_url";
+    private String htmlUrl;
+
+    private static final String BODY = "body";
+    private String body;
+
+    private static final String USER = "user";
+    private User user;
+
+    private long updatedAt;
+
+    private static final String REACTIONS = "reactions";
+    private Reaction reaction;
+
     public Comment() {
     }
 
@@ -34,25 +52,13 @@ public class Comment extends DataModel implements Parcelable {
             } catch(ParseException pe) {
                 Log.e(TAG, "parse: ", pe);
             }
+            if(obj.has(REACTIONS)) {
+                reaction = new Reaction(obj.getJSONObject(REACTIONS));
+            }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
         }
     }
-
-    private int id;
-
-    private String url;
-
-    private static final String HTML_URL = "html_url";
-    private String htmlUrl;
-
-    private static final String BODY = "body";
-    private String body;
-
-    private static final String USER = "user";
-    private User user;
-
-    private long updatedAt;
 
     public int getId() {
         return id;
@@ -87,6 +93,10 @@ public class Comment extends DataModel implements Parcelable {
         return updatedAt;
     }
 
+    public Reaction getReaction() {
+        return reaction;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Comment && ((Comment) obj).id == id;
@@ -101,6 +111,7 @@ public class Comment extends DataModel implements Parcelable {
                 ", body='" + body + '\'' +
                 ", user=" + user +
                 ", updatedAt=" + updatedAt +
+                ", reaction=" + reaction +
                 '}';
     }
 
@@ -117,16 +128,18 @@ public class Comment extends DataModel implements Parcelable {
         dest.writeString(this.body);
         dest.writeParcelable(this.user, flags);
         dest.writeLong(this.updatedAt);
+        dest.writeParcelable(this.reaction, flags);
         dest.writeLong(this.createdAt);
     }
 
-    private Comment(Parcel in) {
+    protected Comment(Parcel in) {
         this.id = in.readInt();
         this.url = in.readString();
         this.htmlUrl = in.readString();
         this.body = in.readString();
         this.user = in.readParcelable(User.class.getClassLoader());
         this.updatedAt = in.readLong();
+        this.reaction = in.readParcelable(Reaction.class.getClassLoader());
         this.createdAt = in.readLong();
     }
 

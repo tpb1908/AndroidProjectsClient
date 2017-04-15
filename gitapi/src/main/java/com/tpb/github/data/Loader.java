@@ -123,7 +123,7 @@ public class Loader extends APIHandler {
                 get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + "?sort=updated" + appendPage(
                         page))
                         .setTag(loader)
-                        .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                        .addHeaders(LICENSES_API_AUTH_HEADERS)
                         .build();
         if(loader == null) {
             req.prefetch();
@@ -154,7 +154,7 @@ public class Loader extends APIHandler {
     public Loader loadRepositories(@Nullable final ListLoader<Repository> loader, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + "?sort=updated" + appendPage(page))
-                        .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                        .addHeaders(LICENSES_API_AUTH_HEADERS)
                         .setTag(loader)
                         .build();
         if(loader == null) {
@@ -186,7 +186,7 @@ public class Loader extends APIHandler {
     public Loader loadStarredRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_STARRED + appendPage(page))
-                        .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                        .addHeaders(LICENSES_API_AUTH_HEADERS)
                         .setTag(loader)
                         .build();
         if(loader == null) {
@@ -217,7 +217,7 @@ public class Loader extends APIHandler {
 
     public Loader loadRepository(@Nullable final ItemLoader<Repository> loader, String repoFullName) {
         final ANRequest req = get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName)
-                .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                .addHeaders(LICENSES_API_AUTH_HEADERS)
                 .setTag(loader)
                 .build();
         if(loader == null) {
@@ -240,7 +240,7 @@ public class Loader extends APIHandler {
 
     public Loader loadPage(@NonNull final ItemLoader<Page> loader, String fullRepoName) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + fullRepoName + SEGMENT_PAGES)
-                .addHeaders(PAGES_API_API_AUTH_HEADERS)
+                .addHeaders(PAGES_API_AUTH_HEADERS)
                 .setTag(loader)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -467,7 +467,7 @@ public class Loader extends APIHandler {
 
     public Loader loadProject(@Nullable final ItemLoader<Project> loader, int id) {
         final ANRequest req = get(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .setTag(loader)
                 .build();
         if(loader == null) {
@@ -491,7 +491,7 @@ public class Loader extends APIHandler {
     public Loader loadProjects(@Nullable final ListLoader<Project> loader, String repoFullName) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
-                        .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                        .addHeaders(PROJECTS_API_AUTH_HEADERS)
                         .addQueryParameter("state", "all")
                         .setTag(loader)
                         .build();
@@ -534,7 +534,7 @@ public class Loader extends APIHandler {
     public Loader loadColumns(@Nullable final ListLoader<Column> loader, int projectId) {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
-                        .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                        .addHeaders(PROJECTS_API_AUTH_HEADERS)
                         .getResponseOnlyFromNetwork()
                         .setTag(loader)
                         .build();
@@ -567,7 +567,7 @@ public class Loader extends APIHandler {
     public Loader loadCards(@NonNull final ListLoader<Card> loader, int columnId, int page) {
         get(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS + appendPage(
                 page))
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
                 .setTag(loader)
                 .build()
@@ -596,7 +596,7 @@ public class Loader extends APIHandler {
 
     public Loader loadIssue(@NonNull final ItemLoader<Issue> loader, String repoFullName, int issueNumber, boolean highPriority) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber)
-                .addHeaders(API_AUTH_HEADERS)
+                .addHeaders(REACTIONS_API_PREVIEW_AUTH_HEADERS)
                 .setPriority(highPriority ? Priority.HIGH : Priority.MEDIUM)
                 .setTag(loader)
                 .build()
@@ -705,7 +705,7 @@ public class Loader extends APIHandler {
         final ANRequest req =
                 get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_ISSUES + "/" + issueNumber + SEGMENT_COMMENTS + appendPage(
                         page))
-                        .addHeaders(API_AUTH_HEADERS)
+                        .addHeaders(REACTIONS_API_PREVIEW_AUTH_HEADERS)
                         .setTag(loader)
                         .build();
         if(loader == null) {
@@ -1086,7 +1086,7 @@ public class Loader extends APIHandler {
 
     public Loader loadLicenseBody(@NonNull final ItemLoader<String> loader, @NonNull String path) {
         get(path)
-                .addHeaders(LICENSES_API_API_AUTH_HEADERS)
+                .addHeaders(LICENSES_API_AUTH_HEADERS)
                 .setTag(loader)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -1113,7 +1113,7 @@ public class Loader extends APIHandler {
 
     public Loader loadCommit(@NonNull final ItemLoader<Commit> loader, String repoFullName, String sha) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha)
-                .addHeaders(API_AUTH_HEADERS)
+                .addHeaders(REACTIONS_API_PREVIEW_AUTH_HEADERS)
                 .setTag(loader)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -1162,7 +1162,7 @@ public class Loader extends APIHandler {
     public Loader loadCommitComments(@NonNull final ListLoader<Comment> loader, String repoFullName, String sha, int page) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + "/" + sha + SEGMENT_COMMENTS + appendPage(
                 page))
-                .addHeaders(API_AUTH_HEADERS)
+                .addHeaders(REACTIONS_API_PREVIEW_AUTH_HEADERS)
                 .setTag(loader)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
