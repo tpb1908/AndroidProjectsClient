@@ -47,13 +47,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
+    <com.tpb.projects.common.LockableViewPager
         android:id="@+id/issue_content_viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </android.support.v4.view.ViewPager>
+    </com.tpb.projects.common.LockableViewPager>
 
     <com.tpb.projects.common.fab.FloatingActionButton
         android:id="@+id/issue_comment_fab"

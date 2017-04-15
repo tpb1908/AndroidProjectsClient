@@ -15,6 +15,7 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
@@ -216,6 +217,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             super(view);
             ButterKnife.bind(this, view);
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
+            mText.setNestedScrollHandler((NestedScrollHandler) mParent.getActivity());
             // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 

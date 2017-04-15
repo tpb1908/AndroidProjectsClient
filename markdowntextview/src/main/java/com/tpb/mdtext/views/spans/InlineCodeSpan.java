@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.widget.TextView;
 
 import static android.R.attr.padding;
 
@@ -25,6 +25,7 @@ public class InlineCodeSpan extends ReplacementSpan {
     private GradientDrawable mDrawable;
     private float mPadding;
     private int mWidth;
+    private int offset = 0;
 
     public InlineCodeSpan(float textSize) {
         mTextSize = textSize;
@@ -64,12 +65,15 @@ public class InlineCodeSpan extends ReplacementSpan {
         final int leading = paint.getFontMetricsInt().leading;
         mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
         mDrawable.draw(canvas);
-
+        Log.i("Code", "Drawing");
+        start = Math.max(Math.min(start + offset, end), start);
         canvas.drawText(text, start, end, x + mPadding, y, paint);
     }
 
-    public void onTouchEvent(MotionEvent event) {
-        Log.i(InlineCodeSpan.class.getSimpleName(), "Code event in span");
+    public void onTouchEvent(TextView parent, float distanceX) {
+        Log.i("Code", "Touch event ");
+        offset += Math.signum(distanceX);
+        parent.postInvalidate();
     }
 
 

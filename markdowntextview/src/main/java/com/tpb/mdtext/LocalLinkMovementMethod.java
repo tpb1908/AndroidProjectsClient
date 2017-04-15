@@ -42,6 +42,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
     private GestureDetectorCompat mGestureDetector;
     private NestedScrollHandler mScrollHandler;
     private InlineCodeSpan mLastCodeSpanHit;
+    private TextView mParent;
 
     public LocalLinkMovementMethod(Context context, @Nullable NestedScrollHandler nestedScrollHandler) {
         mGestureDetector = new GestureDetectorCompat(context, this);
@@ -50,7 +51,9 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
 
     @Override
     public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
+        Log.i("Code", "Touch event");
         mGestureDetector.onTouchEvent(event);
+        mParent = widget;
         final int action = event.getAction();
 
         int x = (int) event.getX();
@@ -76,8 +79,8 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
                     mLastCodeSpanHit = code[0];
                     mScrollHandler.onScrollLocked();
                 } else {
-                    mScrollHandler.onScrollUnlocked();
                     mLastCodeSpanHit = null;
+                    mScrollHandler.onScrollUnlocked();
                 }
 
             }
@@ -86,11 +89,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
                 if(action == MotionEvent.ACTION_UP) {
                     clickable[0].onClick(widget);
                 }
-                if(widget instanceof MarkdownTextView) {
-                    ((MarkdownTextView) widget).setSpanHit();
-                } else if(widget instanceof MarkdownEditText) {
-                    ((MarkdownEditText) widget).setSpanHit();
-                }
+                triggerSpanHit(widget);
                 return true;
             } else {
                 Selection.removeSelection(buffer);
@@ -99,9 +98,15 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
             }
         }
 
-
-
         return Touch.onTouchEvent(widget, buffer, event);
+    }
+
+    private void triggerSpanHit(TextView widget) {
+        if(widget instanceof MarkdownTextView) {
+            ((MarkdownTextView) widget).setSpanHit();
+        } else if(widget instanceof MarkdownEditText) {
+            ((MarkdownEditText) widget).setSpanHit();
+        }
     }
 
     @Override
@@ -122,7 +127,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         Log.i("Code", "OnScroll " + distanceX + ", " + distanceY);
-        if(mLastCodeSpanHit != null) mLastCodeSpanHit.onTouchEvent(e2);
+        if(mLastCodeSpanHit != null) mLastCodeSpanHit.onTouchEvent(mParent, distanceX);
         return false;
     }
 
@@ -133,7 +138,7 @@ public class LocalLinkMovementMethod extends LinkMovementMethod implements Gestu
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        Log.i("Code", "OnScroll " + velocityX + ", " + velocityY );
+        Log.i("Code", "OnFling " + velocityX + ", " + velocityY );
         return false;
     }
 }

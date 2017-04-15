@@ -48,7 +48,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:animateLayoutChanges="true">
 
-        <android.support.v4.view.ViewPager
+        <com.tpb.projects.common.LockableViewPager
             android:id="@+id/project_column_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
