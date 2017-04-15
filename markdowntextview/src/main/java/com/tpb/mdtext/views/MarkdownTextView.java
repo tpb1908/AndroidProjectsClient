@@ -46,6 +46,7 @@ import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
+import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.spans.CleanURLSpan;
@@ -126,6 +127,10 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         setTableClickHandler(new TableDialog(context));
     }
 
+    public void setNestedScrollHandler(NestedScrollHandler handler) {
+        setMovementMethod(new LocalLinkMovementMethod(getContext(), handler));
+    }
+
     /**
      * @see MarkdownTextView#setMarkdown(int)
      */
@@ -200,8 +205,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
                     @Override
                     public void run() {
                         setText(buffer);
-                        // make links work
-                        setMovementMethod(LocalLinkMovementMethod.getInstance());
+                        checkMovementMethod();
                         if(mSpanCache != null && mSpanCache.get() != null)
                             mSpanCache.get().cache(buffer);
                         mSpanCache = null;
@@ -216,6 +220,22 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
             r.run();
         }
 
+    }
+
+    private void checkMovementMethod() {
+        if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
+            setMovementMethod(new LocalLinkMovementMethod(getContext(), new NestedScrollHandler() {
+                @Override
+                public void onScrollLocked() {
+
+                }
+
+                @Override
+                public void onScrollUnlocked() {
+
+                }
+            }));
+        }
     }
 
     @Override

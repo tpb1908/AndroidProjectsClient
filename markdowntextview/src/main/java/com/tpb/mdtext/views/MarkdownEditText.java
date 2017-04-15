@@ -31,6 +31,7 @@ import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
+import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.spans.CodeSpan;
@@ -100,6 +101,10 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
 
     public void setCodeClickHandler(CodeClickHandler handler) {
         mCodeHandler = handler;
+    }
+
+    public void setNestedScrollHandler(NestedScrollHandler handler) {
+        setMovementMethod(new LocalLinkMovementMethod(getContext(), handler));
     }
 
     public void setDefaultHandlers(Context context) {
@@ -175,8 +180,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
                     @Override
                     public void run() {
                         setText(buffer);
-                        // make links work
-                        setMovementMethod(LocalLinkMovementMethod.getInstance());
+                        checkMovementMethod();
                     }
                 });
             }
@@ -187,7 +191,12 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
         } else {
             r.run();
         }
+    }
 
+    private void checkMovementMethod() {
+        if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
+            setMovementMethod(new LocalLinkMovementMethod(getContext(), null));
+        }
     }
 
     @Override
