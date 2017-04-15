@@ -21,8 +21,10 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
+import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
+import com.tpb.projects.common.LockableViewPager;
 import com.tpb.projects.common.ShortcutDialog;
 import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
@@ -38,14 +40,14 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.ItemLoader<Issue> {
+public class IssueActivity extends CircularRevealActivity implements Loader.ItemLoader<Issue>, NestedScrollHandler {
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://raw.githubusercontent.com/tpb1908/AndroidProjectsClient/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
 
     @BindView(R.id.issue_appbar) AppBarLayout mAppbar;
     @BindView(R.id.issue_toolbar) Toolbar mToolbar;
-    @BindView(R.id.issue_content_viewpager) ViewPager mPager;
+    @BindView(R.id.issue_content_viewpager) LockableViewPager mPager;
     @BindView(R.id.issue_fragment_tabs) TabLayout mTabs;
     @BindView(R.id.issue_number) TextView mNumber;
     @BindView(R.id.issue_comment_fab) FloatingActionButton mFab;
@@ -129,6 +131,16 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         }
 
         mAdapter.setIssue();
+    }
+
+    @Override
+    public void onScrollLocked() {
+        mPager.onScrollLocked();
+    }
+
+    @Override
+    public void onScrollUnlocked() {
+        mPager.onScrollUnlocked();
     }
 
     @Override

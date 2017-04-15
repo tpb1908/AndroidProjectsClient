@@ -24,15 +24,17 @@ public abstract class APIHandler {
     private static final String PROJECTS_PREVIEW_ACCEPT_HEADER = "application/vnd.github.inertia-preview+json";
     private static final String REPO_LICENSE_PREVIEW_ACCEPT_HEADER = "application/vnd.github.drax-preview+json";
     private static final String PAGES_PREVIEW_ACCEPT_HEADER = "application/vnd.github.mister-fantastic-preview+json";
+    private static final String REACTIONS_PREVIEW_ACCEPT_HEADER = "  application/vnd.github.squirrel-girl-preview";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
     private static final String AUTHORIZATION_TOKEN_FORMAT = "token %1$s";
     private static GitHubSession mSession;
 
     protected static final HashMap<String, String> API_AUTH_HEADERS = new HashMap<>();
-    static final HashMap<String, String> PROJECTS_API_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> PROJECTS_API_AUTH_HEADERS = new HashMap<>();
     static final HashMap<String, String> ORGANIZATIONS_API_AUTH_HEADERS = new HashMap<>();
-    static final HashMap<String, String> LICENSES_API_API_AUTH_HEADERS = new HashMap<>();
-    static final HashMap<String, String> PAGES_API_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> LICENSES_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> PAGES_API_AUTH_HEADERS = new HashMap<>();
+    static final HashMap<String, String> REACTIONS_API_PREVIEW_AUTH_HEADERS = new HashMap<>();
 
     protected static final String SEGMENT_USER = "/user";
     static final String SEGMENT_USERS = "/users";
@@ -76,20 +78,25 @@ public abstract class APIHandler {
         );
         ORGANIZATIONS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, ORGANIZATIONS_PREVIEW_ACCEPT_HEADER);
 
-        PROJECTS_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+        PROJECTS_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
                 String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        PROJECTS_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
+        PROJECTS_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PROJECTS_PREVIEW_ACCEPT_HEADER);
 
-        LICENSES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+        LICENSES_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
                 String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        LICENSES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REPO_LICENSE_PREVIEW_ACCEPT_HEADER);
+        LICENSES_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REPO_LICENSE_PREVIEW_ACCEPT_HEADER);
 
-        PAGES_API_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+        PAGES_API_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
                 String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
         );
-        PAGES_API_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PAGES_PREVIEW_ACCEPT_HEADER);
+        PAGES_API_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, PAGES_PREVIEW_ACCEPT_HEADER);
+
+        REACTIONS_API_PREVIEW_AUTH_HEADERS.put(AUTHORIZATION_HEADER_KEY,
+                String.format(AUTHORIZATION_TOKEN_FORMAT, accessToken)
+        );
+        REACTIONS_API_PREVIEW_AUTH_HEADERS.put(ACCEPT_HEADER_KEY, REACTIONS_PREVIEW_ACCEPT_HEADER);
     }
 
     private static final String CONNECTION_ERROR = "connectionError";

@@ -78,7 +78,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createProject: ", jse);
         }
         post(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_PROJECTS)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -104,7 +104,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "updateProjects: ", jse);
         }
         patch(GIT_BASE + SEGMENT_PROJECTS + "/" + id)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -123,7 +123,7 @@ public class Editor extends APIHandler {
 
     public Editor deleteProject(@NonNull final DeletionListener<Project> listener, final Project project) {
         delete(GIT_BASE + SEGMENT_PROJECTS + "/" + project.getId())
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -150,7 +150,7 @@ public class Editor extends APIHandler {
         } catch(JSONException ignored) {
         }
         patch(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -174,7 +174,7 @@ public class Editor extends APIHandler {
         } catch(JSONException ignored) {
         }
         patch(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -201,7 +201,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "updateColumnName: ", jse);
         }
         patch(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -226,7 +226,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "addColumn: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + "/" + projectId + SEGMENT_COLUMNS)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -255,7 +255,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "moveColumn: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_MOVES)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -274,7 +274,7 @@ public class Editor extends APIHandler {
 
     public Editor deleteColumn(@NonNull final DeletionListener<Integer> listener, final int columnId) {
         delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -302,7 +302,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createCard: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -328,7 +328,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "createCard: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + "/" + columnId + SEGMENT_CARDS)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -353,7 +353,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "updateCard: ", jse);
         }
         patch(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -383,7 +383,7 @@ public class Editor extends APIHandler {
             Log.e(TAG, "moveCard: ", jse);
         }
         post(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + cardId + SEGMENT_MOVES)
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .addJSONObjectBody(obj)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -403,7 +403,7 @@ public class Editor extends APIHandler {
     public Editor deleteCard(@NonNull final DeletionListener<Card> listener, final Card card) {
         delete(GIT_BASE + SEGMENT_PROJECTS + SEGMENT_COLUMNS + SEGMENT_CARDS + "/" + card
                 .getId())
-                .addHeaders(PROJECTS_API_API_AUTH_HEADERS)
+                .addHeaders(PROJECTS_API_AUTH_HEADERS)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override

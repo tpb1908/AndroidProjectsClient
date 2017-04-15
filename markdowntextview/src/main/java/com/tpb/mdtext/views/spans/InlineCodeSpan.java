@@ -23,6 +23,7 @@ public class InlineCodeSpan extends ReplacementSpan {
     private GradientDrawable mDrawable;
     private float mPadding;
     private int mWidth;
+    private int offset = 0;
 
     public InlineCodeSpan(float textSize) {
         mTextSize = textSize;
@@ -62,8 +63,12 @@ public class InlineCodeSpan extends ReplacementSpan {
         final int leading = paint.getFontMetricsInt().leading;
         mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
         mDrawable.draw(canvas);
-
+        start = Math.max(Math.min(start + offset, end), start);
         canvas.drawText(text, start, end, x + mPadding, y, paint);
+    }
+
+    public void onTouchEvent(boolean direction) {
+        offset += direction ? 1 : -1;
     }
 
 

@@ -1,5 +1,6 @@
 package com.tpb.projects.markdown;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Label;
 import com.tpb.github.data.models.Milestone;
+import com.tpb.github.data.models.Reaction;
 import com.tpb.github.data.models.User;
 import com.tpb.mdtext.Markdown;
 import com.tpb.projects.R;
@@ -301,6 +303,14 @@ public class Formatter {
         }
     }
 
+    @SuppressLint("DefaultLocale")
+    public static String reactions(Reaction r) {
+        return String
+                .format("\uD83D\uDC4D %1$d \uD83D\uDC4E %2$d \uD83D\uDE02 %3$d \uD83C\uDF89 %4$d \uD83D\uDE15 %5$d \u2764 %6$d",
+                        r.plus, r.minus, r.laugh, r.hooray, r.confused, r.heart
+                );
+    }
+
     public static String bold(String s) {
         return "<b>" + Markdown.escape(s) + "</b>";
     }
@@ -392,7 +402,7 @@ public class Formatter {
                     R.plurals.text_user_repositories,
                     user.getRepos(),
                     user.getRepos()
-                    ));
+            ));
             infoList.addView(tv, params);
         }
         if(user.getGists() > 0) {
@@ -401,7 +411,7 @@ public class Formatter {
                     R.plurals.text_user_gists,
                     user.getGists(),
                     user.getGists()
-                    ));
+            ));
             infoList.addView(tv, params);
         }
         if(user.getBio() != null) {

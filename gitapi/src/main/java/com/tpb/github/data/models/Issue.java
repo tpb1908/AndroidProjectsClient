@@ -68,6 +68,9 @@ public class Issue extends DataModel implements Parcelable {
     private static final String MILESTONE = "milestone";
     private Milestone milestone;
 
+    private static final String REACTIONS = "reactions";
+    private Reaction reaction;
+
     public Issue(JSONObject obj) {
         try {
             id = obj.getInt(ID);
@@ -117,6 +120,9 @@ public class Issue extends DataModel implements Parcelable {
             }
             if(obj.has(MILESTONE) && !obj.getString(MILESTONE).equals(JSON_NULL)) {
                 milestone = new Milestone(obj.getJSONObject(MILESTONE));
+            }
+            if(obj.has(REACTIONS)) {
+                reaction = new Reaction(obj.getJSONObject(REACTIONS));
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -188,6 +194,10 @@ public class Issue extends DataModel implements Parcelable {
         return milestone;
     }
 
+    public Reaction getReaction() {
+        return reaction;
+    }
+
     @Nullable
     public Label[] getLabels() {
         return labels;
@@ -226,6 +236,7 @@ public class Issue extends DataModel implements Parcelable {
                 ", repoFullName='" + repoFullName + '\'' +
                 ", isLocked=" + isLocked +
                 ", milestone=" + milestone +
+                ", reaction=" + reaction +
                 '}';
     }
 
@@ -252,6 +263,7 @@ public class Issue extends DataModel implements Parcelable {
         dest.writeString(this.repoFullName);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.milestone, flags);
+        dest.writeParcelable(this.reaction, flags);
         dest.writeLong(this.createdAt);
     }
 
@@ -273,6 +285,7 @@ public class Issue extends DataModel implements Parcelable {
         this.repoFullName = in.readString();
         this.isLocked = in.readByte() != 0;
         this.milestone = in.readParcelable(Milestone.class.getClassLoader());
+        this.reaction = in.readParcelable(Reaction.class.getClassLoader());
         this.createdAt = in.readLong();
     }
 

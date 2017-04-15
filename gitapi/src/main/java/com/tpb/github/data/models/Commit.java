@@ -55,6 +55,9 @@ public class Commit extends DataModel implements Parcelable {
     private static final String FILES = "files";
     private DiffFile[] files;
 
+    private static final String REACTIONS = "reactions";
+    private Reaction reaction;
+
     public Commit(JSONObject obj) {
         try {
             url = obj.getString(URL);
@@ -101,6 +104,10 @@ public class Commit extends DataModel implements Parcelable {
                 for(int i = 0; i < fs.length(); i++) {
                     files[i] = new DiffFile(fs.getJSONObject(i));
                 }
+            }
+
+            if(obj.has(REACTIONS)) {
+                reaction = new Reaction(obj.getJSONObject(REACTIONS));
             }
 
         } catch(JSONException jse) {
@@ -177,6 +184,10 @@ public class Commit extends DataModel implements Parcelable {
         return url.substring(repoStart, url.indexOf('/', url.indexOf('/', repoStart) + 1));
     }
 
+    public Reaction getReaction() {
+        return reaction;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o) return true;
@@ -188,7 +199,6 @@ public class Commit extends DataModel implements Parcelable {
         if(!sha.equals(commit.sha)) return false;
         if(message != null ? !message.equals(commit.message) : commit.message != null) return false;
         if(!authorName.equals(commit.authorName)) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
         return Arrays.equals(files, commit.files);
 
     }
@@ -221,6 +231,7 @@ public class Commit extends DataModel implements Parcelable {
                 ", deletions=" + deletions +
                 ", parents=" + Arrays.toString(parents) +
                 ", files=" + Arrays.toString(files) +
+                ", reaction=" + reaction +
                 '}';
     }
 
@@ -246,6 +257,7 @@ public class Commit extends DataModel implements Parcelable {
         dest.writeInt(this.deletions);
         dest.writeStringArray(this.parents);
         dest.writeTypedArray(this.files, flags);
+        dest.writeParcelable(this.reaction, flags);
         dest.writeLong(this.createdAt);
     }
 
@@ -265,6 +277,7 @@ public class Commit extends DataModel implements Parcelable {
         this.deletions = in.readInt();
         this.parents = in.createStringArray();
         this.files = in.createTypedArray(DiffFile.CREATOR);
+        this.reaction = in.readParcelable(Reaction.class.getClassLoader());
         this.createdAt = in.readLong();
     }
 

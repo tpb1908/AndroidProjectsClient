@@ -15,12 +15,14 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
+import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.issues.fragments.IssueCommentsFragment;
+import com.tpb.projects.markdown.Formatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,6 +179,11 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
+            if(comment.getReaction().hasReaction()) {
+                builder.append("\n");
+                builder.append(Formatter.reactions(comment.getReaction()));
+            }
+
             commentHolder.mText.setMarkdown(
                     builder.toString(),
                     new HttpImageGetter(commentHolder.mText, commentHolder.mText),
@@ -210,6 +217,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             super(view);
             ButterKnife.bind(this, view);
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
+            mText.setNestedScrollHandler((NestedScrollHandler) mParent.getActivity());
             // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
