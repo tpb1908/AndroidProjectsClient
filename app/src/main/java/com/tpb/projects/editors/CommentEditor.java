@@ -25,7 +25,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class CommentEditor extends EditorActivity {
         if(launchIntent.hasExtra(getString(R.string.parcel_issue))) {
             mIssue = launchIntent.getParcelableExtra(getString(R.string.parcel_issue));
         }
-        mEditor.addTextChangedListener(new DumbTextChangeWatcher() {
+        mEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 mHasBeenEdited = mHasBeenEdited || mEditor.isEditing();

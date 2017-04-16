@@ -8,7 +8,7 @@ import android.text.TextWatcher;
  * Simplified TextWatcher which updates onTextChanged
  */
 
-public abstract class DumbTextChangeWatcher implements TextWatcher {
+public abstract class SimpleTextChangeWatcher implements TextWatcher {
 
     @Override
     public final void beforeTextChanged(CharSequence s, int start, int count, int after) {

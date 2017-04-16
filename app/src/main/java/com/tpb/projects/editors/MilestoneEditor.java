@@ -29,7 +29,7 @@ import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
@@ -176,13 +176,13 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
                 }
         );
 
-        mTitleEditor.addTextChangedListener(new DumbTextChangeWatcher() {
+        mTitleEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 mHasBeenEdited = mHasBeenEdited || mDescriptionEditor.isEditing();
             }
         });
-        mDescriptionEditor.addTextChangedListener(new DumbTextChangeWatcher() {
+        mDescriptionEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 mHasBeenEdited = true;

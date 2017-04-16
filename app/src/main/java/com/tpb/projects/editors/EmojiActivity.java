@@ -13,12 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tpb.mdtext.TextUtils;
+import com.tpb.mdtext.emoji.Emoji;
+import com.tpb.mdtext.emoji.EmojiLoader;
 import com.tpb.projects.R;
 import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,7 @@ public class EmojiActivity extends BaseActivity {
         mRecycler.setLayoutManager(new GridLayoutManager(this, 3));
         final EmojiAdapter adapter = new EmojiAdapter(mCommonEmojis);
         mRecycler.setAdapter(adapter);
-        mSearch.addTextChangedListener(new DumbTextChangeWatcher() {
+        mSearch.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 adapter.filter(mSearch.getText().toString().toLowerCase());
@@ -67,11 +67,11 @@ public class EmojiActivity extends BaseActivity {
         private ArrayList<Emoji> mFilteredEmojis = new ArrayList<>();
 
         EmojiAdapter(SharedPreferences prefs) {
-            mEmojis.addAll(EmojiManager.getAll());
+            mEmojis.addAll(EmojiLoader.getAllEmoji());
             if(prefs.getString("common", null) != null) {
                 final String[] common = prefs.getString("common", "").split(",");
                 for(String s : common) {
-                    final Emoji e = EmojiManager.getForAlias(s);
+                    final Emoji e = EmojiLoader.getEmojiForAlias(s);
                     if(e != null) mEmojis.add(0, e);
                 }
             }

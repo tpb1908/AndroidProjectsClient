@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.BaseActivity;
 import com.tpb.projects.util.SettingsActivity;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class CharacterActivity extends BaseActivity {
         mRecycler.setLayoutManager(new GridLayoutManager(this, 3));
         final CharacterAdapter adapter = new CharacterAdapter();
         mRecycler.setAdapter(adapter);
-        mSearch.addTextChangedListener(new DumbTextChangeWatcher() {
+        mSearch.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 adapter.filter(mSearch.getText().toString().toUpperCase());

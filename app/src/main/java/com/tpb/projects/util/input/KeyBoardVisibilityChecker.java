@@ -26,9 +26,9 @@ public class KeyBoardVisibilityChecker {
 
             // r.bottom is the position above soft keypad or device button.
             // if keypad is shown, the r.bottom is smaller than that before.
-            final int keypadHeight = screenHeight - r.bottom;
+            final int kbHeight = screenHeight - r.bottom;
 
-            if(keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+            if(kbHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                 mIsKeyboardOpen = true;
                 if(listener != null) listener.keyboardShown();
             } else {

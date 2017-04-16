@@ -35,7 +35,7 @@ import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
 
 import java.io.IOException;
@@ -129,7 +129,7 @@ public class IssueEditor extends EditorActivity {
             }
         }
 
-        final DumbTextChangeWatcher editWatcher = new DumbTextChangeWatcher() {
+        final SimpleTextChangeWatcher editWatcher = new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
 
@@ -200,8 +200,9 @@ public class IssueEditor extends EditorActivity {
                         } else {
                             mBodyEdit.restoreText();
                             mBodyEdit.enableEditing();
-                            if(!mKeyBoardChecker.isKeyboardOpen())
+                            if(!mKeyBoardChecker.isKeyboardOpen()) {
                                 mInfoLayout.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 }

@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
 
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
+import com.tpb.mdtext.emoji.Emoji;
+import com.tpb.mdtext.emoji.EmojiLoader;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import static android.webkit.URLUtil.isValidUrl;
 
 /**
  * Created by theo on 24/02/17.
@@ -199,19 +197,6 @@ public class Markdown {
         return s;
     }
 
-    private static String concatenateRawContentUrl(String url, String fullRepoName) {
-        int offset = -1;
-        if(url.startsWith("./")) offset = 2;
-        else if(url.startsWith("/")) offset = 1;
-        else if(!url.startsWith("http://") && !url.startsWith("https://")) offset = 0;
-        if(offset != -1) {
-            return "https://raw.githubusercontent.com/" + fullRepoName + "/master/" + url
-                    .substring(offset);
-
-        }
-        return url;
-    }
-
     public static String parseMD(@NonNull String s) {
         return renderer.render(parser.parse(s));
     }
@@ -230,11 +215,11 @@ public class Markdown {
         char pp = ' ';
         final char[] chars = ("\n" + s).toCharArray();
         for(int i = 0; i < chars.length; i++) {
-            if(linkUsernames && chars[i] == '@' && (p == ' ' || p == '\n')) {
+            if(linkUsernames && chars[i] == '@' && isWhiteSpace(p)) {
                 //Max username length is 39 characters
                 //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, chars, i);
-            } else if(chars[i] == '#' && (p == ' ' || p == '\n') && fullRepoPath != null) {
+            } else if(chars[i] == '#' && isWhiteSpace(p) && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);
             } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
                 builder.setLength(builder.length() - 2);
@@ -245,9 +230,11 @@ public class Markdown {
             } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2610");
-            } else if(chars[i] == '(') {
+            } else if(chars[i] == '(' && fullRepoPath != null) {
                 builder.append("(");
                 i = parseImageLink(builder, chars, i, fullRepoPath);
+            } else if(chars[i] == ':') {
+                i = parseEmoji(builder, chars, i);
             } else if(pp == '`' && p == '`' && chars[i] == '`') {
                 //We jump over the code block
                 pp = ' ';
@@ -264,8 +251,6 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
-            } else if(chars[i] == ':') {
-                i = parseEmoji(builder, chars, i);
             } else {
                 builder.append(chars[i]);
             }
@@ -284,26 +269,23 @@ public class Markdown {
     private static int parseUsername(StringBuilder builder, char[] cs, int pos) {
         final StringBuilder nameBuilder = new StringBuilder();
         char p = ' ';
-        for(int i = ++pos; i < cs.length; i++) {
+        for(int i = pos + 1; i < cs.length; i++) {
             if(((cs[i] >= 'A' && cs[i] <= 'Z') ||
-                    (cs[i] >= '0' && cs[i] <= '9') ||
                     (cs[i] >= 'a' && cs[i] <= 'z') ||
+                    (cs[i] >= '0' && cs[i] <= '9') ||
                     (cs[i] == '-' && p != '-')) &&
-                    i - pos < 38 &&
+                    i - pos <= 39 &&
                     i != cs.length - 1) {
                 nameBuilder.append(cs[i]);
                 p = cs[i];
                 //nameBuilder.length() > 0 stop us linking a single @
-            } else if((cs[i] == ' ' || cs[i] == '\n' || cs[i] == '\r' || i == cs.length - 1) && nameBuilder
-                    .length() > 0) {
+            } else if((isWhiteSpace(cs[i]) || i == cs.length - 1) && i - pos > 1) {
                 if(i == cs.length - 1) {
                     nameBuilder.append(cs[i]); //Otherwise we would miss the last char of the name
                 }
                 builder.append("[@");
                 builder.append(nameBuilder.toString());
-                builder.append(']');
-                builder.append('(');
-                builder.append("https://github.com/");
+                builder.append("](https://github.com/");
                 builder.append(nameBuilder.toString());
                 builder.append(')');
                 if(i != cs.length - 1) {
@@ -311,13 +293,12 @@ public class Markdown {
                 }
                 return i;
             } else {
-                builder.append("@");
-                return --pos;
+                break;
             }
 
         }
         builder.append("@");
-        return --pos;
+        return pos;
     }
 
     /**
@@ -328,59 +309,59 @@ public class Markdown {
      */
     private static int parseIssue(StringBuilder builder, char[] cs, int pos, String fullRepoPath) {
         final StringBuilder numBuilder = new StringBuilder();
-        for(int i = ++pos; i < cs.length; i++) {
+        for(int i = pos + 1; i < cs.length; i++) {
             if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
                 numBuilder.append(cs[i]);
-            } else if(i > pos && (cs[i] == ' ' || isLineEnding(cs, i))) {
+            } else if((isWhiteSpace(cs[i]) || isLineEnding(cs, i)) && i > pos + 1) {
                 if(i == cs.length - 1) {
                     if(cs[i] >= '0' && cs[i] <= '9') {
                         numBuilder.append(cs[i]);
-                    } else if(numBuilder.length() == 0) {
-                        builder.append("#");
-                        return --pos;
+                    } else {
+                        break;
                     }
                 }
                 builder.append("[#");
                 builder.append(numBuilder.toString());
-                builder.append("]");
-                builder.append("(");
-                builder.append("https://github.com/");
+                builder.append("](https://github.com/");
                 builder.append(fullRepoPath);
                 builder.append("/issues/");
                 builder.append(numBuilder.toString());
                 builder.append(")");
                 if(i != cs.length - 1) {
-                    builder.append(cs[i]); // We still need to append the space or newline
+                    builder.append(cs[i]); // We still need to append the whitespace
                 }
                 return i;
             } else {
-                builder.append("#");
-                return --pos;
+                break;
             }
         }
         builder.append("#");
-        return --pos;
+        return pos;
     }
 
-    /*
-    This function fixes positioning of text after images
-    The TextView fucks up line spacing if there is text on the same line
-    as an image, so if we find an image url we add a newline
-     */
-    private static int parseImageLink(StringBuilder builder, char[] cs, int pos, @Nullable String repoFullName) {
-        for(int i = ++pos; i < cs.length; i++) {
+    private static String concatenateRawContentUrl(String url, String fullRepoName) {
+        if(url.startsWith("http://") ||url.startsWith("https://")) return url;
+        int offset = 0;
+        if(url.startsWith("./")) offset = 2;
+        else if(url.startsWith("/")) offset = 1;
+        return "https://raw.githubusercontent.com/" + fullRepoName + "/master/" + url
+                    .substring(offset);
+    }
+
+    private static int parseImageLink(StringBuilder builder, char[] cs, int pos, String fullRepoPath) {
+        for(int i = pos + 1; i < cs.length; i++) {
             if(cs[i] == ')') {
-                final String link = new String(Arrays.copyOfRange(cs, pos, i));
+                final String link = new String(Arrays.copyOfRange(cs, pos + 1, i));
                 final String extension = link.substring(link.lastIndexOf('.') + 1);
-                if("png".equals(extension) ||
-                        "jpg".equals(extension) ||
-                        "gif".equals(extension) ||
-                        "bmp".equals(extension) ||
-                        "webp".equals(extension)) {
-                    if(isValidUrl(link) || repoFullName == null) {
+                if("png".equalsIgnoreCase(extension) ||
+                        "jpg".equalsIgnoreCase(extension) ||
+                        "gif".equalsIgnoreCase(extension) ||
+                        "bmp".equalsIgnoreCase(extension) ||
+                        "webp".equalsIgnoreCase(extension)) {
+                    if(TextUtils.isValidURL(link)) {
                         builder.append(link);
                     } else {
-                        builder.append(concatenateRawContentUrl(link, repoFullName));
+                        builder.append(concatenateRawContentUrl(link, fullRepoPath));
                     }
                     builder.append(") <br><br>");
                 } else {
@@ -388,10 +369,12 @@ public class Markdown {
                     builder.append(")");
                 }
                 return i;
+            } else if(isWhiteSpace(cs[i])) {
+                break;
             }
         }
 
-        return --pos;
+        return pos;
     }
 
     private static int parseEmoji(StringBuilder builder, char[] cs, int pos) {
@@ -405,7 +388,7 @@ public class Markdown {
                     cs[i] == '|') {
                 emojiBuilder.append(cs[i]);
             } else if(cs[i] == ':') {
-                final Emoji eww = EmojiManager.getForAlias(emojiBuilder.toString());
+                final Emoji eww = EmojiLoader.getEmojiForAlias(emojiBuilder.toString());
                 if(eww == null) break;
                 builder.append(eww.getUnicode());
                 return i;
@@ -418,10 +401,12 @@ public class Markdown {
     }
 
     private static boolean isLineEnding(char[] cs, int i) {
-        //Character is breaking, and (next character isn't or we are at end of string)
-        return i == cs.length - 1 || (cs[i] == '\n' || cs[i] == '\r') && (i == cs.length - 1 ||
-                (i + 1 < cs.length && (cs[i + 1] != '\n' && cs[i + 1] != '\r'))
-        );
+        return i == cs.length - 1 || cs[i] == '\n' || cs[i] == '\r';
+    }
+
+    private static boolean isWhiteSpace(char c) {
+        //Space tab, newline, line tabulation, carriage return, form feed
+        return c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\r' || c == '\u000C';
     }
 
 

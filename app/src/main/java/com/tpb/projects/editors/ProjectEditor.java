@@ -21,7 +21,7 @@ import com.tpb.projects.R;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.input.DumbTextChangeWatcher;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 
 import java.io.IOException;
 
@@ -103,13 +103,13 @@ public class ProjectEditor extends EditorActivity {
         content.setVisibility(View.VISIBLE);
 
 
-        mNameEditor.addTextChangedListener(new DumbTextChangeWatcher() {
+        mNameEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 mHasBeenEdited = mHasBeenEdited || mDescriptionEditor.isEditing();
             }
         });
-        mDescriptionEditor.addTextChangedListener(new DumbTextChangeWatcher() {
+        mDescriptionEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
                 mHasBeenEdited = true;

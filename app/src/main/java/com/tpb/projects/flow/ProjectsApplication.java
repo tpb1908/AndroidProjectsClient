@@ -5,6 +5,7 @@ import android.app.Application;
 import com.androidnetworking.AndroidNetworking;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.leakcanary.LeakCanary;
+import com.tpb.mdtext.emoji.EmojiLoader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.util.Logger;
 
@@ -29,6 +30,7 @@ public class ProjectsApplication extends Application {
         } else {
             AndroidNetworking.initialize(this);
         }
+        EmojiLoader.loadEmojis(getAssets());
         mAnalytics = FirebaseAnalytics.getInstance(this);
 
     }
