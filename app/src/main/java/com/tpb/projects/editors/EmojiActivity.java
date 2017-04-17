@@ -56,7 +56,7 @@ public class EmojiActivity extends BaseActivity {
         mSearch.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
-                adapter.filter(mSearch.getText().toString().toLowerCase());
+                adapter.filter(mSearch.getText().toString().toLowerCase().replace(" ", "_"));
             }
         });
     }

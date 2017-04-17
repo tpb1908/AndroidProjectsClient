@@ -52,11 +52,8 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
     private void init() {
         setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                    loadUrl(previewText);
-                } else {
-                    evaluateJavascript(previewText, null);
-                }
+                evaluateJavascript(previewText, null);
+
             }
         });
         addJavascriptInterface(this, "TouchIntercept");
@@ -67,9 +64,8 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
         }
 
         getSettings().setJavaScriptEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            getSettings().setAllowUniversalAccessFromFileURLs(true);
-        }
+        getSettings().setAllowUniversalAccessFromFileURLs(true);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
@@ -91,20 +87,11 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
     }
 
     public void setMarkdown(String mdText) {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            previewText = String
-                    .format("javascript:preview('%s')", escape(mdText));
-        } else {
-            previewText = String.format("preview('%s')", escape(mdText));
-        }
+        previewText = String.format("preview('%s')", escape(mdText));
     }
 
     private String escape(String mdText) {
-        String escText = mdText.replace("\n", "\\\\n");
-        escText = escText.replace("'", "\\\'");
-        //in some cases the string may have "\r" and our view will show nothing,so replace it
-        escText = escText.replace("\r", "");
-        return escText;
+        return mdText.replace("\n", "\\\\n").replace("'", "\\\'").replace("\r", "");
     }
 
     /* options */
@@ -128,7 +115,7 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
 
         boolean rv = false;
 
-        MotionEvent event = MotionEvent.obtain(ev);
+        final MotionEvent event = MotionEvent.obtain(ev);
         final int action = MotionEventCompat.getActionMasked(event);
         if(action == MotionEvent.ACTION_DOWN) {
             mNestedOffsetY = 0;
@@ -138,7 +125,6 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
         switch(action) {
             case MotionEvent.ACTION_MOVE:
                 int deltaY = mLastY - eventY;
-                // NestedPreScroll
                 if(dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset)) {
                     deltaY -= mScrollConsumed[1];
                     mLastY = eventY - mScrollOffset[1];
@@ -147,7 +133,6 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
                 }
                 rv = super.onTouchEvent(event);
 
-                // NestedScroll
                 if(dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY, mScrollOffset)) {
                     event.offsetLocation(0, mScrollOffset[1]);
                     mNestedOffsetY += mScrollOffset[1];
@@ -157,13 +142,11 @@ public final class MarkdownWebView extends WebView implements NestedScrollingChi
             case MotionEvent.ACTION_DOWN:
                 rv = super.onTouchEvent(event);
                 mLastY = eventY;
-                // start NestedScroll
                 startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 rv = super.onTouchEvent(event);
-                // end NestedScroll
                 stopNestedScroll();
                 break;
         }

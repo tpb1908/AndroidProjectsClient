@@ -19,8 +19,8 @@ function preview(md_html) {
         if(!codes[i].innerHTML.includes("license")) {
             hljs.highlightBlock(codes[i]);
         }
-                codes[i].addEventListener("touchstart", touchStart, false);
-                codes[i].addEventListener("touchend", touchEnd, false)
+        codes[i].addEventListener("touchstart", touchStart, false);
+        codes[i].addEventListener("touchend", touchEnd, false)
     }
 
     var pres = document.getElementsByTagName('pre');
@@ -33,5 +33,4 @@ function preview(md_html) {
         tables[i].addEventListener("touchstart", touchStart, false);
         tables[i].addEventListener("touchend", touchEnd, false)
     }
-
 }

@@ -14,7 +14,7 @@ public class Emoji {
     private final List<String> tags;
     private final String unicode;
 
-    protected Emoji(String unicode, String description, List<String> aliases, List<String> tags) {
+    Emoji(String unicode, String description, List<String> aliases, List<String> tags) {
         this.unicode = unicode;
         this.description = description;
         this.aliases = Collections.unmodifiableList(aliases);

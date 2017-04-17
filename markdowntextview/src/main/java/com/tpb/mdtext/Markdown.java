@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
  */
 
 public class Markdown {
-    private static final String TAG = Markdown.class.getSimpleName();
 
     private Markdown() {
     }
@@ -92,7 +91,7 @@ public class Markdown {
             if(node instanceof FencedCodeBlock) {
                 final FencedCodeBlock block = (FencedCodeBlock) node;
                 // Greater than 8 lines of code
-                if(instancesOf(block.getLiteral(), "\n") > 10) {
+                if(TextUtils.instancesOf(block.getLiteral(), "\n") > 10) {
                     html.line();
                     html.tag("code");
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(),
@@ -143,19 +142,6 @@ public class Markdown {
                 html.line();
             }
         }
-
-        private static int instancesOf(@NonNull String s1, @NonNull String s2) {
-            int last = 0;
-            int count = 0;
-            while(last != -1) {
-                last = s1.indexOf(s2, last);
-                if(last != -1) {
-                    count++;
-                    last += s2.length();
-                }
-            }
-            return count;
-        }
     }
 
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
@@ -180,7 +166,7 @@ public class Markdown {
         return TextUtils.replace(s, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
-    public static String fixRelativeLinks(@NonNull String s, String fullRepoName) {
+    public static String fixRelativeImageSrcs(@NonNull String s, @NonNull String fullRepoName) {
         int next = s.indexOf("<img");
         while(next != -1) {
             int srcStart = s.indexOf("src=\"", next) + "src=\"".length();
@@ -384,8 +370,7 @@ public class Markdown {
             if((cs[i] >= 'A' && cs[i] <= 'Z') ||
                     (cs[i] >= '0' && cs[i] <= '9') ||
                     (cs[i] >= 'a' && cs[i] <= 'z') ||
-                    cs[i] == '_' ||
-                    cs[i] == '|') {
+                    cs[i] == '_') {
                 emojiBuilder.append(cs[i]);
             } else if(cs[i] == ':') {
                 final Emoji eww = EmojiLoader.getEmojiForAlias(emojiBuilder.toString());
@@ -396,7 +381,7 @@ public class Markdown {
                 break;
             }
         }
-        builder.append(cs[pos]);
+        builder.append(":");
         return pos;
     }
 

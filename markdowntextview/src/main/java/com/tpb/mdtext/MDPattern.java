@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
  * Created by theo on 05/03/17.
  */
 
-public class URLPattern {
+public class MDPattern {
 
     /**
      * Regular expression to match all IANA top-level domains.
@@ -302,10 +302,10 @@ public class URLPattern {
     );
 
 
-    public static final Pattern SPACED_URL_PATTERN = Pattern
+    public static final Pattern SPACED_MATCH_PATTERN = Pattern
             .compile(AUTOLINK_WEB_URL + "|" + AUTOLINK_EMAIL_ADDRESS);
 
-    private URLPattern() {
+    private MDPattern() {
     }
 
 }

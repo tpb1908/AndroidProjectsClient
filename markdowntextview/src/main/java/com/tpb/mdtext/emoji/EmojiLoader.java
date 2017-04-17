@@ -2,7 +2,6 @@ package com.tpb.mdtext.emoji;
 
 import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,9 +31,9 @@ public class EmojiLoader {
     public static void loadEmojis(AssetManager assets) {
         if(EMOJIS.size() > 0) return;
         try {
-            JSONArray emojisJSON = new JSONArray(inputStreamToString(assets.open("json/emojis.json")));
-            for(int i = 0; i < emojisJSON.length(); i++) {
-                final Emoji emoji = buildEmojiFromJSON(emojisJSON.getJSONObject(i));
+            final JSONArray JSON = new JSONArray(inputStreamToString(assets.open("json/emojis.json")));
+            for(int i = 0; i < JSON.length(); i++) {
+                final Emoji emoji = buildEmojiFromJSON(JSON.getJSONObject(i));
                 if(emoji != null) {
                     EMOJIS.add(emoji);
                     for(String tag : emoji.getTags()) {
@@ -46,12 +45,7 @@ public class EmojiLoader {
                     }
                 }
             }
-            Log.i("Emoji", "Emoji loaded succesfully");
-        } catch(IOException ioe) {
-            Log.e("IOException", "Failed to load emojis", ioe);
-        } catch(JSONException jse) {
-            Log.e("JSONException", "Failed to load emojis", jse);
-        }
+        } catch(Exception ignored) {}
     }
 
     private static String inputStreamToString(InputStream is) throws IOException {

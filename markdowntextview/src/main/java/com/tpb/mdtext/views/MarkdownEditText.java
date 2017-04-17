@@ -24,7 +24,6 @@ import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.LocalLinkMovementMethod;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.TextUtils;
-import com.tpb.mdtext.URLPattern;
 import com.tpb.mdtext.dialogs.CodeDialog;
 import com.tpb.mdtext.dialogs.ImageDialog;
 import com.tpb.mdtext.dialogs.TableDialog;
@@ -170,7 +169,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
                 final SpannableString buffer = new SpannableString(text);
 
                 //Add links for emails and web-urls
-                TextUtils.addLinks(buffer, URLPattern.SPACED_URL_PATTERN);
+                TextUtils.addLinks(buffer);
 
                 if(mImageClickHandler != null) {
                     enableImageClicks(buffer);
