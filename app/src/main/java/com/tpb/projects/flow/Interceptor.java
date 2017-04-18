@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -18,7 +17,6 @@ import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.repo.content.FileActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +26,19 @@ import java.util.List;
  */
 
 public class Interceptor extends Activity {
-    private static final String TAG = Interceptor.class.getSimpleName();
-    private Intent failIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        createFailIntent();
 
         if(getIntent().getAction().equals(Intent.ACTION_VIEW) &&
                 getIntent().getData() != null &&
                 "github.com".equals(getIntent().getData().getHost())) {
             final List<String> segments = getIntent().getData().getPathSegments();
-            Logger.i(TAG, "onCreate: Path: " + segments.toString());
-            if(segments.size() == 1) {
+            if(segments.size() == 0) {
+               fail();
+            } else if(segments.size() == 1) {
                 final Intent u = new Intent(Interceptor.this, UserActivity.class);
                 u.putExtra(getString(R.string.intent_username), segments.get(0));
                 startActivity(u);
@@ -128,7 +124,6 @@ public class Interceptor extends Activity {
                             }
                             i.putExtra(getString(R.string.intent_blob_path), path.toString());
                         } else if("milestone".equals(segments.get(2))) {
-                            //TODO Deal with number and edit suffix
                             i.setClass(Interceptor.this, MilestoneActivity.class);
                             i.putExtra(getString(R.string.intent_milestone_number),
                                     safelyExtractInt(segments.get(3))
@@ -163,44 +158,15 @@ public class Interceptor extends Activity {
     }
 
     private void fail() {
-        Logger.e(TAG, "fail: ");
         try {
-            if(failIntent != null) {
-                startActivity(failIntent);
-                finish();
-            } else {
-                startActivity(onFail());
-                finish();
-            }
+            startActivity(generateFailIntentWithoutApp());
         } catch(Exception e) {
             e.printStackTrace();
+        } finally {
             finish();
         }
     }
 
-    private void createFailIntent() {
-        new AsyncTask<Void, Void, Intent>() {
-
-            @Override
-            protected Intent doInBackground(Void... params) {
-                return onFail();
-            }
-
-            @Override
-            protected void onPostExecute(Intent intent) {
-                super.onPostExecute(intent);
-                Interceptor.this.failIntent = intent;
-            }
-        }.execute();
-    }
-
-    private Intent onFail() {
-        if(failIntent == null && getIntent() != null) {
-            return generateFailIntentWithoutApp();
-        } else {
-            return failIntent;
-        }
-    }
 
     private Intent generateFailIntentWithoutApp() {
         try {
@@ -234,7 +200,7 @@ public class Interceptor extends Activity {
             }
         } catch(Exception ignored) {
         }
-        return failIntent;
+        return null;
     }
 
 }
