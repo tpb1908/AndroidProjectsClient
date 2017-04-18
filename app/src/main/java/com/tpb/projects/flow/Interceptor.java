@@ -10,7 +10,6 @@ import android.os.Parcelable;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.issues.IssueActivity;
-import com.tpb.projects.milestones.MilestoneActivity;
 import com.tpb.projects.milestones.MilestonesActivity;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
@@ -30,8 +29,6 @@ public class Interceptor extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         if(getIntent().getAction().equals(Intent.ACTION_VIEW) &&
                 getIntent().getData() != null &&
                 "github.com".equals(getIntent().getData().getHost())) {
@@ -46,7 +43,7 @@ public class Interceptor extends Activity {
                 finish();
             } else {
                 final Intent i = new Intent();
-                putRepo(i, segments);
+                i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
                 switch(segments.size()) {
                     case 2: //Repo
                         i.setClass(Interceptor.this, RepoActivity.class);
@@ -71,7 +68,7 @@ public class Interceptor extends Activity {
                             );
                         }
                         break;
-                    case 4: //Project
+                    case 4:
                         if("projects".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, ProjectActivity.class);
                             i.putExtra(getString(R.string.intent_project_number),
@@ -82,15 +79,12 @@ public class Interceptor extends Activity {
                             for(int j = path
                                     .indexOf('#', path.indexOf(segments.get(3))) + 6; j < path
                                     .length(); j++) {
-                                if(path.charAt(j) >= '0' && path.charAt(j) <= '9')
+                                if(path.charAt(j) >= '0' && path.charAt(j) <= '9') {
                                     id.append(path.charAt(j));
+                                }
                             }
-                            try {
-                                i.putExtra(getString(R.string.intent_card_id),
-                                        safelyExtractInt(id.toString())
-                                );
-                            } catch(Exception ignored) {
-                            }
+                            final int cardId = safelyExtractInt(id.toString());
+                            if(cardId != -1) i.putExtra(getString(R.string.intent_card_id), cardId);
                         } else if("issues".equals(segments.get(2))) {
                             i.setClass(Interceptor.this, IssueActivity.class);
                             i.putExtra(getString(R.string.intent_issue_number),
@@ -123,13 +117,6 @@ public class Interceptor extends Activity {
                                 path.append(segments.get(j));
                             }
                             i.putExtra(getString(R.string.intent_blob_path), path.toString());
-                        } else if("milestone".equals(segments.get(2))) {
-                            i.setClass(Interceptor.this, MilestoneActivity.class);
-                            i.putExtra(getString(R.string.intent_milestone_number),
-                                    safelyExtractInt(segments.get(3))
-                            );
-                        } else if("releases".equals(segments.get(2))) {
-                            i.setClass(Interceptor.this, RepoActivity.class);
                         }
                 }
                 if(i.getComponent() != null && i.getComponent().getClassName() != null) {
@@ -153,9 +140,6 @@ public class Interceptor extends Activity {
         }
     }
 
-    private void putRepo(Intent i, List<String> segments) {
-        i.putExtra(getString(R.string.intent_repo), segments.get(0) + "/" + segments.get(1));
-    }
 
     private void fail() {
         try {
