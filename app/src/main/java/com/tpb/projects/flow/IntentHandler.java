@@ -50,8 +50,8 @@ public class IntentHandler {
         iv.setOnClickListener(v -> openUser(activity, iv, login));
     }
 
-    public static void addOnClickHandler(Activity activity, View view, CardView parent, Issue issue) {
-        view.setOnClickListener(v -> openIssue(activity, parent, issue));
+    public static void addOnClickHandler(Activity activity, View view,Issue issue) {
+        view.setOnClickListener(v -> openIssue(activity, view, issue));
     }
 
     public static void addOnClickHandler(Activity activity, MarkdownTextView tv, NetworkImageView iv, @Nullable CardView cv, Issue issue) {
@@ -129,23 +129,14 @@ public class IntentHandler {
     public static void openIssue(Activity activity, View view, Issue issue) {
         final Intent i = new Intent(activity, IssueActivity.class);
         i.putExtra(activity.getString(R.string.parcel_issue), issue);
-        if(view instanceof MarkdownTextView) {
-            UI.setClickPositionForIntent(activity, i,
-                    ((MarkdownTextView) view).getLastClickPosition()
-            );
-            activity.startActivity(i);
-        } else if(view instanceof CardView) {
-            i.putExtra(activity.getString(R.string.transition_card), "");
-            activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity,
-                    Pair.create(view, activity.getString(R.string.transition_card)),
-                    UI.getSafeNavigationBarTransitionPair(activity)
-                    ).toBundle()
-            );
-        } else {
-            UI.setViewPositionForIntent(i, view);
-            activity.startActivity(i);
-        }
+        i.putExtra(activity.getString(R.string.transition_card), "");
+        activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity,
+                Pair.create(view, activity.getString(R.string.transition_card)),
+                UI.getSafeNavigationBarTransitionPair(activity)
+                ).toBundle()
+        );
+
 
     }
 

@@ -20,11 +20,11 @@ public class CleanURLSpan extends URLSpan {
     private LinkClickHandler mHandler;
 
     public CleanURLSpan(String url) {
-        super(ensureValidUrl(url));
+        super(ensureValidURL(url));
     }
 
     public CleanURLSpan(String url, LinkClickHandler handler) {
-        super(ensureValidUrl(url));
+        super(ensureValidURL(url));
         mHandler = handler;
     }
 
@@ -39,7 +39,7 @@ public class CleanURLSpan extends URLSpan {
         }
     }
 
-    private static String ensureValidUrl(@Nullable String url) {
+    private static String ensureValidURL(@Nullable String url) {
         if(url == null) return null;
 
         if(MDPattern.AUTOLINK_EMAIL_ADDRESS.matcher(url).matches()) {

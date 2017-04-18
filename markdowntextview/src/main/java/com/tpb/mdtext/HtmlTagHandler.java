@@ -284,11 +284,11 @@ public class HtmlTagHandler implements Html.TagHandler {
     }
 
     private void handleBlockQuoteTag(Editable output) {
-        Object obj = getLast(output, BlockQuote.class);
+        final Object obj = getLast(output, BlockQuote.class);
         final int start = output.getSpanStart(obj);
         final int end = output.length();
         output.removeSpan(obj);
-        output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        output.setSpan(new QuoteSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private void handleInlineCodeTag(Editable output) {
@@ -308,9 +308,7 @@ public class HtmlTagHandler implements Html.TagHandler {
             final Table obj = getLast(output, Table.class);
             final int start = output.getSpanStart(obj);
             output.removeSpan(obj); //Remove the old span
-            output.insert(start, "\n");
-            output.replace(start + 1, output.length(), "  "); //We need a non-empty span
-
+            output.insert(start, "\n \n");
             final TableSpan table = new TableSpan(mTableHtmlBuilder.toString(), mTableHandler);
             output.setSpan(table, start, start + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             output.setSpan(new WrappingClickableSpan(table), start, start + 3,

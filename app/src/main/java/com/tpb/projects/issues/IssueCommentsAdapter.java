@@ -15,7 +15,6 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.models.Comment;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
-import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
@@ -154,19 +153,15 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
     @Override
     public void onBindViewHolder(CommentHolder holder, int position) {
-        bindComment(holder);
-    }
-
-    private void bindComment(CommentHolder commentHolder) {
-        final int pos = commentHolder.getAdapterPosition();
+        final int pos = holder.getAdapterPosition();
         final Comment comment = mComments.get(pos).first;
         if(mComments.get(pos).second == null) {
-            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
+            holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             final StringBuilder builder = new StringBuilder();
             builder.append(String.format(
-                    commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                    holder.itemView.getResources().getString(R.string.text_comment_by),
                     String.format(
-                            commentHolder.itemView.getResources().getString(R.string.text_href),
+                            holder.itemView.getResources().getString(R.string.text_href),
                             comment.getUser().getHtmlUrl(),
                             comment.getUser().getLogin()
                     ),
@@ -174,27 +169,27 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             ));
             if(comment.getUpdatedAt() != comment.getCreatedAt()) {
                 builder.append(" • ");
-                builder.append(commentHolder.itemView.getResources()
+                builder.append(holder.itemView.getResources()
                                                      .getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
             builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
-            if(comment.getReaction().hasReaction()) {
+            if(comment.hasReaction()) {
                 builder.append("\n");
                 builder.append(Formatter.reactions(comment.getReaction()));
             }
 
-            commentHolder.mText.setMarkdown(
+            holder.mText.setMarkdown(
                     builder.toString(),
-                    new HttpImageGetter(commentHolder.mText, commentHolder.mText),
+                    new HttpImageGetter(holder.mText, holder.mText),
                     text -> mComments.set(pos, new Pair<>(comment, text))
             );
         } else {
-            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
-            commentHolder.mText.setText(mComments.get(pos).second);
+            holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
+            holder.mText.setText(mComments.get(pos).second);
         }
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mText);
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar,
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar,
                 comment.getUser().getLogin()
         );
     }
@@ -217,7 +212,6 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             super(view);
             ButterKnife.bind(this, view);
             mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-            mText.setNestedScrollHandler((NestedScrollHandler) mParent.getActivity());
             // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 

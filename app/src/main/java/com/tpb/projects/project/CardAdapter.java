@@ -321,12 +321,9 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText, holder.mUserAvatar,
                 holder.mCardView, card.getIssue()
         );
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mIssueIcon, holder.mCardView,
-                card.getIssue()
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mIssueIcon, card.getIssue()
         );
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, holder.mCardView,
-                card.getIssue()
-        );
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, card.getIssue());
         holder.mTitleLayout.setVisibility(View.VISIBLE);
 
         holder.mTitle.setMarkdown(Formatter.bold(card.getIssue().getTitle()));

@@ -204,6 +204,9 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         } else {
             holder.mContent.setText(mIssues.get(pos).second);
         }
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mContent, issue);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, issue);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.itemView, issue);
     }
 
     @Override
@@ -238,9 +241,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
             ButterKnife.bind(this, view);
             mMenuButton.setOnClickListener(
                     (v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
-            mTitle.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
-            mContent.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
-            view.setOnClickListener((v) -> openIssue(IssueHolder.this, getAdapterPosition()));
         }
     }
 }

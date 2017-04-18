@@ -138,7 +138,6 @@ public class Markdown {
                 html.line();
                 html.tag("br");
                 html.raw("<img src=\"" + ((Image) node).getDestination() + "\">");
-                //context.render(node);
                 html.line();
             }
         }

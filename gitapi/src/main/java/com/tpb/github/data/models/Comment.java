@@ -93,6 +93,10 @@ public class Comment extends DataModel implements Parcelable {
         return updatedAt;
     }
 
+    public boolean hasReaction() {
+        return reaction != null && reaction.hasReaction();
+    }
+
     public Reaction getReaction() {
         return reaction;
     }

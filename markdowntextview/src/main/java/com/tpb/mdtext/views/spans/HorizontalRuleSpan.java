@@ -29,7 +29,6 @@ public class HorizontalRuleSpan extends ReplacementSpan {
         final int mid = (top + bottom) / 2;
         final int quarter = (bottom - top) / 4;
         paint.setColor(Color.GRAY);
-
         mRectF.left = x;
         mRectF.top = mid - quarter;
         mRectF.right = x + canvas.getWidth();

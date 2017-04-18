@@ -16,7 +16,7 @@ public class AnimatingRecyclerView extends RecyclerView {
     private ItemDecoration mItemDecoration;
 
     public AnimatingRecyclerView(Context context) {
-        this(context, null);
+        super(context);
         setItemAnimator(new FadeInDownAnimator());
     }
 
