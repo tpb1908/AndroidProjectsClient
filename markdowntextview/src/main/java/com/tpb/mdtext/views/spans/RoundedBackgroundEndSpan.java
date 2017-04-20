@@ -15,7 +15,7 @@ public class RoundedBackgroundEndSpan extends ReplacementSpan {
     private int mCharacterWidth = 0;
     private final int mBgColor;
     private final boolean mIsEndSpan;
-    private RectF mRectF;
+    private float mTextSize;
 
     public RoundedBackgroundEndSpan(int bgColor, boolean isEndSpan) {
         mBgColor = bgColor;
@@ -25,19 +25,20 @@ public class RoundedBackgroundEndSpan extends ReplacementSpan {
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
         mCharacterWidth = (int) paint.measureText("tt");
+        mTextSize = paint.getTextSize();
         return mCharacterWidth;
     }
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-        mRectF = new RectF(x, top, x + mCharacterWidth, bottom);
+        RectF rect =  new RectF(x, top, x + mCharacterWidth, bottom);
         paint.setColor(mBgColor);
-        canvas.drawRoundRect(mRectF, (bottom - top), (bottom - top), paint);
+        canvas.drawRoundRect(rect, mTextSize / 6, mTextSize / 6, paint);
         if(mIsEndSpan) {
-            mRectF = new RectF(x, top, (x + x + mCharacterWidth) / 2, bottom);
+            rect = new RectF(x, top, (x + x + mCharacterWidth) / 2, bottom);
         } else {
-            mRectF = new RectF((x + x + mCharacterWidth) / 2, top, x + mCharacterWidth, bottom);
+            rect = new RectF((x + x + mCharacterWidth) / 2, top, x + mCharacterWidth, bottom);
         }
-        canvas.drawRect(mRectF, paint);
+        canvas.drawRect(rect, paint);
     }
 }

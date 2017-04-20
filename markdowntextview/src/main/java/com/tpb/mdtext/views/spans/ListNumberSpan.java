@@ -34,9 +34,9 @@ public class ListNumberSpan implements LeadingMarginSpan {
     public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline,
                                   int bottom, CharSequence text, int start, int end,
                                   boolean first, Layout l) {
+        //Check if we are at the correct depth to draw text rather than just spacing
         if(text instanceof Spanned) {
-            int spanStart = ((Spanned) text).getSpanStart(this);
-            if(spanStart == start) {
+            if(((Spanned) text).getSpanStart(this) == start) {
                 c.drawText(mNumber, x, baseline, p);
             }
         }
@@ -53,19 +53,20 @@ public class ListNumberSpan implements LeadingMarginSpan {
         int start = 0;
 
         public static ListType fromString(@NonNull String val) {
+            if(val.isEmpty()) return NUMBER;
             if(TextUtils.isInteger(val)) {
                 final ListType num = NUMBER;
                 num.start = Integer.parseInt(val) - 1;
                 return num;
-            } else if("i".equals(val)) {
-                return ROMAN;
-            } else if("I".equals(val)) {
-                return ROMAN_CAP;
-            } else if(val.length() > 0) {
-                if('a' == val.charAt(0)) return LETTER;
-                if('A' == val.charAt(0)) return LETTER_CAP;
+            } else {
+                switch(val.charAt(0)) {
+                    case 'a': return LETTER;
+                    case 'A': return LETTER_CAP;
+                    case 'i': return ROMAN;
+                    case 'I': return ROMAN_CAP;
+                    default: return NUMBER;
+                }
             }
-            return NUMBER;
         }
 
         public static String getFormattedNumber(int num, ListType type) {
@@ -85,13 +86,12 @@ public class ListNumberSpan implements LeadingMarginSpan {
 
         private static String getLetter(int num) {
             final StringBuilder builder = new StringBuilder();
-            while(num > 0) {
-                num--;
+            while(num-- > 0) { //1 = a, not 0 = a
                 final int rmdr = num % 26;
-                builder.append((char) (rmdr + 97));
+                builder.append((char) (rmdr + 'a'));
                 num = (num - rmdr) / 26;
             }
-            return builder.toString();
+            return builder.reverse().toString();
         }
 
         private static TreeMap<Integer, String> map = new TreeMap<>();

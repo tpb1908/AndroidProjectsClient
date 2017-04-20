@@ -122,7 +122,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         switch(tag.toUpperCase()) {
             case UNORDERED_LIST_TAG:
                 mLists.push(
-                        new Triple<>(
+                        Triple.create(
                                 tag,
                                 safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
                                         true
@@ -135,7 +135,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 final ListNumberSpan.ListType type = ListNumberSpan.ListType
                         .fromString(getAttribute("type", xmlReader, ""));
                 mLists.push(
-                        new Triple<>(
+                        Triple.create(
                                 tag,
                                 safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
                                         true
@@ -380,7 +380,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
         int numberMargin = mListIndent * (mLists.size() - 1);
         if(mLists.size() > 2) {
-            // Same as in ordered lists: counter the effect of nested Spans
+            // Counter effect of nested spans
             numberMargin -= (mLists.size() - 2) * mListIndent;
         }
         if(mLists.peek().second) {
@@ -419,10 +419,10 @@ public class HtmlTagHandler implements Html.TagHandler {
                 output.insert(end, " ");
                 output.insert(start, " ");
                 output.setSpan(new RoundedBackgroundEndSpan(color, false), start, start + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
                 );
                 output.setSpan(new RoundedBackgroundEndSpan(color, true), end, end + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                 );
                 output.setSpan(new BackgroundColorSpan(color), start + 1, end,
                         Spannable.SPAN_INCLUSIVE_INCLUSIVE
@@ -704,6 +704,10 @@ public class HtmlTagHandler implements Html.TagHandler {
             first = t;
             second = u;
             third = v;
+        }
+
+        static <T, U, V> Triple<T, U, V> create(T t, U u, V v) {
+            return new Triple<>(t, u, v);
         }
 
     }

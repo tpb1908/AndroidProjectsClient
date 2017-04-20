@@ -141,7 +141,7 @@ public class Card extends DataModel implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Card && ((Card) obj).id == id;
+        return obj instanceof Card && ((Card) obj).id == id && ((Card) obj).updatedAt == updatedAt;
     }
 
     @Override
