@@ -12,7 +12,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ReplacementSpan;
-import android.util.Log;
 
 import com.tpb.mdtext.handlers.TableClickHandler;
 
@@ -31,6 +30,7 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
     private static Bitmap mTableBM;
     private PorterDuffColorFilter mBMFilter;
     private String mHtml;
+    private int mBaseOffset = 7;
 
     public TableSpan(String html, TableClickHandler handler) {
         mHtml = html;
@@ -39,6 +39,7 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, @Nullable Paint.FontMetricsInt fm) {
+        mBaseOffset = (int) paint.measureText("c");
         return 0;
     }
 
@@ -47,15 +48,15 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
         paint.setTextSize(paint.getTextSize() - 1);
         final int textHeight = paint.getFontMetricsInt().descent - paint.getFontMetricsInt().ascent;
 
-        int offset = 7;
+        int offset = mBaseOffset;
         if(mTableBM != null) offset += mTableBM.getWidth();
 
         final int textStart = top + textHeight / 4;
 
-        canvas.drawText(mTableString, x + offset, textStart, paint);
+        canvas.drawText(mTableString, x + mBaseOffset + offset, textStart, paint);
 
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(4);
+        paint.setStrokeWidth(mBaseOffset / 4);
         canvas.drawRoundRect(new RectF(x, top + top - bottom, x + canvas.getWidth(), bottom), 7, 7,
                 paint
         );
@@ -64,7 +65,7 @@ public class TableSpan extends ReplacementSpan implements WrappingClickableSpan.
             if(mBMFilter == null)
                 mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
             paint.setColorFilter(mBMFilter);
-            canvas.drawBitmap(mTableBM, x + 7, textStart - textHeight, paint);
+            canvas.drawBitmap(mTableBM, x + mBaseOffset, textStart - textHeight, paint);
         }
     }
 

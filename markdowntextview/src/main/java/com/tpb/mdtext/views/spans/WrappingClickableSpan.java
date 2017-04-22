@@ -10,7 +10,7 @@ import android.view.View;
 
 public class WrappingClickableSpan extends ClickableSpan {
 
-    private WrappedClickableSpan mWrappedClickableSpan;
+    private final WrappedClickableSpan mWrappedClickableSpan;
 
     public WrappingClickableSpan(@NonNull WrappedClickableSpan child) {
         mWrappedClickableSpan = child;

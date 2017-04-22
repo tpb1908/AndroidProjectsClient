@@ -12,10 +12,9 @@ import android.text.style.ReplacementSpan;
 
 public class RoundedBackgroundEndSpan extends ReplacementSpan {
 
-    private int mCharacterWidth = 0;
+    private int mCharacterWidth;
     private final int mBgColor;
     private final boolean mIsEndSpan;
-    private float mTextSize;
 
     public RoundedBackgroundEndSpan(int bgColor, boolean isEndSpan) {
         mBgColor = bgColor;
@@ -24,8 +23,7 @@ public class RoundedBackgroundEndSpan extends ReplacementSpan {
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        mCharacterWidth = (int) paint.measureText("tt");
-        mTextSize = paint.getTextSize();
+        mCharacterWidth = (int) paint.measureText("t");
         return mCharacterWidth;
     }
 
@@ -33,7 +31,7 @@ public class RoundedBackgroundEndSpan extends ReplacementSpan {
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         RectF rect =  new RectF(x, top, x + mCharacterWidth, bottom);
         paint.setColor(mBgColor);
-        canvas.drawRoundRect(rect, mTextSize / 6, mTextSize / 6, paint);
+        canvas.drawRoundRect(rect, paint.getTextSize() / 6, paint.getTextSize() / 6, paint);
         if(mIsEndSpan) {
             rect = new RectF(x, top, (x + x + mCharacterWidth) / 2, bottom);
         } else {

@@ -35,7 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.tpb.mdtext.HtmlTagHandler;
-import com.tpb.mdtext.LocalLinkMovementMethod;
+import com.tpb.mdtext.ClickableMovementMethod;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.SpanCache;
 import com.tpb.mdtext.TextUtils;
@@ -45,7 +45,6 @@ import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
-import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.spans.CleanURLSpan;
@@ -126,10 +125,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         setTableClickHandler(new TableDialog(context));
     }
 
-    public void setNestedScrollHandler(NestedScrollHandler handler) {
-        setMovementMethod(new LocalLinkMovementMethod(handler));
-    }
-
     /**
      * @see MarkdownTextView#setMarkdown(int)
      */
@@ -182,7 +177,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
                 final Spanned text;
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     text = removeHtmlBottomPadding(
-                            Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                            Html.fromHtml(overridden, Html.FROM_HTML_MODE_COMPACT, imageGetter,
                                     htmlTagHandler
                             ));
                 } else {
@@ -222,8 +217,8 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     }
 
     private void checkMovementMethod() {
-        if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
-            setMovementMethod(new LocalLinkMovementMethod(null));
+        if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
+            setMovementMethod(new ClickableMovementMethod());
         }
     }
 
@@ -286,6 +281,8 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
             mLastClickPosition[0] = event.getRawX();
             mLastClickPosition[1] = event.getRawY();
             if(hasSelection()) clearFocus();
+        } else if(event.getAction() == MotionEvent.ACTION_UP) {
+            mSpanHit = false;
         }
         return super.onTouchEvent(event);
     }

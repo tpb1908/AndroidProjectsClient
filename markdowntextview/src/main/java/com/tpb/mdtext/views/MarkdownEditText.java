@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.tpb.mdtext.HtmlTagHandler;
-import com.tpb.mdtext.LocalLinkMovementMethod;
+import com.tpb.mdtext.ClickableMovementMethod;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.dialogs.CodeDialog;
@@ -30,7 +30,6 @@ import com.tpb.mdtext.dialogs.TableDialog;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
-import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.spans.CodeSpan;
@@ -100,10 +99,6 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
 
     public void setCodeClickHandler(CodeClickHandler handler) {
         mCodeHandler = handler;
-    }
-
-    public void setNestedScrollHandler(NestedScrollHandler handler) {
-        setMovementMethod(new LocalLinkMovementMethod(handler));
     }
 
     public void setDefaultHandlers(Context context) {
@@ -193,8 +188,8 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
     }
 
     private void checkMovementMethod() {
-        if(!(getMovementMethod() instanceof LocalLinkMovementMethod)) {
-            setMovementMethod(new LocalLinkMovementMethod(null));
+        if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
+            setMovementMethod(new ClickableMovementMethod());
         }
     }
 

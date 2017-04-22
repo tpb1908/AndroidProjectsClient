@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ReplacementSpan;
 
+import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.handlers.CodeClickHandler;
 
 import org.sufficientlysecure.htmltextview.R;
@@ -31,6 +32,7 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
     private static String mNoLanguageString = "Code";
     private static Bitmap mCodeBM;
     private PorterDuffColorFilter mBMFilter;
+    private int mBaseOffset = 5;
 
     public CodeSpan(String code, CodeClickHandler handler) {
         setCode(code);
@@ -41,7 +43,7 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
         final int ls = code.indexOf('[');
         final int le = code.indexOf(']');
         if(ls != -1 && le != -1 && le - ls > 0 && le < code.indexOf("\n")) {
-            mLanguage = code.substring(ls + 1, le);
+            mLanguage = TextUtils.capitaliseFirst(code.substring(ls + 1, le));
             mCode = code.substring(le + 1);
         } else {
             mCode = code;
@@ -50,6 +52,7 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, @Nullable Paint.FontMetricsInt fm) {
+        mBaseOffset = (int) paint.measureText("c");
         return 0;
     }
 
@@ -58,31 +61,29 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
         paint.setTextSize(paint.getTextSize() - 1);
         final int textHeight = paint.getFontMetricsInt().descent - paint.getFontMetricsInt().ascent;
 
-        int offset = 5;
+        int offset = mBaseOffset;
         if(mCodeBM != null) offset += mCodeBM.getWidth();
 
         final int textStart = top + textHeight / 4;
 
         if(mLanguage != null && !mLanguage.isEmpty()) {
-            mLanguage = mLanguage.substring(0, 1).toUpperCase() + mLanguage.substring(1);
-            canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + offset, textStart,
+            canvas.drawText(String.format(mLanguageFormatString, mLanguage), x + mBaseOffset + offset, textStart,
                     paint
             );
         } else {
-            canvas.drawText(mNoLanguageString, x + offset, textStart, paint);
+            canvas.drawText(mNoLanguageString, x + mBaseOffset + offset, textStart, paint);
         }
 
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(4);
+        paint.setStrokeWidth(mBaseOffset / 4);
         canvas.drawRoundRect(new RectF(x, top + top - bottom, x + canvas.getWidth(), bottom), 7, 7,
                 paint
         );
 
         if(mCodeBM != null) {
-            if(mBMFilter == null)
-                mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
+            if(mBMFilter == null) mBMFilter = new PorterDuffColorFilter(paint.getColor(), PorterDuff.Mode.SRC_IN);
             paint.setColorFilter(mBMFilter);
-            canvas.drawBitmap(mCodeBM, x, textStart - textHeight, paint);
+            canvas.drawBitmap(mCodeBM, x + mBaseOffset, textStart - textHeight, paint);
         }
     }
 

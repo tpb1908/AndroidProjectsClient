@@ -416,8 +416,8 @@ public class HtmlTagHandler implements Html.TagHandler {
 
             final int color = safelyParseColor(bgc.color);
             if(bgc.rounded) {
-                output.insert(end, " ");
-                output.insert(start, " ");
+                output.insert(end, "\u00A0");
+                output.insert(start, "\u00A0");
                 output.setSpan(new RoundedBackgroundEndSpan(color, false), start, start + 1,
                         Spanned.SPAN_INCLUSIVE_EXCLUSIVE
                 );

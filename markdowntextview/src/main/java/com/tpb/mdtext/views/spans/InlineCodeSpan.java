@@ -4,14 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
-
-import static android.R.attr.padding;
 
 /**
  * Created by theo on 22/03/17.
@@ -20,23 +17,17 @@ import static android.R.attr.padding;
 public class InlineCodeSpan extends ReplacementSpan {
     private final float mTextSize;
 
-    private GradientDrawable mDrawable;
     private float mPadding;
-    private int mWidth;
-    private int offset = 0;
+
 
     public InlineCodeSpan(float textSize) {
         mTextSize = textSize;
-        mDrawable = new GradientDrawable();
-        mDrawable.setColor(Color.GRAY);
-        mDrawable.setAlpha(50);
     }
 
     @Override
     public void updateDrawState(TextPaint tp) {
         tp.setTextSize(mTextSize);
         tp.setTypeface(Typeface.MONOSPACE);
-
     }
 
     @Override
@@ -46,8 +37,7 @@ public class InlineCodeSpan extends ReplacementSpan {
                        @IntRange(from = 0) int end,
                        @Nullable Paint.FontMetricsInt fm) {
         mPadding = paint.measureText("c");
-        mWidth = (int) (paint.measureText(text, start, end) + padding * 2);
-        return mWidth;
+        return  (int) (paint.measureText(text, start, end) + mPadding * 2);
     }
 
     @Override
@@ -60,15 +50,11 @@ public class InlineCodeSpan extends ReplacementSpan {
                      int y,
                      int bottom,
                      @NonNull Paint paint) {
-        final int leading = paint.getFontMetricsInt().leading;
-        mDrawable.setBounds((int) x, top - leading, (int) x + mWidth, bottom + leading);
-        mDrawable.draw(canvas);
-        start = Math.max(Math.min(start + offset, end), start);
         canvas.drawText(text, start, end, x + mPadding, y, paint);
-    }
-
-    public void onTouchEvent(boolean direction) {
-        offset += direction ? 1 : -1;
+        paint.setColor(Color.GRAY);
+        paint.setAlpha(50);
+        final int leading = paint.getFontMetricsInt().leading;
+        canvas.drawRect((int) x, top - leading, (int) x + canvas.getWidth(), bottom + leading, paint);
     }
 
 
