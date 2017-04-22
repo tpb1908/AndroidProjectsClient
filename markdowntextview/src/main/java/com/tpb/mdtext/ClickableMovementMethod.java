@@ -33,6 +33,14 @@ import com.tpb.mdtext.views.MarkdownTextView;
  */
 public class ClickableMovementMethod extends LinkMovementMethod {
 
+    private static ClickableMovementMethod instance;
+
+    private ClickableMovementMethod() {}
+
+    public static ClickableMovementMethod getInstance() {
+        if(instance == null) instance = new ClickableMovementMethod();
+        return instance;
+    }
 
     @Override
     public boolean onTouchEvent(final TextView widget, final Spannable buffer, MotionEvent event) {

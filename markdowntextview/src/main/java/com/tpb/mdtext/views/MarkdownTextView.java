@@ -34,8 +34,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.ClickableMovementMethod;
+import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.SpanCache;
 import com.tpb.mdtext.TextUtils;
@@ -218,7 +218,7 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
 
     private void checkMovementMethod() {
         if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
-            setMovementMethod(new ClickableMovementMethod());
+            setMovementMethod(ClickableMovementMethod.getInstance());
         }
     }
 

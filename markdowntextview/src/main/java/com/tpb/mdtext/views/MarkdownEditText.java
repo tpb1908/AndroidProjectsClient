@@ -189,7 +189,7 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
 
     private void checkMovementMethod() {
         if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
-            setMovementMethod(new ClickableMovementMethod());
+            setMovementMethod(ClickableMovementMethod.getInstance());
         }
     }
 
