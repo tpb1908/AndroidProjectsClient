@@ -50,20 +50,20 @@ public class FillingImageView extends AppCompatImageView {
             if(drawable == null) {
                 setMeasuredDimension(0, 0);
             } else {
-                float imageSideRatio = (float) drawable.getIntrinsicWidth() / (float) drawable
+                final float imageSideRatio = (float) drawable.getIntrinsicWidth() / (float) drawable
                         .getIntrinsicHeight(); //Image aspect ratio
-                float viewSideRatio = (float) MeasureSpec
+                final float viewSideRatio = (float) MeasureSpec
                         .getSize(widthMeasureSpec) / (float) MeasureSpec
                         .getSize(heightMeasureSpec); //Aspect ratio of parent
                 if(imageSideRatio >= viewSideRatio) {
                     // Image is wider than the display (ratio)
-                    int width = MeasureSpec.getSize(widthMeasureSpec);
-                    int height = (int) (width / imageSideRatio);
+                    final int width = MeasureSpec.getSize(widthMeasureSpec);
+                    final int height = (int) (width / imageSideRatio);
                     setMeasuredDimension(width, height);
                 } else {
                     // Image is taller than the display (ratio)
-                    int height = MeasureSpec.getSize(heightMeasureSpec);
-                    int width = (int) (height * imageSideRatio);
+                    final int height = MeasureSpec.getSize(heightMeasureSpec);
+                    final int width = (int) (height * imageSideRatio);
                     setMeasuredDimension(width, height);
                 }
             }

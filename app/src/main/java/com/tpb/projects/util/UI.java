@@ -28,6 +28,9 @@ import com.tpb.projects.common.CircularRevealActivity;
  */
 
 public class UI {
+
+    private UI() {}
+
     /**
      * Sets the expansion point for a {@link CircularRevealActivity} Intent
      * to the midpoint of a View

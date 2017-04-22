@@ -22,6 +22,8 @@ import java.util.List;
 
 public class Util {
 
+    private Util() {}
+
     public static String stringArrayForPrefs(List<String> values) {
         final StringBuilder builder = new StringBuilder();
         for(String s : values) {

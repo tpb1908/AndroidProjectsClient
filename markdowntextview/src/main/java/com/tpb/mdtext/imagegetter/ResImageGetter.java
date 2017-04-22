@@ -40,7 +40,7 @@ class ResImageGetter implements Html.ImageGetter {
         int id = context.getResources().getIdentifier(source, "drawable", context.getPackageName());
 
         if(id == 0) {
-            // the drawable resource wasn't found in our package, maybe it is a stock android drawable?
+            // the mDrawable resource wasn't found in our package, maybe it is a stock android mDrawable?
             id = context.getResources().getIdentifier(source, "drawable", "android");
         }
 

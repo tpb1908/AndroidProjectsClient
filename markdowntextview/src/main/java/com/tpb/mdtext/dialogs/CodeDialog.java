@@ -40,7 +40,7 @@ public class CodeDialog implements CodeClickHandler {
         final HighlightJsView wv = (HighlightJsView) view.findViewById(R.id.dialog_highlight_view);
         wv.setTheme(Theme.ANDROID_STUDIO);
 
-        if(language != null && !language.isEmpty()) wv.setHighlightLanguage(getLanguage(language));
+        if(language != null) wv.setHighlightLanguage(getLanguage(language));
         wv.setSource(code);
         final Dialog dialog = builder.create();
 

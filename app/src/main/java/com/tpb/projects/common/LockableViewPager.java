@@ -5,13 +5,11 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.tpb.mdtext.handlers.NestedScrollHandler;
-
 /**
  * Created by theo on 15/04/17.
  */
 
-public class LockableViewPager extends ViewPager implements NestedScrollHandler {
+public class LockableViewPager extends ViewPager {
 
     private boolean isPagingEnabled = true;
 
@@ -31,16 +29,6 @@ public class LockableViewPager extends ViewPager implements NestedScrollHandler 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         return this.isPagingEnabled && super.onInterceptTouchEvent(event);
-    }
-
-    @Override
-    public void onScrollLocked() {
-        setPagingEnabled(false);
-    }
-
-    @Override
-    public void onScrollUnlocked() {
-        setPagingEnabled(true);
     }
 
     public void setPagingEnabled(boolean b) {

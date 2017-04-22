@@ -57,15 +57,15 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class MarkdownTextView extends AppCompatTextView implements HttpImageGetter.DrawableCacheHandler, View.OnClickListener {
+public class MarkdownTextView extends AppCompatTextView implements HttpImageGetter.DrawableCatcher, View.OnClickListener {
 
     public static final String TAG = MarkdownTextView.class.getSimpleName();
 
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
-    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private CodeClickHandler mCodeHandler;
+    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private Handler mParseHandler;
 
     private boolean mSpanHit = false;

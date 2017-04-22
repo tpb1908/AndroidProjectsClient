@@ -44,7 +44,7 @@ import java.util.Scanner;
  * Created by theo on 27/02/17.
  */
 
-public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCacheHandler{
+public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCatcher {
 
     public static final String TAG = MarkdownEditText.class.getSimpleName();
 

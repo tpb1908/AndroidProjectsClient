@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 
 public class TextUtils {
 
+    private TextUtils() {}
+
     private static final Pattern REGEX_ESCAPE_CHARS =
             Pattern.compile("[\\<\\(\\[\\{\\\\\\^\\-\\=\\$\\!\\|\\]\\}\\)‌​\\?\\*\\+\\.\\>]");
 

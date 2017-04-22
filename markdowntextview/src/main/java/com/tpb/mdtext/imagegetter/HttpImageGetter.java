@@ -25,11 +25,8 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.text.Html.ImageGetter;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import com.tpb.mdtext.views.MarkdownTextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,144 +41,104 @@ public class HttpImageGetter implements ImageGetter {
 
     private static final HashMap<String, Pair<Drawable, Long>> cache = new HashMap<>();
 
-    private final TextView container;
-    private DrawableCacheHandler cacheHandler;
-    private URI baseUri;
-    private boolean matchParentWidth = true;
+    private final TextView mContainer;
+    private WeakReference<DrawableCatcher> mCacheHandler;
 
-    public HttpImageGetter(TextView container, @Nullable DrawableCacheHandler cacheHandler) {
-        this.container = container;
-        this.cacheHandler = cacheHandler;
+    public HttpImageGetter(TextView container, @Nullable DrawableCatcher cacheHandler) {
+        this.mContainer = container;
+        this.mCacheHandler = new WeakReference<>(cacheHandler);
     }
 
-    public HttpImageGetter(TextView container, String baseUrl, @Nullable DrawableCacheHandler cacheHandler) {
-        this.container = container;
-        this.cacheHandler = cacheHandler;
-        if(baseUrl != null) {
-            this.baseUri = URI.create(baseUrl);
-        }
-    }
-
-    public HttpImageGetter(MarkdownTextView textView, String baseUrl, boolean matchParentWidth) {
-        this.container = textView;
-        this.matchParentWidth = matchParentWidth;
-        if(baseUrl != null) {
-            this.baseUri = URI.create(baseUrl);
-        }
-    }
 
     public Drawable getDrawable(String source) {
-        final UrlDrawable urlDrawable = new UrlDrawable();
-
-        // get the actual source
-        new ImageGetterAsyncTask(urlDrawable, this, container, matchParentWidth).execute(source);
-
-        // return reference to URLDrawable which will asynchronously load the image specified in the src tag
-        return urlDrawable;
+        final URLDrawable ud = new URLDrawable();
+        new ImageGetterAsyncTask(ud, this, mContainer).execute(source);
+        return ud;
     }
 
-    /**
-     * Static inner {@link AsyncTask} that keeps a {@link WeakReference} to the {@link UrlDrawable}
-     * and {@link HttpImageGetter}.
-     * <p/>
-     * This way, if the AsyncTask has a longer life span than the UrlDrawable,
-     * we won't leak the UrlDrawable or the HtmlRemoteImageGetter.
-     */
     private static class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
-        private final WeakReference<UrlDrawable> drawableReference;
-        private final WeakReference<HttpImageGetter> imageGetterReference;
-        private final WeakReference<View> containerReference;
-        private final WeakReference<Resources> resources;
-        private String source;
-        private final boolean matchParentWidth;
-        private float scale;
+        private final WeakReference<URLDrawable> mDrawableReference;
+        private final WeakReference<HttpImageGetter> mGetterReference;
+        private final WeakReference<View> mContainerReference;
+        private final WeakReference<Resources> mResources;
+        private String mSource;
+        private float mScale;
 
-        ImageGetterAsyncTask(UrlDrawable d, HttpImageGetter imageGetter, View container, boolean matchParentWidth) {
-            this.drawableReference = new WeakReference<>(d);
-            this.imageGetterReference = new WeakReference<>(imageGetter);
-            this.containerReference = new WeakReference<>(container);
-            this.resources = new WeakReference<>(container.getResources());
-            this.matchParentWidth = matchParentWidth;
+        ImageGetterAsyncTask(URLDrawable d, HttpImageGetter imageGetter, View container) {
+            this.mDrawableReference = new WeakReference<>(d);
+            this.mGetterReference = new WeakReference<>(imageGetter);
+            this.mContainerReference = new WeakReference<>(container);
+            this.mResources = new WeakReference<>(container.getResources());
         }
 
         @Override
         protected Drawable doInBackground(String... params) {
-            source = params[0];
+            mSource = params[0];
             synchronized(cache) {
                 Map.Entry<String, Pair<Drawable, Long>> entry;
-                for(Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet()
-                                                                                .iterator(); it
-                            .hasNext(); ) {
+                final Iterator<Map.Entry<String, Pair<Drawable, Long>>> it = cache.entrySet().iterator();
+                for(; it.hasNext(); ) {
                     entry = it.next();
                     if(System.currentTimeMillis() > entry.getValue().second + 60000) {
                         it.remove();
                     }
                 }
 
-                if(cache.containsKey(source)) {
-                    if(System.currentTimeMillis() > cache.get(source).second + 30000) {
-                        // The drawable is still being accesses, so we update it
-                        fetchDrawable(resources.get(), source);
+                if(cache.containsKey(mSource)) {
+                    if(System.currentTimeMillis() > cache.get(mSource).second + 45000) {
+                        // The drawable is still being accessed, so we update it
+                        fetchDrawable(mResources.get(), mSource);
                     }
-                    return cache.get(source).first.getConstantState().newDrawable();
+                    return cache.get(mSource).first.getConstantState().newDrawable();
+                } else if(mResources.get() != null) {
+                    return fetchDrawable(mResources.get(), mSource);
                 }
             }
 
-            if(resources.get() != null) {
-                return fetchDrawable(resources.get(), source);
-            }
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Drawable result) {
-            if(result == null) {
-                Log.w(MarkdownTextView.TAG, "Drawable result is null! (source: " + source + ")");
-                return;
-            }
-            final UrlDrawable urlDrawable = drawableReference.get();
-            if(urlDrawable == null) { // We exist outside of the lifespan of the view
-                return;
-            }
+            final URLDrawable urlDrawable = mDrawableReference.get();
+            final HttpImageGetter imageGetter = mGetterReference.get();
+            // We exist outside of the lifespan of the view
+            if(result == null || urlDrawable == null || imageGetter == null) return;
+
+
             // Scale is set here as drawable may be cached and view may have changed
             setDrawableScale(result);
 
-            // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * scale),
-                    (int) (result.getIntrinsicHeight() * scale)
+            // Set the correct bound according to the result from HTTP call
+            urlDrawable.setBounds(0, 0, (int) (result.getIntrinsicWidth() * mScale),
+                    (int) (result.getIntrinsicHeight() * mScale)
             );
 
-            // change the reference of the current drawable to the result from the HTTP call
-            urlDrawable.drawable = result;
-            final HttpImageGetter imageGetter = imageGetterReference.get();
-            if(imageGetter == null) {
-                return;
-            }
+            // Change the reference of the current urlDrawable to the result from the HTTP call
+            urlDrawable.mDrawable = result;
 
             //We add the drawable to the image view so that it can get it on click
-            if(imageGetter.cacheHandler != null) {
-                imageGetter.cacheHandler.drawableLoaded(
-                        urlDrawable.drawable.getConstantState().newDrawable(),
-                        source
+            if(imageGetter.mCacheHandler.get() !=  null) {
+                imageGetter.mCacheHandler.get().drawableLoaded(
+                        urlDrawable.mDrawable.getConstantState().newDrawable(),
+                        mSource
                 );
             }
 
             // redraw the image by invalidating the container
-            imageGetter.container.invalidate();
+            imageGetter.mContainer.invalidate();
             // re-set text to fix images overlapping text
-            imageGetter.container.setText(imageGetter.container.getText());
+            imageGetter.mContainer.setText(imageGetter.mContainer.getText());
         }
 
-        /**
-         * Get the Drawable from URL
-         */
-        Drawable fetchDrawable(Resources res, String urlString) {
+        @Nullable
+        private Drawable fetchDrawable(Resources res, String urlString) {
             try {
-                InputStream is = fetch(urlString);
+                final InputStream is = fetch(urlString);
                 final Drawable drawable = new BitmapDrawable(res, is);
                 synchronized(cache) {
-                    cache.put(source, new Pair<>(drawable, System.currentTimeMillis()));
+                    cache.put(mSource, Pair.create(drawable, System.currentTimeMillis()));
                 }
                 return drawable;
             } catch(Exception e) {
@@ -190,15 +147,15 @@ public class HttpImageGetter implements ImageGetter {
         }
 
         private void setDrawableScale(Drawable drawable) {
-            scale = getScale(drawable);
-            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * scale),
-                    (int) (drawable.getIntrinsicHeight() * scale)
+            mScale = getScale(drawable);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * mScale),
+                    (int) (drawable.getIntrinsicHeight() * mScale)
             );
         }
 
         private float getScale(Drawable drawable) {
-            final View container = containerReference.get();
-            if(!matchParentWidth || container == null) {
+            final View container = mContainerReference.get();
+            if(container == null) {
                 return 1f;
             }
             float maxWidth = container.getWidth();
@@ -206,40 +163,36 @@ public class HttpImageGetter implements ImageGetter {
             return maxWidth / originalDrawableWidth;
         }
 
+        @Nullable
         private InputStream fetch(String urlString) throws IOException {
             URL url;
-            final HttpImageGetter imageGetter = imageGetterReference.get();
+            final HttpImageGetter imageGetter = mGetterReference.get();
             if(imageGetter == null) {
                 return null;
             }
-            if(imageGetter.baseUri != null) {
-                url = imageGetter.baseUri.resolve(urlString).toURL();
-            } else {
-                url = URI.create(urlString).toURL();
-            }
+            url = URI.create(urlString).toURL();
+
 
             return (InputStream) url.getContent();
         }
     }
 
-    public interface DrawableCacheHandler {
+    public interface DrawableCatcher {
 
         void drawableLoaded(Drawable d, String source);
 
     }
 
     @SuppressWarnings("deprecation")
-    private class UrlDrawable extends BitmapDrawable {
-        Drawable drawable;
+    private class URLDrawable extends BitmapDrawable {
+        Drawable mDrawable;
 
         @Override
         public void draw(Canvas canvas) {
-            // override the draw to facilitate refresh function later
-            if(drawable != null) {
-                drawable.draw(canvas);
+            if(mDrawable != null) {
+                mDrawable.draw(canvas);
             }
         }
-
 
     }
 } 

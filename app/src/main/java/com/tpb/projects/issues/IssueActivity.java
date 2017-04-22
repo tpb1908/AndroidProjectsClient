@@ -21,7 +21,6 @@ import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.Issue;
 import com.tpb.github.data.models.Repository;
-import com.tpb.mdtext.handlers.NestedScrollHandler;
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.common.LockableViewPager;
@@ -40,7 +39,7 @@ import butterknife.ButterKnife;
  * Created by theo on 15/03/17.
  */
 
-public class IssueActivity extends CircularRevealActivity implements Loader.ItemLoader<Issue>, NestedScrollHandler {
+public class IssueActivity extends CircularRevealActivity implements Loader.ItemLoader<Issue>{
     private static final String TAG = IssueActivity.class.getSimpleName();
     private static final String URL = "https://raw.githubusercontent.com/tpb1908/AndroidProjectsClient/master/app/src/main/java/com/tpb/projects/issues/IssueActivity.java";
 
@@ -131,16 +130,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         }
 
         mAdapter.setIssue();
-    }
-
-    @Override
-    public void onScrollLocked() {
-        mPager.onScrollLocked();
-    }
-
-    @Override
-    public void onScrollUnlocked() {
-        mPager.onScrollUnlocked();
     }
 
     @Override
