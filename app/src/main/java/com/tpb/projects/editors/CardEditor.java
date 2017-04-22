@@ -114,7 +114,7 @@ public class CardEditor extends EditorActivity {
                             mEditor.disableEditing();
                             mEditor.setMarkdown(
                                     Markdown.formatMD(mEditor.getInputText().toString(), null),
-                                    new HttpImageGetter(mEditor, mEditor)
+                                    new HttpImageGetter(mEditor)
                             );
                         } else {
                             mEditor.restoreText();
@@ -156,7 +156,7 @@ public class CardEditor extends EditorActivity {
     private void bindIssue(Issue issue) {
         mEditor.setMarkdown(Formatter.buildIssueSpan(this, issue, true, true, true, true, false)
                                      .toString(),
-                new HttpImageGetter(mEditor, mEditor)
+                new HttpImageGetter(mEditor)
         );
 
     }

@@ -1,6 +1,8 @@
 package com.tpb.mdtext;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
@@ -21,9 +23,11 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.tpb.mdtext.handlers.CodeClickHandler;
+import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
 import com.tpb.mdtext.views.spans.CleanURLSpan;
+import com.tpb.mdtext.views.spans.ClickableImageSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
 import com.tpb.mdtext.views.spans.HorizontalRuleSpan;
 import com.tpb.mdtext.views.spans.InlineCodeSpan;
@@ -52,6 +56,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private static final String BLOCKQUOTE_TAG = "ESCAPED_BLOCKQUOTE_TAG";
     private static final String A_TAG = "ESCAPED_A_TAG";
     private static final String FONT_TAG = "ESCAPED_FONT_TAG";
+    private static final String IMAGE_TAG = "ESCAPED_IMG_TAG";
 
     private static final Map<String, String> ESCAPE_MAP = new HashMap<>();
 
@@ -68,6 +73,8 @@ public class HtmlTagHandler implements Html.TagHandler {
         ESCAPE_MAP.put("</a>", "</" + A_TAG + ">");
         ESCAPE_MAP.put("<font", "<" + FONT_TAG);
         ESCAPE_MAP.put("</font>", "</" + FONT_TAG + ">");
+        ESCAPE_MAP.put("<img", "<" + IMAGE_TAG);
+        ESCAPE_MAP.put("</img>", "</" + IMAGE_TAG + ">");
     }
 
     private static final Pattern ESCAPE_PATTERN = TextUtils.generatePattern(ESCAPE_MAP.keySet());
@@ -88,9 +95,7 @@ public class HtmlTagHandler implements Html.TagHandler {
      * we can continue with correct index of outer list
      */
     private final Stack<Pair<Integer, ListNumberSpan.ListType>> mOlIndices = new Stack<>();
-
     private StringBuilder mTableHtmlBuilder = new StringBuilder();
-
     private int mTableLevel = 0;
 
     private static int mSingleIndent = 10;
@@ -99,10 +104,18 @@ public class HtmlTagHandler implements Html.TagHandler {
     private LinkClickHandler mLinkHandler;
     private CodeClickHandler mCodeHandler;
     private TableClickHandler mTableHandler;
+    private ImageClickHandler mImageClickHandler;
+    private Html.ImageGetter mImageGetter;
 
-    public HtmlTagHandler(TextView tv, @Nullable LinkClickHandler linkHandler, @Nullable CodeClickHandler codeHandler, @Nullable TableClickHandler tableHandler) {
+    public HtmlTagHandler(TextView tv, Html.ImageGetter imageGetter,
+                          @Nullable LinkClickHandler linkHandler,
+                          @Nullable ImageClickHandler imageClickHandler,
+                          @Nullable CodeClickHandler codeHandler,
+                          @Nullable TableClickHandler tableHandler) {
         mTextPaint = tv.getPaint();
         mSingleIndent = (int) mTextPaint.measureText("t");
+        mImageGetter = imageGetter;
+        mImageClickHandler = imageClickHandler;
         mLinkHandler = linkHandler;
         mCodeHandler = codeHandler;
         mTableHandler = tableHandler;
@@ -213,6 +226,9 @@ public class HtmlTagHandler implements Html.TagHandler {
                 break;
             case A_TAG:
                 start(output, new A(getAttribute("href", xmlReader, "invalid_url")));
+                break;
+            case IMAGE_TAG:
+                handleImageTag(output, getAttribute("src", xmlReader, ""));
                 break;
             case "INLINECODE":
                 start(output, new InlineCode());
@@ -454,6 +470,19 @@ public class HtmlTagHandler implements Html.TagHandler {
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             );
         }
+    }
+
+    private void handleImageTag(Editable output, String source) {
+        Drawable d = new ColorDrawable(Color.TRANSPARENT);
+        if (mImageGetter != null) {
+            d = mImageGetter.getDrawable(source);
+        }
+        final int len = output.length();
+        output.append("\uFFFC");
+        final ClickableImageSpan is = new ClickableImageSpan(d,mImageClickHandler);
+        output.setSpan(is, len, output.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        output.setSpan(new WrappingClickableSpan(is), len, output.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     /**

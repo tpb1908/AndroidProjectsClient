@@ -1,7 +1,6 @@
 package com.tpb.mdtext.views;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -10,18 +9,13 @@ import android.support.annotation.RawRes;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.style.ImageSpan;
-import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.view.View;
 
-import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.ClickableMovementMethod;
+import com.tpb.mdtext.HtmlTagHandler;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.dialogs.CodeDialog;
@@ -31,12 +25,10 @@ import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.spans.CodeSpan;
 import com.tpb.mdtext.views.spans.TableSpan;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -44,7 +36,7 @@ import java.util.Scanner;
  * Created by theo on 27/02/17.
  */
 
-public class MarkdownEditText extends AppCompatEditText implements HttpImageGetter.DrawableCatcher {
+public class MarkdownEditText extends AppCompatEditText {
 
     public static final String TAG = MarkdownEditText.class.getSimpleName();
 
@@ -53,7 +45,6 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
     @Nullable private LinkClickHandler mLinkHandler;
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
-    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private CodeClickHandler mCodeHandler;
     @Nullable private Handler mParseHandler;
 
@@ -141,10 +132,8 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                mDrawables.clear(); // Clear the drawables that were cached for use earlier
-
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(MarkdownEditText.this,
-                        mLinkHandler, mCodeHandler, mTableHandler
+                        imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
                 );
 
                 // Override tags to stop Html.fromHtml destroying some of them
@@ -166,9 +155,6 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
                 //Add links for emails and web-urls
                 TextUtils.addLinks(buffer);
 
-                if(mImageClickHandler != null) {
-                    enableImageClicks(buffer);
-                }
                 //Post back on UI thread
                 MarkdownEditText.this.post(new Runnable() {
                     @Override
@@ -193,50 +179,12 @@ public class MarkdownEditText extends AppCompatEditText implements HttpImageGett
         }
     }
 
-    @Override
-    public void drawableLoaded(Drawable d, String source) {
-        mDrawables.put(source, d);
-    }
-
-    private void enableImageClicks(final Spannable s) {
-        for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-            s.setSpan(new URLSpan(span.getSource()) {
-                @Override
-                public void onClick(View widget) {
-                    if(mImageClickHandler == null) {
-                        super.onClick(widget); //Opens image link
-                    } else {
-                        //Get the drawable from our map and call the handler
-                        if(mDrawables.containsKey(span.getSource())) {
-                            mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
-                        }
-                    }
-                }
-
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    // We don't want to show a line below the image
-                    ds.setUnderlineText(false);
-                }
-            }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
-        }
-    }
-
-    /**
-     * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
-     */
     @NonNull
-    static private String convertStreamToString(@NonNull InputStream is) {
-        Scanner s = new Scanner(is).useDelimiter("\\A");
+    private static String convertStreamToString(@NonNull InputStream is) {
+        final Scanner s = new Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 
-    /**
-     * Html.fromHtml sometimes adds extra space at the bottom.
-     * This methods removes this space again.
-     * See https://github.com/SufficientlySecure/html-textview/issues/19
-     */
     @Nullable
     private static Spanned removeHtmlBottomPadding(@Nullable Spanned text) {
         if(text == null) {

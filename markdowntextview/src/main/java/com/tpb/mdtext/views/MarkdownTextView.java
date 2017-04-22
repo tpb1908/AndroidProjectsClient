@@ -18,7 +18,6 @@ package com.tpb.mdtext.views;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -26,10 +25,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,18 +43,15 @@ import com.tpb.mdtext.handlers.CodeClickHandler;
 import com.tpb.mdtext.handlers.ImageClickHandler;
 import com.tpb.mdtext.handlers.LinkClickHandler;
 import com.tpb.mdtext.handlers.TableClickHandler;
-import com.tpb.mdtext.imagegetter.HttpImageGetter;
-import com.tpb.mdtext.views.spans.CleanURLSpan;
 import com.tpb.mdtext.views.spans.CodeSpan;
 import com.tpb.mdtext.views.spans.TableSpan;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class MarkdownTextView extends AppCompatTextView implements HttpImageGetter.DrawableCatcher, View.OnClickListener {
+public class MarkdownTextView extends AppCompatTextView implements View.OnClickListener {
 
     public static final String TAG = MarkdownTextView.class.getSimpleName();
 
@@ -65,7 +59,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
     @Nullable private CodeClickHandler mCodeHandler;
-    private final HashMap<String, Drawable> mDrawables = new HashMap<>();
     @Nullable private Handler mParseHandler;
 
     private boolean mSpanHit = false;
@@ -99,12 +92,12 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         setTextColor(Color.WHITE);
     }
 
-    public void setLinkClickHandler(LinkClickHandler handler) {
-        mLinkHandler = handler;
-    }
-
     public void setParseHandler(@Nullable Handler parseHandler) {
         mParseHandler = parseHandler;
+    }
+
+    public void setLinkClickHandler(LinkClickHandler handler) {
+        mLinkHandler = handler;
     }
 
     public void setImageHandler(ImageClickHandler imageHandler) {
@@ -166,10 +159,8 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                mDrawables.clear(); // Clear the drawables that were cached for use earlier
-
                 final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(MarkdownTextView.this,
-                        mLinkHandler, mCodeHandler, mTableHandler
+                       imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
                 );
 
                 // Override tags to stop Html.fromHtml destroying some of them
@@ -191,9 +182,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
                 //Add links for emails and web-urls
                 TextUtils.addLinks(buffer);
 
-                if(mImageClickHandler != null) {
-                    enableImageClicks(buffer);
-                }
                 //Post back on UI thread
                 MarkdownTextView.this.post(new Runnable() {
                     @Override
@@ -222,27 +210,6 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         }
     }
 
-    @Override
-    public void drawableLoaded(Drawable d, String source) {
-        mDrawables.put(source, d);
-    }
-
-    private void enableImageClicks(final Spannable s) {
-        for(final ImageSpan span : s.getSpans(0, s.length(), ImageSpan.class)) {
-            s.setSpan(new CleanURLSpan(span.getSource()) {
-                @Override
-                public void onClick(View widget) {
-                    if(mImageClickHandler == null || !mDrawables.containsKey(span.getSource())) {
-                        super.onClick(widget); //Opens image link
-                    } else {
-                        //Get the drawable from our map and call the handler
-                        mImageClickHandler.imageClicked(mDrawables.get(span.getSource()));
-                    }
-                }
-            }, s.getSpanStart(span), s.getSpanEnd(span), s.getSpanFlags(span));
-        }
-    }
-
     public float[] getLastClickPosition() {
         if(mLastClickPosition[0] == -1) {
             // If we haven't been clicked yet, get the centre of the view
@@ -254,21 +221,16 @@ public class MarkdownTextView extends AppCompatTextView implements HttpImageGett
         return mLastClickPosition;
     }
 
-    /**
-     * http://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
-     */
     @NonNull
-    static private String convertStreamToString(@NonNull InputStream is) {
+    private static String convertStreamToString(@NonNull InputStream is) {
         Scanner s = new Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 
     /**
      * Html.fromHtml sometimes adds extra space at the bottom.
-     * This methods removes this space again.
      */
     private static Spanned removeHtmlBottomPadding(Spanned text) {
-
         while(text.length() > 0 && text.charAt(text.length() - 1) == '\n') {
             text = (Spanned) text.subSequence(0, text.length() - 1);
         }

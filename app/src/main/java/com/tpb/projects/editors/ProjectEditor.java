@@ -88,7 +88,7 @@ public class ProjectEditor extends EditorActivity {
                                     Markdown.formatMD(mDescriptionEditor.getText().toString(),
                                             null
                                     ),
-                                    new HttpImageGetter(mDescriptionEditor, mDescriptionEditor)
+                                    new HttpImageGetter(mDescriptionEditor)
                             );
                             mDescriptionEditor.disableEditing();
                         } else {

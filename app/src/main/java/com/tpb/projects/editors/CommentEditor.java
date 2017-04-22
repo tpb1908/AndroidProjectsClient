@@ -111,7 +111,7 @@ public class CommentEditor extends EditorActivity {
                             mEditor.disableEditing();
                             mEditor.setMarkdown(
                                     Markdown.formatMD(mEditor.getInputText().toString(), repo),
-                                    new HttpImageGetter(mEditor, mEditor)
+                                    new HttpImageGetter(mEditor)
                             );
                         } else {
                             mEditor.restoreText();

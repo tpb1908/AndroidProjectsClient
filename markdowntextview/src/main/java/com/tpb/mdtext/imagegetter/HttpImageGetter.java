@@ -42,11 +42,9 @@ public class HttpImageGetter implements ImageGetter {
     private static final HashMap<String, Pair<Drawable, Long>> cache = new HashMap<>();
 
     private final TextView mContainer;
-    private WeakReference<DrawableCatcher> mCacheHandler;
 
-    public HttpImageGetter(TextView container, @Nullable DrawableCatcher cacheHandler) {
+    public HttpImageGetter(TextView container) {
         this.mContainer = container;
-        this.mCacheHandler = new WeakReference<>(cacheHandler);
     }
 
 
@@ -118,14 +116,6 @@ public class HttpImageGetter implements ImageGetter {
             // Change the reference of the current urlDrawable to the result from the HTTP call
             urlDrawable.mDrawable = result;
 
-            //We add the drawable to the image view so that it can get it on click
-            if(imageGetter.mCacheHandler.get() !=  null) {
-                imageGetter.mCacheHandler.get().drawableLoaded(
-                        urlDrawable.mDrawable.getConstantState().newDrawable(),
-                        mSource
-                );
-            }
-
             // redraw the image by invalidating the container
             imageGetter.mContainer.invalidate();
             // re-set text to fix images overlapping text
@@ -177,14 +167,8 @@ public class HttpImageGetter implements ImageGetter {
         }
     }
 
-    public interface DrawableCatcher {
-
-        void drawableLoaded(Drawable d, String source);
-
-    }
-
     @SuppressWarnings("deprecation")
-    private class URLDrawable extends BitmapDrawable {
+    public class URLDrawable extends BitmapDrawable {
         Drawable mDrawable;
 
         @Override
@@ -192,6 +176,10 @@ public class HttpImageGetter implements ImageGetter {
             if(mDrawable != null) {
                 mDrawable.draw(canvas);
             }
+        }
+
+        public Drawable getDrawable() {
+            return mDrawable;
         }
 
     }

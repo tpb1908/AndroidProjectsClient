@@ -120,7 +120,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
             holder.mBody.setVisibility(View.VISIBLE);
             holder.mBody.setMarkdown(
                     p.getBody(),
-                    new HttpImageGetter(holder.mBody, holder.mBody),
+                    new HttpImageGetter(holder.mBody),
                     null
             );
         }

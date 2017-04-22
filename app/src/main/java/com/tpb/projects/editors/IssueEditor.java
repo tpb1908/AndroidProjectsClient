@@ -194,7 +194,7 @@ public class IssueEditor extends EditorActivity {
                             mBodyEdit.disableEditing();
                             mBodyEdit.setMarkdown(
                                     Markdown.formatMD(mBodyEdit.getInputText().toString(), repo),
-                                    new HttpImageGetter(mBodyEdit, mBodyEdit)
+                                    new HttpImageGetter(mBodyEdit)
                             );
                             mInfoLayout.setVisibility(View.GONE);
                         } else {

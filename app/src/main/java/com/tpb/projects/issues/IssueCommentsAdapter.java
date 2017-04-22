@@ -181,7 +181,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
 
             holder.mText.setMarkdown(
                     builder.toString(),
-                    new HttpImageGetter(holder.mText, holder.mText),
+                    new HttpImageGetter(holder.mText),
                     text -> mComments.set(pos, new Pair<>(comment, text))
             );
         } else {

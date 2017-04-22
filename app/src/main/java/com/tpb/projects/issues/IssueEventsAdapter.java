@@ -333,7 +333,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         text += " • " + DateUtils.getRelativeTimeSpanString(me.getCreatedAt());
         eventHolder.mText.setMarkdown(
                 text,
-                new HttpImageGetter(eventHolder.mText, eventHolder.mText),
+                new HttpImageGetter(eventHolder.mText),
                 null
         );
         if(me.getData().get(0).getActor() != null) {
@@ -598,7 +598,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setMarkdown(
                 text,
-                new HttpImageGetter(eventHolder.mText, eventHolder.mText),
+                new HttpImageGetter(eventHolder.mText),
                 null
         );
         if(event.getActor() != null) {

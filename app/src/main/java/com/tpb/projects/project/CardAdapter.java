@@ -299,7 +299,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                             card.getNote(),
                             mParent.mParent.mProject.getRepoPath()
                     ),
-                    new HttpImageGetter(holder.mText, holder.mText),
+                    new HttpImageGetter(holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );
         } else {
@@ -338,7 +338,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                             true,
                             true
                     ).toString(),
-                    new HttpImageGetter(holder.mText, holder.mText),
+                    new HttpImageGetter(holder.mText),
                     text -> mCards.set(pos, new Pair<>(card, text))
             );
         } else {
