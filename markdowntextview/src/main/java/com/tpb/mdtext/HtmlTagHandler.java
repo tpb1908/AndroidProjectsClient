@@ -79,25 +79,16 @@ public class HtmlTagHandler implements Html.TagHandler {
 
     private static final Pattern ESCAPE_PATTERN = TextUtils.generatePattern(ESCAPE_MAP.keySet());
 
-    /**
-     * Android captures some tags before they get here, so we escape them
-     */
-    public String overrideTags(@Nullable String html) {
+    public static String overrideTags(@Nullable String html) {
         return TextUtils.replace(html, ESCAPE_MAP, ESCAPE_PATTERN);
     }
 
-    /**
-     * Stack of nested list tags, bulleted flag and list type (For OL)
-     */
+    // Stack of nested list tags, bulleted flag and list type (For OL)
     private final Stack<Triple<String, Boolean, ListNumberSpan.ListType>> mLists = new Stack<>();
-    /**
-     * Tracks indexes of ordered lists so that after a nested list ends
-     * we can continue with correct index of outer list
-     */
+    // Tracks indices of nested ordered lists
     private final Stack<Pair<Integer, ListNumberSpan.ListType>> mOlIndices = new Stack<>();
     private StringBuilder mTableHtmlBuilder = new StringBuilder();
     private int mTableLevel = 0;
-
     private static int mSingleIndent = 10;
     private static final int mListIndent = mSingleIndent * 2;
     private final TextPaint mTextPaint;
@@ -137,8 +128,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 mLists.push(
                         Triple.create(
                                 tag,
-                                safelyParseBoolean(getAttribute("bulleted", xmlReader, "true"),
-                                        true
+                                safelyParseBoolean(
+                                        getAttribute("bulleted", xmlReader, "true"), true
                                 ),
                                 ListNumberSpan.ListType.NUMBER
                         )
@@ -150,8 +141,8 @@ public class HtmlTagHandler implements Html.TagHandler {
                 mLists.push(
                         Triple.create(
                                 tag,
-                                safelyParseBoolean(getAttribute("numbered", xmlReader, "true"),
-                                        true
+                                safelyParseBoolean(
+                                        getAttribute("numbered", xmlReader, "true"), true
                                 ),
                                 type
                         )
@@ -163,7 +154,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                     output.append("\n");
                 }
                 if(!mLists.isEmpty()) {
-                    String parentList = mLists.peek().first;
+                    final String parentList = mLists.peek().first;
                     if(parentList.equalsIgnoreCase(ORDERED_LIST_TAG)) {
                         start(output, new Ol());
                         mOlIndices.push(Pair.create(mOlIndices.pop().first + 1, mLists.peek().third));
@@ -485,17 +476,11 @@ public class HtmlTagHandler implements Html.TagHandler {
         output.setSpan(new WrappingClickableSpan(is), len, output.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    /**
-     * Mark the opening tag by using private classes
-     */
     private void start(Editable output, Object mark) {
         final int point = output.length();
         output.setSpan(mark, point, point, Spannable.SPAN_MARK_MARK);
     }
 
-    /**
-     * Modified from {@link android.text.Html}
-     */
     private void end(Editable output, Class kind, boolean paragraphStyle, Object... replaces) {
         final Object obj = getLast(output, kind);
         final int start = output.getSpanStart(obj);
@@ -503,8 +488,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
         // If we're in a table, then we need to store the raw HTML for later
         if(mTableLevel > 0) {
-            final CharSequence extractedSpanText = extractSpanText(output, kind);
-            mTableHtmlBuilder.append(extractedSpanText);
+            mTableHtmlBuilder.append(extractSpanText(output, kind));
         }
 
         output.removeSpan(obj);
@@ -614,10 +598,6 @@ public class HtmlTagHandler implements Html.TagHandler {
         return defaultAttr;
     }
 
-    /**
-     * If we're arriving at a table tag or are already within a table tag, then we should store
-     * the raw HTML for our span
-     */
     private void storeTableTags(boolean opening, String tag) {
         if(mTableLevel > 0 || tag.equalsIgnoreCase("table")) {
             mTableHtmlBuilder.append("<");
@@ -632,7 +612,7 @@ public class HtmlTagHandler implements Html.TagHandler {
 
 
     /**
-     * Get last marked position of a specific tag kind (private class)
+     * Get last marked position of a tag type
      */
     private static <T> T getLast(Editable text, Class<T> kind) {
         final T[] objs = text.getSpans(0, text.length(), kind);

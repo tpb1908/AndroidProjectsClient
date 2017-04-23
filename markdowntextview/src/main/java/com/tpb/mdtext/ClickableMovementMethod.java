@@ -9,7 +9,6 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.mdtext.views.MarkdownTextView;
 
 /**
@@ -67,8 +66,6 @@ public class ClickableMovementMethod extends LinkMovementMethod {
     private void triggerSpanHit(TextView widget) {
         if(widget instanceof MarkdownTextView) {
             ((MarkdownTextView) widget).setSpanHit();
-        } else if(widget instanceof MarkdownEditText) {
-            ((MarkdownEditText) widget).setSpanHit();
         }
     }
 

@@ -2,8 +2,6 @@ package com.tpb.mdtext.views;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
@@ -47,9 +45,7 @@ public class MarkdownEditText extends AppCompatEditText {
     @Nullable private ImageClickHandler mImageClickHandler;
     @Nullable private TableClickHandler mTableHandler;
     @Nullable private CodeClickHandler mCodeHandler;
-    @Nullable private Handler mParseHandler;
 
-    private boolean mSpanHit = false;
 
     public MarkdownEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -66,7 +62,7 @@ public class MarkdownEditText extends AppCompatEditText {
         init(context);
     }
 
-    private void init(Context context ){
+    private void init(Context context ) {
         if(!CodeSpan.isInitialised()) CodeSpan.initialise(context);
         if(!TableSpan.isInitialised()) TableSpan.initialise(context);
         setDefaultHandlers(context);
@@ -75,10 +71,6 @@ public class MarkdownEditText extends AppCompatEditText {
 
     public void setLinkClickHandler(LinkClickHandler handler) {
         mLinkHandler = handler;
-    }
-
-    public void setParseHandler(@Nullable Handler parseHandler) {
-        mParseHandler = parseHandler;
     }
 
     public void setImageHandler(ImageClickHandler imageHandler) {
@@ -99,12 +91,12 @@ public class MarkdownEditText extends AppCompatEditText {
         setTableClickHandler(new TableDialog(context));
     }
 
-    public void setMarkdown(@RawRes int resId) {
-        setMarkdown(resId, null);
-    }
-
     public void setMarkdown(@NonNull String html) {
         setMarkdown(html, null);
+    }
+
+    public void setMarkdown(@RawRes int resId) {
+        setMarkdown(resId, null);
     }
 
     private void setMarkdown(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
@@ -113,26 +105,11 @@ public class MarkdownEditText extends AppCompatEditText {
     }
 
     public void setMarkdown(@NonNull final String markdown, @Nullable final Html.ImageGetter imageGetter) {
-        //If we have a handler use it
-        if(mParseHandler != null) {
-            mParseHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    parseAndSetMd(markdown, imageGetter);
-                }
-            });
-        } else {
-            parseAndSetMd(markdown, imageGetter);
-        }
-    }
-
-    private void parseAndSetMd(@NonNull final String markdown, @Nullable final Html.ImageGetter imageGetter) {
+        // Override tags to stop Html.fromHtml destroying some of them
+        final String overridden = HtmlTagHandler.overrideTags(Markdown.parseMD(markdown));
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(this,
                 imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
         );
-
-        // Override tags to stop Html.fromHtml destroying some of them
-        final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
         final Spanned text;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             text = removeHtmlBottomPadding(
@@ -149,25 +126,7 @@ public class MarkdownEditText extends AppCompatEditText {
 
         //Add links for emails and web-urls
         TextUtils.addLinks(buffer);
-        if(Looper.myLooper() == Looper.getMainLooper()) {
-            setMarkdownText(buffer);
-        } else {
-            //Post back on UI thread
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    setMarkdownText(buffer);
-                }
-            });
-        }
-    }
-
-    private void setMarkdownText(SpannableString buffer) {
         setText(buffer);
-        checkMovementMethod();
-    }
-
-    private void checkMovementMethod() {
         if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
             setMovementMethod(ClickableMovementMethod.getInstance());
         }
@@ -191,10 +150,6 @@ public class MarkdownEditText extends AppCompatEditText {
         return text;
     }
 
-    public void setSpanHit() {
-        mSpanHit = true;
-    }
-
     public boolean isEditing() {
         return mIsEditing;
     }
@@ -210,7 +165,6 @@ public class MarkdownEditText extends AppCompatEditText {
 
     public void disableEditing() {
         if(!mIsEditing) return;
-        setBackground(null);
         setFocusable(false);
         setCursorVisible(false);
         mIsEditing = false;
