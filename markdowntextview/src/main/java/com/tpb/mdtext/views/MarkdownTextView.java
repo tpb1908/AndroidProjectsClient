@@ -1,25 +1,10 @@
-/*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tpb.mdtext.views;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
@@ -125,82 +110,72 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
         setMarkdown(resId, null);
     }
 
-    /**
-     * @see MarkdownTextView#setMarkdown(String)
-     */
     public void setMarkdown(@NonNull String markdown) {
         setMarkdown(markdown, null, null);
     }
 
-    /**
-     * Loads HTML from a raw resource, i.e., a HTML file in res/raw/.
-     * This allows translatable resource (e.g., res/raw-de/ for german).
-     * The containing HTML is parsed to Android's Spannable format and then displayed.
-     *
-     * @param resId       for example: R.raw.help
-     * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
-     *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
-     */
     private void setMarkdown(@RawRes int resId, @Nullable Html.ImageGetter imageGetter) {
         InputStream inputStreamText = getContext().getResources().openRawResource(resId);
         setMarkdown(convertStreamToString(inputStreamText), imageGetter, null);
     }
 
-    /**
-     * Parses String containing HTML to Android's Spannable format and displays it in this TextView.
-     * Using the implementation of Html.ImageGetter provided.
-     *
-     * @param markdown    String containing HTML, for example: "<b>Hello world!</b>"
-     * @param imageGetter for fetching images. Possible ImageGetter provided by this library:
-     *                    HtmlLocalImageGetter and HtmlRemoteImageGetter
-     */
     public void setMarkdown(@NonNull final String markdown, @Nullable final Html.ImageGetter imageGetter, @Nullable SpanCache cache) {
         mSpanCache = new WeakReference<>(cache);
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(MarkdownTextView.this,
-                       imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
-                );
-
-                // Override tags to stop Html.fromHtml destroying some of them
-                final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
-                final Spanned text;
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    text = removeHtmlBottomPadding(
-                            Html.fromHtml(overridden, Html.FROM_HTML_MODE_COMPACT, imageGetter,
-                                    htmlTagHandler
-                            ));
-                } else {
-                    text = removeHtmlBottomPadding(
-                            Html.fromHtml(overridden, imageGetter, htmlTagHandler));
-                }
-
-                // Convert to a buffer to allow editing
-                final SpannableString buffer = new SpannableString(text);
-
-                //Add links for emails and web-urls
-                TextUtils.addLinks(buffer);
-
-                //Post back on UI thread
-                MarkdownTextView.this.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setText(buffer);
-                        checkMovementMethod();
-                        if(mSpanCache != null && mSpanCache.get() != null)
-                            mSpanCache.get().cache(buffer);
-                        mSpanCache = null;
-                    }
-                });
-            }
-        };
         //If we have a handler use it
         if(mParseHandler != null) {
-            mParseHandler.postDelayed(r, 20);
+            mParseHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    parseAndSetMd(markdown, imageGetter);
+                }
+            });
         } else {
-            r.run();
+            parseAndSetMd(markdown, imageGetter);
         }
+    }
+
+    private void parseAndSetMd(@NonNull final String markdown, @Nullable final Html.ImageGetter imageGetter) {
+        final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(this,
+                imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
+        );
+
+        // Override tags to stop Html.fromHtml destroying some of them
+        final String overridden = htmlTagHandler.overrideTags(Markdown.parseMD(markdown));
+        final Spanned text;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            text = removeHtmlBottomPadding(
+                    Html.fromHtml(overridden, Html.FROM_HTML_MODE_COMPACT, imageGetter,
+                            htmlTagHandler
+                    ));
+        } else {
+            text = removeHtmlBottomPadding(
+                    Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+        }
+
+        // Convert to a buffer to allow editing
+        final SpannableString buffer = new SpannableString(text);
+
+        //Add links for emails and web-urls
+        TextUtils.addLinks(buffer);
+        if(Looper.myLooper() == Looper.getMainLooper()) {
+            setMarkdownText(buffer);
+        } else {
+            //Post back on UI thread
+            MarkdownTextView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    setMarkdownText(buffer);
+                }
+            });
+        }
+    }
+
+    private void setMarkdownText(SpannableString buffer) {
+        setText(buffer);
+        checkMovementMethod();
+        if(mSpanCache != null && mSpanCache.get() != null)
+            mSpanCache.get().cache(buffer);
+        mSpanCache = null;
 
     }
 
