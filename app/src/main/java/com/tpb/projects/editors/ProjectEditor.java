@@ -2,21 +2,16 @@ package com.tpb.projects.editors;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.androidnetworking.error.ANError;
-import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Project;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
@@ -143,25 +138,8 @@ public class ProjectEditor extends EditorActivity {
     }
 
     @Override
-    void imageLoadComplete(String image64) {
-        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
-        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-                                       @Override
-                                       public void imageUploaded(String link) {
-                                           mUploadDialog.cancel();
-                                           final String snippet = String.format(getString(R.string.text_image_link), link);
-                                           final int start = Math.max(mDescriptionEditor.getSelectionStart(), 0);
-                                           mDescriptionEditor.getText().insert(start, snippet);
-                                           mDescriptionEditor.setSelection(start + snippet.indexOf("]"));
-                                       }
-
-                                       @Override
-                                       public void uploadError(ANError error) {
-
-                                       }
-                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
-                BuildConfig.IMGUR_CLIENT_ID
-        );
+    void imageLoadComplete(String url) {
+        Util.insertString(mDescriptionEditor, url);
     }
 
     @Override

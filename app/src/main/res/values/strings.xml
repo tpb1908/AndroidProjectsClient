@@ -18,6 +18,7 @@
     <string name="error_project_not_found">Project not found</string>
     <string name="error_repo_not_found">Repository not found</string>
     <string name="error_no_application_for_picture">No camera</string>
+    <string name="error_image_file_not_created">File couldn\'t be created</string>
     <string name="error_readme_not_found">Readme not found</string>
     <string name="error_rendering_readme">Couldn\'t render readme</string>
     <string name="error_readme_not_found_placeholder"><![CDATA[

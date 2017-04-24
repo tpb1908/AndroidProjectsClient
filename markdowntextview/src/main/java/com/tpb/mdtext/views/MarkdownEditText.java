@@ -113,7 +113,7 @@ public class MarkdownEditText extends AppCompatEditText {
         final Spanned text;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             text = removeHtmlBottomPadding(
-                    Html.fromHtml(overridden, Html.FROM_HTML_MODE_COMPACT, imageGetter,
+                    Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
                             htmlTagHandler
                     ));
         } else {

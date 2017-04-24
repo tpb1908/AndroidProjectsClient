@@ -252,7 +252,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 handleCodeTag(output);
                 break;
             case "HR":
-                handleHorizontalRule(output);
+                handleHorizontalRuleTag(output);
                 break;
             case "CENTER":
                 end(output, Center.class, true,
@@ -327,7 +327,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         }
     }
 
-    private void handleHorizontalRule(Editable output) {
+    private void handleHorizontalRuleTag(Editable output) {
         final Object obj = getLast(output, HorizontalRule.class);
         final int start = output.getSpanStart(obj);
         output.removeSpan(obj); //Remove the old span
@@ -460,17 +460,19 @@ public class HtmlTagHandler implements Html.TagHandler {
             output.setSpan(new CleanURLSpan(obj.href, mLinkHandler), start, end,
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             );
+        } else {
+            output.insert(start, obj.href.concat(" "));
         }
     }
 
     private void handleImageTag(Editable output, String source) {
         Drawable d = new ColorDrawable(Color.TRANSPARENT);
-        if (mImageGetter != null) {
+        if(mImageGetter != null) {
             d = mImageGetter.getDrawable(source);
         }
         final int len = output.length();
         output.append("\uFFFC");
-        final ClickableImageSpan is = new ClickableImageSpan(d,mImageClickHandler);
+        final ClickableImageSpan is = new ClickableImageSpan(d, mImageClickHandler);
         output.setSpan(is, len, output.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         output.setSpan(new WrappingClickableSpan(is), len, output.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -520,7 +522,7 @@ public class HtmlTagHandler implements Html.TagHandler {
         return extractedSpanText;
     }
 
-    private static int safelyParseColor(String color) {
+    private int safelyParseColor(String color) {
         try {
             return Color.parseColor(color);
         } catch(Exception e) {
@@ -558,8 +560,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 case "teal":
                     return 0xff008080;
                 default:
-                    return Color.WHITE;
-
+                    return mTextPaint.getColor();
             }
         }
     }

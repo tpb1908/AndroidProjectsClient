@@ -120,12 +120,12 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
         mSpanCache = new WeakReference<>(cache);
         //If we have a handler use it
         if(mParseHandler != null) {
-            mParseHandler.post(new Runnable() {
+            mParseHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     parseAndSetMd(markdown, imageGetter);
                 }
-            });
+            }, 1);
         } else {
             parseAndSetMd(markdown, imageGetter);
         }
@@ -134,34 +134,41 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
     private void parseAndSetMd(@NonNull String markdown, @Nullable final Html.ImageGetter imageGetter) {
         // Override tags to stop Html.fromHtml destroying some of them
         markdown = HtmlTagHandler.overrideTags(Markdown.parseMD(markdown));
+
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(this,
                 imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
         );
-        final Spanned text;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            text = removeHtmlBottomPadding(
-                    Html.fromHtml(markdown, Html.FROM_HTML_MODE_COMPACT, imageGetter,
-                            htmlTagHandler
-                    ));
-        } else {
-            text = removeHtmlBottomPadding(Html.fromHtml(markdown, imageGetter, htmlTagHandler));
-        }
+        try {
+            final Spanned text;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                text = removeHtmlBottomPadding(
+                        Html.fromHtml(markdown, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                htmlTagHandler
+                        ));
+            } else {
+                text = removeHtmlBottomPadding(
+                        Html.fromHtml(markdown, imageGetter, htmlTagHandler));
+            }
 
-        // Convert to a buffer to allow editing
-        final SpannableString buffer = new SpannableString(text);
+            // Convert to a buffer to allow editing
+            final SpannableString buffer = new SpannableString(text);
 
-        //Add links for emails and web-urls
-        TextUtils.addLinks(buffer);
-        if(Looper.myLooper() == Looper.getMainLooper()) {
-            setMarkdownText(buffer);
-        } else {
-            //Post back on UI thread
-            MarkdownTextView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    setMarkdownText(buffer);
-                }
-            });
+            //Add links for emails and web-urls
+            TextUtils.addLinks(buffer);
+            if(Looper.myLooper() == Looper.getMainLooper()) {
+                setMarkdownText(buffer);
+            } else {
+                //Post back on UI thread
+                MarkdownTextView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setMarkdownText(buffer);
+                    }
+                });
+            }
+        } catch(Exception e) {
+            markdown = "Error parsing markdown\n\n\n" + Html.fromHtml(Html.escapeHtml(markdown));
+            setText(markdown);
         }
     }
 

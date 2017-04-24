@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,22 +16,19 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.androidnetworking.error.ANError;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
-import com.tpb.github.data.Uploader;
 import com.tpb.github.data.models.Card;
 import com.tpb.github.data.models.Issue;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownEditText;
-import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
-import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
+import com.tpb.projects.util.input.SimpleTextChangeWatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -238,27 +233,8 @@ public class CardEditor extends EditorActivity {
     }
 
     @Override
-    void imageLoadComplete(String image64) {
-        //Ensure that we are on UI thread
-        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
-        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-                                       @Override
-                                       public void imageUploaded(String link) {
-                                           mUploadDialog.dismiss();
-                                           //Format the link and insert at currently selected position
-                                           final String snippet = String.format(getString(R.string.text_image_link), link);
-                                           final int start = Math.max(mEditor.getSelectionStart(), 0);
-                                           mEditor.getText().insert(start, snippet);
-                                           mEditor.setSelection(start + snippet.indexOf("]"));
-                                       }
-
-                                       @Override
-                                       public void uploadError(ANError error) {
-                                           //TODO Tell the user
-                                       }
-                                   }, image64, (bUp, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUp) / bTotal)),
-                BuildConfig.IMGUR_CLIENT_ID
-        );
+    void imageLoadComplete(String url) {
+        Util.insertString(mEditor, url);
     }
 
     @Override

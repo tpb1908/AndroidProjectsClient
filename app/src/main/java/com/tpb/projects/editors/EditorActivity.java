@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -18,6 +20,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.androidnetworking.error.ANError;
+import com.tpb.github.data.Uploader;
+import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
 import com.tpb.projects.util.Logger;
@@ -42,7 +47,56 @@ public abstract class EditorActivity extends CircularRevealActivity {
     private String mCurrentFilePath;
     protected ProgressDialog mUploadDialog;
 
-    abstract void imageLoadComplete(String image64);
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == AppCompatActivity.RESULT_OK) {
+            if(requestCode == EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI) {
+                if(data.hasExtra(getString(R.string.intent_emoji))) {
+                    emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
+                }
+            } else if(requestCode == CharacterActivity.REQUEST_CODE_INSERT_CHARACTER) {
+                if(data.hasExtra(getString(R.string.intent_character))) {
+                    insertString(data.getStringExtra(getString(R.string.intent_character)));
+                }
+            } else {
+                final ProgressDialog pd = new ProgressDialog(this);
+                pd.setCanceledOnTouchOutside(false);
+                pd.setCancelable(false);
+                if(requestCode == REQUEST_CAMERA) {
+
+                    pd.setTitle(R.string.title_image_conversion);
+                    pd.show();
+                    AsyncTask.execute(() -> { // Execute asynchronously
+                        final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
+                        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        pd.cancel();
+                        uploadImage(Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
+                    });
+
+                } else if(requestCode == SELECT_FILE) {
+                    final Uri selectedFile = data.getData();
+                    pd.setTitle(R.string.title_image_conversion);
+                    pd.show();
+                    AsyncTask.execute(() -> {
+                        try {
+                            final String image = attemptLoadPicture(selectedFile);
+                            pd.cancel();
+                            uploadImage(image);
+                        } catch(IOException ioe) {
+                            Logger.e(TAG, "onActivityResult: ", ioe);
+                            pd.cancel();
+                            imageLoadException(ioe);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    abstract void imageLoadComplete(String url);
 
     abstract void imageLoadException(IOException ioe);
 
@@ -127,7 +181,7 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_CAMERA);
             } else {
-                imageLoadException(new IOException("File not created"));
+                imageLoadException(new IOException(getString(R.string.error_image_file_not_created)));
             }
         } else {
             Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT)
@@ -164,61 +218,28 @@ public abstract class EditorActivity extends CircularRevealActivity {
         return Base64.encodeToString(array, Base64.DEFAULT);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == AppCompatActivity.RESULT_OK) {
-            if(requestCode == EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI) {
-                if(data.hasExtra(getString(R.string.intent_emoji))) {
-                    emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
-                }
-            } else if(requestCode == CharacterActivity.REQUEST_CODE_INSERT_CHARACTER) {
-                if(data.hasExtra(getString(R.string.intent_character))) {
-                    insertString(data.getStringExtra(getString(R.string.intent_character)));
-                }
-            } else {
-                final ProgressDialog pd = new ProgressDialog(this);
-                pd.setCanceledOnTouchOutside(false);
-                pd.setCancelable(false);
-                if(requestCode == REQUEST_CAMERA) {
+    private void uploadImage(String image64) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
+        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
+                                       @Override
+                                       public void imageUploaded(String link) {
+                                           Logger.i(TAG, "imageUploaded: Image uploaded " + link);
+                                           mUploadDialog.cancel();
+                                           final String snippet = String.format(getString(R.string.text_image_link), link);
+                                           imageLoadComplete(snippet);
+                                       }
 
-                    pd.setTitle(R.string.title_image_conversion);
-                    pd.show();
-                    AsyncTask.execute(() -> { // Execute asynchronously
-                        final Bitmap image = BitmapFactory.decodeFile(mCurrentFilePath);
-                        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        pd.cancel();
-                        imageLoadComplete(
-                                Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
-                    });
-
-                } else if(requestCode == SELECT_FILE) {
-                    final Uri selectedFile = data.getData();
-                    pd.setTitle(R.string.title_image_conversion);
-                    pd.show();
-                    AsyncTask.execute(() -> {
-                        try {
-                            final String image = attemptLoadPicture(selectedFile);
-                            pd.cancel();
-                            imageLoadComplete(image);
-                        } catch(IOException ioe) {
-                            Logger.e(TAG, "onActivityResult: ", ioe);
-                            pd.cancel();
-                            imageLoadException(ioe);
-                        }
-                    });
-                }
-            }
-        }
+                                       @Override
+                                       public void uploadError(ANError error) {
+                                           //TODO Error message
+                                       }
+                                   }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)),
+                BuildConfig.IMGUR_CLIENT_ID
+        );
     }
 
-    protected void emojiChosen(String emoji) {
+    protected abstract void emojiChosen(String emoji);
 
-    }
-
-    protected void insertString(String c) {
-
-    }
+    protected abstract void insertString(String c);
 
 }
