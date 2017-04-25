@@ -63,14 +63,12 @@ public class CharacterActivity extends BaseActivity {
                 if(Character.isDefined(i) && !Character.isISOControl(i)) {
                     characters.add(Pair.create(String.valueOf((char) i), Character.getName(i)));
                     // 50 gives ~10 chunks
-                    if((characters.size() - lastIndex) > length / 50) {
-                        final int start = lastIndex;
-                        adapter.addCharacters(characters.subList(start, characters.size()));
+                    if((characters.size() - lastIndex) > length / 250 || i == Character.MAX_CODE_POINT - 1) {
+                        adapter.addCharacters(characters, lastIndex);
                         lastIndex = characters.size();
                     }
                 }
             }
-
         });
     }
 
@@ -80,9 +78,11 @@ public class CharacterActivity extends BaseActivity {
         private ArrayList<Integer> mFilteredPositions = new ArrayList<>();
         private ArrayList<Integer> mWorkingPositions = new ArrayList<>();
         private int mSize = 0;
+        private String mLastQuery = "";
 
-        void addCharacters(List<Pair<String, String>> characters) {
-            mCharacters.addAll(characters);
+        void addCharacters(List<Pair<String, String>> characters, int start) {
+            for(int i = start; i < characters.size(); i++) mCharacters.add(characters.get(i));
+
             final int originalSize = mFilteredPositions.size();
             for(int i = originalSize; i < mCharacters.size(); i++) {
                 mFilteredPositions.add(i);
@@ -95,17 +95,25 @@ public class CharacterActivity extends BaseActivity {
 
         void filter(String query) {
             AsyncTask.execute(() -> {
-
                 mWorkingPositions = new ArrayList<>();
                 if(query.isEmpty()) {
                     for(int i = 0; i < mCharacters.size(); i++) {
                         mWorkingPositions.add(i);
                     }
+                } else if(query.startsWith(mLastQuery)) {
+                    for(int i = 0; i < mFilteredPositions.size(); i++) {
+                        if(mCharacters.get(mFilteredPositions.get(i)).second.contains(query)) {
+                            mWorkingPositions.add(mFilteredPositions.get(i));
+                        }
+                    }
                 } else {
                     for(int i = 0; i < mCharacters.size(); i++) {
-                        if(mCharacters.get(i).second.contains(query)) mWorkingPositions.add(i);
+                        if(mCharacters.get(i).second.contains(query)) {
+                            mWorkingPositions.add(i);
+                        }
                     }
                 }
+                mLastQuery = query;
                 CharacterActivity.this.runOnUiThread(() -> {
                     mFilteredPositions = mWorkingPositions;
                     mSize = mFilteredPositions.size();

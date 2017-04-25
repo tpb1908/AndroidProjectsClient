@@ -72,23 +72,26 @@ public class EmojiActivity extends BaseActivity {
                 final String[] common = prefs.getString("common", "").split(",");
                 for(String s : common) {
                     final Emoji e = EmojiLoader.getEmojiForAlias(s);
-                    if(e != null) mEmojis.add(0, e);
+                    if(e != null) {
+                        mEmojis.remove(e);
+                        mEmojis.add(0, e);
+                    }
                 }
             }
             mFilteredEmojis.addAll(mEmojis);
         }
 
         void filter(String query) {
+            mFilteredEmojis.clear();
             if(query.isEmpty()) {
                 mFilteredEmojis.addAll(mEmojis);
-                return;
-            }
-            mFilteredEmojis.clear();
-            for(Emoji e : mEmojis) {
-                for(String s : e.getAliases()) {
-                    if(s.contains(query)) {
-                        mFilteredEmojis.add(e);
-                        break;
+            } else {
+                for(Emoji e : mEmojis) {
+                    for(String s : e.getAliases()) {
+                        if(s.contains(query)) {
+                            mFilteredEmojis.add(e);
+                            break;
+                        }
                     }
                 }
             }
@@ -133,24 +136,24 @@ public class EmojiActivity extends BaseActivity {
 
     }
 
-    private void choose(String emoji) {
+    private void choose(String alias) {
         String common = "";
         if(mCommonEmojis.getString("common", null) != null) {
             String current = mCommonEmojis.getString("common", "");
-            if(current.contains(emoji)) {
-                final int index = current.indexOf(emoji);
-                current = current.substring(0, index) + current.substring(index + emoji.length());
+            if(current.contains(alias)) {
+                final int index = current.indexOf(alias);
+                current = current.substring(0, index) + current.substring(index + alias.length());
             }
-            if(TextUtils.instancesOf(current, ",") > 5) {
+            if(TextUtils.instancesOf(current, ",") > 8) {
                 current = current.substring(current.indexOf(',') + 1);
             }
-            common += current;
+            common = current;
         }
-        common += "," + emoji;
+        common += "," + alias;
         mCommonEmojis.edit().putString("common", common).apply();
 
         final Intent result = new Intent();
-        result.putExtra(getString(R.string.intent_emoji), emoji);
+        result.putExtra(getString(R.string.intent_emoji), alias);
         setResult(RESULT_OK, result);
         finish();
     }

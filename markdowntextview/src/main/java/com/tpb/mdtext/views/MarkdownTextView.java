@@ -120,12 +120,12 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
         mSpanCache = new WeakReference<>(cache);
         //If we have a handler use it
         if(mParseHandler != null) {
-            mParseHandler.postDelayed(new Runnable() {
+            mParseHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     parseAndSetMd(markdown, imageGetter);
                 }
-            }, 1);
+            });
         } else {
             parseAndSetMd(markdown, imageGetter);
         }
@@ -159,7 +159,7 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
                 setMarkdownText(buffer);
             } else {
                 //Post back on UI thread
-                MarkdownTextView.this.post(new Runnable() {
+                MarkdownTextView.this.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         setMarkdownText(buffer);

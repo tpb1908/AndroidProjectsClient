@@ -25,7 +25,6 @@ import com.tpb.github.data.Uploader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
 import com.tpb.projects.common.CircularRevealActivity;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 
 import java.io.ByteArrayOutputStream;
@@ -53,13 +52,9 @@ public abstract class EditorActivity extends CircularRevealActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == AppCompatActivity.RESULT_OK) {
             if(requestCode == EmojiActivity.REQUEST_CODE_CHOOSE_EMOJI) {
-                if(data.hasExtra(getString(R.string.intent_emoji))) {
-                    emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
-                }
+                emojiChosen(data.getStringExtra(getString(R.string.intent_emoji)));
             } else if(requestCode == CharacterActivity.REQUEST_CODE_INSERT_CHARACTER) {
-                if(data.hasExtra(getString(R.string.intent_character))) {
-                    insertString(data.getStringExtra(getString(R.string.intent_character)));
-                }
+                insertString(data.getStringExtra(getString(R.string.intent_character)));
             } else {
                 final ProgressDialog pd = new ProgressDialog(this);
                 pd.setCanceledOnTouchOutside(false);
@@ -82,11 +77,10 @@ public abstract class EditorActivity extends CircularRevealActivity {
                     pd.show();
                     AsyncTask.execute(() -> {
                         try {
-                            final String image = attemptLoadPicture(selectedFile);
+                            final String image = attemptLoadImage(selectedFile);
                             pd.cancel();
                             uploadImage(image);
                         } catch(IOException ioe) {
-                            Logger.e(TAG, "onActivityResult: ", ioe);
                             pd.cancel();
                             imageLoadException(ioe);
                         }
@@ -110,25 +104,27 @@ public abstract class EditorActivity extends CircularRevealActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.text_upload_an_image));
         builder.setItems(items, (dialog, which) -> {
-            if(mUploadDialog == null) {
-                mUploadDialog = new ProgressDialog(EditorActivity.this);
-                mUploadDialog.setTitle(R.string.title_image_upload);
-                mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            }
-            if(which == 0) {
-                attemptTakePicture();
-            } else if(which == 1) {
-                final Intent intent = new Intent(
-                        Intent.ACTION_GET_CONTENT,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                );
-                intent.setType("image/*");
-                startActivityForResult(intent, SELECT_FILE);
-
+            if(which == 3) {
+                dialog.dismiss();
             } else if(which == 2) {
                 displayImageLinkDialog();
-            } else if(which == 3) {
-                dialog.dismiss();
+            } else {
+                if(mUploadDialog == null) {
+                    mUploadDialog = new ProgressDialog(EditorActivity.this);
+                    mUploadDialog.setTitle(R.string.title_image_upload);
+                    mUploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                }
+                if(which == 0) {
+                    attemptTakePicture();
+                } else if(which == 1) {
+                    final Intent intent = new Intent(
+                            Intent.ACTION_GET_CONTENT,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    );
+                    intent.setType("image/*");
+                    startActivityForResult(intent, SELECT_FILE);
+
+                }
             }
         });
         builder.show();
@@ -181,7 +177,8 @@ public abstract class EditorActivity extends CircularRevealActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_CAMERA);
             } else {
-                imageLoadException(new IOException(getString(R.string.error_image_file_not_created)));
+                imageLoadException(
+                        new IOException(getString(R.string.error_image_file_not_created)));
             }
         } else {
             Toast.makeText(this, R.string.error_no_application_for_picture, Toast.LENGTH_SHORT)
@@ -203,37 +200,38 @@ public abstract class EditorActivity extends CircularRevealActivity {
         return image;
     }
 
-    private String attemptLoadPicture(Uri uri) throws IOException {
+    private String attemptLoadImage(Uri uri) throws IOException {
         // Open FileDescriptor in read mode
         final ParcelFileDescriptor parcelFileDescriptor =
                 getContentResolver().openFileDescriptor(uri, "r");
         final FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-
         //Decode to a bitmap, and convert to a byte array
         final Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] array = stream.toByteArray();
         //Return base64 string for Imgur
-        return Base64.encodeToString(array, Base64.DEFAULT);
+        return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
     private void uploadImage(String image64) {
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> mUploadDialog.show());
-        new Uploader().uploadImage(new Uploader.ImgurUploadListener() {
-                                       @Override
-                                       public void imageUploaded(String link) {
-                                           Logger.i(TAG, "imageUploaded: Image uploaded " + link);
-                                           mUploadDialog.cancel();
-                                           final String snippet = String.format(getString(R.string.text_image_link), link);
-                                           imageLoadComplete(snippet);
-                                       }
+        Uploader.uploadImage(
+                new Uploader.ImgurUploadListener() {
+                                 @Override
+                                 public void imageUploaded(String link) {
+                                     mUploadDialog.cancel();
+                                     final String snippet = String.format(getString(R.string.text_image_link), link);
+                                     imageLoadComplete(snippet);
+                                 }
 
-                                       @Override
-                                       public void uploadError(ANError error) {
-                                           //TODO Error message
-                                       }
-                                   }, image64, (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)),
+                                 @Override
+                                 public void uploadError(ANError error) {
+                                     mUploadDialog.cancel();
+                                     Toast.makeText(EditorActivity.this, error.getErrorBody(), Toast.LENGTH_SHORT).show();
+                                 }
+                             },
+                image64,
+                (bUP, bTotal) -> mUploadDialog.setProgress(Math.round((100 * bUP) / bTotal)),
                 BuildConfig.IMGUR_CLIENT_ID
         );
     }

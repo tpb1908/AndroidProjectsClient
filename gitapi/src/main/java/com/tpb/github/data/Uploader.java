@@ -21,11 +21,7 @@ public class Uploader {
     private static final String IMGUR_AUTH_KEY = "Authorization";
     private static final String IMGUR_AUTH_FORMAT = "Client-ID %1$s";
 
-    public Uploader() {
-
-    }
-
-    public void uploadImage(@NonNull final ImgurUploadListener listener, String image64, @Nullable UploadProgressListener uploadListener, @NonNull String clientId) {
+    public static void uploadImage(@NonNull final ImgurUploadListener listener, String image64, @Nullable UploadProgressListener uploadListener, @NonNull String clientId) {
         AndroidNetworking.upload("https://api.imgur.com/3/image")
                          .addHeaders(IMGUR_AUTH_KEY, String.format(IMGUR_AUTH_FORMAT,
                                  clientId
@@ -38,8 +34,7 @@ public class Uploader {
                              @Override
                              public void onResponse(JSONObject response) {
                                  try {
-                                     final String link = response.getJSONObject("data")
-                                                                 .getString("link");
+                                     final String link = response.getJSONObject("data").getString("link");
                                      listener.imageUploaded(link);
                                  } catch(Exception e) {
                                      Log.e("Uploader", "onResponse: ", e);
