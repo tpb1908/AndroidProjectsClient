@@ -18,10 +18,6 @@ Built using [the official GitHub API](https://developer.github.com/v3/projects/)
 
 * [HtmlTextView](https://github.com/SufficientlySecure/html-textview) Modified
 
-* [emoji-java](https://github.com/vdurmont/emoji-java)
-
-* [MarkedView](https://github.com/mittsuu/MarkedView-for-Android)
-
 * [CWAC Pager](https://github.com/commonsguy/cwac-pager)
 
 * [AOSP support library](https://developer.android.com/tools/support-library/features.html)

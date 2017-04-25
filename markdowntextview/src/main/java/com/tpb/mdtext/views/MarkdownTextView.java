@@ -13,6 +13,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -167,6 +168,7 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
                 });
             }
         } catch(Exception e) {
+            Log.e("TextView", "WTF", e);
             markdown = "Error parsing markdown\n\n\n" + Html.fromHtml(Html.escapeHtml(markdown));
             setText(markdown);
         }
