@@ -185,9 +185,9 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
             }
 
             commentHolder.mText.setMarkdown(
-                    Markdown.formatMD(builder.toString()),
+                    builder.toString(),
                     new HttpImageGetter(commentHolder.mText),
-                    text -> mComments.set(pos, new Pair<>(comment, text))
+                    text -> mComments.set(pos, Pair.create(comment, text))
             );
         } else {
             commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());

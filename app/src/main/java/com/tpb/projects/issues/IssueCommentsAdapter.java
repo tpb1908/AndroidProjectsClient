@@ -182,7 +182,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             holder.mText.setMarkdown(
                     builder.toString(),
                     new HttpImageGetter(holder.mText),
-                    text -> mComments.set(pos, new Pair<>(comment, text))
+                    text -> mComments.set(pos, Pair.create(comment, text))
             );
         } else {
             holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());

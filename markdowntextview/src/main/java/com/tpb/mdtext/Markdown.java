@@ -3,6 +3,7 @@ package com.tpb.mdtext;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
+import android.text.Html;
 
 import com.tpb.mdtext.emoji.Emoji;
 import com.tpb.mdtext.emoji.EmojiLoader;
@@ -95,7 +96,7 @@ public class Markdown {
                     html.line();
                     html.tag("code");
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(),
-                            block.getLiteral().replace(" ", "&nbsp;").replace("\n", "<br>")
+                            Html.escapeHtml(block.getLiteral()).replace(" ", "&nbsp;").replace("\n", "<br>")
                     ));
                     html.tag("/code");
                     html.tag("br");
@@ -105,7 +106,7 @@ public class Markdown {
                     if(block.getInfo() != null && !block.getInfo().isEmpty()) {
                         // TODO Highlight string
                     }
-                    html.raw(block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;"));
+                    html.raw(Html.escapeHtml(block.getLiteral()).replace("\n", "<br>").replace(" ", "&nbsp;"));
                     html.tag("/inlinecode");
                     html.tag("br");
                 }
@@ -206,6 +207,9 @@ public class Markdown {
                 i = parseUsername(builder, chars, i);
             } else if(chars[i] == '#' && isWhiteSpace(p) && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);
+            }  else if(chars[i] == ']' && p == '[' && pp =='!') {
+                builder.setLength(builder.length() - 2);
+                builder.append("![No description]");
             } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2611");  //☑ ballot box with check
