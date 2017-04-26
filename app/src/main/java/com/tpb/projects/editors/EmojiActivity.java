@@ -87,10 +87,20 @@ public class EmojiActivity extends BaseActivity {
                 mFilteredEmojis.addAll(mEmojis);
             } else {
                 for(Emoji e : mEmojis) {
+                    boolean added = false;
                     for(String s : e.getAliases()) {
                         if(s.contains(query)) {
                             mFilteredEmojis.add(e);
+                            added = true;
                             break;
+                        }
+                    }
+                    if(!added) {
+                        for(String s : e.getTags()) {
+                            if(s.contains(query)) {
+                                mFilteredEmojis.add(e);
+                                break;
+                            }
                         }
                     }
                 }

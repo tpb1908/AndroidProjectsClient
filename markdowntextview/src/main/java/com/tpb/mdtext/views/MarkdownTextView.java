@@ -160,12 +160,12 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
                 setMarkdownText(buffer);
             } else {
                 //Post back on UI thread
-                MarkdownTextView.this.getHandler().post(new Runnable() {
+                MarkdownTextView.this.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         setMarkdownText(buffer);
                     }
-                });
+                }, 17);
             }
         } catch(Exception e) {
             Log.e("TextView", "WTF", e);

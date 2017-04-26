@@ -51,7 +51,6 @@ public class ClickableMovementMethod extends LinkMovementMethod {
                     clickable[0].onClick(widget);
                     triggerSpanHit(widget);
                 }
-
                 return true;
             } else {
                 Selection.removeSelection(buffer);
