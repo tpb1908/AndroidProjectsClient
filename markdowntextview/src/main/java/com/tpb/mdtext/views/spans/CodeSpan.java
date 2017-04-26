@@ -12,6 +12,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ReplacementSpan;
+import android.util.Base64;
 
 import com.tpb.mdtext.TextUtils;
 import com.tpb.mdtext.handlers.CodeClickHandler;
@@ -48,6 +49,7 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
         } else {
             mCode = code;
         }
+        mCode = new String(Base64.decode(mCode, Base64.DEFAULT));
     }
 
     @Override
@@ -88,6 +90,7 @@ public class CodeSpan extends ReplacementSpan implements WrappingClickableSpan.W
     }
 
     public void onClick() {
+
         if(mHandler.get() != null) mHandler.get().codeClicked(mCode, mLanguage);
     }
 

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
 import android.text.Html;
+import android.util.Base64;
 
 import com.tpb.mdtext.emoji.Emoji;
 import com.tpb.mdtext.emoji.EmojiLoader;
@@ -96,7 +97,7 @@ public class Markdown {
                     html.line();
                     html.tag("code");
                     html.raw(String.format("[%1$s]%2$s<br>", block.getInfo(),
-                            Html.escapeHtml(block.getLiteral()).replace(" ", "&nbsp;").replace("\n", "<br>")
+                                    Base64.encodeToString(block.getLiteral().getBytes(), Base64.DEFAULT)
                     ));
                     html.tag("/code");
                     html.tag("br");

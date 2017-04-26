@@ -90,6 +90,36 @@ class MarkdownButtonAdapter {
                                               .inflate(R.layout.shard_markdown_button, mScrollView,
                                                       false
                                               );
+        preview.setImageResource(R.drawable.ic_check_box_checked);
+        preview.setOnClickListener((v) -> {
+            if(mListener != null) mListener.snippetEntered(" [x] ", 5);
+        });
+        mScrollView.addView(preview);
+
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
+        preview.setImageResource(R.drawable.ic_check_box_empty);
+        preview.setOnClickListener((v) -> {
+            if(mListener != null) mListener.snippetEntered(" [] ", 4);
+        });
+        mScrollView.addView(preview);
+
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
+        preview.setImageResource(R.drawable.ic_horizontal_rule);
+        preview.setOnClickListener((v) -> {
+            if(mListener != null) mListener.snippetEntered("\n---\n ", 5);
+        });
+        mScrollView.addView(preview);
+
+        preview = (ImageButton) LayoutInflater.from(mParent)
+                                              .inflate(R.layout.shard_markdown_button, mScrollView,
+                                                      false
+                                              );
         preview.setImageResource(R.drawable.ic_format_list_bulleted);
         preview.setOnClickListener((v) -> {
             if(mListener != null) mListener.snippetEntered(" * ", 3);
