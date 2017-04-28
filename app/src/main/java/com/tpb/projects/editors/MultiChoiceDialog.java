@@ -37,10 +37,10 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
         builder.setTitle(titleRes);
         builder.setMultiChoiceItems(choices, checked, (dialogInterface, i, b) -> checked[i] = b);
         builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-            if(listener != null) listener.ChoicesComplete(choices, checked);
+            if(listener != null) listener.choicesComplete(choices, checked);
         });
         builder.setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {
-            if(listener != null) listener.ChoicesCancelled();
+            if(listener != null) listener.choicesCancelled();
         });
         final AlertDialog dialog = builder.create();
         listView = dialog.getListView();
@@ -52,9 +52,8 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
         return dialog;
     }
 
-    ;
-
     private void addBackgroundSetterListener() {
+        final SpannableStringBuilder[] cache = new SpannableStringBuilder[choices.length];
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -67,35 +66,41 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
-                for(int i = 0; i < visibleCount; i++) {
+                for(int i = firstVisible; i < firstVisible + visibleCount; i++) {
                     try {
-                        final SpannableStringBuilder builder = new SpannableStringBuilder();
-                        builder.append(choices[firstVisible + i]);
-                        builder.setSpan(
-                                new BackgroundColorSpan(colors[firstVisible + i]),
-                                0,
-                                builder.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                        );
-                        builder.setSpan(
-                                new ForegroundColorSpan(
-                                        TextUtils
-                                                .getTextColorForBackground(colors[firstVisible + i])
-                                ),
-                                0,
-                                builder.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                        );
+                        if(cache[i] == null) {
+                            final SpannableStringBuilder builder = new SpannableStringBuilder();
+                            builder.append(choices[i]);
+                            builder.setSpan(
+                                    new BackgroundColorSpan(colors[i]),
+                                    0,
+                                    builder.length(),
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            );
+                            builder.setSpan(
+                                    new ForegroundColorSpan(
+                                            TextUtils
+                                                    .getTextColorForBackground(
+                                                            colors[i])
+                                    ),
+                                    0,
+                                    builder.length(),
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            );
+                            cache[i] = builder;
+
+                        }
                         ((AppCompatCheckedTextView) listView.getChildAt(i))
-                                .setText(builder);
+                                .setText(cache[i]);
                     } catch(ClassCastException ignored) {
                     }
+
                 }
             }
         });
     }
 
-    public void setTextColors(int[] colors) {
+    public void setBackgroundColors(int[] colors) {
         this.colors = colors;
     }
 
@@ -110,9 +115,9 @@ public class MultiChoiceDialog extends KeyboardDismissingDialogFragment {
 
     public interface MultiChoiceDialogListener {
 
-        void ChoicesComplete(String[] choices, boolean[] checked);
+        void choicesComplete(String[] choices, boolean[] checked);
 
-        void ChoicesCancelled();
+        void choicesCancelled();
 
     }
 }

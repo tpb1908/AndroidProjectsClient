@@ -116,7 +116,7 @@ public class MilestoneEditor extends EditorActivity implements Loader.ItemLoader
         });
 
         new MarkdownButtonAdapter(this, mEditButtons,
-                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                new MarkdownButtonAdapter.MarkdownButtonListener() {
                     @Override
                     public void snippetEntered(String snippet, int relativePosition) {
                         if(mTitleEditor.hasFocus()) {

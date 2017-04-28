@@ -302,7 +302,7 @@ public class Markdown {
         for(int i = pos + 1; i < cs.length; i++) {
             if(cs[i] >= '0' && cs[i] <= '9' && i != cs.length - 1) {
                 numBuilder.append(cs[i]);
-            } else if((isWhiteSpace(cs[i]) || isLineEnding(cs, i)))  {
+            } else if((isWhiteSpace(cs[i]) || isLineEnding(cs, i)) && (i > pos + 1 || i == cs.length - 1))  {
                 if(i == cs.length - 1) {
                     if(cs[i] >= '0' && cs[i] <= '9') {
                         numBuilder.append(cs[i]);
@@ -400,3 +400,4 @@ public class Markdown {
 
 
 }
+

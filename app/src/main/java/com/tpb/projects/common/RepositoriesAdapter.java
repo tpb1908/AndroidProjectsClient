@@ -3,6 +3,7 @@ package com.tpb.projects.common;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +17,12 @@ import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
 import com.tpb.github.data.auth.GitHubSession;
 import com.tpb.github.data.models.Repository;
+import com.tpb.github.data.models.State;
 import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.flow.IntentHandler;
+import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.util.Util;
 
 import java.util.ArrayList;
@@ -34,7 +37,6 @@ import butterknife.ButterKnife;
  */
 
 public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.RepoHolder> implements Loader.ListLoader<Repository> {
-    private static final String TAG = RepositoriesAdapter.class.getSimpleName();
 
     private final Loader mLoader;
     private final SwipeRefreshLayout mRefresher;
@@ -42,7 +44,6 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     private final String mAuthenticatedUser;
     private String mUser;
     private final RepoPinChecker mPinChecker;
-    private final RepoOpener mOpener;
     private final Activity mActivity;
     private int mPage = 1;
     private boolean mIsLoading = false;
@@ -50,10 +51,9 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
 
     private boolean mIsShowingStars = false;
 
-    public RepositoriesAdapter(Activity activity, RepoOpener opener, SwipeRefreshLayout refresher) {
+    public RepositoriesAdapter(Activity activity, SwipeRefreshLayout refresher) {
         mActivity = activity;
         mLoader = Loader.getLoader(activity);
-        mOpener = opener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
         mRefresher.setOnRefreshListener(() -> {
@@ -167,8 +167,8 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     public void listLoadComplete(List<Repository> repos) {
         mRefresher.setRefreshing(false);
         mIsLoading = false;
-        if(repos.size() > 0) {
-            int oldLength = mRepos.size();
+        if(!repos.isEmpty()) {
+            final int oldLength = mRepos.size();
             if(mIsShowingStars) {
                 mRepos.addAll(repos);
             } else {
@@ -227,7 +227,15 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     private void openItem(int pos) {
-        mOpener.openRepo(mRepos.get(pos));
+        final Repository repo = mRepos.get(pos);
+        final Intent i = new Intent(mActivity, RepoActivity.class);
+        i.putExtra(mActivity.getString(R.string.intent_repo), repo);
+        Loader.getLoader(mActivity)
+              .loadProjects(null, repo.getFullName())
+              .loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0)
+              .loadProjects(null, repo.getFullName());
+        mActivity.startActivity(i);
+        mActivity.overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
     class RepoHolder extends RecyclerView.ViewHolder {
@@ -316,12 +324,6 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             }
             return repos;
         }
-
-    }
-
-    public interface RepoOpener {
-
-        void openRepo(Repository repo);
 
     }
 

@@ -33,7 +33,6 @@ import butterknife.OnClick;
  */
 
 public class CommentEditor extends EditorActivity {
-    private static final String TAG = CommentEditor.class.getSimpleName();
 
     public static final int REQUEST_CODE_NEW_COMMENT = 1799;
     public static final int REQUEST_CODE_EDIT_COMMENT = 5734;
@@ -78,12 +77,12 @@ public class CommentEditor extends EditorActivity {
         mEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = mHasBeenEdited || mEditor.isEditing();
+                mHasBeenEdited |= mEditor.isEditing();
             }
         });
 
         new MarkdownButtonAdapter(this, mEditButtons,
-                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                new MarkdownButtonAdapter.MarkdownButtonListener() {
                     @Override
                     public void snippetEntered(String snippet, int relativePosition) {
                         if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
@@ -100,8 +99,7 @@ public class CommentEditor extends EditorActivity {
                     public void previewCalled() {
                         if(mEditor.isEditing()) {
                             mEditor.saveText();
-                            String repo = null;
-                            if(mIssue != null) repo = mIssue.getRepoFullName();
+                            final String repo = mIssue == null ? null : mIssue.getRepoFullName();
                             mEditor.disableEditing();
                             mEditor.setMarkdown(
                                     Markdown.formatMD(mEditor.getInputText().toString(), repo),

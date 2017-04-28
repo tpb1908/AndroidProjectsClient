@@ -12,6 +12,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.tpb.mdtext.ClickableMovementMethod;
 import com.tpb.mdtext.HtmlTagHandler;
@@ -104,31 +105,37 @@ public class MarkdownEditText extends AppCompatEditText {
         setMarkdown(convertStreamToString(inputStreamText), imageGetter);
     }
 
-    public void setMarkdown(@NonNull final String markdown, @Nullable final Html.ImageGetter imageGetter) {
+    public void setMarkdown(@NonNull String markdown, @Nullable final Html.ImageGetter imageGetter) {
         // Override tags to stop Html.fromHtml destroying some of them
         final String overridden = HtmlTagHandler.overrideTags(Markdown.parseMD(markdown));
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(this,
                 imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
         );
-        final Spanned text;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            text = removeHtmlBottomPadding(
-                    Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
-                            htmlTagHandler
-                    ));
-        } else {
-            text = removeHtmlBottomPadding(
-                    Html.fromHtml(overridden, imageGetter, htmlTagHandler));
-        }
+        try {
+            final Spanned text;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                text = removeHtmlBottomPadding(
+                        Html.fromHtml(overridden, Html.FROM_HTML_MODE_LEGACY, imageGetter,
+                                htmlTagHandler
+                        ));
+            } else {
+                text = removeHtmlBottomPadding(
+                        Html.fromHtml(overridden, imageGetter, htmlTagHandler));
+            }
 
-        // Convert to a buffer to allow editing
-        final SpannableString buffer = new SpannableString(text);
+            // Convert to a buffer to allow editing
+            final SpannableString buffer = new SpannableString(text);
 
-        //Add links for emails and web-urls
-        TextUtils.addLinks(buffer);
-        setText(buffer);
-        if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
-            setMovementMethod(ClickableMovementMethod.getInstance());
+            //Add links for emails and web-urls
+            TextUtils.addLinks(buffer);
+            setText(buffer);
+            if(!(getMovementMethod() instanceof ClickableMovementMethod)) {
+                setMovementMethod(ClickableMovementMethod.getInstance());
+            }
+        } catch(Exception e) {
+            Log.e("TextView", "WTF", e);
+            markdown = "Error parsing markdown\n\n\n" + Html.fromHtml(Html.escapeHtml(markdown));
+            setText(markdown);
         }
     }
 

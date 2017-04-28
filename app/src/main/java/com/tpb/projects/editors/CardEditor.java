@@ -43,8 +43,6 @@ import butterknife.OnClick;
  */
 
 public class CardEditor extends EditorActivity {
-    private static final String TAG = CardEditor.class.getSimpleName();
-
     public static final int REQUEST_CODE_NEW_CARD = 1606;
     public static final int REQUEST_CODE_EDIT_CARD = 7180;
 
@@ -87,13 +85,11 @@ public class CardEditor extends EditorActivity {
         }
 
         new MarkdownButtonAdapter(this, mEditButtons,
-                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                new MarkdownButtonAdapter.MarkdownButtonListener() {
                     @Override
                     public void snippetEntered(String snippet, int relativePosition) {
                         if(mEditor.hasFocus() && mEditor.isEnabled() && mEditor.isEditing()) {
-                            final int start = Math.max(mEditor.getSelectionStart(), 0);
-                            mEditor.getText().insert(start, snippet);
-                            mEditor.setSelection(start + relativePosition);
+                            Util.insertString(mEditor, snippet, relativePosition);
                         }
                     }
 
@@ -108,7 +104,7 @@ public class CardEditor extends EditorActivity {
                             mEditor.saveText();
                             mEditor.disableEditing();
                             mEditor.setMarkdown(
-                                    Markdown.formatMD(mEditor.getInputText().toString(), null),
+                                    Markdown.formatMD(mEditor.getInputText().toString()),
                                     new HttpImageGetter(mEditor)
                             );
                         } else {
@@ -143,7 +139,7 @@ public class CardEditor extends EditorActivity {
         mEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = mHasBeenEdited || mEditor.isEditing();
+                mHasBeenEdited |= mEditor.isEditing();
             }
         });
     }

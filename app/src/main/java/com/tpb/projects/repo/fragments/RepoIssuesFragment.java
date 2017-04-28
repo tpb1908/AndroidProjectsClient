@@ -208,10 +208,10 @@ public class RepoIssuesFragment extends RepoFragment {
 
 
                 mcd.setChoices(labelTexts, choices);
-                mcd.setTextColors(colors);
+                mcd.setBackgroundColors(colors);
                 mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
                     @Override
-                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                    public void choicesComplete(String[] choices, boolean[] checked) {
                         mLabelsFilter.clear();
                         for(int i = 0; i < choices.length; i++) {
                             if(checked[i]) {
@@ -222,7 +222,7 @@ public class RepoIssuesFragment extends RepoFragment {
                     }
 
                     @Override
-                    public void ChoicesCancelled() {
+                    public void choicesCancelled() {
 
                     }
                 });

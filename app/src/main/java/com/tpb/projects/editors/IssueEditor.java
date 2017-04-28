@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewStub;
@@ -27,7 +28,6 @@ import com.tpb.mdtext.views.MarkdownEditText;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.markdown.Formatter;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.input.KeyBoardVisibilityChecker;
@@ -100,35 +100,35 @@ public class IssueEditor extends EditorActivity {
             }
 
             if(mLaunchIssue.getLabels() != null && mLaunchIssue.getLabels().length > 0) {
-                final ArrayList<String> labels = new ArrayList<>();
-                final ArrayList<Integer> colours = new ArrayList<>();
+                final ArrayList<Pair<String, Integer>> labels = new ArrayList<>();
                 for(Label l : mLaunchIssue.getLabels()) {
-                    labels.add(l.getName());
-                    colours.add(l.getColor());
+                    labels.add(Pair.create(l.getName(), l.getColor()));
                 }
-                setLabelsText(labels, colours);
+                setLabelsText(labels);
             }
 
         } else if(launchIntent.hasExtra(getString(R.string.parcel_card))) {
             mLaunchCard = launchIntent.getParcelableExtra(getString(R.string.parcel_card));
-            //Split the first line of the card to use as a title
-            final String[] text = mLaunchCard.getNote().split("\n", 2);
-            //If the title is too long we ellipsize it
-            if(text[0].length() > 140) {
-                text[1] = "..." + text[0].substring(137) + text[1];
-                text[0] = text[0].substring(0, 137) + "...";
+
+            final String note = mLaunchCard.getNote();
+            int index = note.indexOf("\n");
+            if(index == -1) index = 137;
+            if(index < note.length()) {
+                mTitleEdit.setText(note.substring(0, index) + "...");
+                mBodyEdit.setText("..." + note.substring(index));
+            } else {
+                mTitleEdit.setText(note);
             }
-            mTitleEdit.setText(text[0]);
-            if(text.length > 1) {
-                mBodyEdit.setText(text[1]);
-            }
+
+        } else {
+            finish();
         }
 
         final SimpleTextChangeWatcher editWatcher = new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
 
-                mHasBeenEdited = mHasBeenEdited || mBodyEdit.isEditing();
+                mHasBeenEdited |= mBodyEdit.isEditing();
             }
         };
 
@@ -156,23 +156,11 @@ public class IssueEditor extends EditorActivity {
         );
 
         new MarkdownButtonAdapter(this, mEditButtons,
-                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                new MarkdownButtonAdapter.MarkdownButtonListener() {
                     @Override
                     public void snippetEntered(String snippet, int relativePosition) {
                         mHasBeenEdited = true;
-                        //Check which EditText has focus and insert into the correct one
-                        if(mTitleEdit.hasFocus()) {
-                            final int start = Math.max(mTitleEdit.getSelectionStart(), 0);
-                            mTitleEdit.getText().insert(start, snippet);
-                            mTitleEdit.setSelection(start + relativePosition);
-                        } else if(mBodyEdit.hasFocus() && mBodyEdit.isEditing()) {
-                            final int start = Math.max(mBodyEdit.getSelectionStart(), 0);
-                            mBodyEdit.getText().insert(start, snippet);
-                            Logger.i(TAG,
-                                    "snippetEntered: Setting selection " + (start + relativePosition)
-                            );
-                            mBodyEdit.setSelection(start + relativePosition);
-                        }
+                        Util.insertString(mBodyEdit, snippet, relativePosition);
                     }
 
                     @Override
@@ -187,6 +175,7 @@ public class IssueEditor extends EditorActivity {
                             String repo = null;
                             if(mLaunchIssue != null) repo = mLaunchIssue.getRepoFullName();
                             mBodyEdit.disableEditing();
+                            mTitleEdit.setEnabled(false);
                             mBodyEdit.setMarkdown(
                                     Markdown.formatMD(mBodyEdit.getInputText().toString(), repo),
                                     new HttpImageGetter(mBodyEdit)
@@ -195,6 +184,7 @@ public class IssueEditor extends EditorActivity {
                         } else {
                             mBodyEdit.restoreText();
                             mBodyEdit.enableEditing();
+                            mTitleEdit.setEnabled(true);
                             if(!mKeyBoardChecker.isKeyboardOpen()) {
                                 mInfoLayout.setVisibility(View.VISIBLE);
                             }
@@ -223,14 +213,12 @@ public class IssueEditor extends EditorActivity {
                 final boolean[] checked = new boolean[names.length];
                 for(int i = 0; i < names.length; i++) {
                     names[i] = collaborators.get(i).getLogin();
-                    if(mAssignees.indexOf(names[i]) != -1) {
-                        checked[i] = true;
-                    }
+                    checked[i] = mAssignees.indexOf(names[i]) != -1;
                 }
                 mcd.setChoices(names, checked);
                 mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
                     @Override
-                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                    public void choicesComplete(String[] choices, boolean[] checked) {
                         mAssignees.clear();
                         for(int i = 0; i < choices.length; i++) {
                             if(checked[i]) mAssignees.add(choices[i]);
@@ -240,7 +228,7 @@ public class IssueEditor extends EditorActivity {
                     }
 
                     @Override
-                    public void ChoicesCancelled() {
+                    public void choicesCancelled() {
 
                     }
                 });
@@ -267,7 +255,6 @@ public class IssueEditor extends EditorActivity {
         Loader.getLoader(this).loadLabels(new Loader.ListLoader<Label>() {
             @Override
             public void listLoadComplete(List<Label> labels) {
-                Logger.i(TAG, "listLoadComplete: " + labels.toString());
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
 
                 final Bundle b = new Bundle();
@@ -284,26 +271,24 @@ public class IssueEditor extends EditorActivity {
                 }
 
                 mcd.setChoices(labelTexts, choices);
-                mcd.setTextColors(colors);
+                mcd.setBackgroundColors(colors);
                 mcd.setListener(new MultiChoiceDialog.MultiChoiceDialogListener() {
                     @Override
-                    public void ChoicesComplete(String[] choices, boolean[] checked) {
+                    public void choicesComplete(String[] choices, boolean[] checked) {
                         mSelectedLabels.clear();
-                        final ArrayList<String> labels = new ArrayList<>();
-                        final ArrayList<Integer> colours = new ArrayList<>();
+                        final ArrayList<Pair<String, Integer>> labels = new ArrayList<>();
                         for(int i = 0; i < choices.length; i++) {
                             if(checked[i]) {
                                 mSelectedLabels.add(choices[i]);
-                                labels.add(choices[i]);
-                                colours.add(colors[i]);
+                                labels.add(Pair.create(choices[i], colors[i]));
                             }
                         }
-                        setLabelsText(labels, colours);
+                        setLabelsText(labels);
                         mHasBeenEdited = true;
                     }
 
                     @Override
-                    public void ChoicesCancelled() {
+                    public void choicesCancelled() {
 
                     }
                 });
@@ -322,13 +307,13 @@ public class IssueEditor extends EditorActivity {
     }
 
     private void setAssigneesText() {
-        final StringBuilder builder = new StringBuilder();
-        for(String a : mAssignees) {
-            builder.append(
-                    String.format(getString(R.string.text_href), "https://github.com/" + a, a));
-            builder.append("<br>");
-        }
-        if(builder.length() > 0) {
+        if(!mAssignees.isEmpty()) {
+            final StringBuilder builder = new StringBuilder();
+            for(String a : mAssignees) {
+                builder.append(
+                        String.format(getString(R.string.text_href), "https://github.com/" + a, a));
+                builder.append("<br>");
+            }
             mAssigneesText.setVisibility(View.VISIBLE);
             mAssigneesText.setMarkdown(builder.toString());
         } else {
@@ -336,18 +321,19 @@ public class IssueEditor extends EditorActivity {
         }
     }
 
-    private void setLabelsText(ArrayList<String> names, ArrayList<Integer> colors) {
-        final StringBuilder builder = new StringBuilder();
+    private void setLabelsText(ArrayList<Pair<String, Integer>> labels) {
         mSelectedLabels.clear();
-        builder.append("<ul bulleted=\"false\">");
-        for(int i = 0; i < names.size(); i++) {
-            mSelectedLabels.add(names.get(i));
-            builder.append("<li>");
-            builder.append(Formatter.getLabelString(names.get(i), colors.get(i)));
-            builder.append("</li>");
-        }
-        builder.append("</ul>");
-        if(builder.length() > 0) {
+
+        if(!labels.isEmpty()) {
+            final StringBuilder builder = new StringBuilder();
+            builder.append("<ul bulleted=\"false\">");
+            for(Pair<String, Integer> p : labels) {
+                mSelectedLabels.add(p.first);
+                builder.append("<li>");
+                builder.append(Formatter.getLabelString(p.first, p.second));
+                builder.append("</li>");
+            }
+            builder.append("</ul>");
             mLabelsText.setVisibility(View.VISIBLE);
             mLabelsText.setMarkdown(builder.toString());
         } else {
@@ -386,14 +372,16 @@ public class IssueEditor extends EditorActivity {
         mLaunchIssue.setBody(mBodyEdit.getInputText().toString());
         done.putExtra(getString(R.string.parcel_issue), mLaunchIssue);
         if(mLaunchCard != null) done.putExtra(getString(R.string.parcel_card), mLaunchCard);
-        if(mSelectedLabels.size() > 0)
+        if(!mSelectedLabels.isEmpty()) {
             done.putExtra(getString(R.string.intent_issue_labels),
                     mSelectedLabels.toArray(new String[0])
             );
-        if(mAssignees.size() > 0)
+        }
+        if(!mAssignees.isEmpty()) {
             done.putExtra(getString(R.string.intent_issue_assignees),
                     mAssignees.toArray(new String[0])
             );
+        }
 
         setResult(RESULT_OK, done);
         mHasBeenEdited = false;

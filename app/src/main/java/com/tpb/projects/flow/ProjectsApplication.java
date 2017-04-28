@@ -32,6 +32,6 @@ public class ProjectsApplication extends Application {
         }
         EmojiLoader.loadEmojis(getAssets());
         mAnalytics = FirebaseAnalytics.getInstance(this);
-
     }
+
 }

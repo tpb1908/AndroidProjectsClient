@@ -1,6 +1,5 @@
 package com.tpb.projects.user.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,13 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
-import com.tpb.github.data.Loader;
-import com.tpb.github.data.models.Repository;
-import com.tpb.github.data.models.State;
 import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.FixedLinearLayoutManger;
-import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.common.RepositoriesAdapter;
 
 import butterknife.BindView;
@@ -28,7 +23,7 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserStarsFragment extends UserFragment implements RepositoriesAdapter.RepoOpener {
+public class UserStarsFragment extends UserFragment {
 
     private Unbinder unbinder;
 
@@ -45,7 +40,7 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mRecycler.enableLineDecoration();
-        mAdapter = new RepositoriesAdapter(getActivity(), this, mRefresher);
+        mAdapter = new RepositoriesAdapter(getActivity(), mRefresher);
         mRecycler.setAdapter(mAdapter);
 
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -68,16 +63,6 @@ public class UserStarsFragment extends UserFragment implements RepositoriesAdapt
         mUser = user;
         if(!areViewsValid()) return;
         mAdapter.setUser(user.getLogin(), true);
-    }
-
-    @Override
-    public void openRepo(Repository repo) {
-        final Intent i = new Intent(getContext(), RepoActivity.class);
-        i.putExtra(getString(R.string.intent_repo), repo);
-        Loader.getLoader(getContext()).loadProjects(null, repo.getFullName());
-        Loader.getLoader(getContext()).loadIssues(null, repo.getFullName(), State.OPEN, null, null, 0);
-        startActivity(i);
-        getActivity().overridePendingTransition(R.anim.slide_up, R.anim.none);
     }
 
     @Override

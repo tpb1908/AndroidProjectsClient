@@ -1,10 +1,14 @@
 package com.tpb.projects.editors;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -57,22 +61,15 @@ public class ProjectEditor extends EditorActivity {
 
 
         new MarkdownButtonAdapter(this, mEditButtons,
-                new MarkdownButtonAdapter.MarkDownButtonListener() {
+                new MarkdownButtonAdapter.MarkdownButtonListener() {
                     @Override
                     public void snippetEntered(String snippet, int relativePosition) {
-                        if(mNameEditor.hasFocus()) {
-                            final int start = Math.max(mNameEditor.getSelectionStart(), 0);
-                            mNameEditor.getText().insert(start, snippet);
-                            mNameEditor.setSelection(start + relativePosition);
-                        }
+                        Util.insertString(mDescriptionEditor, snippet, relativePosition);
                     }
 
                     @Override
                     public String getText() {
-                        if(mNameEditor.isFocused()) return mNameEditor.getText().toString();
-                        if(mDescriptionEditor.isFocused())
-                            return mDescriptionEditor.getInputText().toString();
-                        return "";
+                        return mDescriptionEditor.getInputText().toString();
                     }
 
                     @Override
@@ -101,7 +98,7 @@ public class ProjectEditor extends EditorActivity {
         mNameEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {
-                mHasBeenEdited = mHasBeenEdited || mDescriptionEditor.isEditing();
+                mHasBeenEdited |= mDescriptionEditor.isEditing();
             }
         });
         mDescriptionEditor.addTextChangedListener(new SimpleTextChangeWatcher() {
@@ -117,6 +114,8 @@ public class ProjectEditor extends EditorActivity {
             mProjectNumber = project.getId();
             mNameEditor.setText(project.getName());
             mDescriptionEditor.setText(project.getBody());
+        } else {
+            finish();
         }
     }
 
@@ -129,6 +128,7 @@ public class ProjectEditor extends EditorActivity {
         data.putExtra(getString(R.string.intent_name), mNameEditor.getText().toString());
         data.putExtra(getString(R.string.intent_markdown), mDescriptionEditor.getText().toString());
         setResult(RESULT_OK, data);
+        mHasBeenEdited = false;
         finish();
     }
 
@@ -155,5 +155,26 @@ public class ProjectEditor extends EditorActivity {
     @Override
     protected void insertString(String c) {
         Util.insertString(mDescriptionEditor, c);
+    }
+
+    @Override
+    public void finish() {
+        if(mHasBeenEdited && !mDescriptionEditor.getText().toString().isEmpty() && !mNameEditor.getText()
+                                                                                     .toString()
+                                                                                     .isEmpty()) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.title_discard_changes);
+            builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+            });
+            builder.setNegativeButton(R.string.action_no, null);
+            final Dialog deleteDialog = builder.create();
+            deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            deleteDialog.show();
+        } else {
+            super.finish();
+        }
     }
 }
