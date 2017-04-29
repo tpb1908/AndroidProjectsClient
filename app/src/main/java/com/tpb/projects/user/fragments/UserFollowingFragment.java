@@ -64,12 +64,6 @@ public class UserFollowingFragment extends UserFragment {
     }
 
     @Override
-    public void onResume() {
-        mRecycler.getRecycledViewPool().clear();
-        super.onResume();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();

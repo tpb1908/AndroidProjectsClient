@@ -39,6 +39,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
+
 /**
  * Created by theo on 20/12/16.
  */
@@ -262,7 +264,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
 
                     final Bundle bundle = new Bundle();
                     bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-                    mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
+                    mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                 }
 
                 @Override
@@ -270,7 +272,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                     if(error != APIHandler.APIError.NO_CONNECTION) {
                         final Bundle bundle = new Bundle();
                         bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
-                        mParent.mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
+                        mAnalytics.logEvent(Analytics.TAG_ISSUE_LOADED, bundle);
                         loadCount++;
                         if(loadCount < 5) {
                             mParent.loadIssue(this, card.getIssueId());

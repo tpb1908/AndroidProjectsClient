@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
  * Created by theo on 11/03/17.
  */
 
-public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> implements Loader.ListLoader<Gist> {
+public class GistAdapter extends RecyclerView.Adapter<GistAdapter.GistHolder> implements Loader.ListLoader<Gist> {
 
     private String mUser;
     private String mAuthenticatedUser;
@@ -42,7 +42,7 @@ public class GistsAdapter extends RecyclerView.Adapter<GistsAdapter.GistHolder> 
     private Loader mLoader;
     private GistOpener mOpener;
 
-    public GistsAdapter(Context context, GistOpener opener, SwipeRefreshLayout refresher) {
+    public GistAdapter(Context context, GistOpener opener, SwipeRefreshLayout refresher) {
         mLoader = Loader.getLoader(context);
         mOpener = opener;
         mRefresher = refresher;

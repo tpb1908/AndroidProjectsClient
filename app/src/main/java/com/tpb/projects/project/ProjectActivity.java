@@ -32,7 +32,6 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.pager.PageDescriptor;
 import com.commonsware.cwac.pager.v4.ArrayPagerAdapter;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Editor;
 import com.tpb.github.data.Loader;
@@ -64,6 +63,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
+
 
 /**
  * Created by theo on 19/12/16.
@@ -72,8 +73,6 @@ import butterknife.OnClick;
 public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<Project> {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String URL = "https://github.com/tpb1908/AndroidProjectsClient/blob/master/app/src/main/java/com/tpb/projects/project/ProjectActivity.java";
-
-    private FirebaseAnalytics mAnalytics;
 
     @BindView(R.id.project_toolbar) Toolbar mToolbar;
     @BindView(R.id.project_name) TextView mName;
@@ -105,8 +104,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         UI.setStatusBarColor(getWindow(), getResources().getColor(R.color.colorPrimaryDark));
         setContentView(R.layout.activity_project);
         ButterKnife.bind(this);
-        mAnalytics = FirebaseAnalytics.getInstance(this);
-        mAnalytics.setAnalyticsCollectionEnabled(prefs.areAnalyticsEnabled());
 
         final Intent launchIntent = getIntent();
         mLoader = Loader.getLoader(this);

@@ -8,6 +8,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.tpb.mdtext.emoji.EmojiLoader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.util.Logger;
+import com.tpb.projects.util.SettingsActivity;
 
 import okhttp3.OkHttpClient;
 
@@ -32,6 +33,7 @@ public class ProjectsApplication extends Application {
         }
         EmojiLoader.loadEmojis(getAssets());
         mAnalytics = FirebaseAnalytics.getInstance(this);
+        mAnalytics.setAnalyticsCollectionEnabled(SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
     }
 
 }

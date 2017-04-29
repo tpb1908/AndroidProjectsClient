@@ -7,10 +7,12 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import com.tpb.github.data.models.Notification;
 import com.tpb.projects.R;
 import com.tpb.projects.commits.CommitActivity;
 import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.milestones.MilestonesActivity;
+import com.tpb.projects.notifications.NotificationIntentService;
 import com.tpb.projects.project.ProjectActivity;
 import com.tpb.projects.repo.RepoActivity;
 import com.tpb.projects.repo.content.ContentActivity;
@@ -29,10 +31,15 @@ public class Interceptor extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getIntent().getAction().equals(Intent.ACTION_VIEW) &&
-                getIntent().getData() != null &&
-                "github.com".equals(getIntent().getData().getHost())) {
-            final List<String> segments = getIntent().getData().getPathSegments();
+        final Intent l = getIntent();
+        if(l.getAction().equals(Intent.ACTION_VIEW) &&
+                l.getData() != null &&
+                "github.com".equals(l.getData().getHost())) {
+            if(l.hasExtra("notif")) {
+                final Notification notif = l.getParcelableExtra("notif");
+                startService(NotificationIntentService.generateBroadcastDismissIntent(this, notif));
+            }
+            final List<String> segments = l.getData().getPathSegments();
             if(segments.size() == 0) {
                fail();
             } else if(segments.size() == 1) {
@@ -74,7 +81,7 @@ public class Interceptor extends Activity {
                             i.putExtra(getString(R.string.intent_project_number),
                                     safelyExtractInt(segments.get(3))
                             );
-                            final String path = getIntent().getDataString();
+                            final String path = l.getDataString();
                             final StringBuilder id = new StringBuilder();
                             for(int j = path
                                     .indexOf('#', path.indexOf(segments.get(3))) + 6; j < path

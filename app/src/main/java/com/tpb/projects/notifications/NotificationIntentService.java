@@ -34,7 +34,6 @@ public class NotificationIntentService extends IntentService implements Loader.L
     private static final String ACTION_CHECK = "ACTION_CHECK";
     private static final String ACTION_DELETE = "ACTION_DELETE";
 
-    private Loader mLoader;
     private long mLastLoadedSuccessfully = 0;
 
     public NotificationIntentService() {
@@ -42,7 +41,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
     }
 
     public static Intent createIntentStartNotificationService(Context context) {
-        Intent intent = new Intent(context, NotificationIntentService.class);
+        final Intent intent = new Intent(context, NotificationIntentService.class);
         intent.setAction(ACTION_CHECK);
         return intent;
     }
@@ -55,8 +54,9 @@ public class NotificationIntentService extends IntentService implements Loader.L
             if(ACTION_CHECK.equals(action)) {
                 loadNotifications();
             } else if(ACTION_DELETE.equals(action) && intent.hasExtra("notification")) {
-                markNotificationRead(
-                        ((Notification) intent.getParcelableExtra("notification")).getId());
+                Editor.getEditor(this).markNotificationThreadRead(
+                        ((Notification) intent.getParcelableExtra("notification")).getId()
+                );
             }
         } finally {
             Logger.i(TAG, "onHandleIntent: " + intent.toString());
@@ -65,14 +65,9 @@ public class NotificationIntentService extends IntentService implements Loader.L
     }
 
     private void loadNotifications() {
-        if(mLoader == null) mLoader = Loader.getLoader(getApplicationContext());
         Logger.i(TAG, "loadNotifications: Timestamp " + Util
                 .toISO8061FromMilliseconds(mLastLoadedSuccessfully));
-        mLoader.loadNotifications(this, mLastLoadedSuccessfully);
-    }
-
-    private void markNotificationRead(long id) {
-        Editor.getEditor(this).markNotificationThreadRead(id);
+        Loader.getLoader(getApplicationContext()).loadNotifications(this, mLastLoadedSuccessfully);
     }
 
     private android.app.Notification buildNotification(Notification notif) {
@@ -86,12 +81,6 @@ public class NotificationIntentService extends IntentService implements Loader.L
                 builder.setSmallIcon(R.drawable.ic_person_white);
                 break;
             case COMMENT:
-                if("issue".equalsIgnoreCase(notif.getType())) {
-                    //TODO Get issue number
-                } else if(notif.getUrl().contains("/commits/")) {
-                    //TODO get commit ref
-                }
-                //else
                 title = String.format(getString(R.string.text_notification_comment),
                         notif.getRepository().getName()
                 );
@@ -100,7 +89,7 @@ public class NotificationIntentService extends IntentService implements Loader.L
             case ASSIGN:
                 title = String.format(
                         getString(R.string.text_notification_assign),
-                        "#A number",
+                        "Issue",
                         notif.getRepository().getFullName()
                 );
                 builder.setSmallIcon(R.drawable.ic_person_white);
@@ -114,7 +103,6 @@ public class NotificationIntentService extends IntentService implements Loader.L
                         notif.getRepository().getFullName()
                 );
                 builder.setSmallIcon(R.drawable.ic_watchers_white);
-                //TODO get thread
                 break;
             case MENTION:
                 title = getString(R.string.text_notification_mention,
@@ -141,35 +129,40 @@ public class NotificationIntentService extends IntentService implements Loader.L
         }
         final TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(Interceptor.class);
-        stackBuilder.addNextIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl())));
+        final Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(notif.getUrl()));
+        launchIntent.putExtra("notif", notif);
+        stackBuilder.addNextIntent(launchIntent);
         Logger.i(TAG, "buildNotification: URL " + notif.getUrl());
         builder.setContentIntent(
                 stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
         builder.setCategory(android.app.Notification.CATEGORY_MESSAGE);
+        builder.setGroup("GITHUB_GROUP");
         builder.setContentTitle(title);
         builder.setContentText(notif.getTitle());
         builder.setAutoCancel(true);
         builder.setDeleteIntent(generateDismissIntent(notif));
-        builder.setGroup("GITHUB_GROUP");
         return builder.build();
     }
 
     private PendingIntent generateDismissIntent(Notification notif) {
-        final Intent i = new Intent(NotificationIntentService.this,
+        return PendingIntent.getService(this, 0, generateBroadcastDismissIntent(this, notif), PendingIntent.FLAG_ONE_SHOT);
+
+    }
+
+    public static Intent generateBroadcastDismissIntent(Context context, Notification notif) {
+        final Intent i = new Intent(context,
                 NotificationIntentService.class
         );
         i.setAction(ACTION_DELETE);
         i.putExtra("notification", notif);
-        return PendingIntent.getService(this, 53253, i, PendingIntent.FLAG_ONE_SHOT);
-
+        return i;
     }
 
     @Override
     public void listLoadComplete(List<Notification> notifications) {
         Logger.i(TAG, "listLoadComplete: " + notifications.size());
         mLastLoadedSuccessfully = Util.getUTCTimeInMillis();
-        final NotificationManager manager = (NotificationManager) this
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+        final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         for(Notification n : notifications) {
             manager.notify((int) n.getId(), buildNotification(n));
         }

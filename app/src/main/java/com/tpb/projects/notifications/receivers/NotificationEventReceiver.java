@@ -19,19 +19,14 @@ import java.util.Date;
 public class NotificationEventReceiver extends WakefulBroadcastReceiver {
 
     private static final String ACTION_START_NOTIFICATION_SERVICE = "ACTION_START_NOTIFICATION_SERVICE";
-    private static final String ACTION_NOTIFICATION_DISMISSED = "ACTION_NOTIFICATION_DISMISSED";
 
     private static int NOTIFICATIONS_INTERVAL_IN_MINUTES = 1;
-
-    public static void setUpdateInterval(@IntRange(from = 1, to = 60) int minutes) {
-        NOTIFICATIONS_INTERVAL_IN_MINUTES = minutes;
-    }
 
     public static void setupAlarm(Context context) {
         final AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         final PendingIntent alarmIntent = getStartPendingIntent(context);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 new Date().getTime(),
                 NOTIFICATIONS_INTERVAL_IN_MINUTES * 60000,
                 alarmIntent
@@ -44,10 +39,14 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver {
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    public static void setUpdateInterval(@IntRange(from = 1, to = 60) int minutes) {
+        NOTIFICATIONS_INTERVAL_IN_MINUTES = minutes;
+    }
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
+        final String action = intent.getAction();
         if(ACTION_START_NOTIFICATION_SERVICE.equals(action)) {
             Logger.i(getClass().getSimpleName(),
                     "onReceive from alarm, starting notification service"

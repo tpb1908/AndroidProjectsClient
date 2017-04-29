@@ -16,7 +16,7 @@ import com.tpb.github.data.models.User;
 import com.tpb.projects.R;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.repo.content.FileActivity;
-import com.tpb.projects.user.GistsAdapter;
+import com.tpb.projects.user.GistAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,14 +26,14 @@ import butterknife.Unbinder;
  * Created by theo on 10/03/17.
  */
 
-public class UserGistsFragment extends UserFragment implements GistsAdapter.GistOpener {
+public class UserGistsFragment extends UserFragment implements GistAdapter.GistOpener {
 
     private Unbinder unbinder;
 
     @BindView(R.id.fragment_refresher) SwipeRefreshLayout mRefresher;
     @BindView(R.id.fragment_recycler) AnimatingRecyclerView mRecycler;
 
-    private GistsAdapter mAdapter;
+    private GistAdapter mAdapter;
 
     @Nullable
     @Override
@@ -44,7 +44,7 @@ public class UserGistsFragment extends UserFragment implements GistsAdapter.Gist
         final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setLayoutManager(manager);
         mRecycler.enableLineDecoration();
-        mAdapter = new GistsAdapter(getContext(), this, mRefresher);
+        mAdapter = new GistAdapter(getContext(), this, mRefresher);
         mRecycler.setAdapter(mAdapter);
 
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {

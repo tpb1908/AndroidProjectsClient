@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Editor;
@@ -52,6 +51,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
 import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY;
 
 /**
@@ -60,8 +60,6 @@ import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY
 
 public class ColumnFragment extends ViewSafeFragment {
     private static final String TAG = ColumnFragment.class.getSimpleName();
-
-    FirebaseAnalytics mAnalytics;
 
     private Unbinder unbinder;
 
@@ -119,7 +117,6 @@ public class ColumnFragment extends ViewSafeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAnalytics = FirebaseAnalytics.getInstance(getContext());
 
         mEditor = Editor.getEditor(getContext());
         mName.setOnEditorActionListener((textView, i, keyEvent) -> {
