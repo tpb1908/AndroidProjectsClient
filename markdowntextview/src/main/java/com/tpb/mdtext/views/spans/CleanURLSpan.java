@@ -44,7 +44,7 @@ public class CleanURLSpan extends URLSpan {
 
         if(MDPattern.AUTOLINK_EMAIL_ADDRESS.matcher(url).matches()) {
             return "mailto:" + url;
-        } else if(!url.startsWith("https://") && !url.startsWith("http://")) {
+        } else if(!MDPattern.IP_ADDRESS.matcher(url).matches() && !url.startsWith("https://") && !url.startsWith("http://")) {
             return "http://" + url;
         }
         return url;

@@ -120,10 +120,7 @@ public class IssueEditor extends EditorActivity {
                 mTitleEdit.setText(note);
             }
 
-        } else {
-            finish();
         }
-
         final SimpleTextChangeWatcher editWatcher = new SimpleTextChangeWatcher() {
             @Override
             public void textChanged() {

@@ -135,7 +135,6 @@ public class MarkdownTextView extends AppCompatTextView implements View.OnClickL
     private void parseAndSetMd(@NonNull String markdown, @Nullable final Html.ImageGetter imageGetter) {
         // Override tags to stop Html.fromHtml destroying some of them
         markdown = HtmlTagHandler.overrideTags(Markdown.parseMD(markdown));
-
         final HtmlTagHandler htmlTagHandler = new HtmlTagHandler(this,
                 imageGetter,  mLinkHandler, mImageClickHandler, mCodeHandler, mTableHandler
         );

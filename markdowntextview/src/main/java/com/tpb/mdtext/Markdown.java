@@ -3,7 +3,6 @@ package com.tpb.mdtext;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
-import android.text.Html;
 import android.util.Base64;
 
 import com.tpb.mdtext.emoji.Emoji;
@@ -74,7 +73,7 @@ public class Markdown {
         private static Map<String, String> codeBackgroundAttrs = new HashMap<>();
 
         static {
-            codeBackgroundAttrs.put("background-color", "#808080");
+            codeBackgroundAttrs.put("background-color", "#32808080");
             codeBackgroundAttrs.put("face", "monospace");
         }
 
@@ -103,30 +102,35 @@ public class Markdown {
                     html.tag("br");
                     html.line();
                 } else {
+                    html.line();
+                    html.tag("b");
+                    html.tag("/b");
                     html.tag("inlinecode");
-                    if(block.getInfo() != null && !block.getInfo().isEmpty()) {
-                        // TODO Highlight string
-                    }
-                    html.raw(Html.escapeHtml(block.getLiteral()).replace("\n", "<br>").replace(" ", "&nbsp;"));
+                    html.raw(escapeInlineCode(block.getLiteral()));
                     html.tag("/inlinecode");
                     html.tag("br");
                 }
             } else if(node instanceof IndentedCodeBlock) {
                 final IndentedCodeBlock block = (IndentedCodeBlock) node;
+                html.line();
+                html.tag("b");
+                html.tag("/b");
                 html.tag("code");
-                html.text(String.format("[%1$s]\u0002%2$s", "",
-                        block.getLiteral().replace("\n", "<br>").replace(" ", "&nbsp;")
+                html.text(String.format("[%1$s]%2$s", "",
+                        Base64.encodeToString(block.getLiteral().getBytes(), Base64.DEFAULT)
                 ));
                 html.tag("/code");
+                html.tag("br");
+                html.line();
             } else if(node instanceof Code) {
                 final String literal = ((Code) node).getLiteral();
                 if(TextUtils.instancesOf(literal, "\n") == 0) {
                     html.tag("font", codeBackgroundAttrs);
-                    html.text(literal);
+                    html.raw(escapeInlineCode(literal));
                     html.tag("/font");
                 } else {
                     html.tag("inlinecode");
-                    html.raw(literal.replace(" ", "&nbsp;"));
+                    html.raw(escapeInlineCode(literal));
                     html.tag("/inlinecode");
                 }
 
@@ -142,6 +146,10 @@ public class Markdown {
                 html.raw("<img src=\"" + ((Image) node).getDestination() + "\">");
                 html.line();
             }
+        }
+
+        private static String escapeInlineCode(String code) {
+            return code.replace("@", "\u200b@").replace("\n", "<br>").replace(" ", "&nbsp;");
         }
     }
 
@@ -200,30 +208,28 @@ public class Markdown {
         final StringBuilder builder = new StringBuilder();
         char p = ' ';
         char pp = ' ';
-        final char[] chars = ("\n" + s).toCharArray();
+        final char[] chars = s.toCharArray();
         for(int i = 0; i < chars.length; i++) {
             if(linkUsernames && chars[i] == '@' && isWhiteSpace(p)) {
-                //Max username length is 39 characters
-                //Usernames can be alphanumeric with single hyphens
                 i = parseUsername(builder, chars, i);
             } else if(chars[i] == '#' && isWhiteSpace(p) && fullRepoPath != null) {
                 i = parseIssue(builder, chars, i, fullRepoPath);
             }  else if(chars[i] == ']' && p == '[' && pp =='!') {
                 builder.setLength(builder.length() - 2);
                 builder.append("![No description]");
-            } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']') {
+            } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']' && !isEcaped(chars, i-2)) {
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2611");  //☑ ballot box with check
-            } else if(p == '[' && chars[i] == ']') { //Closed box
+            } else if(p == '[' && chars[i] == ']' && !isEcaped(chars, i-1)) { //Closed box
                 builder.setLength(builder.length() - 1);
                 builder.append("\u2610"); //☐ ballot box
-            } else if(pp == '[' && p == ' ' && chars[i] == ']') {//Open box
+            } else if(pp == '[' && p == ' ' && chars[i] == ']' && !isEcaped(chars, i-2)) {//Open box
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2610");
             } else if(chars[i] == '(' && fullRepoPath != null) {
                 builder.append("(");
                 i = parseImageLink(builder, chars, i, fullRepoPath);
-            } else if(chars[i] == ':') {
+            } else if(chars[i] == ':' && !isEcaped(chars, i)) {
                 i = parseEmoji(builder, chars, i);
             } else if(pp == '`' && p == '`' && chars[i] == '`') {
                 //We jump over the code block
@@ -241,6 +247,7 @@ public class Markdown {
                         p = chars[j];
                     }
                 }
+
             } else {
                 builder.append(chars[i]);
             }
@@ -398,6 +405,9 @@ public class Markdown {
         return c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\r' || c == '\u000C';
     }
 
+    private static boolean isEcaped(char[] cs, int i) {
+        return i > 0 && cs[i - 1] == '\\';
+    }
 
 }
 

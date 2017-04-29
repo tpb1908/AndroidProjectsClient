@@ -114,8 +114,6 @@ public class ProjectEditor extends EditorActivity {
             mProjectNumber = project.getId();
             mNameEditor.setText(project.getName());
             mDescriptionEditor.setText(project.getBody());
-        } else {
-            finish();
         }
     }
 

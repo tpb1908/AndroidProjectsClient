@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.androidnetworking.error.ANError;
+import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Uploader;
 import com.tpb.projects.BuildConfig;
 import com.tpb.projects.R;
@@ -225,9 +225,9 @@ public abstract class EditorActivity extends CircularRevealActivity {
                                  }
 
                                  @Override
-                                 public void uploadError(ANError error) {
+                                 public void uploadError(APIHandler.APIError error) {
                                      mUploadDialog.cancel();
-                                     Toast.makeText(EditorActivity.this, error.getErrorBody(), Toast.LENGTH_SHORT).show();
+                                     Toast.makeText(EditorActivity.this, error.resId, Toast.LENGTH_SHORT).show();
                                  }
                              },
                 image64,

@@ -439,6 +439,11 @@ public class HtmlTagHandler implements Html.TagHandler {
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 );
             }
+            if(fgc == null) {
+                output.setSpan(new ForegroundColorSpan(TextUtils.getTextColorForBackground(color)), start, end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+            }
 
         }
         if(f != null) {
@@ -502,7 +507,7 @@ public class HtmlTagHandler implements Html.TagHandler {
                 len++;
             }
             for(Object replace : replaces) {
-                if(output.length() > 0) {
+                if(output.length() > 0 && (mTableLevel == 0 || end < output.length())) {
                     output.setSpan(replace, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }

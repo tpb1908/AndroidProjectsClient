@@ -256,12 +256,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                 @Override
                 public void loadComplete(Issue data) {
                     if(mParent.isAdded() && !mParent.isRemoving()) {
-                        /*
-                        If the Issue is loaded after the disposal of the Activity
-                        the Card may be different
-                         */
                         mCards.get(pos).first.setFromIssue(data);
-                        bindIssueCard(holder, pos);
+                        notifyItemChanged(pos);
                     }
 
                     final Bundle bundle = new Bundle();
@@ -373,7 +369,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> cardClick(this));
             mText.setOnClickListener(v -> cardClick(this));
-            mText.setParseHandler(mParseHandler);
+            //mText.setParseHandler(mParseHandler);
         }
 
     }

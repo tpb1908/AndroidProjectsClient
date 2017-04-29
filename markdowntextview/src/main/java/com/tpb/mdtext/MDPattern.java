@@ -135,7 +135,7 @@ public class MDPattern {
                     + "|(?:zara|zip|zone|zuerich|z[amw]))";
 
 
-    private static final Pattern IP_ADDRESS
+    public static final Pattern IP_ADDRESS
             = Pattern.compile(
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
                     + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
@@ -268,7 +268,7 @@ public class MDPattern {
      * @hide
      */
     static final Pattern AUTOLINK_WEB_URL = Pattern.compile(
-            "(" + WEB_URL_WITH_PROTOCOL + "|" + WEB_URL_WITHOUT_PROTOCOL + ")($|\\s)");
+            "(^|\\s)(" + WEB_URL_WITH_PROTOCOL + "|" + WEB_URL_WITHOUT_PROTOCOL + ")($|\\s)");
 
     /**
      * Regular expression for valid email characters. Does not include some of the valid characters

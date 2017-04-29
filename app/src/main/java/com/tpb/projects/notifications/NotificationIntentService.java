@@ -72,7 +72,6 @@ public class NotificationIntentService extends IntentService implements Loader.L
     }
 
     private void markNotificationRead(long id) {
-        Logger.i(TAG, "markNotificationRead: Should me marking read");
         Editor.getEditor(this).markNotificationThreadRead(id);
     }
 
