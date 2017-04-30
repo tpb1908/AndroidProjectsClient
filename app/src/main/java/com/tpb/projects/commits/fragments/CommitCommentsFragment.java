@@ -1,6 +1,7 @@
 package com.tpb.projects.commits.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +30,7 @@ import com.tpb.projects.commits.CommitCommentsAdapter;
 import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.util.UI;
 
 import butterknife.BindView;
@@ -39,7 +42,6 @@ import butterknife.Unbinder;
  */
 
 public class CommitCommentsFragment extends CommitFragment {
-    private static final String TAG = CommitCommentsFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -76,12 +78,6 @@ public class CommitCommentsFragment extends CommitFragment {
         if(mAreViewsValid) addListeners();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if(mFab != null && mAreViewsValid) addListeners();
-    }
-
     private void addListeners() {
         final LinearLayoutManager manager = (LinearLayoutManager) mRecycler.getLayoutManager();
         mRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -103,6 +99,12 @@ public class CommitCommentsFragment extends CommitFragment {
             UI.setViewPositionForIntent(i, mFab);
             startActivityForResult(i, CommentEditor.REQUEST_CODE_NEW_COMMENT);
         });
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(mFab != null && mAreViewsValid) addListeners();
     }
 
     @Override
@@ -130,6 +132,7 @@ public class CommitCommentsFragment extends CommitFragment {
     }
 
     private void editComment(Comment comment) {
+        mRefresher.setRefreshing(true);
         mEditor.updateCommitComment(new Editor.UpdateListener<Comment>() {
             @Override
             public void updated(Comment comment) {
@@ -145,19 +148,27 @@ public class CommitCommentsFragment extends CommitFragment {
     }
 
     void removeComment(Comment comment) {
-        mRefresher.setRefreshing(true);
-        mEditor.deleteCommitComment(new Editor.DeletionListener<Integer>() {
-            @Override
-            public void deleted(Integer id) {
-                mRefresher.setRefreshing(false);
-                mAdapter.removeComment(id);
-            }
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_delete_comment);
+        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+            mRefresher.setRefreshing(true);
+            mEditor.deleteCommitComment(new Editor.DeletionListener<Integer>() {
+                @Override
+                public void deleted(Integer id) {
+                    mRefresher.setRefreshing(false);
+                    mAdapter.removeComment(id);
+                }
 
-            @Override
-            public void deletionError(APIHandler.APIError error) {
-                mRefresher.setRefreshing(false);
-            }
-        }, mCommit.getFullRepoName(), comment.getId());
+                @Override
+                public void deletionError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, mCommit.getFullRepoName(), comment.getId());
+        });
+        builder.setNegativeButton(R.string.action_no, null);
+        final Dialog deleteDialog = builder.create();
+        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        deleteDialog.show();
     }
 
     public void displayCommentMenu(View view, Comment comment) {
@@ -190,6 +201,11 @@ public class CommitCommentsFragment extends CommitFragment {
                             Toast.LENGTH_SHORT
                     ).show();
                     break;
+                case R.id.menu_fullscreen:
+                    IntentHandler.showFullScreen(getContext(), comment.getBody(),
+                            mCommit.getFullRepoName(), getFragmentManager()
+                    );
+                    break;
             }
             return false;
         });
@@ -204,7 +220,6 @@ public class CommitCommentsFragment extends CommitFragment {
             if(requestCode == CommentEditor.REQUEST_CODE_NEW_COMMENT) {
                 createComment(comment);
             } else if(requestCode == CommentEditor.REQUEST_CODE_EDIT_COMMENT) {
-                mRefresher.setRefreshing(true);
                 editComment(comment);
             }
         }

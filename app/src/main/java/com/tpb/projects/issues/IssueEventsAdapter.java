@@ -84,7 +84,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
             int oldLength = mEvents.size();
             if(mPage == 1) mEvents.clear();
             for(DataModel dm : Util.mergeModels(events, comparator)) {
-                mEvents.add(new Pair<>(dm, null));
+                mEvents.add(Pair.create(dm, null));
             }
             notifyItemRangeInserted(oldLength, mEvents.size());
         } else {
@@ -156,7 +156,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
     void addEvent(IssueEvent event) {
-        mEvents.add(new Pair<>(event, null));
+        mEvents.add(Pair.create(event, null));
         notifyItemInserted(mEvents.size());
     }
 

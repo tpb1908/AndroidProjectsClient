@@ -195,21 +195,21 @@ public class IssueEditor extends EditorActivity {
     @OnClick(R.id.issue_add_assignees_button)
     public void showAssigneesDialog() {
         final ProgressDialog pd = new ProgressDialog(this);
-        pd.setTitle(R.string.text_loading_collaborators);
+        pd.setTitle(R.string.text_loading_contributors);
         pd.setCancelable(false);
         pd.show();
-        Loader.getLoader(this).loadCollaborators(new Loader.ListLoader<User>() {
+        Loader.getLoader(this).loadContributors(new Loader.ListLoader<User>() {
             @Override
-            public void listLoadComplete(List<User> collaborators) {
+            public void listLoadComplete(List<User> contributors) {
                 final MultiChoiceDialog mcd = new MultiChoiceDialog();
                 final Bundle b = new Bundle();
                 b.putInt(getString(R.string.intent_title_res), R.string.title_choose_assignees);
                 mcd.setArguments(b);
 
-                final String[] names = new String[collaborators.size()];
+                final String[] names = new String[contributors.size()];
                 final boolean[] checked = new boolean[names.length];
                 for(int i = 0; i < names.length; i++) {
-                    names[i] = collaborators.get(i).getLogin();
+                    names[i] = contributors.get(i).getLogin();
                     checked[i] = mAssignees.indexOf(names[i]) != -1;
                 }
                 mcd.setChoices(names, checked);

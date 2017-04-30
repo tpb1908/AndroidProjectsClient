@@ -33,6 +33,7 @@ import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.editors.MultiChoiceDialog;
+import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.repo.RepoIssuesAdapter;
 import com.tpb.projects.util.UI;
 
@@ -154,7 +155,6 @@ public class RepoIssuesFragment extends RepoFragment {
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             switch(menuItem.getItemId()) {
-
                 case R.id.menu_filter_assignees:
                     showAssigneesDialog();
                     break;
@@ -241,36 +241,37 @@ public class RepoIssuesFragment extends RepoFragment {
 
     private void showAssigneesDialog() {
         final ProgressDialog pd = new ProgressDialog(getContext());
-        pd.setTitle(R.string.text_loading_collaborators);
+        pd.setTitle(R.string.text_loading_contributors);
         pd.setCancelable(false);
         pd.show();
-        Loader.getLoader(getContext()).loadCollaborators(new Loader.ListLoader<User>() {
+        Loader.getLoader(getContext()).loadContributors(new Loader.ListLoader<User>() {
             @Override
-            public void listLoadComplete(List<User> collaborators) {
-                final String[] collabNames = new String[collaborators.size() + 2];
+            public void listLoadComplete(List<User> contributors) {
+                final String[] collabNames = new String[contributors.size() + 2];
                 collabNames[0] = getString(R.string.text_assignee_all);
                 collabNames[1] = getString(R.string.text_assignee_none);
                 int pos = 0;
                 for(int i = 2; i < collabNames.length; i++) {
-                    collabNames[i] = collaborators.get(i - 2).getLogin();
+                    collabNames[i] = contributors.get(i - 2).getLogin();
                     if(collabNames[i].equals(mAssigneeFilter)) {
                         pos = i;
                     }
                 }
-
+                final String oldAssigneeFilter = mAssigneeFilter;
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(R.string.title_choose_assignee);
                 builder.setSingleChoiceItems(collabNames, pos,
                         (dialogInterface, i) -> mAssigneeFilter = collabNames[i]
                 );
                 builder.setPositiveButton(R.string.action_ok, (dialogInterface, i) -> refresh());
-                builder.setNegativeButton(R.string.action_cancel, null);
+                builder.setNegativeButton(R.string.action_cancel, (d, i) -> mAssigneeFilter = oldAssigneeFilter);
                 builder.create().show();
                 pd.dismiss();
             }
 
             @Override
             public void listLoadError(APIHandler.APIError error) {
+                pd.dismiss();
                 Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mRepo.getFullName());
@@ -292,6 +293,11 @@ public class RepoIssuesFragment extends RepoFragment {
                 case R.id.menu_edit_issue:
                     editIssue(view, issue);
                     break;
+                case R.id.menu_fullscreen:
+                    IntentHandler.showFullScreen(getContext(), issue.getBody(),
+                            issue.getRepoFullName(), getFragmentManager()
+                    );
+                    break;
             }
             return false;
         });
@@ -304,7 +310,7 @@ public class RepoIssuesFragment extends RepoFragment {
         intent.putExtra(getString(R.string.parcel_issue), issue);
         final Loader loader = Loader.getLoader(getContext());
         loader.loadLabels(null, issue.getRepoFullName());
-        loader.loadCollaborators(null, issue.getRepoFullName());
+        loader.loadContributors(null, issue.getRepoFullName());
         if(view instanceof MarkdownTextView) {
             UI.setClickPositionForIntent(getActivity(), intent,
                     ((MarkdownTextView) view).getLastClickPosition()
@@ -327,9 +333,7 @@ public class RepoIssuesFragment extends RepoFragment {
             @Override
             public void updateError(APIHandler.APIError error) {
                 mRefresher.setRefreshing(false);
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -377,51 +381,9 @@ public class RepoIssuesFragment extends RepoFragment {
             }
             final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
-
-                mRefresher.setRefreshing(true);
-                mEditor.createIssue(new Editor.CreationListener<Issue>() {
-                    @Override
-                    public void created(Issue issue) {
-                        mRefresher.setRefreshing(false);
-                        mAdapter.addIssue(issue);
-                        mRecyclerView.scrollToPosition(0);
-                    }
-
-                    @Override
-                    public void creationError(APIHandler.APIError error) {
-                        mRefresher.setRefreshing(false);
-                    }
-                }, mRepo.getFullName(), issue.getTitle(), issue.getBody(), assignees, labels);
+                createIssue(issue, assignees, labels);
             } else if(requestCode == IssueEditor.REQUEST_CODE_EDIT_ISSUE) {
-                mRefresher.setRefreshing(true);
-                mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
-                    int issueCreationAttempts = 0;
-
-                    @Override
-                    public void updated(Issue issue) {
-                        mAdapter.updateIssue(issue);
-                        mRefresher.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void updateError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mRefresher.setRefreshing(false);
-                            Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        } else {
-                            if(issueCreationAttempts < 5) {
-                                issueCreationAttempts++;
-                                mEditor.updateIssue(this, mRepo.getFullName(), issue, assignees,
-                                        labels
-                                );
-                            } else {
-                                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT)
-                                     .show();
-                                mRefresher.setRefreshing(false);
-                            }
-                        }
-                    }
-                }, mRepo.getFullName(), issue, assignees, labels);
+               updateIssue(issue, assignees, labels);
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 mEditor.createIssueComment(new Editor.CreationListener<Comment>() {
@@ -440,6 +402,55 @@ public class RepoIssuesFragment extends RepoFragment {
                 }, issue.getRepoFullName(), issue.getNumber(), comment.getBody());
             }
         }
+    }
+
+    private void createIssue(Issue issue, String[] assignees, String[] labels) {
+        mRefresher.setRefreshing(true);
+        mEditor.createIssue(new Editor.CreationListener<Issue>() {
+            @Override
+            public void created(Issue issue) {
+                mRefresher.setRefreshing(false);
+                mAdapter.addIssue(issue);
+                mRecyclerView.scrollToPosition(0);
+            }
+
+            @Override
+            public void creationError(APIHandler.APIError error) {
+                mRefresher.setRefreshing(false);
+            }
+        }, mRepo.getFullName(), issue.getTitle(), issue.getBody(), assignees, labels);
+    }
+
+    private void updateIssue(Issue issue, String[] assignees, String[] labels) {
+        mRefresher.setRefreshing(true);
+        mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
+            int issueCreationAttempts = 0;
+
+            @Override
+            public void updated(Issue issue) {
+                mAdapter.updateIssue(issue);
+                mRefresher.setRefreshing(false);
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+                if(error == APIHandler.APIError.NO_CONNECTION) {
+                    mRefresher.setRefreshing(false);
+                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                } else {
+                    if(issueCreationAttempts < 5) {
+                        issueCreationAttempts++;
+                        mEditor.updateIssue(this, mRepo.getFullName(), issue, assignees,
+                                labels
+                        );
+                    } else {
+                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT)
+                             .show();
+                        mRefresher.setRefreshing(false);
+                    }
+                }
+            }
+        }, mRepo.getFullName(), issue, assignees, labels);
     }
 
     @Override

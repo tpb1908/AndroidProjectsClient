@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tpb.animatingrecyclerview.AnimatingRecyclerView;
@@ -38,7 +39,6 @@ import butterknife.Unbinder;
  */
 
 public class CommitInfoFragment extends CommitFragment {
-    private static final String TAG = CommitInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -133,7 +133,7 @@ public class CommitInfoFragment extends CommitFragment {
             public void loadComplete(CompleteStatus data) {
                 if(data.getTotalCount() == 0) return; //We don't care if there is no integration
                 ButterKnife.findById(getActivity(), R.id.commit_status).setVisibility(View.VISIBLE);
-                final NetworkImageView niv = ButterKnife.findById(getActivity(), R.id.status_image);
+                final ImageView niv = ButterKnife.findById(getActivity(), R.id.status_image);
                 final TextView status = ButterKnife.findById(getActivity(), R.id.status_state);
                 final TextView desc = ButterKnife.findById(getActivity(), R.id.status_context);
                 if("success".equals(data.getState())) {

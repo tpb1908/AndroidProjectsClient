@@ -127,7 +127,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                 mParent.mParent.notifyFragmentLoaded();
             }
             for(Card c : cards) {
-                mCards.add(new Pair<>(c, null));
+                mCards.add(Pair.create(c, null));
             }
             mParent.mCardCount.setText(String.valueOf(mCards.size()));
             notifyItemRangeInserted(oldLength, mCards.size());
@@ -147,19 +147,19 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     void addCard(Card card) {
-        mCards.add(0, new Pair<>(card, null));
+        mCards.add(0, Pair.create(card, null));
         notifyItemInserted(0);
     }
 
     void addCardFromDrag(Card card) {
-        mCards.add(new Pair<>(card, null));
+        mCards.add(Pair.create(card, null));
         notifyItemInserted(mCards.size());
         mEditor.moveCard(null, mColumn, card.getId(), -1);
     }
 
     void addCardFromDrag(int pos, Card card) {
         Logger.i(TAG, "createCard: Card being added to " + pos);
-        mCards.add(pos, new Pair<>(card, null));
+        mCards.add(pos, Pair.create(card, null));
         notifyItemInserted(pos);
         final int id = pos == 0 ? -1 : mCards.get(pos - 1).first.getId();
         mEditor.moveCard(null, mParent.mColumn.getId(), card.getId(), id);
@@ -168,7 +168,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     void updateCard(Card card) {
         final int index = indexOf(card.getId());
         if(index != -1) {
-            mCards.set(index, new Pair<>(card, null));
+            mCards.set(index, Pair.create(card, null));
             notifyItemChanged(index);
         }
     }
@@ -176,7 +176,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     void updateCard(Card card, int oldId) {
         final int index = indexOf(oldId);
         if(index != -1) {
-            mCards.set(index, new Pair<>(card, null));
+            mCards.set(index, Pair.create(card, null));
             notifyItemChanged(index);
         }
     }
@@ -298,7 +298,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                             mParent.mParent.mProject.getRepoPath()
                     ),
                     new HttpImageGetter(holder.mText),
-                    text -> mCards.set(pos, new Pair<>(card, text))
+                    text -> mCards.set(pos, Pair.create(card, text))
             );
         } else {
             holder.mText.setText(mCards.get(pos).second);
@@ -337,7 +337,7 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
                             true
                     ).toString(),
                     new HttpImageGetter(holder.mText),
-                    text -> mCards.set(pos, new Pair<>(card, text))
+                    text -> mCards.set(pos, Pair.create(card, text))
             );
         } else {
             holder.mText.setText(mCards.get(pos).second);

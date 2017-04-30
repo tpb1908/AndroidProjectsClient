@@ -64,7 +64,7 @@ public class RepoProjectsFragment extends RepoFragment {
     @Override
     public void repoLoaded(Repository repo) {
         mRepo = repo;
-        if(!areViewsValid()) return;
+        if(!mAreViewsValid) return;
         mAdapter.setRepository(repo);
 
     }
@@ -113,9 +113,9 @@ public class RepoProjectsFragment extends RepoFragment {
                     Editor.getEditor(getContext()).deleteProject(
                             new Editor.DeletionListener<Project>() {
                                 @Override
-                                public void deleted(Project project1) {
+                                public void deleted(Project deleted) {
                                     mRefresher.setRefreshing(false);
-                                    mAdapter.removeProject(project1);
+                                    mAdapter.removeProject(deleted);
                                 }
 
                                 @Override
@@ -133,6 +133,31 @@ public class RepoProjectsFragment extends RepoFragment {
         i.putExtra(getString(R.string.parcel_project), project);
         UI.setViewPositionForIntent(i, view);
         startActivityForResult(i, ProjectEditor.REQUEST_CODE_EDIT_PROJECT);
+    }
+
+    public void showMenu(View view, Project project) {
+        final PopupMenu pm = new PopupMenu(getContext(), view);
+        pm.inflate(R.menu.menu_project);
+        if(project.getState() == State.OPEN) {
+            pm.getMenu().add(0, R.id.menu_toggle_project_state, 0, R.string.menu_close_project);
+        } else {
+            pm.getMenu().add(0, R.id.menu_toggle_project_state, 0, R.string.menu_reopen_project);
+        }
+        pm.setOnMenuItemClickListener(item -> {
+            switch(item.getItemId()) {
+                case R.id.menu_toggle_project_state:
+                    toggleProjectState(project);
+                    break;
+                case R.id.menu_edit_project:
+                    editProject(project, view);
+                    break;
+                case R.id.menu_delete_project:
+                    deleteProject(project);
+                    break;
+            }
+            return true;
+        });
+        pm.show();
     }
 
     @Override
@@ -177,31 +202,6 @@ public class RepoProjectsFragment extends RepoFragment {
                         }, name, body, id);
             }
         }
-    }
-
-    public void showMenu(View view, Project project) {
-        final PopupMenu pm = new PopupMenu(getContext(), view);
-        pm.inflate(R.menu.menu_project);
-        if(project.getState() == State.OPEN) {
-            pm.getMenu().add(0, R.id.menu_toggle_project_state, 0, R.string.menu_close_project);
-        } else {
-            pm.getMenu().add(0, R.id.menu_toggle_project_state, 0, R.string.menu_reopen_project);
-        }
-        pm.setOnMenuItemClickListener(item -> {
-            switch(item.getItemId()) {
-                case R.id.menu_toggle_project_state:
-                    toggleProjectState(project);
-                    break;
-                case R.id.menu_edit_project:
-                    editProject(project, view);
-                    break;
-                case R.id.menu_delete_project:
-                    deleteProject(project);
-                    break;
-            }
-            return true;
-        });
-        pm.show();
     }
 
     @Override

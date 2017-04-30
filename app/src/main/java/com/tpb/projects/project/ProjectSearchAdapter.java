@@ -18,6 +18,8 @@ import com.tpb.projects.util.search.FuzzyStringSearcher;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by theo on 02/02/17.
  */
@@ -83,25 +85,23 @@ class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private void bindView(int pos, View view) {
         final int dp = data.indexOf(mFilter.getFiltered().get(pos));
         final String text;
-        if(data.get(dp).hasIssue()) {
-            text = " #" + data.get(dp).getIssue().getNumber() + " " + data.get(dp).getIssue()
+        final Card c = data.get(dp);
+        if(c.hasIssue()) {
+            text = " #" + c.getIssue().getNumber() + " " + c.getIssue()
                                                                           .getTitle();
         } else {
-            text = data.get(dp).getNote();
+            text = c.getNote();
         }
-
-        if(data.get(dp).hasIssue()) {
-            ((TextView) view.findViewById(R.id.suggestion_text))
-                    .setCompoundDrawablesRelativeWithIntrinsicBounds(data.get(dp).getIssue()
-                                                                         .isClosed() ? R.drawable.ic_state_closed : R.drawable.ic_state_open,
+        final TextView tv = ButterKnife.findById(view, R.id.suggestion_text);
+        tv.setText(text);
+        if(c.hasIssue()) {
+            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            c.getIssue().isClosed() ?
+                                    R.drawable.ic_state_closed : R.drawable.ic_state_open,
                             0, 0, 0
                     );
-            ((TextView) view.findViewById(R.id.suggestion_text)).setText(text);
         } else {
-            ((TextView) view.findViewById(R.id.suggestion_text))
-                    .setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            //Log.i(TAG, "bindView: Setting text " + parseCache[dataPos]);
-            ((TextView) view.findViewById(R.id.suggestion_text)).setText(text);
+            tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         }
     }
 

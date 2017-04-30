@@ -70,7 +70,7 @@ public class RepoProjectsAdapter extends RecyclerView.Adapter<RepoProjectsAdapte
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
     }
 
     public void updateProject(Project project) {

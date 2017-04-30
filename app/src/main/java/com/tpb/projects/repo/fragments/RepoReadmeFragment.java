@@ -15,7 +15,6 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.webview.MarkdownWebView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.fab.FloatingActionButton;
-import com.tpb.projects.util.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,8 +58,8 @@ public class RepoReadmeFragment extends RepoFragment {
                 }
             }, mRepo.getFullName());
         });
-        if(mRepo != null) repoLoaded(mRepo);
         mReadme.enableDarkTheme();
+        if(mRepo != null) repoLoaded(mRepo);
         return view;
     }
 

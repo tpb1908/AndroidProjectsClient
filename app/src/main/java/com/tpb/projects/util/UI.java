@@ -174,8 +174,8 @@ public class UI {
     public static Pair<View, String> getSafeNavigationBarTransitionPair(@NonNull Activity activity) {
         final View nav = activity.findViewById(android.R.id.navigationBarBackground);
         return nav == null ?
-                new Pair<>(new View(activity), "not_for_transition") :
-                new Pair<>(nav, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
+                Pair.create(new View(activity), "not_for_transition") :
+                Pair.create(nav, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
     }
 
 

@@ -79,7 +79,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         if(data.size() > 0) {
             int oldLength = mComments.size();
             for(Comment c : data) {
-                mComments.add(new Pair<>(c, null));
+                mComments.add(Pair.create(c, null));
             }
             notifyItemRangeInserted(oldLength, mComments.size());
         } else {
@@ -110,7 +110,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
     }
 
     public void addComment(Comment comment) {
-        mComments.add(new Pair<>(comment, null));
+        mComments.add(Pair.create(comment, null));
         notifyItemInserted(mComments.size());
     }
 
@@ -137,7 +137,7 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
             }
         }
         if(index != -1) {
-            mComments.set(index, new Pair<>(comment, null));
+            mComments.set(index, Pair.create(comment, null));
             notifyItemChanged(index);
         }
     }

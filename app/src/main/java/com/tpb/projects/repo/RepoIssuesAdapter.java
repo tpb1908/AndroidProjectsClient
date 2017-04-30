@@ -1,7 +1,5 @@
 package com.tpb.projects.repo;
 
-import android.content.Intent;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -23,10 +21,8 @@ import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.issues.IssueActivity;
 import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.repo.fragments.RepoIssuesFragment;
-import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
 
@@ -47,7 +43,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     private final ArrayList<Pair<Issue, SpannableString>> mIssues = new ArrayList<>();
     private FuzzyStringSearcher mSearcher = new FuzzyStringSearcher();
     private boolean mIsSearching = false;
-    private ArrayList<Integer> mSearchFilter = new ArrayList<>();
+    private List<Integer> mSearchFilter = new ArrayList<>();
 
     private Loader mLoader;
     private Repository mRepo;
@@ -81,15 +77,20 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
     public void search(String query) {
         if(mIsLoading) return;
         mIsSearching = true;
-        final ArrayList<String> issues = new ArrayList<>();
-        String s;
+        final List<String> issues = new ArrayList<>();
+        final StringBuilder builder = new StringBuilder();
         for(Pair<Issue, SpannableString> p : mIssues) {
-            s = "#" + p.first.getNumber();
+            builder.append(p.first.getNumber());
+            builder.append(" ");
+            builder.append(p.first.getTitle());
+            if(p.first.getOpenedBy() != null) builder.append(p.first.getOpenedBy().getLogin());
             if(p.first.getLabels() != null) {
-                for(Label l : p.first.getLabels()) s += "\n" + l.getName();
+                for(Label l : p.first.getLabels()) builder.append(l.getName());
             }
-            s += p.first.getTitle() + "\n" + p.first.getBody();
-            issues.add(s);
+            builder.append(" ");
+            builder.append(p.first.getBody());
+            issues.add(builder.toString());
+            builder.setLength(0);
         }
         mSearcher.setItems(issues);
         mSearchFilter = mSearcher.search(query);
@@ -131,7 +132,8 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     @Override
     public void listLoadError(APIHandler.APIError error) {
-
+        mRefresher.setRefreshing(false);
+        loadIssues(false);
     }
 
     public void notifyBottomReached() {
@@ -174,12 +176,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
 
     @Override
     public void onBindViewHolder(IssueHolder holder, int position) {
-        final int pos;
-        if(mIsSearching) {
-            pos = mSearchFilter.get(position);
-        } else {
-            pos = holder.getAdapterPosition();
-        }
+        final int pos = mIsSearching ? mSearchFilter.get(position) : holder.getAdapterPosition();
         final Issue issue = mIssues.get(pos).first;
         holder.mTitle.setMarkdown(Formatter.bold(issue.getTitle()));
         holder.mIssueIcon.setImageResource(
@@ -207,6 +204,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mContent, issue);
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mTitle, issue);
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.itemView, issue);
+        holder.mMenuButton.setOnClickListener((v) -> mParent.openMenu(v, issue));
     }
 
     @Override
@@ -214,21 +212,7 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         return mIsSearching ? mSearchFilter.size() : mIssues.size();
     }
 
-    private void openIssue(IssueHolder holder, int pos) {
-        final Intent i = new Intent(mParent.getContext(), IssueActivity.class);
-        i.putExtra(mParent.getString(R.string.transition_card), "");
-        i.putExtra(mParent.getString(R.string.parcel_issue), mIssues.get(pos).first);
-        UI.setDrawableForIntent(holder.mUserAvatar, i);
-        //We have to add the nav bar as ViewOverlay is above it
-        mParent.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                mParent.getActivity(),
-                Pair.create(holder.itemView, mParent.getString(R.string.transition_card)),
-                UI.getSafeNavigationBarTransitionPair(mParent.getActivity())
-                ).toBundle()
-        );
-    }
-
-    class IssueHolder extends RecyclerView.ViewHolder {
+    static class IssueHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.issue_title) MarkdownTextView mTitle;
         @BindView(R.id.issue_content_markdown) MarkdownTextView mContent;
@@ -239,8 +223,6 @@ public class RepoIssuesAdapter extends RecyclerView.Adapter<RepoIssuesAdapter.Is
         IssueHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mMenuButton.setOnClickListener(
-                    (v) -> mParent.openMenu(v, mIssues.get(getAdapterPosition()).first));
         }
     }
 }

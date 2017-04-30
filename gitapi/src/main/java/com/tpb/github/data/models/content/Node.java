@@ -83,8 +83,6 @@ public class Node implements Parcelable {
         } catch(IndexOutOfBoundsException iob) {
             return false;
         }
-
-
     }
 
     public NodeType getType() {
@@ -204,7 +202,6 @@ public class Node implements Parcelable {
             throw new IllegalArgumentException("No NodeType with String value " + type);
         }
     }
-
 
     @Override
     public int describeContents() {

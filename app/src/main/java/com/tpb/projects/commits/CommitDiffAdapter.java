@@ -94,7 +94,7 @@ public class CommitDiffAdapter extends RecyclerView.Adapter<CommitDiffAdapter.Di
         return mDiffs.length;
     }
 
-    class DiffHolder extends RecyclerView.ViewHolder {
+    static class DiffHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.diff_filename) TextView mFileName;
         @BindView(R.id.diff_info) TextView mInfo;

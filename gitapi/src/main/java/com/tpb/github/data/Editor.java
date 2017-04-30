@@ -308,7 +308,7 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        listener.created(new Pair<>(columnId, new Card(response)));
+                        listener.created(Pair.create(columnId, new Card(response)));
                     }
 
                     @Override
@@ -334,7 +334,7 @@ public class Editor extends APIHandler {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        listener.created(new Pair<>(columnId, new Card(response)));
+                        listener.created(Pair.create(columnId, new Card(response)));
                     }
 
                     @Override

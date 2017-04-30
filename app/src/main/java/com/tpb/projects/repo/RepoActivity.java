@@ -96,7 +96,6 @@ public class RepoActivity extends BaseActivity implements Loader.ItemLoader<Repo
         } else {
             if(launchIntent.hasExtra(getString(R.string.intent_pager_page))) {
                 mLaunchPage = launchIntent.getIntExtra(getString(R.string.intent_pager_page), 0);
-
             }
             loader.loadRepository(this,
                     launchIntent.getStringExtra(getString(R.string.intent_repo))

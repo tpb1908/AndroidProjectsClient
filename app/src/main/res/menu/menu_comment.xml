@@ -24,4 +24,8 @@
         android:id="@+id/menu_copy_comment_text"
         android:title="@string/menu_copy_comment_text"/>
 
+    <item
+        android:id="@+id/menu_fullscreen"
+        android:title="@string/menu_fullscreen_note"/>
+
 </menu>

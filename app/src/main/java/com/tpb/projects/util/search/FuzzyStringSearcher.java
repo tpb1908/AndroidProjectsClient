@@ -2,24 +2,10 @@ package com.tpb.projects.util.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by theo on 03/02/17.
- * <p>
- * Possible algorithms
- * https://en.wikipedia.org/wiki/Bitap_algorithm
- * Uses Levenshtein distance on substrings
- * First computes a set of bitmasks containing one bit for each element of the pattern
- * <p>
- * Rabin-Karp algorithm
- * https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
- * Uses hashing to find any one of a set of pattern strings in a atext
- * <p>
- * Knuth-Morris-Pratt algorithm
- * https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
- * <p>
- * Boyer-Moore string search
- * https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm
  */
 
 /*
@@ -31,9 +17,7 @@ An error may be insertion, deletion, or substitution
  */
 
 public class FuzzyStringSearcher {
-    private static final String TAG = FuzzyStringSearcher.class.getSimpleName();
-
-    private ArrayList<String> items = new ArrayList<>();
+    private List<String> mItems = new ArrayList<>();
     private final int[] queryMask = new int[65536];
 
     private static FuzzyStringSearcher instance;
@@ -42,11 +26,11 @@ public class FuzzyStringSearcher {
 
     }
 
-    private FuzzyStringSearcher(ArrayList<String> items) {
-        this.items = items;
+    private FuzzyStringSearcher(List<String> items) {
+        mItems = items;
     }
 
-    public static FuzzyStringSearcher getInstance(ArrayList<String> items) {
+    public static FuzzyStringSearcher getInstance(List<String> items) {
         if(instance == null) {
             instance = new FuzzyStringSearcher(items);
         } else {
@@ -55,18 +39,18 @@ public class FuzzyStringSearcher {
         return instance;
     }
 
-    public void setItems(ArrayList<String> items) {
-        this.items = items;
+    public void setItems(List<String> items) {
+        mItems = items;
     }
 
-    public ArrayList<Integer> search(String query) {
-        final ArrayList<Integer> positions = new ArrayList<>();
-        final ArrayList<Integer> ranks = new ArrayList<>();
+    public List<Integer> search(String query) {
+        final List<Integer> positions = new ArrayList<>();
+        final List<Integer> ranks = new ArrayList<>();
         int index, rank;
-        for(int i = 0; i < items.size(); i++) {
-            index = findIndex(items.get(i), query, 1);
+        for(int i = 0; i < mItems.size(); i++) {
+            index = findIndex(mItems.get(i), query, 1);
             if(index >= 0) {
-                rank = index; //TODO Other indexing
+                rank = index;
                 boolean added = false;
                 for(int j = 0; j < ranks.size(); j++) {
                     if(rank > ranks.get(j)) {
@@ -91,14 +75,14 @@ public class FuzzyStringSearcher {
         int[] R;
         int i, d;
 
-        if(query.isEmpty()) return 0;
+        if(query.isEmpty()) return -1;
         if(m > 31) return -1;
 
         R = new int[k + 1];
         for(i = 0; i <= k; ++i) {
             R[i] = ~1; //Bitwise complement of 1
         }
-        Arrays.fill(queryMask, ~0);
+        Arrays.fill(queryMask, ~0); //Fill the mask
 
         for(i = 0; i < m; ++i) {
             queryMask[query.charAt(i)] &= ~(1 << i);

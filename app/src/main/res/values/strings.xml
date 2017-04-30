@@ -69,7 +69,7 @@
 
     <!-- Commit stuff -->
     <string name="text_committed_by">%1$s committed on %2$s</string>
-    <string name="text_committed_by_with_has">%1$s committed %2$s on with %3$s</string>
+    <string name="text_committed_by_hash_at">%1$s committed %2$s on %3$s</string>
     <string name="text_diff_changes">%1$s with %2$s and %3$s</string>
     <string name="text_ci_status">Continuous integration status: %1$s</string>
     <string name="text_ci_info">%1$s \n%2$s</string>
@@ -185,7 +185,7 @@
     </plurals>
 
     <!-- Issue strings -->
-    <string name="text_loading_collaborators">Loading collaborators</string>
+    <string name="text_loading_contributors">Loading contributors</string>
     <string name="text_assignees">Assignee</string>
     <string name="text_loading_labels">Loading labels</string>
     <string name="text_assigned_to">Assigned to </string>

@@ -30,7 +30,6 @@ import butterknife.ButterKnife;
  */
 
 public class CommitActivity extends CircularRevealActivity implements Loader.ItemLoader<Commit> {
-    private static final String TAG = CommitActivity.class.getSimpleName();
 
     @BindView(R.id.commit_hash) TextView mHash;
     @BindView(R.id.commit_comment_fab) FloatingActionButton mFab;
@@ -116,13 +115,6 @@ public class CommitActivity extends CircularRevealActivity implements Loader.Ite
                 if(mFab != null) mCommentsFragment.setFab(mFab);
                 return mCommentsFragment;
             }
-        }
-
-        void attachFragment(Fragment fragment) {
-            if(fragment instanceof CommitInfoFragment)
-                mInfoFragment = (CommitInfoFragment) fragment;
-            if(fragment instanceof CommitCommentsFragment)
-                mCommentsFragment = (CommitCommentsFragment) fragment;
         }
 
         void notifyCommitLoaded() {

@@ -1,5 +1,6 @@
 package com.tpb.projects.issues.fragments;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -156,19 +158,27 @@ public class IssueCommentsFragment extends IssueFragment {
     }
 
     void removeComment(Comment comment) {
-        mRefresher.setRefreshing(true);
-        mEditor.deleteIssueComment(new Editor.DeletionListener<Integer>() {
-            @Override
-            public void deleted(Integer id) {
-                mRefresher.setRefreshing(false);
-                mAdapter.removeComment(id);
-            }
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_delete_comment);
+        builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
+            mRefresher.setRefreshing(true);
+            mEditor.deleteCommitComment(new Editor.DeletionListener<Integer>() {
+                @Override
+                public void deleted(Integer id) {
+                    mRefresher.setRefreshing(false);
+                    mAdapter.removeComment(id);
+                }
 
-            @Override
-            public void deletionError(APIHandler.APIError error) {
-                mRefresher.setRefreshing(false);
-            }
-        }, mIssue.getRepoFullName(), comment.getId());
+                @Override
+                public void deletionError(APIHandler.APIError error) {
+                    mRefresher.setRefreshing(false);
+                }
+            }, mIssue.getRepoFullName(), comment.getId());
+        });
+        builder.setNegativeButton(R.string.action_no, null);
+        final Dialog deleteDialog = builder.create();
+        deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        deleteDialog.show();
     }
 
     public void displayCommentMenu(View view, Comment comment) {

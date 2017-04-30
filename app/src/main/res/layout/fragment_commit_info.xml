@@ -80,7 +80,7 @@
                           android:paddingEnd="16dp"
                           android:visibility="gone">
 
-                <com.tpb.projects.common.NetworkImageView
+                <ImageView
                     android:id="@+id/status_image"
                     android:layout_width="48dp"
                     android:layout_height="48dp"

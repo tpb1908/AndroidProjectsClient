@@ -87,7 +87,7 @@ public class NetworkImageView extends AppCompatImageView {
                 mImageContainer.cancelRequest();
                 mImageContainer = null;
             }
-            setDefaultImage();
+            displayDefaultImage();
             return;
         }
 
@@ -116,7 +116,7 @@ public class NetworkImageView extends AppCompatImageView {
                         if(response.getBitmap() != null) {
                             setImageBitmap(response.getBitmap());
                         } else if(mDefaultImageResId != 0) {
-                            setDefaultImage();
+                            displayDefaultImage();
                         }
                     }
 
@@ -131,7 +131,12 @@ public class NetworkImageView extends AppCompatImageView {
 
     }
 
-    private void setDefaultImage() {
+    public void resetImage() {
+        setImageDrawable(null);
+        displayDefaultImage();
+    }
+
+    private void displayDefaultImage() {
         if(getDrawable() != null) return; //Drawable has been set manually
         if(mDefaultImageResId != 0) {
             setImageResource(mDefaultImageResId);

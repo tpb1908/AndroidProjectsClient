@@ -157,15 +157,14 @@ public class ProjectEditor extends EditorActivity {
 
     @Override
     public void finish() {
-        if(mHasBeenEdited && !mDescriptionEditor.getText().toString().isEmpty() && !mNameEditor.getText()
-                                                                                     .toString()
-                                                                                     .isEmpty()) {
+        if(mHasBeenEdited && !mNameEditor.getText().toString().isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.title_discard_changes);
             builder.setPositiveButton(R.string.action_yes, (dialogInterface, i) -> {
                 final InputMethodManager imm = (InputMethodManager) getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+                super.finish();
             });
             builder.setNegativeButton(R.string.action_no, null);
             final Dialog deleteDialog = builder.create();

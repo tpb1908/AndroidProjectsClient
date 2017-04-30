@@ -5,6 +5,7 @@ import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +104,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
         if(!mParent.areViewsValid()) return;
         mRefresher.setRefreshing(false);
         mIsLoading = false;
+        Log.i("Loading", commits.size() + " Commits finished loading for page " + mPage);
         if(commits.size() > 0) {
             final int oldLength = mCommits.size();
             if(mPage == 1) {
@@ -111,6 +113,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
             for(Commit c : commits) {
                 mCommits.add(Pair.create(c, null));
             }
+            Log.i("Loading", "Commits loaded: " + commits.toString());
             notifyItemRangeInserted(oldLength, mCommits.size());
         } else {
             mMaxPageReached = true;
@@ -154,7 +157,7 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
 
             builder.append(
                     String.format(
-                            res.getString(R.string.text_committed_by_with_has),
+                            res.getString(R.string.text_committed_by_hash_at),
                             String.format(
                                     res.getString(R.string.text_md_link),
                                     userName,
@@ -170,9 +173,10 @@ public class RepoCommitsAdapter extends RecyclerView.Adapter<RepoCommitsAdapter.
                             )
                     )
             );
-            holder.mInfo
-                    .setMarkdown(Markdown.formatMD(builder.toString(), mRepo.getFullName()), null,
-                            text -> mCommits.set(position, Pair.create(c, text))
+            holder.mInfo.setMarkdown(
+                    Markdown.formatMD(builder.toString(), mRepo.getFullName()),
+                    null,
+                    text -> mCommits.set(position, Pair.create(c, text))
                     );
         } else {
             holder.mInfo.setText(mCommits.get(position).second);

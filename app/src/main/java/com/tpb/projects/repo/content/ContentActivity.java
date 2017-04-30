@@ -35,7 +35,6 @@ import butterknife.ButterKnife;
  */
 
 public class ContentActivity extends BaseActivity implements Loader.ListLoader<Pair<String, String>> {
-    private static final String TAG = ContentActivity.class.getSimpleName();
 
     @BindView(R.id.content_title) TextView mTitle;
     @BindView(R.id.content_ribbon_scrollview) HorizontalScrollView mRibbonScrollView;

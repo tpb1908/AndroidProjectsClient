@@ -120,8 +120,7 @@ public class Loader extends APIHandler {
 
     public Loader loadRepositories(@Nullable final ListLoader<Repository> loader, String user, int page) {
         final ANRequest req =
-                get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + "?sort=updated" + appendPage(
-                        page))
+                get(GIT_BASE + SEGMENT_USERS + "/" + user + SEGMENT_REPOS + appendPage(page) + "&sort=updated")
                         .setTag(loader)
                         .addHeaders(LICENSES_API_AUTH_HEADERS)
                         .build();
@@ -153,7 +152,7 @@ public class Loader extends APIHandler {
 
     public Loader loadRepositories(@Nullable final ListLoader<Repository> loader, int page) {
         final ANRequest req =
-                get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + "?sort=updated" + appendPage(page))
+                get(GIT_BASE + SEGMENT_USER + SEGMENT_REPOS + appendPage(page) + "&sort=updated")
                         .addHeaders(LICENSES_API_AUTH_HEADERS)
                         .setTag(loader)
                         .build();
@@ -1132,7 +1131,7 @@ public class Loader extends APIHandler {
 
     public Loader loadCommits(@NonNull final ListLoader<Commit> loader, String repoFullName, @Nullable String branch, int page) {
         get(GIT_BASE + SEGMENT_REPOS + "/" + repoFullName + SEGMENT_COMMITS + appendPage(
-                page) + (branch == null ? "" : "?sha=" + branch))
+                page) + (branch == null ? "" : "&sha=" + branch))
                 .addHeaders(API_AUTH_HEADERS)
                 .getResponseOnlyFromNetwork()
                 .setTag(loader)
@@ -1239,7 +1238,7 @@ public class Loader extends APIHandler {
 
 
     private static String appendPage(int page) {
-        return page > 1 ? "?page=" + page : "";
+        return page > 0 ? "?page=" + page : "";
     }
 
     public interface ListLoader<T> {

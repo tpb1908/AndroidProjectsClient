@@ -128,6 +128,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
             holder.mDescription.setVisibility(View.GONE);
         }
         if(mIsShowingStars) {
+            holder.mImage.resetImage();
             holder.mImage.setImageUrl(r.getUserAvatarUrl());
             IntentHandler.addOnClickHandler(mActivity, holder.mImage, r.getUserLogin());
         } else {

@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.tpb.github.data.APIHandler;
 import com.tpb.github.data.Loader;
-import com.tpb.github.data.models.Page;
 import com.tpb.github.data.models.Repository;
 import com.tpb.github.data.models.User;
 import com.tpb.mdtext.Markdown;
@@ -28,7 +27,6 @@ import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.common.fab.FloatingActionButton;
 import com.tpb.projects.repo.content.ContentActivity;
 import com.tpb.projects.user.UserActivity;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.UI;
 import com.tpb.projects.util.Util;
 
@@ -85,7 +83,7 @@ public class RepoInfoFragment extends RepoFragment {
 
                 @Override
                 public void loadError(APIHandler.APIError error) {
-
+                    mRefresher.setRefreshing(false);
                 }
             }, mRepo.getFullName());
         });
@@ -106,8 +104,10 @@ public class RepoInfoFragment extends RepoFragment {
         mStars.setText(String.valueOf(repo.getStarGazers()));
         if(Util.isNotNullOrEmpty(mRepo.getDescription())) {
             mDescription.setVisibility(View.VISIBLE);
-            mDescription
-                    .setMarkdown(Markdown.formatMD(mRepo.getDescription(), mRepo.getFullName()));
+            mDescription.setMarkdown(Markdown.formatMD(
+                    mRepo.getDescription(),
+                    mRepo.getFullName())
+            );
         } else {
             mDescription.setVisibility(View.GONE);
         }
@@ -116,17 +116,6 @@ public class RepoInfoFragment extends RepoFragment {
         } else {
             mLicense.setText(R.string.text_no_license);
         }
-        Loader.getLoader(getContext()).loadPage(new Loader.ItemLoader<Page>() {
-            @Override
-            public void loadComplete(Page data) {
-                Logger.i(TAG, "loadComplete: " + data.toString());
-            }
-
-            @Override
-            public void loadError(APIHandler.APIError error) {
-                Logger.i(TAG, "loadError: " + error.toString());
-            }
-        }, mRepo.getFullName());
         loadRelevantUsers();
     }
 
@@ -281,7 +270,6 @@ public class RepoInfoFragment extends RepoFragment {
             i.putExtra(getString(R.string.intent_repo), mRepo.getFullName());
             startActivity(i);
         }
-
     }
 
     @Override

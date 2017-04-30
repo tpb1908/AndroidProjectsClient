@@ -71,7 +71,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
                     .setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_folder, 0, 0, 0);
             holder.mSize.setText("");
         }
-
+        holder.itemView.setOnClickListener((v) -> loadNode(holder.getAdapterPosition()));
     }
 
     void setRef(String ref) {
@@ -82,8 +82,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             mPreviousNode = null;
             reload();
         }
-
-
     }
 
     void reload() {
@@ -115,15 +113,13 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         If we are further down, both mPreviousNode and its parent are non null
          */
         if(mPreviousNode != null) {
+            mPreviousNode = mPreviousNode.getParent();
             if(mPreviousNode.getParent() == null) {
-                mPreviousNode = mPreviousNode.getParent();
                 mCurrentNodes = mRootNodes;
-                notifyDataSetChanged();
             } else {
-                mCurrentNodes = mPreviousNode.getParent().getChildren();
-                mPreviousNode = mPreviousNode.getParent();
-                notifyDataSetChanged();
+                mCurrentNodes = mPreviousNode.getChildren();
             }
+            notifyDataSetChanged();
         }
 
     }
@@ -149,7 +145,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
             if(node.getChildren().size() == 0) {
                 mLoader.loadDirectory(this, mRepo, node.getPath(), node, mRef);
             } else {
-                mParent.mRefresher.setRefreshing(true);
                 listLoadComplete(node.getChildren());
             }
         }
@@ -177,8 +172,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
                         if(parent.equals(child)) {
                             parent.setChildren(directory);
                             return;
+                        } else if(child.getType() == Node.NodeType.DIRECTORY) {
+                            stack.push(child);
                         }
-                        stack.push(child);
                     }
                 }
             }
@@ -195,7 +191,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         if(mPreviousNode == null) { //We are at the root
             mRootNodes = directory;
             mCurrentNodes = directory;
-            mPreviousNode = null;
             notifyItemRangeInserted(0, mCurrentNodes.size());
             if(mCurrentNodes.size() > 0) mParent.setDefaultRef(mCurrentNodes.get(0).getRef());
         } else {
@@ -223,7 +218,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         return mCurrentNodes.size();
     }
 
-    class NodeViewHolder extends RecyclerView.ViewHolder {
+    static class NodeViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.node_text) TextView mText;
         @BindView(R.id.node_size) TextView mSize;
@@ -231,7 +226,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.NodeView
         NodeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener((v) -> loadNode(getAdapterPosition()));
         }
     }
 

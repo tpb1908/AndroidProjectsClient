@@ -3,6 +3,7 @@ package com.tpb.projects.repo.content;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,8 +26,6 @@ import butterknife.ButterKnife;
  */
 
 public class FileActivity extends AppCompatActivity {
-    private static final String TAG = FileActivity.class.getSimpleName();
-
     @BindView(R.id.file_name) TextView mName;
     @BindView(R.id.file_webview) HighlightJsView mWebView;
     @BindView(R.id.file_loading_spinner) ProgressBar mSpinner;
@@ -80,7 +79,11 @@ public class FileActivity extends AppCompatActivity {
             final Node node = ContentActivity.mLaunchNode;
             mName.setText(node.getName());
             mWebView.setHighlightLanguage(getLanguage(getFileType(node.getUrl())));
-            new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
+            if("base64".equals(node.getEncoding())) {
+                fileLoadListener.onResponse(new String(Base64.decode(node.getContent(), Base64.DEFAULT)));
+            } else {
+                new FileLoader(this).loadRawFile(fileLoadListener, node.getDownloadUrl());
+            }
         } else {
             finish();
         }

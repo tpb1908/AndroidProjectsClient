@@ -178,8 +178,8 @@ public class IssueInfoFragment extends IssueFragment {
                     getActivity().startActivity(us,
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     getActivity(),
-                                    new Pair<>(login, getString(R.string.transition_username)),
-                                    new Pair<>(avatar, getString(R.string.transition_user_image))
+                                    Pair.create(login, getString(R.string.transition_username)),
+                                    Pair.create(avatar, getString(R.string.transition_user_image))
                             ).toBundle()
                     );
                 });

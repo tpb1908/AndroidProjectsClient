@@ -34,7 +34,6 @@ import butterknife.ButterKnife;
  */
 
 public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAdapter.CommentHolder> implements Loader.ListLoader<Comment> {
-    private static final String TAG = CommitCommentsAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<Comment, SpannableString>> mComments = new ArrayList<>();
     private Commit mCommit;
@@ -80,7 +79,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         if(comments.size() > 0) {
             final int oldLength = mComments.size();
             for(Comment c : comments) {
-                mComments.add(new Pair<>(c, null));
+                mComments.add(Pair.create(c, null));
             }
             notifyItemRangeInserted(oldLength, mComments.size());
         } else {
@@ -111,35 +110,27 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
     }
 
     public void addComment(Comment comment) {
-        mComments.add(new Pair<>(comment, null));
+        mComments.add(Pair.create(comment, null));
         notifyItemInserted(mComments.size());
     }
 
     public void removeComment(int commentId) {
-        int index = -1;
         for(int i = 0; i < mComments.size(); i++) {
             if(mComments.get(i).first.getId() == commentId) {
-                index = i;
+                mComments.remove(i);
+                notifyItemRemoved(i);
                 break;
             }
-        }
-        if(index != -1) {
-            mComments.remove(index);
-            notifyItemRemoved(index);
         }
     }
 
     public void updateComment(Comment comment) {
-        int index = -1;
         for(int i = 0; i < mComments.size(); i++) {
             if(mComments.get(i).first.getId() == comment.getId()) {
-                index = i;
+                mComments.set(i, Pair.create(comment, null));
+                notifyItemChanged(i);
                 break;
             }
-        }
-        if(index != -1) {
-            mComments.set(index, new Pair<>(comment, null));
-            notifyItemChanged(index);
         }
     }
 
@@ -154,19 +145,15 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
 
     @Override
     public void onBindViewHolder(CommentHolder holder, int position) {
-        bindComment(holder);
-    }
-
-    private void bindComment(CommentHolder commentHolder) {
-        final int pos = commentHolder.getAdapterPosition();
+        final int pos = holder.getAdapterPosition();
         final Comment comment = mComments.get(pos).first;
         if(mComments.get(pos).second == null) {
-            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
+            holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
             final StringBuilder builder = new StringBuilder();
             builder.append(String.format(
-                    commentHolder.itemView.getResources().getString(R.string.text_comment_by),
+                    holder.itemView.getResources().getString(R.string.text_comment_by),
                     String.format(
-                            commentHolder.itemView.getResources().getString(R.string.text_href),
+                            holder.itemView.getResources().getString(R.string.text_href),
                             comment.getUser().getHtmlUrl(),
                             comment.getUser().getLogin()
                     ),
@@ -174,7 +161,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
             ));
             if(comment.getUpdatedAt() != comment.getCreatedAt()) {
                 builder.append(" • ");
-                builder.append(commentHolder.itemView.getResources()
+                builder.append(holder.itemView.getResources()
                                                      .getString(R.string.text_comment_edited));
             }
             builder.append("<br><br>");
@@ -184,19 +171,20 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
                 builder.append(Formatter.reactions(comment.getReaction()));
             }
 
-            commentHolder.mText.setMarkdown(
+            holder.mText.setMarkdown(
                     builder.toString(),
-                    new HttpImageGetter(commentHolder.mText),
+                    new HttpImageGetter(holder.mText),
                     text -> mComments.set(pos, Pair.create(comment, text))
             );
         } else {
-            commentHolder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
-            commentHolder.mText.setText(mComments.get(pos).second);
+            holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
+            holder.mText.setText(mComments.get(pos).second);
         }
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mText);
-        IntentHandler.addOnClickHandler(mParent.getActivity(), commentHolder.mAvatar,
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar,
                 comment.getUser().getLogin()
         );
+        holder.mMenu.setOnClickListener((v) -> displayMenu(v, holder.getAdapterPosition()));
     }
 
     @Override
@@ -208,7 +196,7 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         mParent.displayCommentMenu(view, mComments.get(pos).first);
     }
 
-    class CommentHolder extends RecyclerView.ViewHolder {
+    static class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_comment_avatar) NetworkImageView mAvatar;
         @BindView(R.id.comment_text) MarkdownTextView mText;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
@@ -216,8 +204,6 @@ public class CommitCommentsAdapter extends RecyclerView.Adapter<CommitCommentsAd
         CommentHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-            // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }
