@@ -84,9 +84,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         } else {
             final int issueNumber = launchIntent
                     .getIntExtra(getString(R.string.intent_issue_number), -1);
-            final String fullRepoName = launchIntent
+            final String repoFullName = launchIntent
                     .getStringExtra(getString(R.string.intent_repo));
-            mLoader.loadIssue(this, fullRepoName, issueNumber, true);
+            mLoader.loadIssue(this, repoFullName, issueNumber, true);
         }
 
         mPager.setOffscreenPageLimit(2);
@@ -118,8 +118,9 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 @Override
                 public void loadComplete(Repository.AccessLevel data) {
                     mAccessLevel = data;
-                    if(mAdapter.mInfoFragment != null)
+                    if(mAdapter.mInfoFragment != null) {
                         mAdapter.mInfoFragment.setAccessLevel(mAccessLevel);
+                    }
                 }
 
                 @Override
@@ -128,7 +129,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
                 }
             }, GitHubSession.getSession(this).getUserLogin(), mIssue.getRepoFullName());
         }
-
         mAdapter.setIssue();
     }
 
@@ -207,13 +207,6 @@ public class IssueActivity extends CircularRevealActivity implements Loader.Item
         }
         return true;
     }
-
-    @Override
-    public void onBackPressed() {
-        mAdapter.mInfoFragment.checkSharedElementExit();
-        super.onBackPressed();
-    }
-
 
     private class IssueFragmentAdapter extends FragmentPagerAdapter {
 

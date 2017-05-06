@@ -54,6 +54,8 @@ public class IssueEvent extends DataModel implements Parcelable {
     private String renameFrom;
     private String renameTo;
 
+    private static final String MILESTONE = "milestone";
+    private Milestone milestone;
 
     public IssueEvent(JSONObject obj) {
         try {
@@ -93,6 +95,9 @@ public class IssueEvent extends DataModel implements Parcelable {
             if(obj.has(RENAME)) {
                 renameFrom = obj.getJSONObject(RENAME).getString(RENAME_FROM);
                 renameTo = obj.getJSONObject(RENAME).getString(RENAME_TO);
+            }
+            if(obj.has(MILESTONE)) {
+                milestone = new Milestone(obj.getJSONObject(MILESTONE));
             }
         } catch(JSONException jse) {
             Log.e(TAG, "parse: ", jse);
@@ -161,6 +166,9 @@ public class IssueEvent extends DataModel implements Parcelable {
         return renameTo;
     }
 
+    public Milestone getMilestone() {
+        return milestone;
+    }
 
     @Override
     public String toString() {
@@ -286,6 +294,7 @@ public class IssueEvent extends DataModel implements Parcelable {
         return obj instanceof IssueEvent && ((IssueEvent) obj).id == id;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -306,13 +315,11 @@ public class IssueEvent extends DataModel implements Parcelable {
         dest.writeParcelable(this.requestedReviewer, flags);
         dest.writeString(this.renameFrom);
         dest.writeString(this.renameTo);
+        dest.writeParcelable(this.milestone, flags);
         dest.writeLong(this.createdAt);
     }
 
-    public IssueEvent() {
-    }
-
-    private IssueEvent(Parcel in) {
+    protected IssueEvent(Parcel in) {
         this.id = in.readInt();
         this.actor = in.readParcelable(User.class.getClassLoader());
         int tmpEvent = in.readInt();
@@ -327,6 +334,7 @@ public class IssueEvent extends DataModel implements Parcelable {
         this.requestedReviewer = in.readParcelable(User.class.getClassLoader());
         this.renameFrom = in.readString();
         this.renameTo = in.readString();
+        this.milestone = in.readParcelable(Milestone.class.getClassLoader());
         this.createdAt = in.readLong();
     }
 

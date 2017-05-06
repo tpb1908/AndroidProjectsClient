@@ -17,6 +17,7 @@ import com.tpb.projects.util.search.ArrayFilter;
 import com.tpb.projects.util.search.FuzzyStringSearcher;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 
@@ -27,11 +28,11 @@ import butterknife.ButterKnife;
 class ProjectSearchAdapter extends ArrayAdapter<Card> {
     private static final String TAG = ProjectSearchAdapter.class.getSimpleName();
 
-    private final ArrayList<Card> data;
+    private final List<Card> data;
     private ArrayFilter<Card> mFilter;
     private final FuzzyStringSearcher mSearcher;
 
-    public ProjectSearchAdapter(Context context, @NonNull ArrayList<Card> data) {
+    public ProjectSearchAdapter(Context context, @NonNull List<Card> data) {
         super(context, R.layout.viewholder_search_suggestion, data);
         this.data = data;
         final ArrayList<String> strings = new ArrayList<>();

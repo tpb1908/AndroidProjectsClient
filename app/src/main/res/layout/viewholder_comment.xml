@@ -3,10 +3,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="8dp"
                                     android:layout_marginTop="4dp"
                                     android:layout_marginBottom="4dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginEnd="8dp"
                                     android:minHeight="32dp"
                                     app:cardCornerRadius="2dp"
                                     app:cardElevation="2dp">
@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="16dp">
 
         <com.tpb.projects.common.NetworkImageView
             android:id="@+id/event_comment_avatar"
@@ -24,11 +24,13 @@
             android:layout_alignParentStart="true"/>
 
         <com.tpb.mdtext.views.MarkdownTextView
-            android:id="@+id/comment_text"
-            android:layout_width="match_parent"
+            android:id="@+id/comment_commenter"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/event_comment_avatar"
-            android:layout_toStartOf="@+id/comment_menu_button"/>
+            android:layout_toStartOf="@+id/comment_menu_button">
+
+        </com.tpb.mdtext.views.MarkdownTextView>
 
         <ImageButton
             android:id="@+id/comment_menu_button"
@@ -41,6 +43,12 @@
             android:contentDescription="@string/content_description_menu"
             android:src="@drawable/ic_chevron_down"/>
 
+        <com.tpb.mdtext.views.MarkdownTextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/comment_commenter"/>
     </RelativeLayout>
 
 

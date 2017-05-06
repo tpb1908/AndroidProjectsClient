@@ -86,17 +86,17 @@ public class Util {
         return new String(Base64.decode(base64, Base64.DEFAULT));
     }
 
-    public static ArrayList<DataModel> mergeModels(List<? extends DataModel> models, Comparator<DataModel> comparator) {
-        final ArrayList<DataModel> merged = new ArrayList<>();
-        ArrayList<DataModel> toMerge = new ArrayList<>();
+    public static List<DataModel> mergeModels(List<? extends DataModel> models, Comparator<DataModel> comparator) {
+        final List<DataModel> merged = new ArrayList<>();
+        List<DataModel> toMerge = new ArrayList<>();
         DataModel last = null;
         for(int i = 0; i < models.size(); i++) {
             //If we have two of the same event, happening at the same time
             if(comparator.compare(models.get(i), last) == 0) {
-                /*If multiple events (labels or assignees) were added as the first event,
+                if(merged.size() > 1) merged.remove(merged.size() - 1);
+                /* If multiple events (labels or assignees) were added as the first event,
                 * then we need to stop the first item being duplicated
                  */
-                if(merged.size() > 1) merged.remove(merged.size() - 1);
                 if(merged.size() == 1 && merged.get(0).equals(last)) merged.remove(0);
                 toMerge.add(models.get(i - 1)); //Add the previous event
                 int j = i;

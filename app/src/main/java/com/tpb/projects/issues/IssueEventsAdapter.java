@@ -38,7 +38,6 @@ import butterknife.ButterKnife;
  */
 
 public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.EventHolder> implements Loader.ListLoader<IssueEvent> {
-    private static final String TAG = IssueEventsAdapter.class.getSimpleName();
 
     private final ArrayList<Pair<DataModel, SpannableString>> mEvents = new ArrayList<>();
     private Issue mIssue;
@@ -100,39 +99,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                     ? 0 : -1;
 
 
-    private ArrayList<DataModel> mergeEvents(List<IssueEvent> events) {
-        final ArrayList<DataModel> merged = new ArrayList<>();
-        ArrayList<IssueEvent> toMerge = new ArrayList<>();
-        IssueEvent last = new IssueEvent();
-        for(int i = 0; i < events.size(); i++) {
-            //If we have two of the same event, happening at the same time
-            if(events.get(i).getCreatedAt() == last.getCreatedAt() && events.get(i)
-                                                                            .getEvent() == last
-                    .getEvent()) {
-                /*If multiple events (labels or assignees) were added as the first event,
-                * then we need to stop the first item being duplicated
-                 */
-                if(merged.size() == 1 && merged.get(0).equals(events.get(i - 1))) merged.remove(0);
-                toMerge.add(events.get(i - 1)); //Add the previous event
-                int j = i;
-                //Loop until we find an event which shouldn't be merged
-                while(j < events.size() && events.get(j).getCreatedAt() == last
-                        .getCreatedAt() && events.get(j).getEvent() == last.getEvent()) {
-                    toMerge.add(events.get(j++));
-                }
-                i = j - 1; //Jump to the end of the merged positions
-                merged.add(new MergedModel<IssueEvent>(toMerge));
-                toMerge = new ArrayList<>(); //Reset the list of merged events
-            } else {
-                merged.add(events.get(i));
-            }
-            last = events.get(i); //Set the last event
-        }
-        return merged;
-
-    }
-
-
     @Override
     public void listLoadError(APIHandler.APIError error) {
 
@@ -155,10 +121,6 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
         mLoader.loadEvents(this, mIssue.getRepoFullName(), mIssue.getNumber(), mPage);
     }
 
-    void addEvent(IssueEvent event) {
-        mEvents.add(Pair.create(event, null));
-        notifyItemInserted(mEvents.size());
-    }
 
     @Override
     public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -166,6 +128,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                                              .inflate(R.layout.viewholder_event, parent, false));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(EventHolder holder, int position) {
         if(mEvents.get(position).first instanceof IssueEvent) {
@@ -178,140 +141,128 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     private void bindMergedEvent(EventHolder eventHolder, MergedModel<IssueEvent> me) {
         String text;
         final Resources res = eventHolder.itemView.getResources();
+        final StringBuilder builder = new StringBuilder();
         switch(me.getData().get(0).getEvent()) {
             case ASSIGNED:
-                final StringBuilder assignees = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    assignees.append(String.format(res.getString(R.string.text_href),
+                    builder.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
                             e.getActor().getLogin()
                     ));
-                    assignees.append(", ");
+                    builder.append(", ");
                 }
-                assignees.setLength(assignees.length() - 2); //Remove final comma
+                builder.setLength(builder.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_assigned_multiple),
-                        assignees.toString()
+                        builder.toString()
                 );
                 break;
             case UNASSIGNED:
-                final StringBuilder unassignees = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    unassignees.append(String.format(res.getString(R.string.text_href),
+                    builder.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
                             e.getActor().getLogin()
                     ));
-                    unassignees.append(", ");
+                    builder.append(", ");
                 }
-                unassignees.setLength(unassignees.length() - 2); //Remove final comma
+                builder.setLength(builder.length() - 2); //Remove final comma
                 text = String.format(res.getString(R.string.text_event_unassigned_multiple),
-                        unassignees.toString()
+                        builder.toString()
                 );
                 break;
             case REVIEW_REQUESTED:
-                final StringBuilder requested = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    requested.append(String.format(res.getString(R.string.text_href),
+                    builder.append(String.format(res.getString(R.string.text_href),
                             e.getRequestedReviewer().getHtmlUrl(),
                             e.getRequestedReviewer().getLogin()
                     ));
-                    requested.append(", ");
+                    builder.append(", ");
                 }
-                requested.setLength(requested.length() - 2); //Remove final comma
+                builder.setLength(builder.length() - 2);
                 text = String.format(res.getString(R.string.text_event_review_requested_multiple),
                         String.format(res.getString(R.string.text_href),
                                 me.getData().get(0).getReviewRequester().getHtmlUrl(),
                                 me.getData().get(0).getReviewRequester().getLogin()
                         ),
-                        requested.toString()
+                        builder.toString()
                 );
                 break;
             case REVIEW_REQUEST_REMOVED:
-                final StringBuilder derequested = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    derequested.append(String.format(res.getString(R.string.text_href),
+                    builder.append(String.format(res.getString(R.string.text_href),
                             e.getReviewRequester().getHtmlUrl(),
                             e.getReviewRequester().getLogin()
                     ));
-                    derequested.append(", ");
+                    builder.append(", ");
                 }
-                derequested.setLength(derequested.length() - 2); //Remove final comma
+                builder.setLength(builder.length() - 2);
                 text = String
                         .format(res.getString(R.string.text_event_review_request_removed_multiple),
                                 String.format(res.getString(R.string.text_href),
                                         me.getData().get(0).getActor().getHtmlUrl(),
                                         me.getData().get(0).getActor().getLogin()
                                 ),
-                                derequested.toString()
+                                builder.toString()
                         );
                 break;
             case LABELED:
-                final StringBuilder labels = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    labels.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
-                    labels.append("&nbsp;");
+                    builder.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    builder.append("&nbsp;");
                 }
-                labels.setLength(labels.length() - "&nbsp;".length());
+                builder.setLength(builder.length() - "&nbsp;".length());
                 text = String.format(
                         res.getString(R.string.text_event_labels_added),
                         String.format(res.getString(R.string.text_href),
                                 me.getData().get(0).getActor().getHtmlUrl(),
                                 me.getData().get(0).getActor().getLogin()
                         ),
-                        labels.toString()
+                        builder.toString()
                 );
                 break;
             case UNLABELED:
-                final StringBuilder unlabels = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    unlabels.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
-                    unlabels.append("&nbsp;");
+                    builder.append(Formatter.getLabelString(e.getLabelName(), e.getLabelColor()));
+                    builder.append("&nbsp;");
                 }
-                unlabels.setLength(unlabels.length() - 2);
+                builder.setLength(builder.length() - 2);
                 text = String.format(res.getString(R.string.text_event_labels_removed),
                         String.format(res.getString(R.string.text_href),
                                 me.getData().get(0).getActor().getHtmlUrl(),
                                 me.getData().get(0).getActor().getLogin()
                         ),
-                        unlabels.toString()
+                        builder.toString()
                 );
                 break;
-            case CLOSED:
-                //Duplicate close events seem to happen
-                bindEvent(eventHolder, me.getData().get(0));
-                return;
             case REFERENCED:
-                final StringBuilder commits = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    commits.append("<br>");
-                    commits.append(String.format(res.getString(R.string.text_href),
+                    builder.append("<br>");
+                    builder.append(String.format(res.getString(R.string.text_href),
                             "https://github.com/" + mIssue.getRepoFullName() + "/commit/" + e
                                     .getCommitId(),
                             String.format(res.getString(R.string.text_commit), e.getShortCommitId())
                     ));
                 }
-                commits.append("<br>");
+                builder.append("<br>");
                 text = String.format(res.getString(R.string.text_event_referenced_multiple),
-                        commits.toString()
+                        builder.toString()
                 );
                 break;
             case MENTIONED:
-                final StringBuilder mentioned = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    mentioned.append("<br>");
-                    mentioned.append(String.format(res.getString(R.string.text_href),
+                    builder.append("<br>");
+                    builder.append(String.format(res.getString(R.string.text_href),
                             e.getActor().getHtmlUrl(),
                             e.getActor().getLogin()
                     ));
                 }
                 text = String.format(res.getString(R.string.text_event_mentioned_multiple),
-                        mentioned.toString()
+                        builder.toString()
                 );
                 break;
             case RENAMED:
-                final StringBuilder named = new StringBuilder();
                 for(IssueEvent e : me.getData()) {
-                    named.append("<br>");
-                    named.append(
+                    builder.append("<br>");
+                    builder.append(
                             String.format(
                                     res.getString(R.string.text_event_rename_multiple),
                                     e.getRenameFrom(),
@@ -320,7 +271,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                     );
                 }
                 text = String.format(res.getString(R.string.text_event_renamed_multiple),
-                        named.toString()
+                        builder.toString()
                 );
                 break;
             case MOVED_COLUMNS_IN_PROJECT:
@@ -484,10 +435,28 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 );
                 break;
             case MILESTONED:
-                text = "Milestoned"; //TODO
+                text = String.format(res.getString(R.string.text_event_milestoned),
+                        String.format(res.getString(R.string.text_href),
+                                event.getMilestone().getHtmlUrl(),
+                                event.getMilestone().getTitle()
+                        ),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()
+                        )
+                );
                 break;
             case DEMILESTONED:
-                text = "De-milestoned"; //TODO
+                text = String.format(res.getString(R.string.text_event_demilestoned),
+                        String.format(res.getString(R.string.text_href),
+                                event.getMilestone().getHtmlUrl(),
+                                event.getMilestone().getTitle()
+                        ),
+                        String.format(res.getString(R.string.text_href),
+                                event.getActor().getHtmlUrl(),
+                                event.getActor().getLogin()
+                        )
+                );
                 break;
             case RENAMED:
                 text = String.format(res.getString(R.string.text_event_renamed),
@@ -592,8 +561,8 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
                 text = res.getString(R.string.text_event_moved_columns_in_project);
                 break;
             default:
-                text = "An event type hasn't been implemented " + event.getEvent();
-                text += "\nTell me here " + BuildConfig.BUG_EMAIL;
+                text = "An event type hasn't been implemented " + event.getEvent()
+                        + "\nTell me here " + BuildConfig.BUG_EMAIL;
         }
         text += " • " + DateUtils.getRelativeTimeSpanString(event.getCreatedAt());
         eventHolder.mText.setMarkdown(
@@ -621,7 +590,7 @@ public class IssueEventsAdapter extends RecyclerView.Adapter<IssueEventsAdapter.
     }
 
 
-    class EventHolder extends RecyclerView.ViewHolder {
+    static class EventHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_text) MarkdownTextView mText;
         @BindView(R.id.event_user_avatar) NetworkImageView mAvatar;
 

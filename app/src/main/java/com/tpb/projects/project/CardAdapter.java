@@ -30,7 +30,6 @@ import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.flow.IntentHandler;
 import com.tpb.projects.markdown.Formatter;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,12 +80,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         mNavListener = navListener;
         mRefresher = refresher;
         mRefresher.setRefreshing(true);
-        mRefresher.setOnRefreshListener(() -> {
-            mPage = 1;
-            mMaxPageReached = false;
-            notifyDataSetChanged();
-            loadCards(true);
-        });
     }
 
     void setColumn(int columnId) {
@@ -158,7 +151,6 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
     }
 
     void addCardFromDrag(int pos, Card card) {
-        Logger.i(TAG, "createCard: Card being added to " + pos);
         mCards.add(pos, Pair.create(card, null));
         notifyItemInserted(pos);
         final int id = pos == 0 ? -1 : mCards.get(pos - 1).first.getId();
@@ -206,8 +198,8 @@ class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardHolder> implement
         return -1;
     }
 
-    ArrayList<Card> getCards() {
-        final ArrayList<Card> cards = new ArrayList<>();
+    List<Card> getCards() {
+        final List<Card> cards = new ArrayList<>();
         for(Pair<Card, SpannableString> p : mCards) cards.add(p.first);
         return cards;
     }

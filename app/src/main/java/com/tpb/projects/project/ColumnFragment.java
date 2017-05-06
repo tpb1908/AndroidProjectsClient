@@ -39,19 +39,16 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.flow.IntentHandler;
-import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-import static com.tpb.projects.flow.ProjectsApplication.mAnalytics;
 import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY;
 
 /**
@@ -59,7 +56,6 @@ import static com.tpb.projects.util.SettingsActivity.Preferences.CardAction.COPY
  */
 
 public class ColumnFragment extends ViewSafeFragment {
-    private static final String TAG = ColumnFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -127,7 +123,6 @@ public class ColumnFragment extends ViewSafeFragment {
                     mName.setText(mColumn.getName());
                 } else {
                     mEditor.updateColumnName(new Editor.UpdateListener<Column>() {
-                        int loadCount = 0;
 
                         @Override
                         public void updated(Column column) {
@@ -135,31 +130,14 @@ public class ColumnFragment extends ViewSafeFragment {
                                 mColumn.setName(mName.getText().toString());
                                 resetLastUpdate();
                             }
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.TAG_PROJECT_EDIT, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
                         }
 
                         @Override
                         public void updateError(APIHandler.APIError error) {
-                            if(error != APIHandler.APIError.NO_CONNECTION) {
-                                if(loadCount < 5) {
-                                    loadCount++;
-                                    mEditor.updateColumnName(this, mColumn.getId(),
-                                            mName.getText().toString()
-                                    );
-                                } else {
-                                    Toast.makeText(getContext(), R.string.error_title_change_failed,
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                    mName.setText(mColumn.getName());
-                                    final Bundle bundle = new Bundle();
-                                    bundle.putString(Analytics.TAG_PROJECT_EDIT,
-                                            Analytics.VALUE_FAILURE
-                                    );
-                                    mAnalytics.logEvent(Analytics.TAG_COLUMN_NAME_CHANGE, bundle);
-                                }
-                            }
+                            Toast.makeText(getContext(), R.string.error_title_change_failed,
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            mName.setText(mColumn.getName());
                         }
                     }, mColumn.getId(), mName.getText().toString());
                 }
@@ -233,7 +211,6 @@ public class ColumnFragment extends ViewSafeFragment {
 
     @OnClick(R.id.column_delete)
     void deleteColumn() {
-        //TODO Move this to an options menu for the column
         mParent.deleteColumn(mColumn);
     }
 
@@ -254,7 +231,6 @@ public class ColumnFragment extends ViewSafeFragment {
     void recreateCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
-            int createAttempts = 0;
 
             @Override
             public void created(Pair<Integer, Card> integerCardPair) {
@@ -264,22 +240,8 @@ public class ColumnFragment extends ViewSafeFragment {
 
             @Override
             public void creationError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
-                } else {
-                    if(createAttempts < 5) {
-                        createAttempts++;
-                        mEditor.createCard(this, mColumn.getId(), card.getNote());
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                mParent.mRefresher.setRefreshing(false);
             }
         }, mColumn.getId(), card.getNote());
     }
@@ -299,13 +261,11 @@ public class ColumnFragment extends ViewSafeFragment {
         for(int i = 0; i < mRecycler.getChildCount() && i < index; i++) {
             height += mRecycler.getChildAt(i).getHeight();
         }
-        Logger.i(TAG, "attemptMoveTo: Height of " + height);
         mNestedScroller.scrollTo(0, height);
-
         return true;
     }
 
-    ArrayList<Card> getCards() {
+    List<Card> getCards() {
         return mAdapter.getCards();
     }
 
@@ -330,18 +290,19 @@ public class ColumnFragment extends ViewSafeFragment {
             case IssueEditor.REQUEST_CODE_ISSUE_FROM_CARD:
                 final Card oldCard = data.getParcelableExtra(getString(R.string.parcel_card));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
-                mEditor.createIssue(new Editor.CreationListener<Issue>() {
-                                        @Override
-                                        public void created(Issue issue) {
-                                            convertCardToIssue(oldCard, issue);
-                                        }
+                mEditor.createIssue(
+                        new Editor.CreationListener<Issue>() {
+                                @Override
+                                public void created(Issue issue) {
+                                    convertCardToIssue(oldCard, issue);
+                                }
 
-                                        @Override
-                                        public void creationError(APIHandler.APIError error) {
+                                @Override
+                                public void creationError(APIHandler.APIError error) {
 
-                                        }
-                                    }, mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees,
-                        labels
+                                }
+                        },
+                        mParent.mProject.getRepoPath(), issue.getTitle(), issue.getBody(), assignees, labels
                 );
                 break;
         }
@@ -438,72 +399,36 @@ public class ColumnFragment extends ViewSafeFragment {
     void newCard(Card card) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
-            int createAttempts = 0;
 
             @Override
             public void created(Pair<Integer, Card> pair) {
                 addCard(pair.second);
                 mParent.mRefresher.setRefreshing(false);
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
             }
 
             @Override
             public void creationError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
-                } else {
-                    if(createAttempts < 5) {
-                        createAttempts++;
-                        mEditor.createCard(this, mColumn.getId(), card.getNote());
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_CARD_CREATION, bundle);
+                mParent.mRefresher.setRefreshing(false);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, mColumn.getId(), card.getNote());
     }
 
     void editCard(Card card) {
-        Logger.i(TAG, "editCard: Updating card: " + card.toString());
         mParent.mRefresher.setRefreshing(true);
         mEditor.updateCard(new Editor.UpdateListener<Card>() {
-            int updateAttempts = 0;
 
             @Override
             public void updated(Card card) {
                 mAdapter.updateCard(card);
                 resetLastUpdate();
                 mParent.mRefresher.setRefreshing(false);
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
             }
 
             @Override
             public void updateError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                } else {
-                    if(updateAttempts < 5) {
-                        updateAttempts++;
-                        mEditor.updateCard(this, card.getId(), card.getNote());
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_CARD_EDIT, bundle);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                mParent.mRefresher.setRefreshing(false);
             }
         }, card.getId(), card.getNote());
 
@@ -511,47 +436,17 @@ public class ColumnFragment extends ViewSafeFragment {
 
     private void toggleIssueState(Card card) {
         final Editor.UpdateListener<Issue> listener = new Editor.UpdateListener<Issue>() {
-            int stateChangeAttempts = 0;
 
             @Override
             public void updated(Issue issue) {
                 card.setFromIssue(issue);
                 mAdapter.updateCard(card);
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(
-                        issue.isClosed() ? Analytics.TAG_ISSUE_CLOSED : Analytics.TAG_ISSUE_OPENED,
-                        bundle
-                );
             }
 
             @Override
             public void updateError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-
-                } else {
-                    if(stateChangeAttempts < 5) {
-                        if(card.getIssue().isClosed()) {
-                            stateChangeAttempts++;
-                            mEditor.openIssue(this, mParent.mProject.getRepoPath(),
-                                    card.getIssueId()
-                            );
-                        } else {
-                            mEditor.closeIssue(this, mParent.mProject.getRepoPath(),
-                                    card.getIssueId()
-                            );
-                        }
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                mParent.mRefresher.setRefreshing(false);
             }
         };
 
@@ -605,7 +500,6 @@ public class ColumnFragment extends ViewSafeFragment {
     public void editIssue(Card card, Issue issue, @Nullable String[] assignees, @Nullable String[] labels) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.updateIssue(new Editor.UpdateListener<Issue>() {
-            int issueCreationAttempts = 0;
 
             @Override
             public void updated(Issue issue) {
@@ -613,67 +507,29 @@ public class ColumnFragment extends ViewSafeFragment {
                 mAdapter.updateCard(card);
                 mParent.mRefresher.setRefreshing(false);
                 resetLastUpdate();
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
             }
 
             @Override
             public void updateError(APIHandler.APIError error) {
-                Logger.i(TAG, "updateError: " + error.toString());
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                } else {
-                    if(issueCreationAttempts < 5) {
-                        issueCreationAttempts++;
-                        mEditor.updateIssue(this, issue.getRepoFullName(), issue, assignees,
-                                labels
-                        );
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_ISSUE_EDIT, bundle);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                mParent.mRefresher.setRefreshing(false);
             }
         }, card.getIssue().getRepoFullName(), issue, assignees, labels);
     }
 
     private void convertCardToIssue(Card oldCard, Issue issue) {
         mEditor.deleteCard(new Editor.DeletionListener<Card>() {
-            int cardDeletionAttempts = 0;
 
             @Override
             public void deleted(Card card) {
                 createIssueCard(issue, oldCard.getId());
                 resetLastUpdate();
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_CARD_DELETION, bundle);
             }
 
             @Override
             public void deletionError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                } else {
-                    if(cardDeletionAttempts < 5) {
-                        cardDeletionAttempts++;
-                        mEditor.deleteCard(this, oldCard);
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_CARD_DELETION, bundle);
+                mParent.mRefresher.setRefreshing(false);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
             }
         }, oldCard);
     }
@@ -685,7 +541,6 @@ public class ColumnFragment extends ViewSafeFragment {
     private void createIssueCard(Issue issue, int oldCardId) {
         mParent.mRefresher.setRefreshing(true);
         mEditor.createCard(new Editor.CreationListener<Pair<Integer, Card>>() {
-            int issueCardCreationAttempts = 0;
 
             @Override
             public void created(Pair<Integer, Card> val) {
@@ -696,28 +551,12 @@ public class ColumnFragment extends ViewSafeFragment {
                     mAdapter.updateCard(val.second, oldCardId);
                 }
                 resetLastUpdate();
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                mAnalytics.logEvent(Analytics.TAG_CARD_TO_ISSUE, bundle);
             }
 
             @Override
             public void creationError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mParent.mRefresher.setRefreshing(false);
-                    Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                } else {
-                    if(issueCardCreationAttempts < 5) {
-                        issueCardCreationAttempts++;
-                        mEditor.createCard(this, mColumn.getId(), issue.getId());
-                    } else {
-                        Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
-                        mParent.mRefresher.setRefreshing(false);
-                    }
-                }
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_CARD_TO_ISSUE, bundle);
+                Toast.makeText(getContext(), error.resId, Toast.LENGTH_SHORT).show();
+                mParent.mRefresher.setRefreshing(false);
             }
         }, mColumn.getId(), issue.getId());
     }

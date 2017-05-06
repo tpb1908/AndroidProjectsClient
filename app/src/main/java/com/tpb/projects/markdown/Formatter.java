@@ -44,20 +44,17 @@ import static com.tpb.mdtext.TextUtils.getTextColorForBackground;
 public class Formatter {
 
     public static StringBuilder buildIssueSpan(Context context, Issue issue,
-                                               boolean headerTitle,
+                                               boolean showTitle,
                                                boolean showNumberedLink,
                                                boolean showAssignees,
                                                boolean showClosedAt,
                                                boolean showCommentCount) {
         final StringBuilder builder = new StringBuilder();
-        if(headerTitle) {
-            builder.append("<h1>");
-            builder.append(Markdown.escape(issue.getTitle())
-                                   .replace("\n", "</h1><h1>")); //h1 won't do multiple lines
-            builder.append("</h1>");
+        if(showTitle) {
+            builder.append(header(Markdown.escape(issue.getTitle()), 1));
         }
 
-        if(issue.getBody() != null && issue.getBody().trim().length() > 0) {
+        if(issue.getBody() != null && !issue.getBody().isEmpty()) {
             builder.append(Markdown.formatMD(issue.getBody().replaceFirst("\\s++$", ""),
                     issue.getRepoFullName()
             ));
@@ -176,62 +173,50 @@ public class Formatter {
                                   ));
         }
         if(issue.getMilestone() != null) {
-            final Milestone milestone = issue.getMilestone();
-            builder.append("<br>");
-            if(milestone.getClosedAt() == 0) {
+            appendMilestone(context, builder, issue.getMilestone());
+        }
+        return builder;
+    }
+
+    private static void appendMilestone(Context context, StringBuilder builder, Milestone milestone) {
+        builder.append("<br>");
+        if(milestone.getClosedAt() == 0) {
 
 
-                if(milestone.getDueOn() > 0) {
-                    final StringBuilder dueStringBuilder = new StringBuilder();
-                    if(System.currentTimeMillis() < milestone.getDueOn() ||
-                            (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone
-                                    .getDueOn())) {
-                        dueStringBuilder.append(
-                                String.format(
-                                        context.getString(R.string.text_milestone_due_on),
-                                        DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
-                                )
-                        );
-                    } else {
-                        dueStringBuilder.append("<font color=\"");
-                        dueStringBuilder.append(String.format("#%06X", (0xFFFFFF & Color.RED)));
-                        dueStringBuilder.append("\">");
-                        dueStringBuilder.append(
-                                String.format(
-                                        context.getString(R.string.text_milestone_due_on),
-                                        DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
-                                )
-                        );
-                        dueStringBuilder.append("</font>");
-                    }
-                    builder.append(
+            if(milestone.getDueOn() > 0) {
+                final StringBuilder dueStringBuilder = new StringBuilder();
+                if(System.currentTimeMillis() < milestone.getDueOn() ||
+                        (milestone.getClosedAt() != 0 && milestone.getClosedAt() < milestone
+                                .getDueOn())) {
+                    dueStringBuilder.append(
                             String.format(
-                                    context.getString(R.string.text_milestone_short),
-                                    String.format(
-                                            context.getString(R.string.text_href),
-                                            milestone.getHtmlUrl(),
-                                            milestone.getTitle()
-                                    ),
-                                    dueStringBuilder.toString()
+                                    context.getString(R.string.text_milestone_due_on),
+                                    DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
                             )
                     );
                 } else {
-                    builder.append(
+                    dueStringBuilder.append("<font color=\"");
+                    dueStringBuilder.append(String.format("#%06X", (0xFFFFFF & Color.RED)));
+                    dueStringBuilder.append("\">");
+                    dueStringBuilder.append(
                             String.format(
-                                    context.getString(R.string.text_milestone_short),
-                                    String.format(
-                                            context.getString(R.string.text_href),
-                                            milestone.getHtmlUrl(),
-                                            milestone.getTitle()
-                                    ),
-                                    String.format(
-                                            context.getString(R.string.text_milestone_opened),
-                                            DateUtils.getRelativeTimeSpanString(
-                                                    milestone.getCreatedAt())
-                                    )
+                                    context.getString(R.string.text_milestone_due_on),
+                                    DateUtils.getRelativeTimeSpanString(milestone.getDueOn())
                             )
                     );
+                    dueStringBuilder.append("</font>");
                 }
+                builder.append(
+                        String.format(
+                                context.getString(R.string.text_milestone_short),
+                                String.format(
+                                        context.getString(R.string.text_href),
+                                        milestone.getHtmlUrl(),
+                                        milestone.getTitle()
+                                ),
+                                dueStringBuilder.toString()
+                        )
+                );
             } else {
                 builder.append(
                         String.format(
@@ -242,14 +227,29 @@ public class Formatter {
                                         milestone.getTitle()
                                 ),
                                 String.format(
-                                        context.getString(R.string.text_milestone_closed_at),
-                                        DateUtils.getRelativeTimeSpanString(milestone.getClosedAt())
+                                        context.getString(R.string.text_milestone_opened),
+                                        DateUtils.getRelativeTimeSpanString(
+                                                milestone.getCreatedAt())
                                 )
                         )
                 );
             }
+        } else {
+            builder.append(
+                    String.format(
+                            context.getString(R.string.text_milestone_short),
+                            String.format(
+                                    context.getString(R.string.text_href),
+                                    milestone.getHtmlUrl(),
+                                    milestone.getTitle()
+                            ),
+                            String.format(
+                                    context.getString(R.string.text_milestone_closed_at),
+                                    DateUtils.getRelativeTimeSpanString(milestone.getClosedAt())
+                            )
+                    )
+            );
         }
-        return builder;
     }
 
     public static SpannableStringBuilder buildDiffSpan(@NonNull String diff) {

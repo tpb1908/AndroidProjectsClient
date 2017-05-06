@@ -13,17 +13,17 @@ import java.util.List;
 
 public class MergedModel<T extends DataModel> extends DataModel implements Parcelable {
 
-    private ArrayList<T> data = new ArrayList<>();
+    private List<T> data = new ArrayList<>();
 
     public MergedModel(ArrayList<T> data) {
-        this.data = data;
+        this.data.addAll(data);
     }
 
     public MergedModel(List<T> data) {
         this.data.addAll(data);
     }
 
-    public ArrayList<T> getData() {
+    public List<T> getData() {
         return data;
     }
 

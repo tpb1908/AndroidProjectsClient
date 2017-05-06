@@ -52,7 +52,6 @@ import com.tpb.projects.editors.CardEditor;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
 import com.tpb.projects.util.Analytics;
-import com.tpb.projects.util.Logger;
 import com.tpb.projects.util.SettingsActivity;
 import com.tpb.projects.util.UI;
 
@@ -132,7 +131,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             }
             loadFromId(repo, number);
         }
+        //Ensure that the keyboard does not show
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        initialiseListeners();
+    }
+
+    private void initialiseListeners() {
         mAdapter = new ColumnPagerAdapter(getSupportFragmentManager(), new ArrayList<>());
         mColumnPager.setAdapter(mAdapter);
         mColumnPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -158,18 +163,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 }
             }
         });
+
+
         mRefresher.setRefreshing(true);
         mMenu.hideMenuButton(false); //Hide the button so that we can show it later
         mMenu.setClosedOnTouchOutside(true);
         mRefresher.setOnRefreshListener(() -> {
-            if(mProject != null) {
-                mLoader.loadProject(ProjectActivity.this, mProject.getId());
-            } else {
-                final String repo = launchIntent.getStringExtra(getString(R.string.intent_repo));
-                final int number = launchIntent
-                        .getIntExtra(getString(R.string.intent_project_number), 1);
-                loadFromId(repo, number);
-            }
+            mLoader.loadProject(ProjectActivity.this, mProject.getId());
         });
         mRefresher.setOnChildScrollUpCallback((parent, child) -> {
             mAdapter.getCurrentFragment().notifyScroll();
@@ -181,8 +181,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
 
     private void loadFromId(String repo, int number) {
         //We have to load all of the projects to get the id that we want
+        //This is because we have the number and need the id
         mLoader.loadProjects(new Loader.ListLoader<Project>() {
-            int projectLoadAttempts = 0;
 
             @Override
             public void listLoadComplete(List<Project> projects) {
@@ -201,27 +201,14 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
 
             @Override
             public void listLoadError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mRefresher.setRefreshing(false);
-                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-
-                } else {
-                    if(projectLoadAttempts < 5) {
-                        projectLoadAttempts++;
-                        mLoader.loadProjects(this, repo);
-                    } else {
-                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
-                             .show();
-                        mRefresher.setRefreshing(false);
-                    }
-                }
+                mRefresher.setRefreshing(false);
+                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, repo);
     }
 
     private void checkAccess(Project project) {
         mLoader.checkAccessToRepository(new Loader.ItemLoader<Repository.AccessLevel>() {
-            int accessCheckAttempts = 0;
 
             @Override
             public void loadComplete(Repository.AccessLevel data) {
@@ -240,23 +227,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
 
             @Override
             public void loadError(APIHandler.APIError error) {
-                if(error == APIHandler.APIError.NO_CONNECTION) {
-                    mRefresher.setRefreshing(false);
-                    Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
-
-                } else {
-                    if(accessCheckAttempts < 5) {
-                        accessCheckAttempts++;
-                        mLoader.checkAccessToRepository(this,
-                                GitHubSession.getSession(ProjectActivity.this).getUserLogin(),
-                                project.getRepoPath()
-                        );
-                    } else {
-                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
-                             .show();
-                        mRefresher.setRefreshing(false);
-                    }
-                }
+                mRefresher.setRefreshing(false);
+                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT).show();
             }
         }, GitHubSession.getSession(this).getUserLogin(), project.getRepoPath());
     }
@@ -272,16 +244,12 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     @Override
     public void loadComplete(Project project) {
         mProject = project;
-        mLoader.loadLabels(null, mProject.getRepoPath());
         mName.setText(mProject.getName());
         mName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 project.getState() == State.OPEN ? R.drawable.ic_state_open : R.drawable.ic_state_closed,
                 0, 0, 0
         );
 
-        final Bundle bundle = new Bundle();
-        bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-        mAnalytics.logEvent(Analytics.TAG_PROJECT_LOADED, bundle);
         mLoadCount = 0;
         mLoader.loadColumns(new Loader.ListLoader<Column>() {
             @Override
@@ -317,18 +285,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     mAddCard.setVisibility(View.GONE);
                     mAddIssue.setVisibility(View.GONE);
                 }
-
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_SUCCESS);
-                bundle.putInt(Analytics.KEY_COLUMN_COUNT, columns.size() + 1);
-                mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
             }
 
             @Override
             public void listLoadError(APIHandler.APIError error) {
-                final Bundle bundle = new Bundle();
-                bundle.putString(Analytics.KEY_LOAD_STATUS, Analytics.VALUE_FAILURE);
-                mAnalytics.logEvent(Analytics.TAG_COLUMNS_LOADED, bundle);
+                mRefresher.setRefreshing(false);
+                Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
+                     .show();
             }
         }, mProject.getId());
 
@@ -370,7 +333,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             if(!text.isEmpty()) {
                 mRefresher.setRefreshing(true);
                 mEditor.addColumn(new Editor.CreationListener<Column>() {
-                    int addColumnAttempts = 0;
 
                     @Override
                     public void created(Column column) {
@@ -384,32 +346,13 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                             mColumnPager.setCurrentItem(mAdapter.getCount(), true);
                         }
                         mRefresher.setRefreshing(false);
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                        mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
                     }
 
                     @Override
                     public void creationError(APIHandler.APIError error) {
-                        if(error == APIHandler.APIError.NO_CONNECTION) {
-                            mRefresher.setRefreshing(false);
-                            Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
-                                 .show();
-
-                        } else {
-                            if(addColumnAttempts < 5) {
-                                addColumnAttempts++;
-                                mEditor.addColumn(this, mProject.getId(), text);
-                            } else {
-                                Toast.makeText(ProjectActivity.this, error.resId,
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                mRefresher.setRefreshing(false);
-                            }
-                        }
-                        final Bundle bundle = new Bundle();
-                        bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                        mAnalytics.logEvent(Analytics.TAG_COLUMN_ADD, bundle);
+                        mRefresher.setRefreshing(false);
+                        Toast.makeText(ProjectActivity.this, error.resId, Toast.LENGTH_SHORT)
+                             .show();
                     }
                 }, mProject.getId(), text);
                 dialog.dismiss();
@@ -462,7 +405,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                 .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
                     mRefresher.setRefreshing(true);
                     mEditor.deleteColumn(new Editor.DeletionListener<Integer>() {
-                        int deleteColumnAttempts = 0;
 
                         @Override
                         public void deleted(Integer integer) {
@@ -473,67 +415,18 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                                 mAddCard.setVisibility(View.GONE);
                                 mAddIssue.setVisibility(View.GONE);
                             }
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_SUCCESS);
-                            mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
                         }
 
                         @Override
                         public void deletionError(APIHandler.APIError error) {
-                            if(error == APIHandler.APIError.NO_CONNECTION) {
-                                mRefresher.setRefreshing(false);
-                                Toast.makeText(ProjectActivity.this, error.resId,
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else {
-                                if(deleteColumnAttempts < 5) {
-                                    deleteColumnAttempts++;
-                                    mEditor.deleteColumn(this, column.getId());
-                                } else {
-                                    Toast.makeText(ProjectActivity.this, error.resId,
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                    mRefresher.setRefreshing(false);
-                                }
-                            }
-                            final Bundle bundle = new Bundle();
-                            bundle.putString(Analytics.KEY_EDIT_STATUS, Analytics.VALUE_FAILURE);
-                            mAnalytics.logEvent(Analytics.TAG_COLUMN_DELETE, bundle);
+                            mRefresher.setRefreshing(false);
+                            Toast.makeText(ProjectActivity.this, error.resId,
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         }
                     }, column.getId());
                 }).show();
 
-    }
-
-    /**
-     * @param tag       id of the column being moved
-     * @param dropTag   id of the column being dropped onto
-     * @param direction side of the drop column to drop to true=left false=right
-     */
-    void moveColumn(int tag, int dropTag, boolean direction) {
-        final int from = mAdapter.indexOf(tag);
-        final int to;
-        if(direction) {
-            to = Math.max(0, mAdapter.indexOf(dropTag) - 1);
-        } else {
-            to = Math.min(mAdapter.getCount() - 1, mAdapter.indexOf(dropTag) + 1);
-        }
-        Logger.i(TAG, "moveColumn: From " + from + ", to " + to);
-        mAdapter.move(from, to);
-        mAdapter.columns.add(to, mAdapter.columns.remove(from));
-        mColumnPager.setCurrentItem(to, true);
-        mEditor.moveColumn(new Editor.UpdateListener<Integer>() {
-            @Override
-            public void updated(Integer integer) {
-
-            }
-
-            @Override
-            public void updateError(APIHandler.APIError error) {
-
-            }
-        }, tag, dropTag, to);
     }
 
     void deleteCard(Card card, boolean showWarning) {
@@ -573,26 +466,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         }
     }
 
-    private void dragLeft() {
-        if(mCurrentPosition > 0) {
-            mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
-        }
-    }
-
-    private void dragRight() {
-        if(mCurrentPosition < mAdapter.getCount()) {
-            mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
-        }
-    }
-
-    private void dragUp() {
-        mAdapter.getCurrentFragment().scrollUp();
-    }
-
-    private void dragDown() {
-        mAdapter.getCurrentFragment().scrollDown();
-    }
-
     void notifyFragmentLoaded() {
         mLoadCount++;
         if(mLoadCount == mAdapter.getCount()) {
@@ -608,10 +481,6 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         if(mMenu.isOpened()) {
             mMenu.close(true);
         } else {
-            /*
-            This seems to fix the problem with RecyclerView view detaching
-            Quick and dirty way of removing the com.tpb.mdtext.views
-             */
             mColumnPager.setAdapter(null);
             mMenu.hideMenuButton(true);
             super.onBackPressed();
@@ -697,8 +566,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mMenu.close(true);
         if(resultCode == AppCompatActivity.RESULT_OK) {
+            mMenu.close(true);
             mRefresher.setRefreshing(true);
             if(requestCode == IssueEditor.REQUEST_CODE_NEW_ISSUE) {
                 String[] assignees = null;
@@ -738,8 +607,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     mAdapter.getCurrentFragment().newCard(card);
                 }
             } else if(requestCode == CardEditor.REQUEST_CODE_EDIT_CARD) {
-                mAdapter.getCurrentFragment()
-                        .editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
+                mAdapter.getCurrentFragment().editCard(data.getParcelableExtra(getString(R.string.parcel_card)));
             } else if(requestCode == CommentEditor.REQUEST_CODE_COMMENT_FOR_STATE) {
                 final Comment comment = data.getParcelableExtra(getString(R.string.parcel_comment));
                 final Issue issue = data.getParcelableExtra(getString(R.string.parcel_issue));
@@ -763,11 +631,53 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mAnalytics.setAnalyticsCollectionEnabled(
-                SettingsActivity.Preferences.getPreferences(this).areAnalyticsEnabled());
+    /**
+     * @param tag       id of the column being moved
+     * @param dropTag   id of the column being dropped onto
+     * @param direction side of the drop column to drop to true=left false=right
+     */
+    void moveColumn(int tag, int dropTag, boolean direction) {
+        final int from = mAdapter.indexOf(tag);
+        final int to;
+        if(direction) {
+            to = Math.max(0, mAdapter.indexOf(dropTag) - 1);
+        } else {
+            to = Math.min(mAdapter.getCount() - 1, mAdapter.indexOf(dropTag) + 1);
+        }
+        mAdapter.move(from, to);
+        mAdapter.columns.add(to, mAdapter.columns.remove(from));
+        mColumnPager.setCurrentItem(to, true);
+        mEditor.moveColumn(new Editor.UpdateListener<Integer>() {
+            @Override
+            public void updated(Integer integer) {
+
+            }
+
+            @Override
+            public void updateError(APIHandler.APIError error) {
+
+            }
+        }, tag, dropTag, to);
+    }
+
+    private void dragLeft() {
+        if(mCurrentPosition > 0) {
+            mColumnPager.setCurrentItem(mCurrentPosition - 1, true);
+        }
+    }
+
+    private void dragRight() {
+        if(mCurrentPosition < mAdapter.getCount()) {
+            mColumnPager.setCurrentItem(mCurrentPosition + 1, true);
+        }
+    }
+
+    private void dragUp() {
+        mAdapter.getCurrentFragment().scrollUp();
+    }
+
+    private void dragDown() {
+        mAdapter.getCurrentFragment().scrollDown();
     }
 
     class NavigationDragListener implements View.OnDragListener {
@@ -805,10 +715,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
                     if(pos[1] + relativePos < 0.1 * metrics.heightPixels) {
                         dragUp();
                     }
-                    Logger.i(TAG, "onDrag: At the first position- We should scroll up");
 
                 } else if(tp == last) {
-                    Logger.i(TAG, "onDrag: At the last position- We should scroll down");
                     rv.getChildAt(last).getLocationOnScreen(pos);
                     if(pos[1] + relativePos > 0.9 * metrics.heightPixels) {
                         dragDown();
@@ -833,7 +741,7 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
     }
 
     private class ColumnPagerAdapter extends ArrayPagerAdapter<ColumnFragment> {
-        private ArrayList<Column> columns = new ArrayList<>();
+        private List<Column> columns = new ArrayList<>();
 
         ColumnPagerAdapter(FragmentManager manager, List<PageDescriptor> descriptors) {
             super(manager, descriptors);
@@ -846,8 +754,8 @@ public class ProjectActivity extends BaseActivity implements Loader.ItemLoader<P
             return -1;
         }
 
-        ArrayList<Card> getAllCards() {
-            final ArrayList<Card> cards = new ArrayList<>();
+        List<Card> getAllCards() {
+            final List<Card> cards = new ArrayList<>();
             for(int i = 0; i < getCount(); i++) {
                 cards.addAll(getExistingFragment(i).getCards());
             }

@@ -172,26 +172,28 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
                 builder.append(holder.itemView.getResources()
                                                      .getString(R.string.text_comment_edited));
             }
-            builder.append("<br><br>");
+            holder.mCommenter.setMarkdown(builder.toString());
+            builder.setLength(0);
             builder.append(Markdown.formatMD(comment.getBody(), mIssue.getRepoFullName()));
             if(comment.hasReaction()) {
                 builder.append("\n");
                 builder.append(Formatter.reactions(comment.getReaction()));
             }
 
-            holder.mText.setMarkdown(
+            holder.mBody.setMarkdown(
                     builder.toString(),
-                    new HttpImageGetter(holder.mText),
+                    new HttpImageGetter(holder.mBody),
                     text -> mComments.set(pos, Pair.create(comment, text))
             );
         } else {
             holder.mAvatar.setImageUrl(comment.getUser().getAvatarUrl());
-            holder.mText.setText(mComments.get(pos).second);
+            holder.mBody.setText(mComments.get(pos).second);
         }
-        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mText);
+        IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mBody);
         IntentHandler.addOnClickHandler(mParent.getActivity(), holder.mAvatar,
                 comment.getUser().getLogin()
         );
+        holder.mMenu.setOnClickListener((v) -> displayMenu(v, holder.getAdapterPosition()));
     }
 
     @Override
@@ -203,16 +205,15 @@ public class IssueCommentsAdapter extends RecyclerView.Adapter<IssueCommentsAdap
         mParent.displayCommentMenu(view, mComments.get(pos).first);
     }
 
-    class CommentHolder extends RecyclerView.ViewHolder {
+    static class CommentHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.event_comment_avatar) NetworkImageView mAvatar;
-        @BindView(R.id.comment_text) MarkdownTextView mText;
+        @BindView(R.id.comment_commenter) MarkdownTextView mCommenter;
+        @BindView(R.id.comment_text) MarkdownTextView mBody;
         @BindView(R.id.comment_menu_button) ImageButton mMenu;
 
         CommentHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            mMenu.setOnClickListener((v) -> displayMenu(v, getAdapterPosition()));
-            // view.setOnClickListener((v) -> displayInFullScreen(getAdapterPosition()));
         }
 
     }

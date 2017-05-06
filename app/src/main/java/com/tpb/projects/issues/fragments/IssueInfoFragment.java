@@ -37,6 +37,7 @@ import com.tpb.mdtext.Markdown;
 import com.tpb.mdtext.imagegetter.HttpImageGetter;
 import com.tpb.mdtext.views.MarkdownTextView;
 import com.tpb.projects.R;
+import com.tpb.projects.common.FixedLinearLayoutManger;
 import com.tpb.projects.common.NetworkImageView;
 import com.tpb.projects.editors.CommentEditor;
 import com.tpb.projects.editors.IssueEditor;
@@ -57,8 +58,6 @@ import butterknife.Unbinder;
  */
 
 public class IssueInfoFragment extends IssueFragment {
-
-    private static final String TAG = IssueInfoFragment.class.getSimpleName();
 
     private Unbinder unbinder;
 
@@ -93,7 +92,7 @@ public class IssueInfoFragment extends IssueFragment {
         mAccessLevel = ((IssueActivity) getActivity()).mAccessLevel;
         mEditor = Editor.getEditor(getContext());
         mAdapter = new IssueEventsAdapter(this, mRefresher);
-        final LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager manager = new FixedLinearLayoutManger(getContext());
         mRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -117,7 +116,7 @@ public class IssueInfoFragment extends IssueFragment {
 
                 @Override
                 public void loadError(APIHandler.APIError error) {
-
+                    mRefresher.setRefreshing(false);
                 }
             }, mIssue.getRepoFullName(), mIssue.getNumber(), true);
         });
@@ -126,13 +125,25 @@ public class IssueInfoFragment extends IssueFragment {
         return view;
     }
 
-    private void displayIssue(Issue issue) {
-        mTitle.setMarkdown(Formatter.header(issue.getTitle(), 1));
+
+    @Override
+    public void issueLoaded(Issue issue) {
+        mIssue = issue;
+        if(mAdapter != null) {
+            mAdapter.setIssue(issue);
+            displayIssue();
+            displayAssignees();
+            displayMilestone();
+        }
+    }
+
+    private void displayIssue() {
+        mTitle.setMarkdown(Formatter.header(mIssue.getTitle(), 1));
         mInfo.setMarkdown(
                 Formatter.buildIssueSpan(
                         getContext(),
-                        issue,
-                        false, //Header title
+                        mIssue,
+                        false, //Show title
                         false, //No numbered link
                         false, //No assignees
                         true, //Closed at
@@ -140,23 +151,22 @@ public class IssueInfoFragment extends IssueFragment {
                 ).toString(),
                 new HttpImageGetter(mInfo), null
         );
-        mUserAvatar.setOnClickListener(v -> IntentHandler
-                .openUser(getActivity(), mUserAvatar, issue.getOpenedBy().getLogin()));
-        mUserAvatar.setImageUrl(issue.getOpenedBy().getAvatarUrl());
+        mUserAvatar.setImageUrl(mIssue.getOpenedBy().getAvatarUrl());
+        IntentHandler.addOnClickHandler(getActivity(), mUserAvatar, mIssue.getOpenedBy().getLogin());
         mImageState.setOnClickListener(v -> toggleIssueState());
-        if(issue.isClosed()) {
+        if(mIssue.isClosed()) {
             mImageState.setImageResource(R.drawable.ic_state_closed);
         } else {
             mImageState.setImageResource(R.drawable.ic_state_open);
         }
     }
 
-    private void displayAssignees(Issue issue) {
+    private void displayAssignees() {
         mAssigneesLayout.removeAllViews();
-        if(issue != null && issue.getAssignees() != null && issue.getAssignees().length > 0) {
+        if(mIssue != null && mIssue.getAssignees() != null && mIssue.getAssignees().length > 0) {
             mAssigneesLayout.setVisibility(View.VISIBLE);
             mAssigneesTitle.setVisibility(View.VISIBLE);
-            for(User u : issue.getAssignees()) {
+            for(User u : mIssue.getAssignees()) {
                 final LinearLayout user = (LinearLayout) getActivity().getLayoutInflater()
                                                                       .inflate(R.layout.shard_user,
                                                                               mAssigneesLayout,
@@ -169,7 +179,7 @@ public class IssueInfoFragment extends IssueFragment {
                 avatar.setImageUrl(u.getAvatarUrl());
                 avatar.setScaleType(ImageView.ScaleType.FIT_XY);
                 final TextView login = ButterKnife.findById(user, R.id.user_login);
-                login.setId(View.generateViewId()); //Max 10 assignees
+                login.setId(View.generateViewId());
                 login.setText(u.getLogin());
                 user.setOnClickListener((v) -> {
                     final Intent us = new Intent(getActivity(), UserActivity.class);
@@ -191,9 +201,9 @@ public class IssueInfoFragment extends IssueFragment {
     }
 
     private void displayMilestone() {
-        if(mIssue.getMilestone() != null) {
+        final Milestone milestone = mIssue.getMilestone();
+        if(milestone != null) {
             mMilestoneCard.setVisibility(View.VISIBLE);
-            final Milestone milestone = mIssue.getMilestone();
             final MarkdownTextView tv = ButterKnife
                     .findById(mMilestoneCard, R.id.milestone_content_markdown);
             final ImageView status = ButterKnife.findById(mMilestoneCard, R.id.milestone_drawable);
@@ -208,9 +218,7 @@ public class IssueInfoFragment extends IssueFragment {
 
             final StringBuilder builder = new StringBuilder();
 
-            builder.append("<b>");
-            builder.append(Markdown.escape(milestone.getTitle()));
-            builder.append("</b>");
+            Formatter.bold(Markdown.escape(milestone.getTitle()));
             builder.append("<br>");
             if(milestone.getOpenIssues() > 0 || milestone.getClosedIssues() > 0) {
                 builder.append("<br>");
@@ -227,9 +235,9 @@ public class IssueInfoFragment extends IssueFragment {
                     String.format(
                             getString(R.string.text_milestone_opened_by),
                             String.format(getString(R.string.text_href),
-                                    "https://github.com/" + mIssue.getMilestone().getCreator()
+                                    "https://github.com/" + milestone.getCreator()
                                                                   .getLogin(),
-                                    mIssue.getMilestone().getCreator().getLogin()
+                                    milestone.getCreator().getLogin()
                             ),
                             DateUtils.getRelativeTimeSpanString(milestone.getCreatedAt())
                     )
@@ -291,19 +299,22 @@ public class IssueInfoFragment extends IssueFragment {
             @Override
             public void updated(Issue issue) {
                 int matchCount = 0;
-                if(mIssue.getAssignees() != null && issue.getAssignees() != null) {
-                    for(User u : mIssue.getAssignees()) {
-                        for(User v : mIssue.getAssignees()) {
+                final Issue old = mIssue;
+                mIssue = issue;
+                if(old.getAssignees() != null && mIssue.getAssignees() != null) {
+                    for(User u : old.getAssignees()) {
+                        for(User v : old.getAssignees()) {
                             if(u.equals(v)) matchCount++;
                         }
                     }
-                    if(matchCount != mIssue.getAssignees().length || matchCount != issue
-                            .getAssignees().length) {
-                        displayAssignees(issue);
+                    if(matchCount != old.getAssignees().length || 
+                            matchCount != mIssue.getAssignees().length) {
+                        displayAssignees();
                     }
                 }
-                mIssue = issue;
-                displayIssue(mIssue);
+
+                displayIssue();
+                displayMilestone();
                 mRefresher.setRefreshing(false);
             }
 
@@ -442,17 +453,6 @@ public class IssueInfoFragment extends IssueFragment {
         mAccessLevel = level;
     }
 
-    @Override
-    public void issueLoaded(Issue issue) {
-        mIssue = issue;
-        if(mAdapter != null) {
-            mAdapter.setIssue(issue);
-            displayIssue(mIssue);
-            displayAssignees(mIssue);
-            displayMilestone();
-        }
-    }
-
     private void checkSharedElementEntry() {
         final Intent i = getActivity().getIntent();
         if(i.hasExtra(getString(R.string.transition_card))) {
@@ -470,9 +470,6 @@ public class IssueInfoFragment extends IssueFragment {
                        }
                    });
         }
-    }
-
-    public void checkSharedElementExit() {
     }
 
     @Override

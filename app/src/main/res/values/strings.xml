@@ -133,7 +133,8 @@
     <string name="text_event_renamed_multiple">Renamed multiple times %1$s</string>
     <string name="text_event_rename_multiple">![CDATA[from <b>\"%1$s\"</b> to <b>\"%2$s\"</b>]></string>
     <string name="text_event_moved_columns_in_project_multiple">Moved columns in project multiple times</string>
-
+    <string name="text_event_milestoned">Added to %1$s milestone by %2$s</string>
+    <string name="text_event_demilestoned">Removed from %1$s milestone by %2$s</string>
 
     <!--Notifications -->
     <string name="text_notification_comment">Comment on %1$s</string>
