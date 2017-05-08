@@ -217,19 +217,19 @@ public class Markdown {
             }  else if(chars[i] == ']' && p == '[' && pp =='!') {
                 builder.setLength(builder.length() - 2);
                 builder.append("![No description]");
-            } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']' && !isEcaped(chars, i-2)) {
+            } else if(pp == '[' && (p == 'x' || p == 'X') && chars[i] == ']' && !isEscaped(chars, i-2)) {
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2611");  //☑ ballot box with check
-            } else if(p == '[' && chars[i] == ']' && !isEcaped(chars, i-1)) { //Closed box
+            } else if(p == '[' && chars[i] == ']' && !isEscaped(chars, i-1)) { //Closed box
                 builder.setLength(builder.length() - 1);
                 builder.append("\u2610"); //☐ ballot box
-            } else if(pp == '[' && p == ' ' && chars[i] == ']' && !isEcaped(chars, i-2)) {//Open box
+            } else if(pp == '[' && p == ' ' && chars[i] == ']' && !isEscaped(chars, i-2)) {//Open box
                 builder.setLength(builder.length() - 2);
                 builder.append("\u2610");
             } else if(chars[i] == '(' && fullRepoPath != null) {
                 builder.append("(");
                 i = parseImageLink(builder, chars, i, fullRepoPath);
-            } else if(chars[i] == ':' && !isEcaped(chars, i)) {
+            } else if(chars[i] == ':' && !isEscaped(chars, i)) {
                 i = parseEmoji(builder, chars, i);
             } else if(pp == '`' && p == '`' && chars[i] == '`') {
                 //We jump over the code block
@@ -405,7 +405,7 @@ public class Markdown {
         return c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\r' || c == '\u000C';
     }
 
-    private static boolean isEcaped(char[] cs, int i) {
+    private static boolean isEscaped(char[] cs, int i) {
         return i > 0 && cs[i - 1] == '\\';
     }
 
